@@ -10,14 +10,14 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.model.Item;
 
 @Service
-public interface PersistenceService {
+public interface PersistenceService<T extends Item> {
 	/**
 	 * Saved the given model and all of its dependent models.
 	 * 
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void save(T model) throws ModelSaveException;
+	void save(T model) throws ModelSaveException;
 
 	/**
 	 * Returns an object based on its PK.
@@ -25,7 +25,7 @@ public interface PersistenceService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T load(Class<T> type, Long pk) throws ModelNotFoundException;
+	T load(Class<T> type, Long pk) throws ModelNotFoundException;
 
 	/**
 	 * Returns an object based on the given search parameters (key = property
@@ -34,7 +34,7 @@ public interface PersistenceService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
+	List<T> load(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
 
 	/**
 	 * Initiates the datastorage based on the registeredTypes.

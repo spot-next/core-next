@@ -16,7 +16,7 @@ public abstract class Item implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Property(unique = true)
-	public long pk;
+	public Long pk;
 
 	@Property
 	public DateTime lastModified;
@@ -28,7 +28,7 @@ public abstract class Item implements Serializable {
 		try {
 			return BeanUtils.getSimpleProperty(this, propertyName);
 		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			throw new PropertyNotAccessibleException();
+			throw new PropertyNotAccessibleException(e);
 		}
 	}
 
@@ -36,7 +36,7 @@ public abstract class Item implements Serializable {
 		try {
 			BeanUtils.setProperty(this, propertyName, value);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new PropertyNotAccessibleException();
+			throw new PropertyNotAccessibleException(e);
 		}
 	}
 }

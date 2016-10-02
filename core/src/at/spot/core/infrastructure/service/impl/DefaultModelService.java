@@ -27,7 +27,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> T get(Class<T> type, Long pk) throws ModelNotFoundException {
-		return persistenceService.load(type, pk);
+		return (T) persistenceService.load(type, pk);
 	}
 
 	@Override

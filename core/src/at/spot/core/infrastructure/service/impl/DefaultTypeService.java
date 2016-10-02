@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,5 +81,15 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Override
 	public <A extends Annotation> A getAnnotation(Class<? extends Object> type, Class<A> annotation) {
 		return type.getAnnotation(annotation);
+	}
+
+	@Override
+	public <A extends Annotation> boolean hasAnnotation(AccessibleObject member, Class<A> annotation) {
+		return getAnnotation(member, annotation) != null;
+	}
+
+	@Override
+	public <A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation) {
+		return member.getAnnotation(annotation);
 	}
 }

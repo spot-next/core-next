@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
@@ -47,6 +48,25 @@ public interface TypeService {
 	 * @return
 	 */
 	<A extends Annotation> A getAnnotation(Class<? extends Object> type, Class<A> annotation);
+
+	/**
+	 * Checks for the presence of the given annotation on the given member.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	<A extends Annotation> boolean hasAnnotation(AccessibleObject member, Class<A> annotation);
+
+	/**
+	 * Returns the given annotation object, if present. If the annotation is not
+	 * found, null is returned.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	<A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation);
 
 	/**
 	 * Scans the classpath for {@link Item} types (that are also annotated with

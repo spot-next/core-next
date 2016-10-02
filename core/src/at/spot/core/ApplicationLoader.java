@@ -44,6 +44,7 @@ public class ApplicationLoader {
 		for (int i = 0; i < 100; i++) {
 			User user = getModelService().create(User.class);
 			user.name = "test-" + i;
+			user.uid = user.name;
 
 			try {
 				getModelService().save(user);

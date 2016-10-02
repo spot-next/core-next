@@ -1,13 +1,15 @@
 package at.spot.core.persistence.service.impl;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
+import java.beans.IntrospectionException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Set;
 
 import org.mapdb.BTreeMap;
@@ -18,19 +20,24 @@ import org.mapdb.serializer.SerializerArrayTuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.service.PersistenceService;
 
 @Service
-public class MapDBService implements PersistenceService {
+public class MapDBService implements PersistenceService<Item> {
 	private DB database;
 	private Map<String, BTreeMap<Object[], Integer>> dataStorage = new HashMap<>();
 
 	@Autowired
 	ModelService modelService;
+
+	@Autowired
+	TypeService typeService;
 
 	@Override
 	public void initDataStorage() {
@@ -40,33 +47,35 @@ public class MapDBService implements PersistenceService {
 
 		for (Class<? extends Item> t : itemTypes) {
 			BTreeMap<Object[], Integer> map = database.treeMap("towns")
-					.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.STRING))
+					.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.JAVA))
 					.valueSerializer(Serializer.JAVA).createOrOpen();
 
 			dataStorage.put(t.getSimpleName(), map);
 		}
 	}
 
-	protected <T extends Item> BTreeMap<Object[], Integer> getDataStorageForType(Class<T> type) {
+	protected BTreeMap<Object[], Integer> getDataStorageForType(Class<? extends Item> type) {
 		return this.dataStorage.get(type.getSimpleName());
 	}
 
 	@Override
-	public <T extends Item> void save(T model) throws ModelSaveException {
-		BTreeMap<Object[], Integer> storage = getDataStorageForType(model.getClass());
-
-		model.pk = getNextPk();
-
-		// storage.put(model.pk, model);
+	public void save(Item model) throws ModelSaveException {
+		try {
+			saveInternal(model);
+		} catch (IntrospectionException e) {
+			throw new ModelSaveException(e);
+		}
 	}
 
-	protected long getNextPk() {
+	protected long getNextPk(Item model) {
 		Set<Long> pks = new HashSet<>();
 
 		long newPK = 0l;
 
 		for (BTreeMap<Object[], Integer> s : dataStorage.values()) {
-			pks.addAll(s.keySet());
+			for (Object[] o : s.getKeys()) {
+				pks.add((Long) o[0]);
+			}
 		}
 
 		if (pks.size() > 0) {
@@ -76,39 +85,75 @@ public class MapDBService implements PersistenceService {
 		return newPK;
 	}
 
-	protected Map<String, Item> decomposeItem(Item item) {
+	protected void saveInternal(Item item) throws IntrospectionException {
 		BTreeMap<Object[], Integer> storage = getDataStorageForType(item.getClass());
+		Long newPk = getNextPk(item);
 
-		Map<String, Object> objectMap = new HashMap<>();
-
-		BeanInfo beanInfo = Introspector.getBeanInfo(item.getClass());
-
-		for (PropertyDescriptor propertyDesc : beanInfo.getPropertyDescriptors()) {
-			String propertyName = propertyDesc.getName();
-			Object propertyValue = propertyDesc.getValue(propertyName);
-
-			// we found a property on the item model that is also an item model
-			// -> we have to replace it with a reference object, and save the
-			// original object in it's own datastorage.
-			if (propertyDesc.getPropertyType().isInstance(Item.class) && propertyValue != null) {
-
-			}
+		if (item.pk == null) {
+			item.pk = getNextPk(item);
 		}
 
-		return items;
+		try {
+			for (Field field : item.getClass().getFields()) {
+				Object fieldValue = field.get(item);
+
+				if (fieldValue != null && typeService.hasAnnotation(field, Property.class)) {
+					// check for collections
+					if (field.getGenericType() instanceof ParameterizedType) {
+						ParameterizedType paramType = (ParameterizedType) field.getGenericType();
+
+						if (paramType != null) {
+							for (Type c : paramType.getActualTypeArguments()) {
+								if (c.getClass().isInstance(Item.class)) {
+									Collection<Item> col = (Collection<Item>) fieldValue;
+
+									for (Item collectionItem : col) {
+										saveInternal(collectionItem);
+									}
+								}
+							}
+						}
+					}
+
+					// we found a property on the item model that is also an
+					// item
+					// model
+					// -> we have to replace it with a reference object, and
+					// save
+					// the
+					// original object in it's own datastorage.
+					if (field.getType().isInstance(Item.class)) {
+						saveInternal((Item) fieldValue);
+					}
+
+					storage.put(new Object[] { item.pk, field.getName(), fieldValue }, 1);
+				}
+			}
+		} catch (Exception e) {
+			database.rollback();
+		}
+
+		database.commit();
 	}
 
 	@Override
-	public <T extends Item> T load(Class<T> type, Long pk) throws ModelNotFoundException {
-		// T item = (T) getDataStorageForType(type).get(pk);
+	public Item load(Class<Item> type, Long pk) throws ModelNotFoundException {
+		NavigableMap<Object[], Integer> items = getDataStorageForType(type).prefixSubMap(new Object[] { pk });
 
-		return null;
+		Item found;
+		try {
+			found = type.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return found;
 	}
 
 	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters)
-			throws ModelNotFoundException {
-		List<T> ret = new ArrayList<>();
+	public List<Item> load(Class<Item> type, Map<String, Object> searchParameters) throws ModelNotFoundException {
+		// List<T> ret = new ArrayList<>();
 
 		// try {
 		// for (Item i : models.values()) {
@@ -133,7 +178,7 @@ public class MapDBService implements PersistenceService {
 		// throw new ModelNotFoundException();
 		// }
 
-		return ret;
+		return null;
 	}
 
 	@Override
