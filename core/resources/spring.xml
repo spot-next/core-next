@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<context:annotation-config /> 
+	<context:component-scan base-package="at.spot.core" />
+	
+	<aop:aspectj-autoproxy />
+
+	<!-- model package scan path -->
+	<util:list id="modelPackageScanPaths" value-type="java.lang.String">
+		<value>at.spot.core.model</value>
+	</util:list>
+
+	<!-- beans are created via annotations -->
+	
+	
+	<!--  aliases -->
+	<alias name="defaultClasspathService" alias="classpathService" />
+	<alias name="consoleLoggingService" alias="loggingService" />
+	<alias name="defaultModelService" alias="modelService" />
+	<alias name="mapDBService" alias="persistenceService" />
+
+
+	<!-- aspects -->
+	<bean id="baseAspect" abstract="true" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect" factory-method="aspectOf" />
+		
+	<bean id="logAspect" class="at.spot.core.infrastructure.aspect.LogAspect" parent="baseAspect" />
+	<bean id="itemPropertyAccessAspect" class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" parent="baseAspect" />
+	
+	
+</beans>
