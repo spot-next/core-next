@@ -77,11 +77,7 @@ public class MapDBService implements PersistenceService {
 	}
 
 	protected Map<String, Item> decomposeItem(Item item) {
-		Map<Long, Item> storage = getDataStorageForType(model.getClass());
-
-		if (item.pk != null) {
-
-		}
+		BTreeMap<Object[], Integer> storage = getDataStorageForType(item.getClass());
 
 		Map<String, Object> objectMap = new HashMap<>();
 
@@ -104,9 +100,9 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> T load(Class<T> type, Long pk) throws ModelNotFoundException {
-		T item = (T) getDataStorageForType(type).get(pk);
+		// T item = (T) getDataStorageForType(type).get(pk);
 
-		return item;
+		return null;
 	}
 
 	@Override

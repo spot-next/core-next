@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.service.LoggingService;
 
 @Service
-public class ConsoleLoggingService implements LoggingService {
+public class ConsoleLoggingService extends AbstractService implements LoggingService {
 
 	private static String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 	private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);

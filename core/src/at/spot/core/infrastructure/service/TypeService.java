@@ -8,7 +8,7 @@ import org.aspectj.lang.JoinPoint;
 import at.spot.core.infrastructure.annotation.model.Type;
 import at.spot.core.model.Item;
 
-public interface ClasspathService {
+public interface TypeService {
 
 	/**
 	 * Checks for the presence of the given annotation on the given joinPoint.

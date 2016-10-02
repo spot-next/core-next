@@ -15,10 +15,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.model.Type;
-import at.spot.core.infrastructure.service.ClasspathService;
+import at.spot.core.infrastructure.service.TypeService;
 
 @Service
-public class DefaultClasspathService implements ClasspathService {
+public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {

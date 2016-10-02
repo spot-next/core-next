@@ -29,7 +29,7 @@
 	
 	
 	<!--  aliases -->
-	<alias name="defaultClasspathService" alias="classpathService" />
+	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="consoleLoggingService" alias="loggingService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="mapDBService" alias="persistenceService" />

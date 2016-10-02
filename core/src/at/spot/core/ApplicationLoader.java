@@ -1,9 +1,7 @@
 package at.spot.core;
 
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -70,17 +68,18 @@ public class ApplicationLoader {
 	 * PROPERTIES
 	 */
 
-	public static ApplicationContext getApplicationContext() {
-		return applicationContext;
-	}
+	// public static ApplicationContext getApplicationContext() {
+	// return applicationContext;
+	// }
 
 	/*
 	 * INTERNAL FUNCTIONALITY
 	 */
 
-	public static BeanDefinitionRegistry getBeanFactory() {
-		return (BeanDefinitionRegistry) ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
-	}
+	// public static BeanDefinitionRegistry getBeanFactory() {
+	// return (BeanDefinitionRegistry) ((ConfigurableApplicationContext)
+	// applicationContext).getBeanFactory();
+	// }
 
 	/*
 	 * SPRING SETTERS
