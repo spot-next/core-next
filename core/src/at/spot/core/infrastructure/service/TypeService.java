@@ -2,7 +2,9 @@ package at.spot.core.infrastructure.service;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Member;
 import java.util.List;
+import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
 
@@ -88,4 +90,11 @@ public interface TypeService {
 	 * Scans the classpath for {@link Item} types and registers them.
 	 */
 	void registerTypes();
+	
+	/**
+	 * Returns a map of all the @Property annotated properties of the given item.
+	 * @param item
+	 * @return
+	 */
+	Map<String, Member> getItemProperties(Item item);
 }

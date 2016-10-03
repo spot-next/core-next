@@ -2,9 +2,12 @@ package at.spot.core.infrastructure.service.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -35,10 +39,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Resource(name = "modelPackageScanPaths")
 	protected List<String> modelPackageScanPaths;
-	
+
 	@Autowired
 	protected LoggingService loggingService;
-	
+
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
 		return getAnnotation(joinPoint, annotation) != null;
@@ -114,7 +118,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 	}
-	
+
 	protected void registerType(Class<?> type, String scope) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		beanDefinition.setBeanClass(type);
@@ -146,5 +150,28 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Override
 	public <A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation) {
 		return member.getAnnotation(annotation);
+	}
+
+	@Override
+	public Map<String, Member> getItemProperties(Item item) {
+		Class<Item> itemType = (Class<Item>) item.getClass();
+
+		Map<String, Member> propertyMembers = new HashMap<>();
+
+		// add all the fields
+		for (Field f : itemType.getFields()) {
+			if (hasAnnotation(f, Property.class) && f.isAccessible()) {
+				propertyMembers.put(f.getName(), f);
+			}
+		}
+
+		// add all the getter methods
+		for (Method m : itemType.getMethods()) {
+			if (hasAnnotation(m, Property.class) && m.isAccessible() && m.getReturnType() != Void.class) {
+				propertyMembers.put(m.getName(), m);
+			}
+		}
+
+		return propertyMembers;
 	}
 }
