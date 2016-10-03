@@ -20,6 +20,8 @@ import org.mapdb.serializer.SerializerArrayTuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -43,7 +45,7 @@ public class MapDBService implements PersistenceService<Item> {
 	public void initDataStorage() {
 		database = DBMaker.fileDB("storage/database.db").make();
 
-		List<Class<? extends Item>> itemTypes = modelService.getAvailableTypes();
+		List<Class<? extends Item>> itemTypes = typeService.getAvailableTypes();
 
 		for (Class<? extends Item> t : itemTypes) {
 			BTreeMap<Object[], Integer> map = database.treeMap("towns")
@@ -94,6 +96,9 @@ public class MapDBService implements PersistenceService<Item> {
 		}
 
 		try {
+			ObjectMapper m = new ObjectMapper();
+			Map<String, Object> props = m.convertValue(item.getClass(), Map.class);
+
 			for (Field field : item.getClass().getFields()) {
 				Object fieldValue = field.get(item);
 
@@ -140,7 +145,7 @@ public class MapDBService implements PersistenceService<Item> {
 	public Item load(Class<Item> type, Long pk) throws ModelNotFoundException {
 		NavigableMap<Object[], Integer> items = getDataStorageForType(type).prefixSubMap(new Object[] { pk });
 
-		Item found;
+		Item found = null;
 		try {
 			found = type.newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {

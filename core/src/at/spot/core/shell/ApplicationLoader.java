@@ -1,43 +1,27 @@
-package at.spot.core;
+package at.spot.core.shell;
 
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Service;
+import org.springframework.shell.Bootstrap;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.User;
 import at.spot.core.persistence.service.PersistenceService;
 
-@Service
 public class ApplicationLoader {
 
-	private static ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 
-	public static void main(String[] args) {
-		try {
-			applicationContext = new ClassPathXmlApplicationContext("spring.xml");
-
-			ApplicationLoader loader = applicationContext.getBean(ApplicationLoader.class);
-			loader.configure();
-			loader.run();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * STARTUP FUNCTIONALITY
-	 */
-
-	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = true)
-	protected void configure() {
-		getModelService().registerTypes();
-		getPersistenceService().initDataStorage();
+	public static void main(String[] args) throws Exception {
+		ApplicationLoader loader = new ApplicationLoader();
+		loader.init();
+		loader.startShell(args);
 	}
 
 	public void run() {
@@ -64,7 +48,31 @@ public class ApplicationLoader {
 
 		getLoggingService().info("Exited");
 	}
+	
+	/*
+	 * STARTUP FUNCTIONALITY
+	 */
 
+	public void init() throws Exception {
+		initSpring();
+		setupTypeInfrastrucutre();
+	}
+	
+	public void initSpring() {
+		applicationContext = new ClassPathXmlApplicationContext("spring.xml");
+	}
+	
+	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
+	protected void setupTypeInfrastrucutre() {
+		getTypeService().registerTypes();
+		getPersistenceService().initDataStorage();
+	}
+
+	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
+	public void startShell(String...args) throws Exception {
+		Bootstrap.main(args);
+	}
+	
 	/*
 	 * PROPERTIES
 	 */
@@ -88,6 +96,10 @@ public class ApplicationLoader {
 
 	protected PersistenceService getPersistenceService() {
 		return (PersistenceService) applicationContext.getBean("persistenceService");
+	}
+	
+	protected TypeService getTypeService() {
+		return (TypeService) applicationContext.getBean("typeService");
 	}
 
 	protected ModelService getModelService() {

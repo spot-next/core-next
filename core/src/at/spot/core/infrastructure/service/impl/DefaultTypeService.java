@@ -3,27 +3,44 @@ package at.spot.core.infrastructure.service.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Resource;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.model.Type;
+import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.model.Item;
 
+/**
+ * Provides functionality to manage the typesystem.
+ *
+ */
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
+	@Resource(name = "modelPackageScanPaths")
+	protected List<String> modelPackageScanPaths;
+	
+	@Autowired
+	protected LoggingService loggingService;
+	
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
-
 		return getAnnotation(joinPoint, annotation) != null;
 	}
 
@@ -71,6 +88,44 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		}
 
 		return itemTypes;
+	}
+
+	@Override
+	public List<Class<? extends Item>> getAvailableTypes() {
+		Map<String, Item> types = getApplicationContext().getBeansOfType(Item.class);
+
+		List<Class<? extends Item>> allTypes = new ArrayList<>(types.keySet().size());
+
+		for (Item i : types.values()) {
+			if (hasAnnotation(i.getClass(), Type.class)) {
+				allTypes.add(i.getClass());
+			}
+		}
+
+		return allTypes;
+	}
+
+	@Override
+	public void registerTypes() {
+
+		for (Class<?> clazz : getItemConcreteTypes(modelPackageScanPaths)) {
+			if (clazz.isAnnotationPresent(Type.class)) {
+				registerType(clazz, "prototype");
+			}
+		}
+	}
+	
+	protected void registerType(Class<?> type, String scope) {
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(type);
+		beanDefinition.setLazyInit(false);
+		beanDefinition.setAbstract(Modifier.isAbstract(type.getModifiers()));
+		beanDefinition.setAutowireCandidate(true);
+		beanDefinition.setScope(scope);
+
+		getBeanFactory().registerBeanDefinition(type.getSimpleName(), beanDefinition);
+
+		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
 	}
 
 	@Override

@@ -15,6 +15,10 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	@Autowired
 	ModelService modelService;
 
+	@Pointcut("!within(at.spot.core.persistence..*)")
+	protected void notFromPersistencePackage() {
+	};
+	
 	/**
 	 * Define the pointcut for all fields that are accessed (get) on an object
 	 * of type @Item that are annotated with @Property.
@@ -31,7 +35,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	protected void setAccess() {
 	};
 
-	@Before("getAccess()")
+	@Before("getAccess() && notFromPersistencePackage()")
 	public void getPropertyValue(JoinPoint joinPoint) {
 		Property ann = getAnnotation(joinPoint, Property.class);
 
@@ -40,7 +44,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		}
 	}
 
-	@Before("setAccess()")
+	@Before("setAccess() && notFromPersistencePackage()")
 	public void setPropertyValue(JoinPoint joinPoint) {
 		Property ann = getAnnotation(joinPoint, Property.class);
 

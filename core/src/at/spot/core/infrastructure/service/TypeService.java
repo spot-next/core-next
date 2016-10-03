@@ -75,4 +75,17 @@ public interface TypeService {
 	 * @param packages
 	 */
 	List<Class<?>> getItemConcreteTypes(List<String> packages);
+
+	/**
+	 * Return a list of all concrete registered types. Abstract types are not
+	 * listed here.
+	 * 
+	 * @return
+	 */
+	List<Class<? extends Item>> getAvailableTypes();
+
+	/**
+	 * Scans the classpath for {@link Item} types and registers them.
+	 */
+	void registerTypes();
 }

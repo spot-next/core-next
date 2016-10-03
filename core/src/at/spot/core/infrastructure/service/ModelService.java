@@ -42,16 +42,5 @@ public interface ModelService {
 	 */
 	<T extends Item> List<T> get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
 
-	/**
-	 * Return a list of all concrete registered types. Abstract types are not
-	 * listed here.
-	 * 
-	 * @return
-	 */
-	List<Class<? extends Item>> getAvailableTypes();
 
-	/**
-	 * Scans the classpath for {@link Item} types and registers them.
-	 */
-	void registerTypes();
 }

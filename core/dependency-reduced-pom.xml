@@ -61,8 +61,8 @@
         </dependencies>
         <configuration>
           <showWeaveInfo>true</showWeaveInfo>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <Xlint>ignore</Xlint>
           <complianceLevel>${java.version}</complianceLevel>
           <encoding>UTF-8</encoding>
@@ -87,11 +87,23 @@
       <id>oss.sonatype.org</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </repository>
+    <repository>
+      <id>libs-milestone</id>
+      <url>http://repo.spring.io/libs-milestone/</url>
+    </repository>
+    <repository>
+      <id>libs-release</id>
+      <url>http://repo.spring.io/libs-release/</url>
+    </repository>
   </repositories>
   <properties>
+    <spring.shell.version>1.2.0.RELEASE</spring.shell.version>
     <aspectj.version>1.8.9</aspectj.version>
     <java.version>1.8</java.version>
     <spring.version>4.3.3.RELEASE</spring.version>
+    <log4j.version>1.2.17</log4j.version>
+    <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
+    <junit.version>4.10</junit.version>
   </properties>
 </project>
 
