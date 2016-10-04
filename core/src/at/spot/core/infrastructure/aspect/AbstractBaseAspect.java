@@ -19,4 +19,9 @@ public class AbstractBaseAspect {
 	public void setTypeService(TypeService typeService) {
 		this.typeService = typeService;
 	}
+
+	protected String createSignature(JoinPoint joinPoint) {
+		return String.format("%s.%s", joinPoint.getSignature().getClass().getSimpleName(),
+				joinPoint.getSignature().getName());
+	}
 }

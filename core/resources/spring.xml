@@ -27,14 +27,17 @@
 	
 	<!-- This mapping of property value providers is used to fetch Item models from collection-like properties -->
 	<util:map id="itemPropertyValueProviders" key-type="java.lang.String" value-type="at.spot.core.persistence.valueprovider.ItemPropertyValueProvider">
-		<entry key="Collection">
-			<ref bean="collectionValueProvider" />
-		</entry>
-		<entry key="Map">
-			<ref bean="mapValueProvider" />
-		</entry>
+<!-- 		<entry key="Collection"> -->
+<!-- 			<ref bean="collectionValueProvider" /> -->
+<!-- 		</entry> -->
+<!-- 		<entry key="Map"> -->
+<!-- 			<ref bean="mapValueProvider" /> -->
+<!-- 		</entry> -->
 <!-- 		<entry key="Relation"> -->
 <!-- 			<ref bean="relationValueProvider" /> -->
+<!-- 		</entry> -->
+<!-- 		<entry key="Item"> -->
+<!-- 			<ref bean="referenceValueProvider" /> -->
 <!-- 		</entry> -->
 	</util:map>
 
@@ -43,16 +46,21 @@
 	
 	<!-- spring beans -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-	<property name="basename">
-		<value>locale/messages</value>
-	</property>
-</bean>
+		<property name="basename">
+			<value>locale/messages</value>
+		</property>
+	</bean>
+	
+	<util:properties id="configuration" location="application.properties" scope="singleton" />
+	
 	
 	<!--  aliases -->
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="consoleLoggingService" alias="loggingService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="mapDBService" alias="persistenceService" />
+	<alias name="defaultL10nService" alias="l10nService" />
+	<alias name="defaultI18nService" alias="i18nService" />
 
 
 	<!-- aspects -->

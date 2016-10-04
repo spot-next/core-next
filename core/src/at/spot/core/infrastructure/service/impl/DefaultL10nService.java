@@ -14,10 +14,10 @@ import at.spot.core.infrastructure.service.L10nService;
 public class DefaultL10nService implements L10nService {
 
 	@Autowired
-	MessageSource messageSource;
+	protected MessageSource messageSource;
 
 	@Autowired
-	I18nService i18nService;
+	protected I18nService i18nService;
 
 	@Override
 	public String getMessage(String key, Object... messageParams) throws NoSuchMessageException {

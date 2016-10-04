@@ -2,8 +2,11 @@ package at.spot.core.data.model;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.model.Property;
@@ -16,8 +19,7 @@ public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean persisted;
-	private boolean dirty;
+	private List<String> dirtyAttributes = new ArrayList<>();
 
 	@Property(unique = true)
 	public PK pk;
@@ -27,6 +29,21 @@ public abstract class Item implements Serializable {
 
 	@Property
 	public DateTime created;
+
+	/**
+	 * If this object is used as a proxy, eg. in a collection or relation, this
+	 * is true. The item property handler then knows it has to load it on the
+	 * fly.
+	 */
+	public final boolean isProxy;
+
+	public Item() {
+		this.isProxy = false;
+	}
+
+	public Item(boolean isProxy) {
+		this.isProxy = isProxy;
+	}
 
 	public Object getProperty(String propertyName) throws PropertyNotAccessibleException {
 		try {
@@ -38,18 +55,21 @@ public abstract class Item implements Serializable {
 
 	public void setProperty(String propertyName, Object value) throws PropertyNotAccessibleException {
 		try {
-			BeanUtils.setProperty(this, propertyName, value);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new PropertyNotAccessibleException(e);
+			FieldUtils.writeField(this, propertyName, value);
+		} catch (IllegalAccessException e) {
+			//
 		}
 	}
 
 	public boolean isPersisted() {
-		return pk != null && persisted;
+		return pk != null && dirtyAttributes.size() == 0;
 	}
 
 	public boolean isDirty() {
-		return dirty;
+		return dirtyAttributes.size() > 0;
 	}
 
+	private void markDirty(String propertyName) {
+		this.dirtyAttributes.add(propertyName);
+	}
 }

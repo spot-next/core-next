@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -21,13 +22,14 @@ import org.springframework.stereotype.Service;
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.persistence.service.PersistenceService;
 
 @Service
-public class MapDBService implements PersistenceService<Item> {
+public class MapDBService implements PersistenceService {
 	private DB database;
 	private Map<String, BTreeMap<Object[], PK>> dataStorage = new HashMap<>();
 
@@ -65,7 +67,7 @@ public class MapDBService implements PersistenceService<Item> {
 		}
 	}
 
-	protected PK getNextPk(Item model) {
+	protected PK getNextPk(Item item) {
 		Set<Long> pks = new HashSet<>();
 
 		long newPK = 0l;
@@ -80,7 +82,7 @@ public class MapDBService implements PersistenceService<Item> {
 			newPK = pks.stream().max(Long::compare).get() + 1;
 		}
 
-		return new PK(newPK);
+		return new PK(newPK, item.getClass());
 	}
 
 	protected void saveInternal(Item item) throws IntrospectionException {
@@ -92,9 +94,13 @@ public class MapDBService implements PersistenceService<Item> {
 		Map<String, Object> itemAttributes = new HashMap<>();
 
 		try {
-			Map<String, Member> itemMembers = typeService.getItemProperties(item);
+			Map<String, Member> itemMembers = typeService.getItemProperties(item.getClass());
 
 			for (Member member : itemMembers.values()) {
+				if (StringUtils.equalsIgnoreCase(member.getName(), "pk")) {
+					continue;
+				}
+
 				Object value = modelService.getPropertyValue(item, member.getName());
 
 				if (value != null) {
@@ -126,9 +132,7 @@ public class MapDBService implements PersistenceService<Item> {
 					} else {
 						itemAttributes.put(member.getName(), value);
 					}
-
 				}
-
 			}
 
 			for (String k : itemAttributes.keySet()) {
@@ -142,22 +146,36 @@ public class MapDBService implements PersistenceService<Item> {
 	}
 
 	@Override
-	public Item load(Class<Item> type, Long pk) throws ModelNotFoundException {
+	public <T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException {
 		NavigableMap<Object[], PK> items = getDataStorageForType(type).prefixSubMap(new Object[] { pk });
 
-		Item found = null;
-		try {
-			found = type.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		T found = null;
+
+		if (items.values().size() > 0) {
+			try {
+				found = type.newInstance();
+
+				for (Object[] k : items.keySet()) {
+					if (found.pk == null) {
+						found.pk = items.get(k);
+					}
+
+					String propertyName = (String) k[1];
+					Object propertyValue = k[2];
+
+					found.setProperty(propertyName, propertyValue);
+				}
+
+			} catch (Exception | PropertyNotAccessibleException e) {
+				throw new ModelNotFoundException(e);
+			}
 		}
 
 		return found;
 	}
 
 	@Override
-	public List<Item> load(Class<Item> type, Map<String, Object> searchParameters) throws ModelNotFoundException {
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) {
 		// List<T> ret = new ArrayList<>();
 
 		// try {
@@ -183,6 +201,12 @@ public class MapDBService implements PersistenceService<Item> {
 		// throw new ModelNotFoundException();
 		// }
 
+		return null;
+	}
+
+	@Override
+	public <T extends Item> T loadProxyModel(T proxyItem) throws ModelNotFoundException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

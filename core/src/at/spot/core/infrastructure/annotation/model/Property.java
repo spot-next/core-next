@@ -20,4 +20,6 @@ public @interface Property {
 
 	boolean isReference() default false;
 
+	String itemValueProvider() default "";
+
 }

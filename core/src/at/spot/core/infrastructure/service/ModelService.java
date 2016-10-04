@@ -6,6 +6,7 @@ import java.util.Map;
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.type.PK;
 
 public interface ModelService {
 
@@ -40,7 +41,15 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, Long pk) throws ModelNotFoundException;
+	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
+
+	/**
+	 * Returns an object based on its PK.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> T get(Class<T> type, PK pk) throws ModelNotFoundException;
 
 	/**
 	 * Returns an object based on the given search parameters (key = property
@@ -58,7 +67,7 @@ public interface ModelService {
 	 * @param propertyName
 	 * @return
 	 */
-	Object getPropertyValue(Item item, String propertyName);
+	<T extends Item> Object getPropertyValue(T item, String propertyName);
 
 	/**
 	 * Returns the item's value of the given property.
@@ -67,5 +76,13 @@ public interface ModelService {
 	 * @param propertyName
 	 * @return
 	 */
-	<T extends Object> T getPropertyValue(Item item, String propertyName, Class<T> type);
+	<T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> type);
+
+	/**
+	 * If the given model is a proxy item (=only the pk is filled) then all of
+	 * it's properties are filled.
+	 * 
+	 * @param item
+	 */
+	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
 }
