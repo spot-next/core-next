@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.model.Item;
+import at.spot.core.infrastructure.util.ELParser;
 import at.spot.core.persistence.service.PersistenceService;
 
 @Service
@@ -26,6 +28,13 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
+	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException {
+		for (T item : models) {
+			save(item);
+		}
+	}
+
+	@Override
 	public <T extends Item> T get(Class<T> type, Long pk) throws ModelNotFoundException {
 		return (T) persistenceService.load(type, pk);
 	}
@@ -36,4 +45,17 @@ public class DefaultModelService extends AbstractModelService {
 
 		return persistenceService.load(type, searchParameters);
 	}
+
+	@Override
+	public Object getPropertyValue(Item item, String propertyName) {
+		Transformer transformer = new ELParser(propertyName);
+
+		return transformer.transform(item);
+	}
+
+	@Override
+	public <T> T getPropertyValue(Item item, String propertyName, Class<T> type) {
+		return (T) getPropertyValue(item, propertyName);
+	}
+
 }

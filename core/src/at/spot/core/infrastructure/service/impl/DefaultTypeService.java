@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
@@ -24,11 +26,11 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.model.Item;
 
 /**
  * Provides functionality to manage the typesystem.
@@ -37,8 +39,8 @@ import at.spot.core.model.Item;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	@Resource(name = "modelPackageScanPaths")
-	protected List<String> modelPackageScanPaths;
+	@Resource(name = "itemTypePackageScanPaths")
+	protected List<String> itemTypePackageScanPaths;
 
 	@Autowired
 	protected LoggingService loggingService;
@@ -112,7 +114,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Override
 	public void registerTypes() {
 
-		for (Class<?> clazz : getItemConcreteTypes(modelPackageScanPaths)) {
+		for (Class<?> clazz : getItemConcreteTypes(itemTypePackageScanPaths)) {
 			if (clazz.isAnnotationPresent(Type.class)) {
 				registerType(clazz, "prototype");
 			}
@@ -153,25 +155,40 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
-	public Map<String, Member> getItemProperties(Item item) {
-		Class<Item> itemType = (Class<Item>) item.getClass();
-
+	public Map<String, Member> getItemProperties(Class<? extends Item> itemType) {
 		Map<String, Member> propertyMembers = new HashMap<>();
 
 		// add all the fields
 		for (Field f : itemType.getFields()) {
-			if (hasAnnotation(f, Property.class) && f.isAccessible()) {
+			if (hasAnnotation(f, Property.class)) {
 				propertyMembers.put(f.getName(), f);
 			}
 		}
 
 		// add all the getter methods
 		for (Method m : itemType.getMethods()) {
-			if (hasAnnotation(m, Property.class) && m.isAccessible() && m.getReturnType() != Void.class) {
-				propertyMembers.put(m.getName(), m);
+			if (hasAnnotation(m, Property.class) && m.getReturnType() != Void.class) {
+				String name = m.getName();
+
+				if (StringUtils.startsWithIgnoreCase(name, "get")) {
+					name = StringUtils.substring(name, 3);
+				} else if (StringUtils.startsWithIgnoreCase(name, "get")) {
+					name = StringUtils.substring(name, 2);
+				}
+
+				name = Introspector.decapitalize(name);
+
+				propertyMembers.put(name, m);
 			}
 		}
 
 		return propertyMembers;
+	}
+
+	@Override
+	public Class<? extends Item> getType(String typeCode) {
+		Class<? extends Item> type = (Class<? extends Item>) getApplicationContext().getBean(typeCode).getClass();
+
+		return type;
 	}
 }

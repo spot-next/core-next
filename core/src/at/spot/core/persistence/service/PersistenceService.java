@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.model.Item;
 
 @Service
 public interface PersistenceService<T extends Item> {

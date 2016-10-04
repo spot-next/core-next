@@ -5,18 +5,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.shell.Bootstrap;
 
+import at.spot.core.data.model.User;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.model.User;
 import at.spot.core.persistence.service.PersistenceService;
 
+/**
+ * This is the main entry point for the application. After the application has
+ * been initialized, it will call {@link ApplicationLoader#run()}. Then the
+ * shell is being loaded.
+ */
 public class ApplicationLoader {
 
 	private ApplicationContext applicationContext;
+
+	ModelService modelService;
+	TypeService typeService;
+	LoggingService loggingService;
 
 	public static void main(String[] args) throws Exception {
 		ApplicationLoader loader = new ApplicationLoader();
@@ -48,7 +57,7 @@ public class ApplicationLoader {
 
 		getLoggingService().info("Exited");
 	}
-	
+
 	/*
 	 * STARTUP FUNCTIONALITY
 	 */
@@ -56,12 +65,14 @@ public class ApplicationLoader {
 	public void init() throws Exception {
 		initSpring();
 		setupTypeInfrastrucutre();
+
+		run();
 	}
-	
+
 	public void initSpring() {
 		applicationContext = new ClassPathXmlApplicationContext("spring.xml");
 	}
-	
+
 	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
 	protected void setupTypeInfrastrucutre() {
 		getTypeService().registerTypes();
@@ -69,10 +80,10 @@ public class ApplicationLoader {
 	}
 
 	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
-	public void startShell(String...args) throws Exception {
+	public void startShell(String... args) throws Exception {
 		Bootstrap.main(args);
 	}
-	
+
 	/*
 	 * PROPERTIES
 	 */
@@ -97,13 +108,17 @@ public class ApplicationLoader {
 	protected PersistenceService getPersistenceService() {
 		return (PersistenceService) applicationContext.getBean("persistenceService");
 	}
-	
+
 	protected TypeService getTypeService() {
-		return (TypeService) applicationContext.getBean("typeService");
+		if (typeService == null)
+			typeService = (TypeService) applicationContext.getBean("typeService");
+		return typeService;
 	}
 
 	protected ModelService getModelService() {
-		return (ModelService) applicationContext.getBean("modelService");
+		if (modelService == null)
+			modelService = (ModelService) applicationContext.getBean("modelService");
+		return modelService;
 	}
 
 	protected LoggingService getLoggingService() {

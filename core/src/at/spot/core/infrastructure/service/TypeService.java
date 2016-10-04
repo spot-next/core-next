@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
 
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.Type;
-import at.spot.core.model.Item;
 
 public interface TypeService {
 
@@ -90,11 +90,21 @@ public interface TypeService {
 	 * Scans the classpath for {@link Item} types and registers them.
 	 */
 	void registerTypes();
-	
+
 	/**
-	 * Returns a map of all the @Property annotated properties of the given item.
+	 * Returns a map of all the @Property annotated properties of the given
+	 * item.
+	 * 
 	 * @param item
 	 * @return
 	 */
-	Map<String, Member> getItemProperties(Item item);
+	Map<String, Member> getItemProperties(Class<? extends Item> itemType);
+
+	/**
+	 * Returns the class definition for the given type code.
+	 * 
+	 * @param typeCode
+	 * @return
+	 */
+	Class<? extends Item> getType(String typeCode);
 }

@@ -1,4 +1,4 @@
-package at.spot.core.model;
+package at.spot.core.data.model;
 
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;

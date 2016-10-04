@@ -1,18 +1,17 @@
-package at.spot.core.model;
+package at.spot.core.data.model;
 
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;
-import at.spot.core.infrastructure.annotation.model.Unique;
 
 @Type
-public abstract class Principal extends Item {
+public abstract class Relation<S extends Item, T extends Item> extends Item {
 
 	private static final long serialVersionUID = 1L;
 
-	@Unique
 	@Property(unique = true)
-	public String uid;
+	public S source;
 
-	@Property
-	public String name;
+	@Property(unique = true)
+	public T target;
+
 }

@@ -1,4 +1,4 @@
-package at.spot.core.model;
+package at.spot.core.data.model;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -9,14 +9,18 @@ import org.joda.time.DateTime;
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
+import at.spot.core.infrastructure.type.PK;
 
 @Type
 public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private boolean persisted;
+	private boolean dirty;
+
 	@Property(unique = true)
-	public Long pk;
+	public PK pk;
 
 	@Property
 	public DateTime lastModified;
@@ -39,4 +43,13 @@ public abstract class Item implements Serializable {
 			throw new PropertyNotAccessibleException(e);
 		}
 	}
+
+	public boolean isPersisted() {
+		return pk != null && persisted;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
 }

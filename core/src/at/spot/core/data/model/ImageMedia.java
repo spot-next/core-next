@@ -1,13 +1,15 @@
-package at.spot.core.model;
+package at.spot.core.data.model;
+
+import java.util.List;
 
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.Type;
 
 @Type
-public class UserGroup extends Principal {
+public class ImageMedia extends Media {
 
 	private static final long serialVersionUID = 1L;
 
-	@Property(isReference = true)
-	public UserGroup parent;
+	@Property
+	List<Media> medias;
 }

@@ -21,12 +21,32 @@
 	<aop:aspectj-autoproxy />
 
 	<!-- model package scan path -->
-	<util:list id="modelPackageScanPaths" value-type="java.lang.String">
-		<value>at.spot.core.model</value>
+	<util:list id="itemTypePackageScanPaths" value-type="java.lang.String">
+		<value>at.spot.core.data.model</value>
 	</util:list>
+	
+	<!-- This mapping of property value providers is used to fetch Item models from collection-like properties -->
+	<util:map id="itemPropertyValueProviders" key-type="java.lang.String" value-type="at.spot.core.persistence.valueprovider.ItemPropertyValueProvider">
+		<entry key="Collection">
+			<ref bean="collectionValueProvider" />
+		</entry>
+		<entry key="Map">
+			<ref bean="mapValueProvider" />
+		</entry>
+<!-- 		<entry key="Relation"> -->
+<!-- 			<ref bean="relationValueProvider" /> -->
+<!-- 		</entry> -->
+	</util:map>
 
 	<!-- beans are created via annotations -->
 	
+	
+	<!-- spring beans -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+	<property name="basename">
+		<value>locale/messages</value>
+	</property>
+</bean>
 	
 	<!--  aliases -->
 	<alias name="defaultTypeService" alias="typeService" />

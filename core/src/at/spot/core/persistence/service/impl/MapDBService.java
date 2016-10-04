@@ -1,9 +1,7 @@
 package at.spot.core.persistence.service.impl;
 
 import java.beans.IntrospectionException;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.Member;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,20 +18,18 @@ import org.mapdb.serializer.SerializerArrayTuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.model.Item;
+import at.spot.core.infrastructure.type.PK;
 import at.spot.core.persistence.service.PersistenceService;
 
 @Service
 public class MapDBService implements PersistenceService<Item> {
 	private DB database;
-	private Map<String, BTreeMap<Object[], Integer>> dataStorage = new HashMap<>();
+	private Map<String, BTreeMap<Object[], PK>> dataStorage = new HashMap<>();
 
 	@Autowired
 	ModelService modelService;
@@ -48,7 +44,7 @@ public class MapDBService implements PersistenceService<Item> {
 		List<Class<? extends Item>> itemTypes = typeService.getAvailableTypes();
 
 		for (Class<? extends Item> t : itemTypes) {
-			BTreeMap<Object[], Integer> map = database.treeMap("towns")
+			BTreeMap<Object[], PK> map = database.treeMap("towns")
 					.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.JAVA))
 					.valueSerializer(Serializer.JAVA).createOrOpen();
 
@@ -56,7 +52,7 @@ public class MapDBService implements PersistenceService<Item> {
 		}
 	}
 
-	protected BTreeMap<Object[], Integer> getDataStorageForType(Class<? extends Item> type) {
+	protected BTreeMap<Object[], PK> getDataStorageForType(Class<? extends Item> type) {
 		return this.dataStorage.get(type.getSimpleName());
 	}
 
@@ -69,12 +65,12 @@ public class MapDBService implements PersistenceService<Item> {
 		}
 	}
 
-	protected long getNextPk(Item model) {
+	protected PK getNextPk(Item model) {
 		Set<Long> pks = new HashSet<>();
 
 		long newPK = 0l;
 
-		for (BTreeMap<Object[], Integer> s : dataStorage.values()) {
+		for (BTreeMap<Object[], PK> s : dataStorage.values()) {
 			for (Object[] o : s.getKeys()) {
 				pks.add((Long) o[0]);
 			}
@@ -84,55 +80,59 @@ public class MapDBService implements PersistenceService<Item> {
 			newPK = pks.stream().max(Long::compare).get() + 1;
 		}
 
-		return newPK;
+		return new PK(newPK);
 	}
 
 	protected void saveInternal(Item item) throws IntrospectionException {
-		BTreeMap<Object[], Integer> storage = getDataStorageForType(item.getClass());
-		Long newPk = getNextPk(item);
-
+		BTreeMap<Object[], PK> storage = getDataStorageForType(item.getClass());
 		if (item.pk == null) {
 			item.pk = getNextPk(item);
 		}
 
+		Map<String, Object> itemAttributes = new HashMap<>();
+
 		try {
-			ObjectMapper m = new ObjectMapper();
-			Map<String, Object> props = m.convertValue(item.getClass(), Map.class);
+			Map<String, Member> itemMembers = typeService.getItemProperties(item);
 
-			for (Field field : item.getClass().getFields()) {
-				Object fieldValue = field.get(item);
+			for (Member member : itemMembers.values()) {
+				Object value = modelService.getPropertyValue(item, member.getName());
 
-				if (fieldValue != null && typeService.hasAnnotation(field, Property.class)) {
-					// check for collections
-					if (field.getGenericType() instanceof ParameterizedType) {
-						ParameterizedType paramType = (ParameterizedType) field.getGenericType();
-
-						if (paramType != null) {
-							for (Type c : paramType.getActualTypeArguments()) {
-								if (c.getClass().isInstance(Item.class)) {
-									Collection<Item> col = (Collection<Item>) fieldValue;
-
-									for (Item collectionItem : col) {
-										saveInternal(collectionItem);
-									}
-								}
-							}
+				if (value != null) {
+					// if this is a reference to another item model, we just
+					// save the pk
+					if (value instanceof Item) {
+						Item subItem = (Item) value;
+						if (!subItem.isPersisted()) {
+							saveInternal(subItem);
 						}
+
+						itemAttributes.put(member.getName(), ((Item) value).pk);
+					} else if (value.getClass().isArray()) {
+						// Object[] objects = (Object[]) value;
+						//
+						// for (Object o : objects) {
+						// if (o != null) {
+						// if (o instanceof Item) {
+						//
+						// } else {
+						// itemAttributes.put(key, value)
+						// }
+						// }
+						// }
+					} else if (Collection.class.isAssignableFrom(value.getClass())) {
+
+					} else if (Map.class.isAssignableFrom(value.getClass())) {
+
+					} else {
+						itemAttributes.put(member.getName(), value);
 					}
 
-					// we found a property on the item model that is also an
-					// item
-					// model
-					// -> we have to replace it with a reference object, and
-					// save
-					// the
-					// original object in it's own datastorage.
-					if (field.getType().isInstance(Item.class)) {
-						saveInternal((Item) fieldValue);
-					}
-
-					storage.put(new Object[] { item.pk, field.getName(), fieldValue }, 1);
 				}
+
+			}
+
+			for (String k : itemAttributes.keySet()) {
+				storage.put(new Object[] { item.pk.longValue(), k, itemAttributes.get(k) }, item.pk);
 			}
 		} catch (Exception e) {
 			database.rollback();
@@ -143,7 +143,7 @@ public class MapDBService implements PersistenceService<Item> {
 
 	@Override
 	public Item load(Class<Item> type, Long pk) throws ModelNotFoundException {
-		NavigableMap<Object[], Integer> items = getDataStorageForType(type).prefixSubMap(new Object[] { pk });
+		NavigableMap<Object[], PK> items = getDataStorageForType(type).prefixSubMap(new Object[] { pk });
 
 		Item found = null;
 		try {

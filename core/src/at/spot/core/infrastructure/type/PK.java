@@ -2,7 +2,7 @@ package at.spot.core.infrastructure.type;
 
 import java.math.BigInteger;
 
-import at.spot.core.model.Item;
+import at.spot.core.data.model.Item;
 
 public class PK extends BigInteger {
 
