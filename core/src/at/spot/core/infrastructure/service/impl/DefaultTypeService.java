@@ -27,8 +27,8 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.data.model.Item;
-import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 
@@ -129,7 +129,16 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		beanDefinition.setAutowireCandidate(true);
 		beanDefinition.setScope(scope);
 
-		getBeanFactory().registerBeanDefinition(type.getSimpleName(), beanDefinition);
+		String beanName = type.getSimpleName();
+
+		ItemType ann = type.getAnnotation(ItemType.class);
+
+		// use the annotated itemtype name, it should
+		if (ann != null && StringUtils.isNotBlank(ann.beanName())) {
+			beanName = ann.beanName();
+		}
+
+		getBeanFactory().registerBeanDefinition(beanName, beanDefinition);
 
 		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
 	}

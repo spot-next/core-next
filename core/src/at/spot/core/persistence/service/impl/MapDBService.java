@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.data.model.Item;
+import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
@@ -39,6 +40,7 @@ public class MapDBService implements PersistenceService {
 	@Autowired
 	TypeService typeService;
 
+	@Log(message = "Initializing MapDB storage ...")
 	@Override
 	public void initDataStorage() {
 		database = DBMaker.fileDB("storage/database.db").make();

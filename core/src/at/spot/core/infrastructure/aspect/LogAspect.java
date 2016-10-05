@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.aspect;
 
 import org.aopalliance.aop.AspectException;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,8 +30,7 @@ public class LogAspect extends AbstractBaseAspect {
 		Log ann = getAnnotation(joinPoint, Log.class);
 
 		if (ann != null && ann.before()) {
-			loggingService.log(ann.logLevel(), String.format("Before %s.%s",
-					joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName()));
+			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, true));
 		}
 	}
 
@@ -39,9 +39,20 @@ public class LogAspect extends AbstractBaseAspect {
 		Log ann = getAnnotation(joinPoint, Log.class);
 
 		if (ann != null && ann.after()) {
-			loggingService.log(ann.logLevel(), String.format("After %s.%s",
-					joinPoint.getTarget().getClass().getSimpleName(), joinPoint.getSignature().getName()));
+			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, false));
 		}
 	}
 
+	protected String createLogMessage(JoinPoint joinPoint, boolean useAnnotationMessage) {
+		Log ann = getAnnotation(joinPoint, Log.class);
+
+		String msg = String.format("Before %s.%s", joinPoint.getTarget().getClass().getSimpleName(),
+				joinPoint.getSignature().getName());
+
+		if (useAnnotationMessage && ann != null && StringUtils.isNotBlank(ann.message())) {
+			msg = ann.message();
+		}
+
+		return msg;
+	}
 }

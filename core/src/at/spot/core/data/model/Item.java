@@ -9,8 +9,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.joda.time.DateTime;
 
-import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.type.PK;
 

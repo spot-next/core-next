@@ -7,7 +7,7 @@ import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HelloWorldCommands implements CommandMarker {
+public class DefaultCommands implements CommandMarker {
 	
 	private boolean simpleCommandExecuted = false;
 	

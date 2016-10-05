@@ -18,7 +18,7 @@ public @interface Log {
 
 	boolean measureTime() default false;
 
-	LogLevel logLevel() default LogLevel.DEBUG;
+	LogLevel logLevel() default LogLevel.INFO;
 
 	String message() default "";
 }

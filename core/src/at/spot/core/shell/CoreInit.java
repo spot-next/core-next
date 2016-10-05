@@ -3,10 +3,11 @@ package at.spot.core.shell;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.shell.Bootstrap;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.service.TypeService;
@@ -18,7 +19,8 @@ import at.spot.core.persistence.service.PersistenceService;
  * being loaded.
  */
 @Service
-public class CoreInit {
+@EnableWebMvc
+public class CoreInit extends AbstractAnnotationConfigDispatcherServletInitializer {
 
 	@Autowired
 	protected TypeService typeService;
@@ -62,9 +64,10 @@ public class CoreInit {
 
 	}
 
+	@Log(message = "Starting spOt core ...")
 	@PostConstruct
 	public void init() throws Exception {
-		// initSpring();
+		// initSpringWeb();
 		setupTypeInfrastrucutre();
 
 		run();
@@ -72,14 +75,32 @@ public class CoreInit {
 		startShell();
 	}
 
-	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
+	@Log(message = "Setting up type registry ...")
 	protected void setupTypeInfrastrucutre() {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
 	}
 
-	@Log(logLevel = LogLevel.DEBUG, before = true, measureTime = false)
+	@Log(message = "Starting up shell ...")
 	public void startShell(String... args) throws Exception {
 		Bootstrap.main(args);
+	}
+
+	@Override
+	protected Class<?>[] getRootConfigClasses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Class<?>[] getServletConfigClasses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String[] getServletMappings() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
