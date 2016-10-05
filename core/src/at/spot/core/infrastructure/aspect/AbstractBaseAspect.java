@@ -4,10 +4,12 @@ import java.lang.annotation.Annotation;
 
 import org.aspectj.lang.JoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import at.spot.core.infrastructure.service.TypeService;
 
-public class AbstractBaseAspect {
+@Configurable
+public abstract class AbstractBaseAspect {
 
 	@Autowired
 	protected TypeService typeService;

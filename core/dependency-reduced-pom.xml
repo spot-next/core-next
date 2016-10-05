@@ -97,13 +97,15 @@
     </repository>
   </repositories>
   <properties>
+    <junit.version>4.10</junit.version>
+    <java.version>1.8</java.version>
     <spring.shell.version>1.2.0.RELEASE</spring.shell.version>
     <aspectj.version>1.8.9</aspectj.version>
-    <java.version>1.8</java.version>
-    <spring.version>4.3.3.RELEASE</spring.version>
-    <log4j.version>1.2.17</log4j.version>
     <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
-    <junit.version>4.10</junit.version>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <log4j.version>1.2.17</log4j.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.version>4.3.3.RELEASE</spring.version>
   </properties>
 </project>
 

@@ -15,6 +15,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
 
+	<context:spring-configured />
 	<context:annotation-config /> 
 	<context:component-scan base-package="at.spot.core" />
 	
@@ -62,12 +63,4 @@
 	<alias name="defaultL10nService" alias="l10nService" />
 	<alias name="defaultI18nService" alias="i18nService" />
 
-
-	<!-- aspects -->
-	<bean id="baseAspect" abstract="true" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect" factory-method="aspectOf" />
-		
-	<bean id="logAspect" class="at.spot.core.infrastructure.aspect.LogAspect" parent="baseAspect" />
-	<bean id="itemPropertyAccessAspect" class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" parent="baseAspect" />
-	
-	
 </beans>

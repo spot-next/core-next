@@ -7,13 +7,15 @@
 	<name>spOt core module</name>
 
 	<properties>
-		<spring.version>4.3.3.RELEASE</spring.version>
 		<java.version>1.8</java.version>
-		<aspectj.version>1.8.9</aspectj.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring.version>4.3.3.RELEASE</spring.version>
+		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
 		<spring.shell.version>1.2.0.RELEASE</spring.shell.version>
+		<aspectj.version>1.8.9</aspectj.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
-		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
 	</properties>
 
 	<repositories>
@@ -131,12 +133,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.jcabi</groupId>
-			<artifactId>jcabi-aspects</artifactId>
-			<version>0.22.5</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
 			<version>1.0.0.Final</version>
@@ -179,12 +175,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>19.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
@@ -208,6 +198,11 @@
 			<version>2.0.2-beta</version>
 		</dependency>
 
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -222,29 +217,18 @@
 		</dependency>
 
 		<!-- spring -->
+
+		<!-- spring shell -->
 		<dependency>
 			<groupId>org.springframework.shell</groupId>
 			<artifactId>spring-shell</artifactId>
 			<version>${spring.shell.version}</version>
 		</dependency>
+
+		<!-- spring core -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -257,6 +241,8 @@
 			<artifactId>spring-aspects</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+
+		<!-- spring web -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -268,20 +254,11 @@
 			<version>0.8</version>
 		</dependency>
 
+		<!-- spring boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<version>1.4.1.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-			<version>1.4.1.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
 		</dependency>
 	</dependencies>
 </project>

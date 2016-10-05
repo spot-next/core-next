@@ -17,7 +17,7 @@ import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.service.TypeService;
 
 @RestController
-@RequestMapping("/types")
+@RequestMapping("/rest/types/")
 public class TypesRestController {
 
 	@Autowired

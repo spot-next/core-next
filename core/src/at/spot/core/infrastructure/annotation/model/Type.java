@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Type {
-	String uid() default "";
+	String beanName() default "";
 }
