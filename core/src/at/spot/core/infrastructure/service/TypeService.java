@@ -9,7 +9,7 @@ import java.util.Map;
 import org.aspectj.lang.JoinPoint;
 
 import at.spot.core.data.model.Item;
-import at.spot.core.infrastructure.annotation.model.Type;
+import at.spot.core.infrastructure.annotation.model.ItemType;
 
 public interface TypeService {
 
@@ -72,7 +72,7 @@ public interface TypeService {
 
 	/**
 	 * Scans the classpath for {@link Item} types (that are also annotated with
-	 * {@link Type} in the given packages.
+	 * {@link ItemType} in the given packages.
 	 * 
 	 * @param packages
 	 */

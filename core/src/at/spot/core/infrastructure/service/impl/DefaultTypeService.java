@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.annotation.model.Type;
+import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 
@@ -84,10 +84,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		for (String pack : packages) {
 			Reflections reflections = new Reflections(pack);
-			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(Type.class);
+			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
 
 			for (Class<?> clazz : annotated) {
-				if (clazz.isAnnotationPresent(Type.class)) {
+				if (clazz.isAnnotationPresent(ItemType.class)) {
 					itemTypes.add(clazz);
 				}
 			}
@@ -103,7 +103,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		List<Class<? extends Item>> allTypes = new ArrayList<>(types.keySet().size());
 
 		for (Item i : types.values()) {
-			if (hasAnnotation(i.getClass(), Type.class)) {
+			if (hasAnnotation(i.getClass(), ItemType.class)) {
 				allTypes.add(i.getClass());
 			}
 		}
@@ -115,7 +115,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	public void registerTypes() {
 
 		for (Class<?> clazz : getItemConcreteTypes(itemTypePackageScanPaths)) {
-			if (clazz.isAnnotationPresent(Type.class)) {
+			if (clazz.isAnnotationPresent(ItemType.class)) {
 				registerType(clazz, "prototype");
 			}
 		}

@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 
 @Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Type {
+public @interface ItemType {
 	String beanName() default "";
 }

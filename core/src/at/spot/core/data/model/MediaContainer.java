@@ -3,9 +3,9 @@ package at.spot.core.data.model;
 import org.springframework.util.MimeType;
 
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.annotation.model.Type;
+import at.spot.core.infrastructure.annotation.model.ItemType;
 
-@Type
+@ItemType
 public class MediaContainer extends Item {
 
 	private static final long serialVersionUID = 1L;

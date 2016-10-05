@@ -10,11 +10,11 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.annotation.model.Type;
+import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.type.PK;
 
-@Type
+@ItemType
 public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
