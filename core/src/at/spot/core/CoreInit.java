@@ -1,10 +1,9 @@
-package at.spot.core.shell;
+package at.spot.core;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.shell.Bootstrap;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
@@ -71,19 +70,12 @@ public class CoreInit extends AbstractAnnotationConfigDispatcherServletInitializ
 		setupTypeInfrastrucutre();
 
 		run();
-
-		startShell();
 	}
 
 	@Log(message = "Setting up type registry ...")
 	protected void setupTypeInfrastrucutre() {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
-	}
-
-	@Log(message = "Starting up shell ...")
-	public void startShell(String... args) throws Exception {
-		Bootstrap.main(args);
 	}
 
 	@Override

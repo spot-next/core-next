@@ -7,7 +7,7 @@ import org.springframework.shell.core.annotation.CliOption;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultCommands implements CommandMarker {
+public class ShellCommands implements CommandMarker {
 	
 	private boolean simpleCommandExecuted = false;
 	

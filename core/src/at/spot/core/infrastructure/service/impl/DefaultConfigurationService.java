@@ -3,9 +3,11 @@ package at.spot.core.infrastructure.service.impl;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
 
+@Service
 public class DefaultConfigurationService implements ConfigurationService {
 
 	@Autowired

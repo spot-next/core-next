@@ -5,12 +5,12 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.L10nService;
 
-@Component
+@Service
 public class DefaultL10nService implements L10nService {
 
 	@Autowired

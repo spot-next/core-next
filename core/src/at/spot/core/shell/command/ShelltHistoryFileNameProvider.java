@@ -2,20 +2,20 @@ package at.spot.core.shell.command;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.shell.plugin.support.DefaultHistoryFileNameProvider;
 import org.springframework.stereotype.Component;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DefaultPromptProvider extends org.springframework.shell.plugin.support.DefaultPromptProvider {
+public class ShelltHistoryFileNameProvider extends DefaultHistoryFileNameProvider {
 
-	@Override
-	public String getPrompt() {
-		return "hw-shell>";
+	public String getHistoryFileName() {
+		return "log/shell.log";
 	}
 
 	@Override
 	public String getProviderName() {
-		return "My prompt provider";
+		return "spOt core shell";
 	}
 
 }
