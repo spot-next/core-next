@@ -5,8 +5,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.service.TypeService;
@@ -18,8 +16,7 @@ import at.spot.core.persistence.service.PersistenceService;
  * being loaded.
  */
 @Service
-@EnableWebMvc
-public class CoreInit extends AbstractAnnotationConfigDispatcherServletInitializer {
+public class CoreInit {
 
 	@Autowired
 	protected TypeService typeService;
@@ -76,23 +73,5 @@ public class CoreInit extends AbstractAnnotationConfigDispatcherServletInitializ
 	protected void setupTypeInfrastrucutre() {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
-	}
-
-	@Override
-	protected Class<?>[] getRootConfigClasses() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Class<?>[] getServletConfigClasses() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected String[] getServletMappings() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

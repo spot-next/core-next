@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.service;
 
-import org.springframework.boot.logging.LogLevel;
+import at.spot.core.infrastructure.type.LogLevel;
 
 public interface LoggingService {
 	void debug(String message);

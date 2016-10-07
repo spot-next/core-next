@@ -3,10 +3,10 @@ package at.spot.core.infrastructure.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.LoggingService;
+import at.spot.core.infrastructure.type.LogLevel;
 
 @Service
 public class ConsoleLoggingService extends AbstractService implements LoggingService {

@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.logging.LogLevel;
+import at.spot.core.infrastructure.type.LogLevel;
 
 @Target({ FIELD, METHOD })
 @Retention(RetentionPolicy.RUNTIME)
