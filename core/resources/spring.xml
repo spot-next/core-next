@@ -12,6 +12,5 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
 
 	<import resource="classpath:spring/core.xml" />
-	<import resource="classpath:spring/web.xml" />
 
 </beans>

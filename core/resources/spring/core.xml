@@ -42,8 +42,6 @@
 <!-- 		</entry> -->
 	</util:map>
 
-	<!-- beans are created via annotations -->
-	
 	
 	<!-- spring beans -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -63,5 +61,17 @@
 	<alias name="defaultL10nService" alias="l10nService" />
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
+	
 
+	<!-- converters -->
+	<bean name="abstractPopulatingConverter" class="at.spot.core.remote.converter.AbstractPopulatingConverter" abstract="true" />
+	
+	<bean name="itemTypeConverter" parent="abstractPopulatingConverter">
+		<property name="targetClass" value="at.spot.core.remote.data.GenericData" />
+		<property name="populators">
+			<list>
+				<ref bean="genericPropertyPopulator" />	
+			</list>
+		</property>
+	</bean>
 </beans>

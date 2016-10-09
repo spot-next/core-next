@@ -24,6 +24,7 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
+import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.PK;
@@ -35,24 +36,32 @@ public class MapDBService implements PersistenceService {
 	private Map<String, BTreeMap<Object[], PK>> dataStorage = new HashMap<>();
 
 	@Autowired
-	ModelService modelService;
+	protected ModelService modelService;
 
 	@Autowired
-	TypeService typeService;
+	protected TypeService typeService;
+
+	@Autowired
+	protected LoggingService loggingService;
 
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
 	public void initDataStorage() {
-		database = DBMaker.fileDB("storage/database.db").make();
+		try {
+			database = DBMaker.fileDB("storage/database.db").transactionEnable().make();
 
-		List<Class<? extends Item>> itemTypes = typeService.getAvailableTypes();
+			List<Class<? extends Item>> itemTypes = typeService.getAvailableTypes();
 
-		for (Class<? extends Item> t : itemTypes) {
-			BTreeMap<Object[], PK> map = database.treeMap("towns")
-					.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.JAVA))
-					.valueSerializer(Serializer.JAVA).createOrOpen();
+			for (Class<? extends Item> t : itemTypes) {
+				BTreeMap<Object[], PK> map = database.treeMap(t.getClass().getSimpleName())
+						.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.JAVA))
+						.valueSerializer(Serializer.JAVA).createOrOpen();
 
-			dataStorage.put(t.getSimpleName(), map);
+				dataStorage.put(t.getSimpleName(), map);
+			}
+		} catch (Exception e) {
+			// org.mapdb.DBException$DataCorruption
+			loggingService.error(e.getMessage());
 		}
 	}
 

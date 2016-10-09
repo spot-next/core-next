@@ -1,3 +1,4 @@
+
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.Properties;
@@ -26,6 +27,27 @@ public class DefaultConfigurationService implements ConfigurationService {
 	@Override
 	public Double getDouble(String key) throws NumberFormatException {
 		return Double.parseDouble(getString(key));
+	}
+
+	@Override
+	public String getString(String key, String defaultValue) {
+		String val = getString(key);
+
+		return val != null ? val : defaultValue;
+	}
+
+	@Override
+	public Integer getInteger(String key, Integer defaultValue) throws NumberFormatException {
+		Integer val = getInteger(key);
+
+		return val != null ? val : defaultValue;
+	}
+
+	@Override
+	public Double getDouble(String key, Double defaultValue) throws NumberFormatException {
+		Double val = getDouble(key);
+
+		return val != null ? val : defaultValue;
 	}
 
 }
