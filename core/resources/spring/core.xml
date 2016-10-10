@@ -67,10 +67,10 @@
 	<bean name="abstractPopulatingConverter" class="at.spot.core.remote.converter.AbstractPopulatingConverter" abstract="true" />
 	
 	<bean name="itemTypeConverter" parent="genericPopulatingConverter">
-		<property name="targetClass" value="at.spot.core.remote.data.GenericData" />
+		<property name="targetClass" value="at.spot.core.remote.data.GenericItemData" />
 		<property name="populators">
 			<list>
-				<ref bean="genericPropertyPopulator" />	
+				<ref bean="itemTypePopulator" />	
 			</list>
 		</property>
 	</bean>

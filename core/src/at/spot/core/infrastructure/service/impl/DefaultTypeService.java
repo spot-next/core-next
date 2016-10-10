@@ -31,6 +31,7 @@ import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.type.ItemPropertyDefinition;
 
 /**
  * Provides functionality to manage the typesystem.
@@ -144,12 +145,12 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
-	public <A extends Annotation> boolean hasAnnotation(Class<? extends Object> type, Class<A> annotation) {
+	public <A extends Annotation> boolean hasAnnotation(Class<? extends Item> type, Class<A> annotation) {
 		return getAnnotation(type, annotation) != null;
 	}
 
 	@Override
-	public <A extends Annotation> A getAnnotation(Class<? extends Object> type, Class<A> annotation) {
+	public <A extends Annotation> A getAnnotation(Class<? extends Item> type, Class<A> annotation) {
 		return type.getAnnotation(annotation);
 	}
 
@@ -164,19 +165,27 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
-	public Map<String, Member> getItemProperties(Class<? extends Item> itemType) {
-		Map<String, Member> propertyMembers = new HashMap<>();
+	public Map<String, ItemPropertyDefinition> getItemProperties(Class<? extends Item> itemType) {
+		Map<String, ItemPropertyDefinition> propertyMembers = new HashMap<>();
 
 		// add all the fields
-		for (Field f : itemType.getFields()) {
-			if (hasAnnotation(f, Property.class)) {
-				propertyMembers.put(f.getName(), f);
+		for (Field m : itemType.getFields()) {
+			Property annotation = getAnnotation(m, Property.class);
+
+			if (annotation != null) {
+				ItemPropertyDefinition def = new ItemPropertyDefinition(m.getName(), m.getDeclaringClass().getName(),
+						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
+						annotation.itemValueProvider());
+
+				propertyMembers.put(m.getName(), def);
 			}
 		}
 
 		// add all the getter methods
 		for (Method m : itemType.getMethods()) {
-			if (hasAnnotation(m, Property.class) && m.getReturnType() != Void.class) {
+			Property annotation = getAnnotation(m, Property.class);
+
+			if (annotation != null && m.getReturnType() != Void.class) {
 				String name = m.getName();
 
 				if (StringUtils.startsWithIgnoreCase(name, "get")) {
@@ -187,7 +196,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 				name = Introspector.decapitalize(name);
 
-				propertyMembers.put(name, m);
+				ItemPropertyDefinition def = new ItemPropertyDefinition(m.getName(), m.getDeclaringClass().getName(),
+						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
+						annotation.itemValueProvider());
+
+				propertyMembers.put(name, def);
 			}
 		}
 

@@ -2,7 +2,6 @@ package at.spot.core.infrastructure.service;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.aspectj.lang.JoinPoint;
 
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.type.ItemPropertyDefinition;
 
 public interface TypeService {
 
@@ -39,7 +39,7 @@ public interface TypeService {
 	 * @param annotation
 	 * @return
 	 */
-	<A extends Annotation> boolean hasAnnotation(Class<? extends Object> type, Class<A> annotation);
+	<A extends Annotation> boolean hasAnnotation(Class<? extends Item> type, Class<A> annotation);
 
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
@@ -49,7 +49,7 @@ public interface TypeService {
 	 * @param annotation
 	 * @return
 	 */
-	<A extends Annotation> A getAnnotation(Class<? extends Object> type, Class<A> annotation);
+	<A extends Annotation> A getAnnotation(Class<? extends Item> type, Class<A> annotation);
 
 	/**
 	 * Checks for the presence of the given annotation on the given member.
@@ -96,9 +96,9 @@ public interface TypeService {
 	 * item.
 	 * 
 	 * @param item
-	 * @return
+	 * @return {@link ItemPropertyDefinition}
 	 */
-	Map<String, Member> getItemProperties(Class<? extends Item> itemType);
+	Map<String, ItemPropertyDefinition> getItemProperties(Class<? extends Item> itemType);
 
 	/**
 	 * Returns the class definition for the given type code.

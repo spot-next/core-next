@@ -1,7 +1,6 @@
 package at.spot.core.persistence.service.impl;
 
 import java.beans.IntrospectionException;
-import java.lang.reflect.Member;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +26,7 @@ import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.type.ItemPropertyDefinition;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.persistence.service.PersistenceService;
 
@@ -105,14 +105,14 @@ public class MapDBService implements PersistenceService {
 		Map<String, Object> itemAttributes = new HashMap<>();
 
 		try {
-			Map<String, Member> itemMembers = typeService.getItemProperties(item.getClass());
+			Map<String, ItemPropertyDefinition> itemMembers = typeService.getItemProperties(item.getClass());
 
-			for (Member member : itemMembers.values()) {
-				if (StringUtils.equalsIgnoreCase(member.getName(), "pk")) {
+			for (ItemPropertyDefinition member : itemMembers.values()) {
+				if (StringUtils.equalsIgnoreCase(member.name, "pk")) {
 					continue;
 				}
 
-				Object value = modelService.getPropertyValue(item, member.getName());
+				Object value = modelService.getPropertyValue(item, member.name);
 
 				if (value != null) {
 					// if this is a reference to another item model, we just
@@ -123,7 +123,7 @@ public class MapDBService implements PersistenceService {
 							saveInternal(subItem);
 						}
 
-						itemAttributes.put(member.getName(), ((Item) value).pk);
+						itemAttributes.put(member.name, ((Item) value).pk);
 					} else if (value.getClass().isArray()) {
 						// Object[] objects = (Object[]) value;
 						//
@@ -141,7 +141,7 @@ public class MapDBService implements PersistenceService {
 					} else if (Map.class.isAssignableFrom(value.getClass())) {
 
 					} else {
-						itemAttributes.put(member.getName(), value);
+						itemAttributes.put(member.name, value);
 					}
 				}
 			}

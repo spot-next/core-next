@@ -1,4 +1,4 @@
-package at.spot.core.remote.converter;
+package at.spot.core.remote.converter.impl;
 
 import java.util.List;
 

@@ -6,9 +6,12 @@ import java.util.Map;
 /**
  * This is a generic DTO implementation.
  */
-public class GenericData {
+public class GenericItemData {
 
-	Map<String, Object> properties = new HashMap<>();
+	public Map<String, Object> properties = new HashMap<>();
+	public String typeName;
+	public String typePackage;
+	public String beanName;
 
 	public void setProperty(String key, Object value) {
 		properties.put(key, value);

@@ -11,7 +11,8 @@ import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.remote.annotation.Get;
-import at.spot.core.remote.data.GenericData;
+import at.spot.core.remote.data.GenericItemData;
+import at.spot.core.remote.transformer.JsonResponseTransformer;
 import spark.Request;
 import spark.Response;
 
@@ -27,14 +28,14 @@ public class TypeSystemRestService extends AbstractHttpService {
 	protected ConfigurationService configurationService;
 	
 	@Autowired
-	protected Converter<Class<? extends Item>, GenericData> itemTypeConverter;
+	protected Converter<Class<? extends Item>, GenericItemData> itemTypeConverter;
 
-	@Get(pathMapping = "/types/")
+	@Get(pathMapping = "/types/", mimeType="application/json", responseTransformer=JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
-		List<GenericData> types = new ArrayList<>();
+		List<GenericItemData> types = new ArrayList<>();
 
 		for (Class<? extends Item> t : typeService.getAvailableTypes()) {
-			GenericData d = itemTypeConverter.convert(t);
+			GenericItemData d = itemTypeConverter.convert(t);
 			types.add(d);
 		}
 		

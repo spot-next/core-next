@@ -17,6 +17,8 @@ public @interface Property {
 	boolean readable() default true;
 
 	boolean unique() default false;
+	
+	boolean initial() default false;
 
 	boolean isReference() default false;
 
