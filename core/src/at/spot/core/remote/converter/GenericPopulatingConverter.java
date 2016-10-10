@@ -3,10 +3,12 @@ package at.spot.core.remote.converter;
 import java.util.List;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import at.spot.core.remote.populator.Populator;
 
-public abstract class AbstractPopulatingConverter<S, T>
+@Component
+public class GenericPopulatingConverter<S, T>
 		implements Converter<S, T> {
 
 	protected List<Populator<S, T>> populators;
