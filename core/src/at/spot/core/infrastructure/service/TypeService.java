@@ -9,7 +9,8 @@ import org.aspectj.lang.JoinPoint;
 
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.type.ItemPropertyDefinition;
+import at.spot.core.infrastructure.type.ItemTypeDefinition;
+import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 
 public interface TypeService {
 
@@ -76,15 +77,15 @@ public interface TypeService {
 	 * 
 	 * @param packages
 	 */
-	List<Class<?>> getItemConcreteTypes(List<String> packages);
+	List<Class<? extends Item>> getItemConcreteTypes(List<String> packages);
 
 	/**
-	 * Return a list of all concrete registered types. Abstract types are not
+	 * Return a map of all concrete registered types. Abstract types are not
 	 * listed here.
 	 * 
 	 * @return
 	 */
-	List<Class<? extends Item>> getAvailableTypes();
+	Map<String, ItemTypeDefinition> getItemTypeDefinitions();
 
 	/**
 	 * Scans the classpath for {@link Item} types and registers them.
@@ -92,19 +93,36 @@ public interface TypeService {
 	void registerTypes();
 
 	/**
-	 * Returns a map of all the @Property annotated properties of the given
-	 * item.
-	 * 
-	 * @param item
-	 * @return {@link ItemPropertyDefinition}
-	 */
-	Map<String, ItemPropertyDefinition> getItemProperties(Class<? extends Item> itemType);
-
-	/**
-	 * Returns the class definition for the given type code.
+	 * Returns the class definition for the given type code (=bean name).
 	 * 
 	 * @param typeCode
 	 * @return
 	 */
 	Class<? extends Item> getType(String typeCode);
+
+	/**
+	 * Returns a map of all the @Property annotated properties of the given
+	 * item.
+	 * 
+	 * @param item
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
+	 */
+	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode);
+
+	/**
+	 * Returns a map of all the @Property annotated properties of the given
+	 * item.
+	 * 
+	 * @param item
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
+	 */
+	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(Class<? extends Item> itemType);
+
+	/**
+	 * Returns the item definition for the given type.
+	 * 
+	 * @param typeCode
+	 * @return null if there is no item found for the given type code.
+	 */
+	ItemTypeDefinition getItemTypeDefinition(String typeCode);
 }

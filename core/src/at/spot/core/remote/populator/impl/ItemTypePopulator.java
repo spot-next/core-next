@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.infrastructure.type.ItemPropertyDefinition;
-import at.spot.core.remote.data.GenericItemData;
+import at.spot.core.infrastructure.type.ItemTypeDefinition;
+import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.remote.data.GenericItemDefinitionData;
 import at.spot.core.remote.populator.Populator;
 
 /**
@@ -14,21 +15,20 @@ import at.spot.core.remote.populator.Populator;
  * target object.
  */
 @Component
-public class ItemTypePopulator<S extends Class<? extends Item>, T extends GenericItemData> implements Populator<S, T> {
+public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericItemDefinitionData> implements Populator<S, T> {
 
 	@Autowired
 	protected TypeService typeService;
 
 	@Override
 	public void populate(S source, T target) {
-//		Item annotation = typeService.getAnnotation(source, Item.class);
+		target.typeCode = source.typeCode;
+		target.typeName = source.typeName;
+		target.typeClass = source.typeClass;
+		target.packageName = source.packageName;
 		
-		target.beanName = source.getSimpleName();
-		target.typeName = source.getName();
-		target.typePackage = source.getPackage().getName();
-		
-		for (ItemPropertyDefinition member : typeService.getItemProperties(source).values()) {
-			target.setProperty(member.name, member);
+		for (ItemTypePropertyDefinition member : typeService.getItemTypeProperties(source.typeCode).values()) {
+			target.addProperty(member);
 		}
 	}
 }

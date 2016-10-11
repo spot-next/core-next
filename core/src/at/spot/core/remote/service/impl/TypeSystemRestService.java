@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.remote.annotation.Get;
-import at.spot.core.remote.data.GenericItemData;
+import at.spot.core.remote.data.GenericItemDefinitionData;
 import at.spot.core.remote.transformer.JsonResponseTransformer;
 import spark.Request;
 import spark.Response;
@@ -28,14 +28,16 @@ public class TypeSystemRestService extends AbstractHttpService {
 	protected ConfigurationService configurationService;
 	
 	@Autowired
-	protected Converter<Class<? extends Item>, GenericItemData> itemTypeConverter;
+	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
 	@Get(pathMapping = "/types/", mimeType="application/json", responseTransformer=JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
-		List<GenericItemData> types = new ArrayList<>();
+		List<GenericItemDefinitionData> types = new ArrayList<>();
 
-		for (Class<? extends Item> t : typeService.getAvailableTypes()) {
-			GenericItemData d = itemTypeConverter.convert(t);
+		for (String typeCode : typeService.getItemTypeDefinitions().keySet()) {
+			ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
+			
+			GenericItemDefinitionData d = itemTypeConverter.convert(def);
 			types.add(d);
 		}
 		

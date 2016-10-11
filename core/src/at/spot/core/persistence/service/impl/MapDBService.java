@@ -26,7 +26,8 @@ import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.infrastructure.type.ItemPropertyDefinition;
+import at.spot.core.infrastructure.type.ItemTypeDefinition;
+import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.persistence.service.PersistenceService;
 
@@ -50,14 +51,14 @@ public class MapDBService implements PersistenceService {
 		try {
 			database = DBMaker.fileDB("storage/database.db").transactionEnable().make();
 
-			List<Class<? extends Item>> itemTypes = typeService.getAvailableTypes();
+			Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
-			for (Class<? extends Item> t : itemTypes) {
+			for (ItemTypeDefinition t : itemTypes.values()) {
 				BTreeMap<Object[], PK> map = database.treeMap(t.getClass().getSimpleName())
 						.keySerializer(new SerializerArrayTuple(Serializer.LONG, Serializer.STRING, Serializer.JAVA))
 						.valueSerializer(Serializer.JAVA).createOrOpen();
 
-				dataStorage.put(t.getSimpleName(), map);
+				dataStorage.put(t.typeCode, map);
 			}
 		} catch (Exception e) {
 			// org.mapdb.DBException$DataCorruption
@@ -105,9 +106,9 @@ public class MapDBService implements PersistenceService {
 		Map<String, Object> itemAttributes = new HashMap<>();
 
 		try {
-			Map<String, ItemPropertyDefinition> itemMembers = typeService.getItemProperties(item.getClass());
+			Map<String, ItemTypePropertyDefinition> itemMembers = typeService.getItemTypeProperties(item.getClass());
 
-			for (ItemPropertyDefinition member : itemMembers.values()) {
+			for (ItemTypePropertyDefinition member : itemMembers.values()) {
 				if (StringUtils.equalsIgnoreCase(member.name, "pk")) {
 					continue;
 				}

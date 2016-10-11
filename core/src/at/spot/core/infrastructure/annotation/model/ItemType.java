@@ -9,5 +9,9 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ItemType {
-	String beanName() default "";
+	
+	/**
+	 * This is the bean name of the item.
+	 */
+	String typeCode() default "";
 }
