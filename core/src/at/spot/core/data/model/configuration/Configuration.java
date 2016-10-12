@@ -1,15 +1,19 @@
-package at.spot.core.data.model;
+package at.spot.core.data.model.configuration;
 
 import java.util.List;
 
 import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.ItemType;
 
 @ItemType
-public class User extends Principal {
+public class Configuration extends Item {
 
 	private static final long serialVersionUID = 1L;
 
+	@Property(unique = true)
+	public String uid;
+
 	@Property(isReference = true)
-	public List<UserGroup> groups;
+	public List<ConfigEntry> entries;
 }

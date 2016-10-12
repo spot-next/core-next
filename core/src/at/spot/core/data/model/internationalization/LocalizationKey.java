@@ -1,5 +1,6 @@
-package at.spot.core.data.model;
+package at.spot.core.data.model.internationalization;
 
+import at.spot.core.data.model.KeyValuePair;
 import at.spot.core.infrastructure.annotation.model.ItemType;
 
 @ItemType

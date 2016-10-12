@@ -1,8 +1,9 @@
-package at.spot.core.data.model;
+package at.spot.core.data.model.media;
 
 import org.springframework.util.MimeType;
 
 import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.ItemType;
 
 @ItemType

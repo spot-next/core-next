@@ -1,4 +1,4 @@
-package at.spot.core.data.model;
+package at.spot.core.data.model.media;
 
 import java.util.List;
 
