@@ -8,16 +8,33 @@ import org.springframework.stereotype.Service;
 import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 
 @Service
 public interface PersistenceService {
 	/**
-	 * Saved the given model and all of its dependent models.
+	 * Saves the given model and all of its dependent models.
 	 * 
 	 * @param type
 	 * @return
 	 */
 	<T extends Item> void save(T model) throws ModelSaveException;
+
+	/**
+	 * Saves the given models and all of its dependent models.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	<T extends Item> void saveAll(T... models) throws ModelSaveException;
+
+	/**
+	 * Saves the given models and all of its dependent models.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	<T extends Item> void saveAll(List<T> models) throws ModelSaveException;
 
 	/**
 	 * Returns an object based on its PK.
@@ -26,6 +43,14 @@ public interface PersistenceService {
 	 * @return
 	 */
 	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
+
+	/**
+	 * Refreshes the given model's properties.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
 	/**
 	 * Returns an object based on the given search parameters (key = property
@@ -43,6 +68,14 @@ public interface PersistenceService {
 	 * @return
 	 */
 	<T extends Item> T loadProxyModel(T proxyItem) throws ModelNotFoundException;
+
+	/**
+	 * Creates a new proxy item that references the given item.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
 	 * Initiates the datastorage based on the registeredTypes.

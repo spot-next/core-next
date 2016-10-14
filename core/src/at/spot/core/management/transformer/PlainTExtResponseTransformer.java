@@ -1,4 +1,4 @@
-package at.spot.core.remote.transformer;
+package at.spot.core.management.transformer;
 
 import spark.ResponseTransformer;
 

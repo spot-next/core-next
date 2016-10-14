@@ -72,4 +72,8 @@ public abstract class Item implements Serializable {
 	private void markDirty(String propertyName) {
 		this.dirtyAttributes.add(propertyName);
 	}
+
+	public void clearDirtyFlag() {
+		this.dirtyAttributes.clear();
+	}
 }

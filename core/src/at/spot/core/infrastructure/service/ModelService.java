@@ -33,6 +33,15 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
+	<T extends Item> void saveAll(T... models) throws ModelSaveException;
+
+	/**
+	 * Saves all the given Item models. Referenced Item models will not be
+	 * saved.
+	 * 
+	 * @param type
+	 * @return
+	 */
 	<T extends Item> void saveAll(List<T> models) throws ModelSaveException;
 
 	/**
@@ -50,6 +59,14 @@ public interface ModelService {
 	 * @return
 	 */
 	<T extends Item> T get(Class<T> type, PK pk) throws ModelNotFoundException;
+
+	/**
+	 * Refreshes the given model's properties.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
 	/**
 	 * Returns an object based on the given search parameters (key = property

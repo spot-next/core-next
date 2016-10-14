@@ -1,4 +1,4 @@
-package at.spot.core.remote.service.impl;
+package at.spot.core.management.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
-import at.spot.core.remote.annotation.Get;
-import at.spot.core.remote.data.GenericItemDefinitionData;
-import at.spot.core.remote.transformer.JsonResponseTransformer;
+import at.spot.core.management.annotation.Get;
+import at.spot.core.management.data.GenericItemDefinitionData;
+import at.spot.core.management.transformer.JsonResponseTransformer;
 import spark.Request;
 import spark.Response;
 

@@ -1,4 +1,4 @@
-package at.spot.core.remote.annotation;
+package at.spot.core.management.annotation;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import at.spot.core.remote.transformer.PlainTExtResponseTransformer;
+import at.spot.core.management.transformer.PlainTExtResponseTransformer;
 import spark.ResponseTransformer;
 
 @Target({ FIELD, METHOD })

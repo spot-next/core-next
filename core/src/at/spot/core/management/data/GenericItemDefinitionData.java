@@ -1,4 +1,4 @@
-package at.spot.core.remote.data;
+package at.spot.core.management.data;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

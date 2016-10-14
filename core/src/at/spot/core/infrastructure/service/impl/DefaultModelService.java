@@ -26,10 +26,13 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
+	public <T extends Item> void saveAll(T... models) throws ModelSaveException {
+		persistenceService.saveAll(models);
+	}
+
+	@Override
 	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException {
-		for (T item : models) {
-			save(item);
-		}
+		persistenceService.saveAll(models);
 	}
 
 	@Override
@@ -65,5 +68,10 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> type) {
 		// TODO Auto-generated method stub
 		return (V) getPropertyValue(item, propertyName);
+	}
+
+	@Override
+	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
+		persistenceService.refresh(item);
 	}
 }

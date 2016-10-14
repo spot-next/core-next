@@ -1,15 +1,14 @@
-package at.spot.core.remote.converter.impl;
+package at.spot.core.management.converter.impl;
 
 import java.util.List;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import at.spot.core.remote.populator.Populator;
+import at.spot.core.management.populator.Populator;
 
 @Component
-public class GenericPopulatingConverter<S, T>
-		implements Converter<S, T> {
+public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
 
 	protected List<Populator<S, T>> populators;
 	protected Class<T> targetClass;
@@ -32,11 +31,11 @@ public class GenericPopulatingConverter<S, T>
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void setTargetClass(Class<T> targetClass) {
 		this.targetClass = targetClass;
 	}
-	
+
 	public void setPopulators(List<Populator<S, T>> populators) {
 		this.populators = populators;
 	}

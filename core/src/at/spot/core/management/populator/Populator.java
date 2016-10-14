@@ -1,4 +1,4 @@
-package at.spot.core.remote.populator;
+package at.spot.core.management.populator;
 
 
 /**

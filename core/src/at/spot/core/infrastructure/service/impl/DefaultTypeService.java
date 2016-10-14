@@ -46,10 +46,13 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Autowired
 	protected LoggingService loggingService;
 
-	/* *****************************************************************************************************
-	 * TYPE SYSTEM INIT
-	 * ************************************************************************************************** */
-	
+	/*
+	 * *************************************************************************
+	 * **************************** TYPE SYSTEM INIT
+	 * *************************************************************************
+	 * *************************
+	 */
+
 	@Override
 	public void registerTypes() {
 		for (Class<?> clazz : getItemConcreteTypes(itemTypePackageScanPaths)) {
@@ -58,7 +61,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 	}
-	
+
 	protected void registerType(Class<?> type, String scope) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		beanDefinition.setBeanClass(type);
@@ -80,11 +83,14 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
 	}
-	
-	/* *****************************************************************************************************
-	 * ANNOTATIONS
-	 * ************************************************************************************************** */
-	
+
+	/*
+	 * *************************************************************************
+	 * **************************** ANNOTATIONS
+	 * *************************************************************************
+	 * *************************
+	 */
+
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
 		return getAnnotation(joinPoint, annotation) != null;
@@ -118,7 +124,6 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	}
 
-	
 	@Override
 	public <A extends Annotation> boolean hasAnnotation(Class<? extends Item> type, Class<A> annotation) {
 		return getAnnotation(type, annotation) != null;
@@ -146,9 +151,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		for (String pack : packages) {
 			Reflections reflections = new Reflections(pack);
 			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
-			
+
 			for (Class<?> clazz : annotated) {
-				if (clazz.isAnnotationPresent(ItemType.class) && clazz.getGenericSuperclass().equals(Item.class)) {
+				if (clazz.isAnnotationPresent(ItemType.class) && Item.class.isAssignableFrom(clazz)) {
 					itemTypes.add((Class<? extends Item>) clazz);
 				}
 			}
@@ -156,19 +161,24 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		return itemTypes;
 	}
-	
-	/* *****************************************************************************************************
-	 * ITEM TYPE DEFINITIONS
-	 * ************************************************************************************************** */
-	
+
+	/*
+	 * *************************************************************************
+	 * **************************** ITEM TYPE DEFINITIONS
+	 * *************************************************************************
+	 * *************************
+	 */
+
 	@Override
 	public Class<? extends Item> getType(String typeCode) {
-		// we fetch an actual instantiated item type copy and get the class from there.
-		Class<? extends Item> type = (Class<? extends Item>) getApplicationContext().getBean(typeCode, Item.class).getClass();
+		// we fetch an actual instantiated item type copy and get the class from
+		// there.
+		Class<? extends Item> type = (Class<? extends Item>) getApplicationContext().getBean(typeCode, Item.class)
+				.getClass();
 
 		return type;
 	}
-	
+
 	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() {
 		String[] typeCodes = getApplicationContext().getBeanNamesForType(Item.class);
@@ -177,7 +187,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		for (String typeCode : typeCodes) {
 			ItemTypeDefinition def = getItemTypeDefinition(typeCode);
-			
+
 			if (def != null) {
 				alltypes.put(def.typeCode, def);
 			}
@@ -185,27 +195,28 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		return alltypes;
 	}
-	
+
 	public ItemTypeDefinition getItemTypeDefinition(String typeCode) {
 		Class<? extends Item> itemType = getType(typeCode);
 		ItemType typeAnnotation = getAnnotation(itemType, ItemType.class);
-		
+
 		ItemTypeDefinition def = null;
-		
+
 		if (typeAnnotation != null) {
-			def = new ItemTypeDefinition(typeCode, itemType.getName(), itemType.getSimpleName(), itemType.getPackage().getName());
+			def = new ItemTypeDefinition(typeCode, itemType.getName(), itemType.getSimpleName(),
+					itemType.getPackage().getName());
 		}
-		
+
 		return def;
 	}
-	
+
 	@Override
 	public Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) {
 		Class<? extends Item> type = getType(typeCode);
-		
+
 		return getItemTypeProperties(type);
 	}
-	
+
 	@Override
 	public Map<String, ItemTypePropertyDefinition> getItemTypeProperties(Class<? extends Item> itemType) {
 		Map<String, ItemTypePropertyDefinition> propertyMembers = new HashMap<>();
@@ -215,9 +226,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			Property annotation = getAnnotation(m, Property.class);
 
 			if (annotation != null) {
-				ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getDeclaringClass().getName(),
-						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
-						annotation.itemValueProvider());
+				ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(),
+						m.getDeclaringClass().getName(), annotation.readable(), annotation.writable(),
+						annotation.initial(), annotation.unique(), annotation.itemValueProvider());
 
 				propertyMembers.put(m.getName(), def);
 			}
@@ -238,9 +249,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 				name = Introspector.decapitalize(name);
 
-				ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getDeclaringClass().getName(),
-						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
-						annotation.itemValueProvider());
+				ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(),
+						m.getDeclaringClass().getName(), annotation.readable(), annotation.writable(),
+						annotation.initial(), annotation.unique(), annotation.itemValueProvider());
 
 				propertyMembers.put(name, def);
 			}

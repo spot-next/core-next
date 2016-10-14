@@ -1,4 +1,4 @@
-package at.spot.core.remote.service.impl;
+package at.spot.core.management.service.impl;
 
 import static spark.Spark.get;
 
@@ -13,9 +13,9 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.LogLevel;
-import at.spot.core.remote.annotation.Get;
-import at.spot.core.remote.eception.RemoteServiceInitException;
-import at.spot.core.remote.service.RemoteInterfaceService;
+import at.spot.core.management.annotation.Get;
+import at.spot.core.management.exception.RemoteServiceInitException;
+import at.spot.core.management.service.RemoteInterfaceService;
 import spark.Request;
 import spark.Response;
 import spark.Route;

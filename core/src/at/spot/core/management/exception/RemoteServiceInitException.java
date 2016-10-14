@@ -1,4 +1,4 @@
-package at.spot.core.remote.eception;
+package at.spot.core.management.exception;
 
 public class RemoteServiceInitException extends Exception {
 	private static final long serialVersionUID = 1L;
