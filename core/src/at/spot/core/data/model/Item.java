@@ -19,7 +19,7 @@ public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<String> dirtyAttributes = new ArrayList<>();
+	protected List<String> dirtyAttributes = new ArrayList<>();
 
 	@Property(unique = true)
 	public PK pk;
@@ -69,7 +69,7 @@ public abstract class Item implements Serializable {
 		return dirtyAttributes.size() > 0;
 	}
 
-	private void markDirty(String propertyName) {
+	protected void markAsDirty(String propertyName) {
 		this.dirtyAttributes.add(propertyName);
 	}
 

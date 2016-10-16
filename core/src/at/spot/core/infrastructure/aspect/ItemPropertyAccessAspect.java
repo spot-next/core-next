@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.aspect;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +15,7 @@ import at.spot.core.data.model.Item;
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.persistence.util.ClassUtil;
 import at.spot.core.persistence.valueprovider.ItemPropertyValueProvider;
 
 @Aspect
@@ -57,14 +57,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 		// set the changed field to dirty
 		if (joinPoint.getTarget() instanceof Item) {
-			try {
-				Item i = (Item) joinPoint.getTarget();
-				Method markDirtyMethod = Item.class.getMethod("markDirty");
-				markDirtyMethod.setAccessible(true);
-				markDirtyMethod.invoke(i, joinPoint.getSignature().getName());
-			} catch (Exception e) {
-				// should never fail
-			}
+			ClassUtil.invokeMethod(joinPoint.getTarget(), "markAsDirty", joinPoint.getSignature().getName());
 		}
 	}
 

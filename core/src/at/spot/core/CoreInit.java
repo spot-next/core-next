@@ -61,7 +61,10 @@ public class CoreInit {
 			user1.groups.add(group);
 			user2.groups.add(group);
 
-			for (int i = 1; i < 10000; i++) {
+			users.add(user1);
+			users.add(user2);
+
+			for (int i = 3; i < 100; i++) {
 				if (i > 0 && i % 50 == 0) {
 					long duration = System.currentTimeMillis() - start;
 
@@ -79,25 +82,23 @@ public class CoreInit {
 				users.add(user);
 			}
 
-			// modelService.saveAll(user1, user2);
-			//
-			// // user1 = modelService.get(User.class, user1.pk);
-			// user2 = modelService.get(User.class, user2.pk);
-			//
-			// user1.groups.get(0).uid = "abc";
-			//
-			// System.out.println(user2.groups.get(0).uid);
-			//
-			// modelService.save(user1);
-			//
-			// System.out.println(user2.groups.get(0).uid);
-
-			// modelService.refresh(user2);
-
-			// System.out.println(user2.groups.get(0).uid);
-
 			modelService.saveAll(users);
 
+			user1.groups.get(0).uid = "abc";
+
+			// iterate over all children and check dirty flag
+			modelService.saveAll(user1);
+
+			user1 = modelService.get(User.class, user1.pk);
+			user2 = modelService.get(User.class, user2.pk);
+
+			System.out.println(user2.groups.get(0).uid);
+
+			modelService.refresh(user2);
+
+			System.out.println(user2.groups.get(0).uid);
+
+			System.out.print("");
 		} catch (Exception e) {
 			loggingService.exception(e.getMessage());
 		}
