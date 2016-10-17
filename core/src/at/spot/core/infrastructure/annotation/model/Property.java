@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ FIELD, METHOD })
+@Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
 	String accessor() default "";

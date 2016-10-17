@@ -18,7 +18,7 @@ public class ClassUtil {
 	 * @param fieldName
 	 * @param value
 	 */
-	public static void setPrivateField(Object object, String fieldName, Object value) {
+	public static void setField(Object object, String fieldName, Object value) {
 		Field field;
 		try {
 			field = object.getClass().getField(fieldName);

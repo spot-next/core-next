@@ -27,13 +27,23 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @Autowired
 	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders;
 
-	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*) && !within(at.spot.core.data.model..*)")
-	protected void notFromPersistencePackage() {
-	};
-
 	/*
 	 * PointCuts
 	 */
+
+	/**
+	 * Write methods on Collection Warning: Does not pick out iterator(), even
+	 * though an Iterator can remove elements.
+	 */
+	@Pointcut("call(boolean Collection+.add(Object)) || call(boolean Collection+.addAll(Collection)) || "
+			+ "call(void Collection+.clear()) || call(boolean Collection+.remove(Object)) || "
+			+ "call(boolean Collection+.removeAll(Collection)) || call(boolean Collection+.retainAll(Collection))")
+	protected void collectionModificationCalls() {
+	}
+
+	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*) && !within(at.spot.core.data.model..*)")
+	protected void notFromPersistencePackage() {
+	};
 
 	/**
 	 * Define the pointcut for all fields that are accessed (get) on an object

@@ -119,16 +119,20 @@ public class CoreInit {
 	 * STARTUP FUNCTIONALITY
 	 */
 
-	public void initSpring() {
-
-	}
-
 	@Log(message = "Starting spOt core ...")
 	@PostConstruct
 	public void init() throws Exception {
 		setupTypeInfrastrucutre();
 
+		runMigrateScripts();
+		
+		// this is just for testing
 		run();
+	}
+
+	@Log(message = "Running data migration scripts ...")
+	protected void runMigrateScripts() {
+		//not yet implemented
 	}
 
 	@Log(message = "Setting up type registry ...")

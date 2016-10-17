@@ -80,8 +80,8 @@ public class CqEngineDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> T loadProxyModel(T item) throws ModelNotFoundException {
-		return null;
+	public <T extends Item> void loadProxyModel(T item) throws ModelNotFoundException {
+		refresh(item);
 	}
 
 	@Override

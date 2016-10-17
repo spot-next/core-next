@@ -218,7 +218,7 @@ public class MapDBService implements PersistenceService {
 			item = type.newInstance();
 
 			for (String property : itemEntity.getProperties().keySet()) {
-				ClassUtil.setPrivateField(item, property, itemEntity.getProperty(property));
+				ClassUtil.setField(item, property, itemEntity.getProperty(property));
 			}
 
 			item.pk = itemEntity.getPK();
@@ -238,21 +238,16 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
-		T newItem = load((Class<T>) item.getClass(), item.pk.longValue());
+		T loadedItem = load((Class<T>) item.getClass(), item.pk.longValue());
 
-		try {
-			BeanUtils.copyProperties(newItem, item);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new ModelNotFoundException(String.format("Could not refresh given item (pk=%s)", item.pk.longValue()),
-					e);
+		for (ItemTypePropertyDefinition p : typeService.getItemTypeProperties(item.getClass()).values()) {
+			item.setProperty(p.name, loadedItem.getProperty(p.name));
 		}
 	}
 
 	@Override
-	public <T extends Item> T loadProxyModel(T item) throws ModelNotFoundException {
+	public <T extends Item> void loadProxyModel(T item) throws ModelNotFoundException {
 		refresh(item);
-
-		return item;
 	}
 
 	@Override
@@ -260,7 +255,7 @@ public class MapDBService implements PersistenceService {
 		T proxyItem;
 		try {
 			proxyItem = (T) item.getClass().newInstance();
-			ClassUtil.setPrivateField(proxyItem, "isProxy", true);
+			ClassUtil.setField(proxyItem, "isProxy", true);
 
 			proxyItem.pk = item.pk;
 		} catch (InstantiationException | IllegalAccessException e) {

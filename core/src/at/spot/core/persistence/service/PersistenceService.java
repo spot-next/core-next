@@ -67,7 +67,7 @@ public interface PersistenceService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T loadProxyModel(T proxyItem) throws ModelNotFoundException;
+	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
 
 	/**
 	 * Creates a new proxy item that references the given item.

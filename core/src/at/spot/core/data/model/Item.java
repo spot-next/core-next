@@ -15,6 +15,7 @@ import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.infrastructure.type.collection.ObservableChange;
 import at.spot.core.infrastructure.type.collection.Observer;
+import at.spot.core.persistence.util.ClassUtil;
 
 @ItemType
 public abstract class Item implements Serializable, Observer {
@@ -47,20 +48,12 @@ public abstract class Item implements Serializable, Observer {
 		this.isProxy = isProxy;
 	}
 
-	public Object getProperty(String propertyName) throws PropertyNotAccessibleException {
-		try {
-			return BeanUtils.getSimpleProperty(this, propertyName);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			throw new PropertyNotAccessibleException(e);
-		}
+	public Object getProperty(String propertyName) {
+		return ClassUtil.getPrivateField(this, propertyName);
 	}
 
-	public void setProperty(String propertyName, Object value) throws PropertyNotAccessibleException {
-		try {
-			FieldUtils.writeField(this, propertyName, value);
-		} catch (IllegalAccessException e) {
-			//
-		}
+	public void setProperty(String propertyName, Object value) {
+		ClassUtil.setField(this, propertyName, value);
 	}
 
 	public boolean isPersisted() {
