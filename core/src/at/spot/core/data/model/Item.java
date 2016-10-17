@@ -13,9 +13,11 @@ import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
 import at.spot.core.infrastructure.exception.PropertyNotAccessibleException;
 import at.spot.core.infrastructure.type.PK;
+import at.spot.core.infrastructure.type.collection.ObservableChange;
+import at.spot.core.infrastructure.type.collection.Observer;
 
 @ItemType
-public abstract class Item implements Serializable {
+public abstract class Item implements Serializable, Observer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,7 +75,13 @@ public abstract class Item implements Serializable {
 		this.dirtyAttributes.add(propertyName);
 	}
 
-	public void clearDirtyFlag() {
+	protected void clearDirtyFlag() {
 		this.dirtyAttributes.clear();
+	}
+
+	@Override
+	public void notify(String collectionName, ObservableChange change, Object element) {
+		// TODO: this should be done directly in the itempropertyaccessaspect
+		markAsDirty(collectionName);
 	}
 }

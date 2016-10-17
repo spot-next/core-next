@@ -27,9 +27,13 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @Autowired
 	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders;
 
-	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.data.model..*)")
+	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*) && !within(at.spot.core.data.model..*)")
 	protected void notFromPersistencePackage() {
 	};
+
+	/*
+	 * PointCuts
+	 */
 
 	/**
 	 * Define the pointcut for all fields that are accessed (get) on an object
@@ -47,6 +51,10 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	protected void setAccess() {
 	};
 
+	/*
+	 * JoinPoints
+	 */
+
 	@After("setAccess() && notFromPersistencePackage()")
 	public void setPropertyValue(JoinPoint joinPoint) {
 		Property ann = getAnnotation(joinPoint, Property.class);
@@ -62,7 +70,6 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	@Around("getAccess() && notFromPersistencePackage()")
-	// @Before("getAccess() && notFromPersistencePackage()")
 	public Object getPropertyValue(ProceedingJoinPoint joinPoint) throws Throwable {
 		Property ann = getAnnotation(joinPoint, Property.class);
 

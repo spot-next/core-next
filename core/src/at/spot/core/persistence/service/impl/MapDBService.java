@@ -149,7 +149,7 @@ public class MapDBService implements PersistenceService {
 
 						saveInternal(valueItem, commit);
 
-						((Item) value).clearDirtyFlag();
+						ClassUtil.invokeMethod(value, "clearDirtyFlag");
 
 						// replace actual item with proxy
 						value = createProxyModel(item);
@@ -250,7 +250,9 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> T loadProxyModel(T item) throws ModelNotFoundException {
-		return null;
+		refresh(item);
+
+		return item;
 	}
 
 	@Override
