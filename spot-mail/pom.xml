@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>at.spot.mail</groupId>
+	<artifactId>spot-mail</artifactId>
+	<version>0.0.1</version>
+
+	<repositories>
+		<repository>
+			<id>mvnrepository</id>
+			<name>mvnrepository</name>
+			<url>http://www.mvnrepository.com</url>
+		</repository>
+		<repository>
+			<id>oss.sonatype.org</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>libs-milestone</id>
+			<url>http://repo.spring.io/libs-milestone/</url>
+		</repository>
+		<repository>
+			<id>libs-release</id>
+			<url>http://repo.spring.io/libs-release/</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>at.spot.core.infrastructure-base</groupId>
+			<artifactId>spot-core-infrastructure-base</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.spot.core.model-infrastructure</groupId>
+			<artifactId>spot-core-model-infrastructure</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>at.spot.core.model</groupId>
+			<artifactId>spot-core-model</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<!-- third party libs -->
+
+		<dependency>
+			<groupId>org.subethamail</groupId>
+			<artifactId>subethasmtp</artifactId>
+			<version>3.1.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.james</groupId>
+			<artifactId>james-server-core-api</artifactId>
+			<version>3.0-M2</version>
+		</dependency>
+
+
+	</dependencies>
+</project>

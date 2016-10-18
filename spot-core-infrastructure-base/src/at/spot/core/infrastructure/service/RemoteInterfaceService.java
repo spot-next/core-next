@@ -1,4 +1,4 @@
-package at.spot.core.management.service;
+package at.spot.core.infrastructure.service;
 
 import java.net.SocketException;
 
@@ -17,5 +17,12 @@ public interface RemoteInterfaceService {
 	 * @throws RemoteServiceInitException
 	 * @throws SocketException
 	 */
-	public void init() throws RemoteServiceInitException, SocketException;
+	void init() throws RemoteServiceInitException, SocketException;
+
+	/**
+	 * Gets the port that is being used for this service.
+	 * 
+	 * @param port
+	 */
+	int getPort();
 }

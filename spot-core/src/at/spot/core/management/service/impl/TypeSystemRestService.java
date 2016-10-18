@@ -20,32 +20,32 @@ import spark.Response;
 public class TypeSystemRestService extends AbstractHttpService {
 
 	private static final String CONFIG_PORT_KEY = "spot.service.remotetypeservice.port";
-	
+
 	@Autowired
 	protected TypeService typeService;
-	
+
 	@Autowired
 	protected ConfigurationService configurationService;
-	
+
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
-	@Get(pathMapping = "/types/", mimeType="application/json", responseTransformer=JsonResponseTransformer.class)
+	@Get(pathMapping = "/types/", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
 		List<GenericItemDefinitionData> types = new ArrayList<>();
 
 		for (String typeCode : typeService.getItemTypeDefinitions().keySet()) {
 			ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
-			
+
 			GenericItemDefinitionData d = itemTypeConverter.convert(def);
 			types.add(d);
 		}
-		
+
 		return types;
 	}
 
 	@Override
-	protected void setPort(int port) {
-		super.setPort(configurationService.getInteger(CONFIG_PORT_KEY));
+	public int getPort() {
+		return configurationService.getInteger(CONFIG_PORT_KEY);
 	}
 }
