@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.type.LogLevel;
 
+/**
+ * This logging service maintains a list of {@link Logger}s for each class that
+ * calls a log method. It logs to the {@link System#console()} as well as to the
+ * default log4j logger.
+ */
 @Service
 public class ConsoleLoggingService extends AbstractService implements LoggingService {
 
@@ -91,6 +96,13 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 		return sdf.format(new Date(System.currentTimeMillis()));
 	}
 
+	/**
+	 * Returns the {@link Logger} object for the given class. It is also stored
+	 * internally and created if it doesn't exist yet.
+	 * 
+	 * @param type
+	 * @return
+	 */
 	protected Logger getLoggerForClass(Class<?> type) {
 		Logger logger = loggers.get(type);
 
@@ -102,6 +114,10 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 		return logger;
 	}
 
+	/**
+	 * The calling class is parsed out of the stacktrace. This might not work in
+	 * case any calls are intercepted (like with AspectJ).
+	 */
 	protected Class<?> getCallingClass() {
 		Class<?> callingClass = null;
 
