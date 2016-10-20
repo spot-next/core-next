@@ -15,4 +15,16 @@ public interface LoggingService {
 
 	void log(LogLevel level, String message);
 
+	void debug(String message, Class<?> callingClass);
+
+	void info(String message, Class<?> callingClass);
+
+	void warn(String message, Class<?> callingClass);
+
+	void error(String message, Class<?> callingClass);
+
+	void exception(String message, Class<?> callingClass);
+
+	void log(LogLevel level, String message, Class<?> callingClass);
+
 }

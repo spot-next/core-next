@@ -30,7 +30,7 @@ public class LogAspect extends AbstractBaseAspect {
 		Log ann = getAnnotation(joinPoint, Log.class);
 
 		if (ann != null && ann.before()) {
-			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, true));
+			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, true), joinPoint.getTarget().getClass());
 		}
 	}
 
@@ -39,7 +39,7 @@ public class LogAspect extends AbstractBaseAspect {
 		Log ann = getAnnotation(joinPoint, Log.class);
 
 		if (ann != null && ann.after()) {
-			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, false));
+			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, false), joinPoint.getTarget().getClass());
 		}
 	}
 

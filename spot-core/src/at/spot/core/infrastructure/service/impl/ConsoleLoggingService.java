@@ -2,7 +2,12 @@ package at.spot.core.infrastructure.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.LoggingService;
@@ -14,38 +19,107 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	private static String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
 	private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
+	Map<Class<?>, Logger> loggers = new HashMap<>();
+
+	@Override
+	public void debug(String message, Class<?> callingClass) {
+		log(LogLevel.DEBUG, message, callingClass);
+	}
+
+	@Override
+	public void info(String message, Class<?> callingClass) {
+		log(LogLevel.INFO, message, callingClass);
+	}
+
+	@Override
+	public void warn(String message, Class<?> callingClass) {
+		log(LogLevel.WARN, message, callingClass);
+	}
+
+	@Override
+	public void error(String message, Class<?> callingClass) {
+		log(LogLevel.ERROR, message, callingClass);
+	}
+
+	@Override
+	public void exception(String message, Class<?> callingClass) {
+		log(LogLevel.FATAL, message, callingClass);
+	}
+
+	@Override
+	public void log(LogLevel level, String message, Class<?> callingClass) {
+		System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+
+		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
+	}
+
 	@Override
 	public void debug(String message) {
-		log(LogLevel.DEBUG, message);
+		log(LogLevel.DEBUG, message, getCallingClass());
 	}
 
 	@Override
 	public void info(String message) {
-		log(LogLevel.INFO, message);
+		log(LogLevel.INFO, message, getCallingClass());
 	}
 
 	@Override
 	public void warn(String message) {
-		log(LogLevel.WARN, message);
+		log(LogLevel.WARN, message, getCallingClass());
 	}
 
 	@Override
 	public void error(String message) {
-		log(LogLevel.ERROR, message);
+		log(LogLevel.ERROR, message, getCallingClass());
 	}
 
 	@Override
 	public void exception(String message) {
-		log(LogLevel.FATAL, message);
+		log(LogLevel.FATAL, message, getCallingClass());
 	}
 
 	@Override
 	public void log(LogLevel level, String message) {
-		System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+		log(level, message, getCallingClass());
 	}
+
+	/*
+	 * Helper functions
+	 */
 
 	protected String getTimeStamp() {
 		return sdf.format(new Date(System.currentTimeMillis()));
 	}
 
+	protected Logger getLoggerForClass(Class<?> type) {
+		Logger logger = loggers.get(type);
+
+		if (logger == null) {
+			logger = Logger.getLogger(type);
+			loggers.put(type, logger);
+		}
+
+		return logger;
+	}
+
+	protected Class<?> getCallingClass() {
+		Class<?> callingClass = null;
+
+		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+
+		for (int i = 1; i < stack.length; i++) {
+			StackTraceElement o = stack[i];
+
+			if (!StringUtils.equalsIgnoreCase(o.getClassName(), this.getClass().getName())) {
+				try {
+					callingClass = Class.forName(o.getClassName());
+				} catch (ClassNotFoundException e) {
+					// ignore, as this should never happen
+				}
+				break;
+			}
+		}
+
+		return callingClass;
+	}
 }
