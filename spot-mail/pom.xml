@@ -40,9 +40,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>at.spot.core.infrastructure-base</groupId>
-			<artifactId>spot-core-infrastructure-base</artifactId>
-			<version>0.0.1</version>
+			<groupId>at.spot.core</groupId>
+			<artifactId>spot-core</artifactId>
+			<version>0.0.5</version>
 		</dependency>
 
 		<dependency>
@@ -60,16 +60,26 @@
 		<!-- third party libs -->
 
 		<dependency>
-			<groupId>org.subethamail</groupId>
-			<artifactId>subethasmtp</artifactId>
-			<version>3.1.7</version>
+			<groupId>com.github.tntim96</groupId>
+			<artifactId>fakesmtp</artifactId>
+			<version>2.0</version>
 		</dependency>
+
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.subethamail</groupId> -->
+		<!-- <artifactId>subethasmtp</artifactId> -->
+		<!-- <version>3.1.7</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.james</groupId>
-			<artifactId>james-server-core-api</artifactId>
+			<artifactId>james-server-core-library</artifactId>
 			<version>3.0-M2</version>
 		</dependency>
+
+
 
 
 	</dependencies>

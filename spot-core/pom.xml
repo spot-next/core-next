@@ -137,8 +137,8 @@
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>at.spot.core.infrastructure-base</groupId>
-			<artifactId>spot-core-infrastructure-base</artifactId>
+			<groupId>at.spot.core.support</groupId>
+			<artifactId>spot-core-support</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 
