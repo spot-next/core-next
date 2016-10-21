@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -33,6 +34,11 @@ import at.spot.core.support.util.ClassUtil;
 
 @Service
 public class MapDBService implements PersistenceService {
+
+	public static final String MAP_DB_STORAGE_FILE_KEY = "persistence.mapdb.filepath";
+
+	protected static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
+
 	private DB database;
 	private Map<String, HTreeMap<Long, Entity>> dataStorage = new HashMap<>();
 
@@ -45,13 +51,16 @@ public class MapDBService implements PersistenceService {
 	@Autowired
 	protected LoggingService loggingService;
 
+	@Autowired
+	protected ConfigurationService configurationService;
+
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
 	public void initDataStorage() {
 		try {
-			database = DBMaker.fileDB("storage/database.db").fileMmapEnable().fileMmapPreclearDisable()
-					.cleanerHackEnable().transactionEnable().allocateStartSize(50 * 1024 * 1024)
-					.allocateIncrement(50 * 1024 * 1024).make();
+			database = DBMaker.fileDB(configurationService.getString(MAP_DB_STORAGE_FILE_KEY, DEFAULT_DB_FILEPATH))
+					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
+					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 
 			Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 

@@ -38,7 +38,7 @@ public class CoreInit {
 	protected PersistenceService persistenceService;
 
 	public static void main(String[] args) throws Exception {
-		new ClassPathXmlApplicationContext("spring.xml").close();
+		new ClassPathXmlApplicationContext("spring-core.xml").close();
 	}
 
 	public void run() {

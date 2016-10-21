@@ -12,10 +12,6 @@
 			<url>http://www.mvnrepository.com</url>
 		</repository>
 		<repository>
-			<id>oss.sonatype.org</id>
-			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
 			<id>libs-milestone</id>
 			<url>http://repo.spring.io/libs-milestone/</url>
 		</repository>
@@ -43,6 +39,12 @@
 			<groupId>at.spot.core</groupId>
 			<artifactId>spot-core</artifactId>
 			<version>0.0.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -63,7 +65,25 @@
 			<groupId>com.github.tntim96</groupId>
 			<artifactId>fakesmtp</artifactId>
 			<version>2.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.dhatim</groupId> -->
+		<!-- <artifactId>fakesmtp-server</artifactId> -->
+		<!-- <version>0.0.6</version> -->
+		<!-- </dependency> -->
+
 
 
 

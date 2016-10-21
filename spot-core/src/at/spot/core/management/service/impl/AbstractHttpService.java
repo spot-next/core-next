@@ -3,17 +3,14 @@ package at.spot.core.management.service.impl;
 import static spark.Spark.get;
 
 import java.lang.reflect.Method;
-import java.net.SocketException;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.RemoteInterfaceService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.annotation.Get;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import spark.Request;
@@ -34,10 +31,9 @@ public abstract class AbstractHttpService implements RemoteInterfaceService {
 	@Autowired
 	protected LoggingService loggingService;
 
-	@Log(logLevel = LogLevel.INFO, message = "Initiating remote type system access service ...")
 	@PostConstruct
 	@Override
-	public void init() throws RemoteServiceInitException, SocketException {
+	public void init() throws RemoteServiceInitException {
 		Spark.port(getPort());
 
 		// create routes for GET method

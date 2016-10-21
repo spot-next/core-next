@@ -1,6 +1,7 @@
 package at.spot.mail.service.impl;
 
-import java.net.SocketException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 
@@ -21,18 +22,31 @@ public class DefaultImapService extends AbstractService implements ImapService {
 
 	@Autowired
 	protected ConfigurationService configurationService;
-	
+
 	@Log(logLevel = LogLevel.INFO, message = "Initiating imap service ...")
 	@PostConstruct
 	@Override
-	public void init() throws RemoteServiceInitException, SocketException {
+	public void init() throws RemoteServiceInitException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getPort() {
-		 return configurationService.getInteger(CONFIG_PORT_KEY);
+		return configurationService.getInteger(CONFIG_PORT_KEY);
+	}
+
+	@Override
+	public InetAddress getBindAddress() {
+		InetAddress ret = null;
+
+		try {
+			ret = InetAddress.getByName("localhost");
+		} catch (UnknownHostException e) {
+			loggingService.exception(e.getMessage());
+		}
+
+		return ret;
 	}
 
 }

@@ -6,8 +6,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.service.LoggingService;
+
 @Service
 public abstract class AbstractService {
+
+	@Autowired
+	protected LoggingService loggingService;
 
 	@Autowired
 	protected ApplicationContext applicationContext;
