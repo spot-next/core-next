@@ -14,16 +14,16 @@ public class Mail extends Item {
 	private static final long serialVersionUID = 1L;
 
 	@Property
-	public URI sender;
+	public String sender;
 
 	@Property
-	public List<URI> toReceipients;
+	public List<String> toRecipients;
 
 	@Property
-	public List<URI> ccReceipients;
+	public List<String> ccReceipients;
 
 	@Property
-	public List<URI> forwardToReceipients;
+	public List<String> forwardToReceipients;
 
 	@Property
 	public String content;

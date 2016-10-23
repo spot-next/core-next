@@ -35,8 +35,7 @@ import at.spot.core.support.util.ClassUtil;
 @Service
 public class MapDBService implements PersistenceService {
 
-	public static final String MAP_DB_STORAGE_FILE_KEY = "persistence.mapdb.filepath";
-
+	protected static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
 	protected static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
 
 	private DB database;
@@ -58,7 +57,7 @@ public class MapDBService implements PersistenceService {
 	@Override
 	public void initDataStorage() {
 		try {
-			database = DBMaker.fileDB(configurationService.getString(MAP_DB_STORAGE_FILE_KEY, DEFAULT_DB_FILEPATH))
+			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
 					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 

@@ -10,6 +10,7 @@ import org.aspectj.lang.JoinPoint;
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
 
 public interface TypeService {
@@ -77,7 +78,7 @@ public interface TypeService {
 	 * 
 	 * @param packages
 	 */
-	List<Class<? extends Item>> getItemConcreteTypes(List<String> packages);
+	List<Class<? extends Item>> getItemConcreteTypes(List<ModuleDefinition> moduleDefinitions);
 
 	/**
 	 * Return a map of all concrete registered types. Abstract types are not
@@ -105,7 +106,8 @@ public interface TypeService {
 	 * item.
 	 * 
 	 * @param item
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
+	 *         key
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode);
 
@@ -114,7 +116,8 @@ public interface TypeService {
 	 * item.
 	 * 
 	 * @param item
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
+	 *         key
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(Class<? extends Item> itemType);
 

@@ -25,7 +25,8 @@ import spark.Response;
 @Service
 public class TypeSystemRestService extends AbstractHttpService {
 
-	private static final String CONFIG_PORT_KEY = "spot.service.remotetypeservice.port";
+	private static final String CONFIG_KEY_PORT = "service.typesystem.restservice.port";
+	private static final int DEFAULT_PORT = 9000;
 
 	@Autowired
 	protected TypeService typeService;
@@ -59,7 +60,7 @@ public class TypeSystemRestService extends AbstractHttpService {
 
 	@Override
 	public int getPort() {
-		return configurationService.getInteger(CONFIG_PORT_KEY);
+		return configurationService.getInteger(CONFIG_KEY_PORT, DEFAULT_PORT);
 	}
 
 	@Override

@@ -17,10 +17,14 @@
 
 	<aop:aspectj-autoproxy />
 
+	<util:properties id="mailConfiguration" location="mail.properties"
+		scope="singleton" />
+
 	<!-- model package scan path -->
-	<util:list id="itemTypePackageScanPaths" value-type="java.lang.String">
-		<value>at.spot.core.model</value>
-	</util:list>
+	<bean id="mailModuleDefinition" class="at.spot.core.infrastructure.type.ModuleDefinition">
+		<constructor-arg name="moduleName" value="mail" />
+		<constructor-arg name="modelPackagePath" value="at.spot.mail.model" />
+	</bean>
 
 	<import resource="classpath:spring-core.xml" />
 

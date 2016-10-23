@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -31,6 +29,7 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
 
 /**
@@ -40,8 +39,8 @@ import at.spot.core.model.Item;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	@Resource(name = "itemTypePackageScanPaths")
-	protected List<String> itemTypePackageScanPaths;
+	@Autowired
+	protected List<ModuleDefinition> moduleDefinitions;
 
 	@Autowired
 	protected LoggingService loggingService;
@@ -55,7 +54,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public void registerTypes() {
-		for (Class<?> clazz : getItemConcreteTypes(itemTypePackageScanPaths)) {
+		for (Class<?> clazz : getItemConcreteTypes(moduleDefinitions)) {
 			if (clazz.isAnnotationPresent(ItemType.class)) {
 				registerType(clazz, "prototype");
 			}
@@ -145,11 +144,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
-	public List<Class<? extends Item>> getItemConcreteTypes(List<String> packages) {
+	public List<Class<? extends Item>> getItemConcreteTypes(List<ModuleDefinition> moduleDefinitions) {
 		List<Class<? extends Item>> itemTypes = new ArrayList<>();
 
-		for (String pack : packages) {
-			Reflections reflections = new Reflections(pack);
+		for (ModuleDefinition m : moduleDefinitions) {
+			Reflections reflections = new Reflections(m.getModelPackagePath());
 			Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
 
 			for (Class<?> clazz : annotated) {
