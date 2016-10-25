@@ -1,5 +1,9 @@
 package at.spot.core.infrastructure.service;
 
-public interface EventService {
+import org.springframework.context.ApplicationEventPublisher;
 
+/**
+ * Provides infrastructure for publishing events.
+ */
+public interface EventService extends ApplicationEventPublisher {
 }

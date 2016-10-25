@@ -35,7 +35,15 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> List<T> get(Class<T> type, Map<String, Object> searchParameters)
+	public <T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException {
+
+		List<T> items = persistenceService.load(type, searchParameters);
+
+		return items.size() > 0 ? items.get(0) : null;
+	}
+
+	@Override
+	public <T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters)
 			throws ModelNotFoundException {
 
 		return persistenceService.load(type, searchParameters);

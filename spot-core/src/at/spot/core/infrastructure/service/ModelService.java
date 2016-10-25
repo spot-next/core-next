@@ -45,7 +45,7 @@ public interface ModelService {
 	<T extends Item> void saveAll(List<T> models) throws ModelSaveException;
 
 	/**
-	 * Returns an object based on its PK.
+	 * Returns an {@link Item} based on its PK.
 	 * 
 	 * @param pk
 	 * @return
@@ -53,12 +53,21 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns an object based on its PK.
+	 * Returns an {@link Item} based on its {@link PK}.
 	 * 
 	 * @param pk
 	 * @return
 	 */
 	<T extends Item> T get(Class<T> type, PK pk) throws ModelNotFoundException;
+
+	/**
+	 * Returns the first {@link Item} based on the given search parameters (key
+	 * = property name, value = property value).
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
 
 	/**
 	 * Refreshes the given model's properties.
@@ -75,7 +84,7 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.

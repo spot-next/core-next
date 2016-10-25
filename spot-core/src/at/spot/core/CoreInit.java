@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.init.ModuleInit;
+import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -23,6 +26,8 @@ import at.spot.core.persistence.service.PersistenceService;
  * been initialized, it will call {@link CoreInit#run()}. Then the shell is
  * being loaded.
  */
+@EnableAsync
+@EnableScheduling
 @Service
 public class CoreInit extends ModuleInit {
 
@@ -37,6 +42,9 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected PersistenceService persistenceService;
+
+	@Autowired
+	protected EventService eventService;
 
 	@Override
 	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {

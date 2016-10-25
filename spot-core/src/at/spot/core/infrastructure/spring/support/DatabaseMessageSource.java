@@ -9,9 +9,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
 
-import at.spot.core.model.internationalization.LocalizationKey;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.model.internationalization.LocalizationKey;
 
 /**
  * Fetches spring message values from the database, instead of the property
@@ -32,7 +32,7 @@ public class DatabaseMessageSource extends AbstractMessageSource {
 
 		List<LocalizationKey> translations = null;
 		try {
-			translations = modelService.get(LocalizationKey.class, keyParam);
+			translations = modelService.getAll(LocalizationKey.class, keyParam);
 
 		} catch (ModelNotFoundException e) {
 		}

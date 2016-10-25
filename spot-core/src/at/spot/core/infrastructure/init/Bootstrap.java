@@ -3,28 +3,35 @@ package at.spot.core.infrastructure.init;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import at.spot.core.infrastructure.service.LoggingService;
+import at.spot.core.support.util.MiscUtil;
 
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
-
 		// find all module init classes
 		Reflections reflections = new Reflections();
 		Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
 
-		// create a generic spring context
-		GenericApplicationContext ctx = new GenericApplicationContext();
+		AnnotationConfigApplicationContext ctx = null;
 
-		// register all found module inits in that spring context
-		for (Class<? extends ModuleInit> init : inits) {
-			init.newInstance().injectBeanDefinition(ctx);
+		try {
+			// create a generic spring context
+			ctx = new AnnotationConfigApplicationContext();
+
+			// register all found module inits in that spring context
+			for (Class<? extends ModuleInit> init : inits) {
+				init.newInstance().injectBeanDefinition(ctx);
+			}
+
+			ctx.registerShutdownHook();
+
+			ctx.refresh();
+			ctx.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			MiscUtil.closeQuietly(ctx);
 		}
-
-		ctx.refresh();
-
-		LoggingService loggingService = ctx.getBean("loggingService", LoggingService.class);
-		loggingService.info("Server start finished.");
 	}
 }
