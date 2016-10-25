@@ -4,11 +4,11 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.shell.Bootstrap;
 import org.springframework.shell.core.ExitShellRequest;
-import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 
-@Service
+//@Service
+//@Order
 public class SpotShellService extends Bootstrap {
 
 	@PostConstruct

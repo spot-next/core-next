@@ -30,6 +30,11 @@ import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.mail.model.Mail;
 import at.spot.mail.service.SmtpServiceEndpoint;
 
+/**
+ * Implements a simple SMTP service endpoint. Received mails are stored as
+ * {@link Mail} objects in the given MailBox
+ *
+ */
 @Service
 public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpServiceEndpoint, SimpleMessageListener {
 
@@ -38,11 +43,13 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	protected static final int DEFAULT_PORT = 8025;
 	protected static final String DEFAULT_BIND_ADDRESS = "localhost";
 
+	protected boolean stop = false;
+
 	protected final SMTPServer smtpServer = new SMTPServer(new SimpleMessageListenerAdapter(this),
 			new SMTPAuthHandlerFactory());
 
 	protected Queue<Mail> mailQueue = new ConcurrentLinkedDeque<>();
-	
+
 	@Autowired
 	protected ModelService modelService;
 
@@ -53,17 +60,16 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		this.smtpServer.setBindAddress(getBindAddress());
 		this.smtpServer.setPort(getPort());
 		this.smtpServer.start();
-		
-//		run();
+
+		runMessageQueueLoop();
 	}
 
-	protected void run() {
-		boolean stop = false;
-		
+	protected void runMessageQueueLoop() {
 		Mail mail = null;
-		
+
 		while (!stop) {
 			mail = mailQueue.poll();
+
 			if (mail != null) {
 				try {
 					modelService.save(mail);
@@ -73,7 +79,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			}
 		}
 	}
-	
+
 	@Override
 	public int getPort() {
 		return configurationService.getInteger(CONFIG_KEY_PORT, DEFAULT_PORT);
@@ -107,15 +113,10 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 
 		mail.sender = from;
 		mail.toRecipients.add(recipient);
-		mail.content = IOUtils.toString(data, "UTF-8"); ;
+		mail.content = IOUtils.toString(data, "UTF-8");
 
+		// add new mail to the message queue
 		mailQueue.add(mail);
-		
-//		try {
-//			modelService.save(mail);
-//		} catch (ModelSaveException e) {
-//			loggingService.exception("Can't save received mail.");
-//		}
 	}
 
 	final class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {

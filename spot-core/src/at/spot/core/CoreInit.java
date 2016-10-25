@@ -3,14 +3,14 @@ package at.spot.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.annotation.Order;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
+import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -23,12 +23,8 @@ import at.spot.core.persistence.service.PersistenceService;
  * been initialized, it will call {@link CoreInit#run()}. Then the shell is
  * being loaded.
  */
-// @EnableCaching
-// @EnableScheduling
-// @EnableAsync
 @Service
-@Order(0)
-public class CoreInit {
+public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected TypeService typeService;
@@ -42,8 +38,10 @@ public class CoreInit {
 	@Autowired
 	protected PersistenceService persistenceService;
 
-	public static void main(String[] args) throws Exception {
-		new ClassPathXmlApplicationContext("spring-core.xml").close();
+	@Override
+	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {
+		BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
+		reader.loadBeanDefinitions("spring-core.xml");
 	}
 
 	public void run() {
@@ -125,10 +123,9 @@ public class CoreInit {
 	 */
 
 	@Log(message = "Starting spOt core ...")
-	@PostConstruct
-	public void init() throws Exception {
+	@Override
+	public void initialize() {
 		setupTypeInfrastrucutre();
-
 		runMigrateScripts();
 
 		// this is just for testing
