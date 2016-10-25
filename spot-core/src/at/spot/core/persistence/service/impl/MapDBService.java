@@ -237,9 +237,31 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) {
-		// TODO Auto-generated method stub
+		HTreeMap<Long, Entity> storage = getDataStorageForType(type);
 
-		return null;
+		List<T> foundItems = new ArrayList<>();
+
+		for (Entity e : storage.getValues()) {
+			boolean found = true;
+
+			for (String k : searchParameters.keySet()) {
+				Object v = searchParameters.get(k);
+
+				if (!e.getProperty(k).equals(v)) {
+					found = false;
+				}
+			}
+
+			if (found) {
+				try {
+					foundItems.add(load(type, e.getPK().longValue()));
+				} catch (ModelNotFoundException e1) {
+					loggingService.warn(String.format("Couldn't load item with pk=%s", e.getPK().longValue()));
+				}
+			}
+		}
+
+		return foundItems;
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package at.spot.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
@@ -75,26 +77,31 @@ public class CoreInit extends ModuleInit {
 			users.add(user1);
 			users.add(user2);
 
-			// for (int i = 3; i < 100; i++) {
-			// if (i > 0 && i % 50 == 0) {
-			// long duration = System.currentTimeMillis() - start;
-			//
-			// if (duration >= 1000) {
-			// loggingService.debug("Created " + i + " users (" + i / (duration
-			// / 1000) + " items/s )");
-			// }
-			// }
-			//
-			// User user = modelService.create(User.class);
-			// user.name = "test-" + i;
-			// user.uid = user.name;
-			//
-			// user.groups.add(group);
-			//
-			// users.add(user);
-			// }
+			for (int i = 3; i < 10000; i++) {
+				if (i > 0 && i % 50 == 0) {
+					long duration = System.currentTimeMillis() - start;
+
+					if (duration >= 1000) {
+						// loggingService.debug("Created " + i + " users (" + i
+						// / (duration / 1000) + " items/s )");
+					}
+				}
+
+				User user = modelService.create(User.class);
+				user.name = "test-" + i;
+				user.uid = user.name;
+
+				user.groups.add(group);
+
+				users.add(user);
+			}
 
 			modelService.saveAll(users);
+
+			Map<String, Object> criteria = new HashMap<>();
+			criteria.put("uid", "test-500");
+
+			User test99 = modelService.get(User.class, criteria);
 
 			user1.groups.get(0).uid = "abc";
 
