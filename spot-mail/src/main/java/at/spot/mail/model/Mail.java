@@ -1,5 +1,6 @@
 package at.spot.mail.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -17,13 +18,13 @@ public class Mail extends Item {
 	public String sender;
 
 	@Property
-	public List<String> toRecipients;
+	final public List<String> toRecipients = new ArrayList<>();
 
 	@Property
-	public List<String> ccReceipients;
+	final public List<String> ccReceipients = new ArrayList<>();
 
 	@Property
-	public List<String> forwardToReceipients;
+	final public List<String> forwardToReceipients = new ArrayList<>();
 
 	@Property
 	public String content;

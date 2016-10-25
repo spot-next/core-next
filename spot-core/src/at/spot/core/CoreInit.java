@@ -6,7 +6,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.annotation.Order;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -22,7 +26,11 @@ import at.spot.core.persistence.service.PersistenceService;
  * been initialized, it will call {@link CoreInit#run()}. Then the shell is
  * being loaded.
  */
+@EnableCaching
+@EnableScheduling
+@EnableAsync
 @Service
+@Order(0)
 public class CoreInit {
 
 	@Autowired
@@ -40,7 +48,7 @@ public class CoreInit {
 	public static void main(String[] args) throws Exception {
 		new ClassPathXmlApplicationContext("spring-core.xml").close();
 	}
-
+	
 	public void run() {
 		long start = System.currentTimeMillis();
 

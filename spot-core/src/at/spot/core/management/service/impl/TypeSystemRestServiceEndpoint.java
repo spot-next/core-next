@@ -23,7 +23,7 @@ import spark.Request;
 import spark.Response;
 
 @Service
-public class TypeSystemRestService extends AbstractHttpService {
+public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 
 	private static final String CONFIG_KEY_PORT = "service.typesystem.restservice.port";
 	private static final int DEFAULT_PORT = 9000;
@@ -43,7 +43,7 @@ public class TypeSystemRestService extends AbstractHttpService {
 	public void init() throws RemoteServiceInitException {
 		super.init();
 	}
-
+	
 	@Get(pathMapping = "/types/", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
 		List<GenericItemDefinitionData> types = new ArrayList<>();

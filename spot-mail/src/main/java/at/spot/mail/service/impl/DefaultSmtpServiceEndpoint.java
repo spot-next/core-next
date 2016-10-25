@@ -6,9 +6,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.subethamail.smtp.AuthenticationHandler;
@@ -25,10 +28,10 @@ import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.mail.model.Mail;
-import at.spot.mail.service.SmtpService;
+import at.spot.mail.service.SmtpServiceEndpoint;
 
 @Service
-public class DefaultSmtpService extends AbstractService implements SmtpService, SimpleMessageListener {
+public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpServiceEndpoint, SimpleMessageListener {
 
 	protected static final String CONFIG_KEY_PORT = "service.mail.smtp.port";
 	protected static final String CONFIG_KEY_BIND_ADDRESS = "service.mail.smtp.bindaddress";
@@ -38,6 +41,8 @@ public class DefaultSmtpService extends AbstractService implements SmtpService, 
 	protected final SMTPServer smtpServer = new SMTPServer(new SimpleMessageListenerAdapter(this),
 			new SMTPAuthHandlerFactory());
 
+	protected Queue<Mail> mailQueue = new ConcurrentLinkedDeque<>();
+	
 	@Autowired
 	protected ModelService modelService;
 
@@ -48,8 +53,27 @@ public class DefaultSmtpService extends AbstractService implements SmtpService, 
 		this.smtpServer.setBindAddress(getBindAddress());
 		this.smtpServer.setPort(getPort());
 		this.smtpServer.start();
+		
+//		run();
 	}
 
+	protected void run() {
+		boolean stop = false;
+		
+		Mail mail = null;
+		
+		while (!stop) {
+			mail = mailQueue.poll();
+			if (mail != null) {
+				try {
+					modelService.save(mail);
+				} catch (ModelSaveException e) {
+					loggingService.exception("Can't save received mail.");
+				}
+			}
+		}
+	}
+	
 	@Override
 	public int getPort() {
 		return configurationService.getInteger(CONFIG_KEY_PORT, DEFAULT_PORT);
@@ -78,18 +102,20 @@ public class DefaultSmtpService extends AbstractService implements SmtpService, 
 		saveMail(from, recipient, data);
 	}
 
-	protected void saveMail(String from, String recipient, InputStream data) {
-		Mail mail = modelService.create(Mail.class);
+	protected void saveMail(String from, String recipient, InputStream data) throws IOException {
+		Mail mail = new Mail();
 
 		mail.sender = from;
 		mail.toRecipients.add(recipient);
-		mail.content = data.toString();
+		mail.content = IOUtils.toString(data, "UTF-8"); ;
 
-		try {
-			modelService.save(mail);
-		} catch (ModelSaveException e) {
-			loggingService.exception("Can't save received mail.");
-		}
+		mailQueue.add(mail);
+		
+//		try {
+//			modelService.save(mail);
+//		} catch (ModelSaveException e) {
+//			loggingService.exception("Can't save received mail.");
+//		}
 	}
 
 	final class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {

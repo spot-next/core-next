@@ -9,10 +9,10 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import at.spot.core.infrastructure.service.LoggingService;
-import at.spot.core.infrastructure.service.RemoteInterfaceService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.management.annotation.Get;
 import at.spot.core.management.exception.RemoteServiceInitException;
+import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -23,7 +23,7 @@ import spark.Spark;
  * method and register it as Spark request endpoints.
  *
  */
-public abstract class AbstractHttpService implements RemoteInterfaceService {
+public abstract class AbstractHttpServiceEndpoint implements RemoteInterfaceServiceEndpoint {
 
 	@Autowired
 	protected TypeService typeService;
@@ -57,10 +57,10 @@ public abstract class AbstractHttpService implements RemoteInterfaceService {
 	 *
 	 */
 	protected class HttpRoute implements Route {
-		private AbstractHttpService serviceImpl;
+		private AbstractHttpServiceEndpoint serviceImpl;
 		private Method httpMethodImpl;
 
-		public HttpRoute(AbstractHttpService serviceImpl, Method httpMethodImpl) {
+		public HttpRoute(AbstractHttpServiceEndpoint serviceImpl, Method httpMethodImpl) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 		}

@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.service;
+package at.spot.core.management.service;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -10,7 +10,7 @@ import at.spot.core.management.exception.RemoteServiceInitException;
  * service.
  *
  */
-public interface RemoteInterfaceService {
+public interface RemoteInterfaceServiceEndpoint {
 
 	/**
 	 * Initializes the remote service.

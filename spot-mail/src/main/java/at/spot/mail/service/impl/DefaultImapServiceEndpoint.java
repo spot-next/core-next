@@ -13,17 +13,17 @@ import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
-import at.spot.mail.service.ImapService;
+import at.spot.mail.service.ImapServiceEndpoint;
 
 @Service
-public class DefaultImapService extends AbstractService implements ImapService {
+public class DefaultImapServiceEndpoint extends AbstractService implements ImapServiceEndpoint {
 
 	private static final String CONFIG_PORT_KEY = "spot.service.imapservice.port";
 
 	@Autowired
 	protected ConfigurationService configurationService;
 
-	@Log(logLevel = LogLevel.INFO, message = "Initiating imap service ...")
+	@Log(logLevel = LogLevel.INFO, message = "Initiating IMAP service ...")
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {

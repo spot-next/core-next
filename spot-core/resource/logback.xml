@@ -32,7 +32,7 @@
 	<logger name="org.springframework" level="INFO" />
 	<logger name="org.springframework.context.support" level="WARN" />
 	<logger name="org.springframework.beans.factory" level="WARN" />
-	
+	<logger name="ch.qos.logback" level="WARN" />
 	<logger name="org.reflections.Reflections" level="WARN" />
 
 	<root>

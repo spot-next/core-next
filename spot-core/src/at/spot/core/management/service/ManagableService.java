@@ -1,4 +1,4 @@
-package at.spot.core.management.service.impl;
+package at.spot.core.management.service;
 
 public interface ManagableService {
 
