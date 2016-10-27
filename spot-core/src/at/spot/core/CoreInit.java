@@ -104,7 +104,7 @@ public class CoreInit extends ModuleInit {
 			modelService.saveAll(users);
 
 			Map<String, Object> criteria = new HashMap<>();
-			criteria.put("uid", "test-500");
+			criteria.put("uid", "user-1");
 
 			User test99 = modelService.get(User.class, criteria);
 

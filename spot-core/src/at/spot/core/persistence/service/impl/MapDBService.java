@@ -7,14 +7,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapdb.DB;
+import org.mapdb.DBException;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Sets;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
@@ -42,10 +47,8 @@ public class MapDBService implements PersistenceService {
 
 	protected static final String PK_PROPERTY_NAME = "pk";
 
-	private DB database;
-	private Map<String, HTreeMap<Long, Entity>> dataStorage = new HashMap<>();
-
-	private Map<String, Long> latestPkForType = new HashMap<>();
+	private static DB database;
+	private Map<String, DataStorage> dataStorage = new HashMap<>();
 
 	@Autowired
 	protected ModelService modelService;
@@ -74,18 +77,18 @@ public class MapDBService implements PersistenceService {
 			// .valueSerializer(new ItemSerializer<>()).createOrOpen();
 
 			for (ItemTypeDefinition t : itemTypes.values()) {
-				HTreeMap<Long, Entity> map = database.hashMap(t.typeClass).keySerializer(Serializer.LONG)
-						.valueSerializer(Serializer.JAVA).createOrOpen();
-
-				dataStorage.put(t.typeClass, map);
+				dataStorage.put(t.typeClass,
+						new DataStorage(t, typeService.getItemTypeProperties(t.typeCode).values()));
 			}
 		} catch (Exception e) {
 			// org.mapdb.DBException$DataCorruption
 			loggingService.error(e.getMessage());
 		}
+
+		loggingService.debug("MapDB service initialized");
 	}
 
-	protected HTreeMap<Long, Entity> getDataStorageForType(Class<? extends Item> type) {
+	protected DataStorage getDataStorageForType(Class<? extends Item> type) {
 		return this.dataStorage.get(type.getName());
 	}
 
@@ -99,7 +102,9 @@ public class MapDBService implements PersistenceService {
 	protected boolean isUnique(Item model) {
 		boolean isUnique = true;
 
-		if (!model.isPersisted() && load(model.getClass(), model.getUniqueProperties()).size() > 0) {
+		DataStorage storage = getDataStorageForType(model.getClass());
+
+		if (!model.isPersisted() && storage.get(model.getUniqueProperties()).size() > 0) {
 			isUnique = false;
 		}
 
@@ -150,21 +155,6 @@ public class MapDBService implements PersistenceService {
 		}
 	}
 
-	protected synchronized PK getNextPk(Class<? extends Item> type) {
-		Long latestPK = latestPkForType.get(type.getName());
-
-		if (latestPK == null) {
-			latestPK = new Long(getDataStorageForType(type).values().size());
-		}
-
-		// increase by one
-		latestPK += 1;
-
-		latestPkForType.put(type.getName(), latestPK);
-
-		return new PK(latestPK, type);
-	}
-
 	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
 	protected void saveInternal(Item item, boolean commit) throws IntrospectionException, ModelNotUniqueException {
 
@@ -174,10 +164,11 @@ public class MapDBService implements PersistenceService {
 		}
 
 		// check if there is already an item with the same unique properties
-		if (!isUnique(item)) {
-			throw new ModelNotUniqueException(
-					"Cannot save model because there is already a model with the same uniqueness criteria");
-		}
+		// if (!isUnique(item)) {
+		// throw new ModelNotUniqueException(
+		// "Cannot save model because there is already a model with the same
+		// uniqueness criteria");
+		// }
 
 		// now iterate over all attributes and check for item references and
 		// also save them
@@ -227,14 +218,12 @@ public class MapDBService implements PersistenceService {
 	}
 
 	protected PK storeEntity(Entity entity, PK pk, Class<? extends Item> type) {
-		HTreeMap<Long, Entity> storage = getDataStorageForType(type);
-
-		if (pk == null) {
-			pk = getNextPk(type);
-		}
-
-		entity.setPK(pk);
-		storage.put(pk.longValue(), entity);
+		// if (pk == null) {
+		// pk = getDataStorageForType(type) getNextPk(type);
+		// }
+		//
+		// entity.setPK(pk);
+		getDataStorageForType(type).put(entity);
 
 		return pk;
 	}
@@ -256,9 +245,7 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException {
-		HTreeMap<Long, Entity> storage = getDataStorageForType(type);
-
-		Entity itemEntity = storage.get(pk);
+		Entity itemEntity = getDataStorageForType(type).get(pk);
 
 		T item;
 		try {
@@ -278,28 +265,36 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) {
-		HTreeMap<Long, Entity> storage = getDataStorageForType(type);
 
 		List<T> foundItems = new ArrayList<>();
 
-		for (Entity e : storage.getValues()) {
-			boolean found = true;
+		Set<Long> pks = getDataStorageForType(type).get(searchParameters);
 
-			for (String k : searchParameters.keySet()) {
-				Object v = searchParameters.get(k);
-
-				if (!e.getProperty(k).equals(v)) {
-					found = false;
-				}
+		for (Long pk : pks) {
+			try {
+				foundItems.add(load(type, pk));
+			} catch (ModelNotFoundException e) {
+				// ignore it for now
 			}
-
-			if (found) {
-				try {
-					foundItems.add(load(type, e.getPK().longValue()));
-				} catch (ModelNotFoundException e1) {
-					loggingService.warn(String.format("Couldn't load item with pk=%s", e.getPK().longValue()));
-				}
-			}
+			//
+			// boolean found = true;
+			//
+			// for (String k : searchParameters.keySet()) {
+			// Object v = searchParameters.get(k);
+			//
+			// if (!e.getProperty(k).equals(v)) {
+			// found = false;
+			// }
+			// }
+			//
+			// if (found) {
+			// try {
+			// foundItems.add(load(type, e.getPK().longValue()));
+			// } catch (ModelNotFoundException e1) {
+			// loggingService.warn(String.format("Couldn't load item with
+			// pk=%s", e.getPK().longValue()));
+			// }
+			// }
 		}
 
 		return foundItems;
@@ -348,13 +343,139 @@ public class MapDBService implements PersistenceService {
 	@Log(logLevel = LogLevel.DEBUG, message = "Clearing database ...")
 	@Override
 	public void clearDataStorage() {
-		for (HTreeMap<Long, Entity> m : dataStorage.values()) {
-			m.clear();
-		}
-
-		saveDataStorage();
-		database.close();
-		initDataStorage();
+		// for (BTreeMap<Long, Entity> m : dataStorage.values()) {
+		// m.clear();
+		// }
+		//
+		// saveDataStorage();
+		// database.close();
+		// initDataStorage();
 	}
 
+	protected static class DataStorage {
+		private HTreeMap<Long, Entity> map = null;
+
+		private Map<String, Map<Object, List<Long>>> indexes = new HashMap<>();
+		private Long latestPkForType = null;;
+
+		// private Class<? extends Item> itemType = null;
+
+		public DataStorage(ItemTypeDefinition itemTypeDefinition,
+				Collection<ItemTypePropertyDefinition> propertyDefinitions) {
+
+			map = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
+					.valueSerializer(Serializer.JAVA).createOrOpen();
+
+			// try {
+			// itemType = (Class<? extends Item>)
+			// Class.forName(itemTypeDefinition.typeClass);
+			// } catch (ClassNotFoundException e) {
+			// //
+			// }
+
+			// for (ItemTypePropertyDefinition prop : propertyDefinitions) {
+			// NavigableMap<Object, Long> indexMap = new HashMap<Object,
+			// Long>();
+
+			// NavigableSet<Object[]> propertyIndex = new TreeSet<Object[]>();
+			//
+			// Bind.secondaryKey(map, propertyIndex, new Fun.Function2<Boolean,
+			// Integer, Person>() {
+			// @Override
+			// public Boolean run(Integer key, Person value) {
+			// return Boolean.valueOf(value.isMale());
+			// }
+			// });
+			//
+			// }
+		}
+
+		public void indexEntity(Entity entity) {
+			for (String prop : entity.getProperties().keySet()) {
+				if (StringUtils.equalsIgnoreCase(prop, PK_PROPERTY_NAME)) {
+					continue;
+				}
+
+				Object val = entity.getProperty(prop);
+
+				Map<Object, List<Long>> values = indexes.get(prop);
+
+				if (values == null) {
+					values = new HashMap<>();
+					indexes.put(prop, values);
+				}
+
+				if (val != null) {
+					List<Long> indexedPKs = values.get(val);
+
+					if (indexedPKs == null) {
+						indexedPKs = new ArrayList<>();
+						values.put(val, indexedPKs);
+					}
+
+					indexedPKs.add(entity.getPK().longValue());
+				}
+			}
+		}
+
+		public long getEntityCount() {
+			long ret = 0;
+
+			try {
+				ret = map.values().size();
+			} catch (DBException e) {
+				// TODO: handle exception
+			}
+
+			return ret;
+		}
+
+		public void put(Entity value) {
+			map.put(getNextPk(), value);
+			indexEntity(value);
+		}
+
+		public Entity get(Long key) {
+			return map.get(key);
+		}
+
+		public Set<Long> get(Map<String, Object> criteria) {
+			Map<String, List<Long>> pksForProperty = new TreeMap<>();
+
+			for (String k : criteria.keySet()) {
+				Map<Object, List<Long>> values = indexes.get(k);
+
+				if (values != null && values.values() != null) {
+					pksForProperty.put(k, values.get(criteria.get(k)));
+				}
+			}
+
+			Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+
+			return commonPKs;
+		}
+
+		public Collection<Entity> values() {
+			return map.getValues();
+		}
+
+		public <T> Set<T> intersection(List<List<T>> list) {
+			Set<T> result = Sets.newHashSet(list.get(0));
+			for (List<T> numbers : list) {
+				result = Sets.intersection(result, Sets.newHashSet(numbers));
+			}
+			return result;
+		}
+
+		protected synchronized Long getNextPk() {
+			if (latestPkForType == null) {
+				latestPkForType = new Long(getEntityCount());
+			}
+
+			// increase by one
+			latestPkForType += 1;
+
+			return latestPkForType;
+		}
+	}
 }
