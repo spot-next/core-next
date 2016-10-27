@@ -1,13 +1,17 @@
 package at.spot.core.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.model.Unique;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.infrastructure.type.collection.ObservableChange;
 import at.spot.core.infrastructure.type.collection.Observer;
@@ -37,6 +41,7 @@ public abstract class Item implements Serializable, Observer {
 	public final boolean isProxy;
 
 	public Item() {
+		this.created = new DateTime();
 		this.isProxy = false;
 	}
 
@@ -62,6 +67,7 @@ public abstract class Item implements Serializable, Observer {
 
 	protected void markAsDirty(String propertyName) {
 		this.dirtyAttributes.add(propertyName);
+		this.lastModified = new DateTime();
 	}
 
 	protected void clearDirtyFlag() {
@@ -72,5 +78,37 @@ public abstract class Item implements Serializable, Observer {
 	public void notify(String collectionName, ObservableChange change, Object element) {
 		// TODO: this should be done directly in the itempropertyaccessaspect
 		markAsDirty(collectionName);
+	}
+
+	/**
+	 * Returns the names and the values of all properties annotated
+	 * with @Unique.
+	 * 
+	 * @return
+	 */
+	public Map<String, Object> getUniqueProperties() {
+		Map<String, Object> uniqueProps = new HashMap<>();
+
+		for (Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Unique.class)) {
+			uniqueProps.put(uniqueField.getName(), ClassUtil.getPrivateField(this, uniqueField.getName()));
+		}
+
+		return uniqueProps;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		boolean ret = false;
+
+		if (object.getClass().equals(this.getClass())) {
+
+			// we directly compare a map of all the unique properties of the
+			// object, ignoring the rest
+			if (getUniqueProperties().equals(((Item) object).getUniqueProperties())) {
+				ret = true;
+			}
+		}
+
+		return ret;
 	}
 }

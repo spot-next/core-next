@@ -257,4 +257,20 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		return propertyMembers;
 	}
+
+	@Override
+	public Map<String, ItemTypePropertyDefinition> getUniqueItemTypeProperties(Class<? extends Item> itemType) {
+		Map<String, ItemTypePropertyDefinition> props = getItemTypeProperties(itemType);
+
+		Map<String, ItemTypePropertyDefinition> uniqueProps = new HashMap<>();
+
+		for (String k : props.keySet()) {
+			ItemTypePropertyDefinition v = props.get(k);
+			if (v.isUnique) {
+				uniqueProps.put(k, v);
+			}
+		}
+
+		return null;
+	}
 }

@@ -95,4 +95,10 @@ public class CqEngineDBService implements PersistenceService {
 
 	}
 
+	@Override
+	public void clearDataStorage() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

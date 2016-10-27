@@ -27,6 +27,7 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.mail.model.Mail;
 import at.spot.mail.service.SmtpServiceEndpoint;
 
@@ -59,7 +60,12 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	public void init() throws RemoteServiceInitException {
 		this.smtpServer.setBindAddress(getBindAddress());
 		this.smtpServer.setPort(getPort());
-		this.smtpServer.start();
+
+		try {
+			this.smtpServer.start();
+		} catch (RuntimeException e) {
+			loggingService.exception("Cannot start SMTP server: " + e.getMessage());
+		}
 
 		runMessageQueueLoop();
 	}
@@ -73,7 +79,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			if (mail != null) {
 				try {
 					modelService.save(mail);
-				} catch (ModelSaveException e) {
+				} catch (ModelSaveException | ModelNotUniqueException e) {
 					loggingService.exception("Can't save received mail.");
 				}
 			}

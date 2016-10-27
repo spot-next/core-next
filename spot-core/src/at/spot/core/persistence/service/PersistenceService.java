@@ -9,6 +9,7 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 @Service
 public interface PersistenceService {
@@ -18,7 +19,7 @@ public interface PersistenceService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void save(T model) throws ModelSaveException;
+	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves the given models and all of its dependent models.
@@ -26,7 +27,7 @@ public interface PersistenceService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(T... models) throws ModelSaveException;
+	<T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves the given models and all of its dependent models.
@@ -34,7 +35,7 @@ public interface PersistenceService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(List<T> models) throws ModelSaveException;
+	<T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Returns an object based on its PK.
@@ -87,4 +88,9 @@ public interface PersistenceService {
 	 * quits to prevent data corruption.
 	 */
 	void saveDataStorage();
+
+	/**
+	 * Clears all stored data from the storage.
+	 */
+	void clearDataStorage();
 }

@@ -1,10 +1,13 @@
 package at.spot.core.support.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
 
@@ -72,14 +75,10 @@ public class ClassUtil {
 			i++;
 		}
 
-		List<Class<?>> classesToTest = new ArrayList<>();
-		classesToTest.add(object.getClass());
-		classesToTest.addAll(ClassUtils.getAllSuperclasses(object.getClass()));
-
 		Method method = null;
 
 		// iterate over all superclasses and look for given method
-		for (Class<?> c : classesToTest) {
+		for (Class<?> c : getAllAssignableClasses(object)) {
 			try {
 				method = c.getDeclaredMethod(methodName, paramArgs);
 
@@ -102,5 +101,28 @@ public class ClassUtil {
 		}
 
 		return retVal;
+	}
+
+	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(Object object, Class<A> annotation) {
+		Set<Field> annotatedFields = new HashSet<>();
+
+		for (Class<?> c : getAllAssignableClasses(object)) {
+			for (Field field : c.getDeclaredFields()) {
+				if (field.isAnnotationPresent(annotation)) {
+					annotatedFields.add(field);
+				}
+			}
+		}
+
+		return annotatedFields;
+
+	}
+
+	public static List<Class<?>> getAllAssignableClasses(Object object) {
+		List<Class<?>> classes = new ArrayList<>();
+		classes.add(object.getClass());
+		classes.addAll(ClassUtils.getAllSuperclasses(object.getClass()));
+
+		return classes;
 	}
 }

@@ -7,6 +7,7 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 public interface ModelService {
 
@@ -24,7 +25,7 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void save(T model) throws ModelSaveException;
+	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be
@@ -33,7 +34,7 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(T... models) throws ModelSaveException;
+	<T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be
@@ -42,7 +43,7 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(List<T> models) throws ModelSaveException;
+	<T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Returns an {@link Item} based on its PK.

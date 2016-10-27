@@ -122,6 +122,16 @@ public interface TypeService {
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(Class<? extends Item> itemType);
 
 	/**
+	 * Returns a map of all the @Property annotated properties of the given item
+	 * that have also the @Unique annotation.
+	 * 
+	 * @param item
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
+	 *         key
+	 */
+	Map<String, ItemTypePropertyDefinition> getUniqueItemTypeProperties(Class<? extends Item> itemType);
+
+	/**
 	 * Returns the item definition for the given type.
 	 * 
 	 * @param typeCode

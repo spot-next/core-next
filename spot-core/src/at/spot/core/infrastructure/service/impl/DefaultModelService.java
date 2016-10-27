@@ -10,6 +10,7 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.support.util.ELParser;
 
@@ -20,24 +21,23 @@ public class DefaultModelService extends AbstractModelService {
 	protected PersistenceService persistenceService;
 
 	@Override
-	public <T extends Item> void save(T model) throws ModelSaveException {
+	public <T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.save(model);
 	}
 
 	@Override
-	public <T extends Item> void saveAll(T... models) throws ModelSaveException {
+	public <T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.saveAll(models);
 	}
 
 	@Override
-	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException {
+	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.saveAll(models);
 	}
 
 	@Override
 	public <T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException {
-
-		List<T> items = persistenceService.load(type, searchParameters);
+		List<T> items = getAll(type, searchParameters);
 
 		return items.size() > 0 ? items.get(0) : null;
 	}

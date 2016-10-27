@@ -25,9 +25,11 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
@@ -38,8 +40,12 @@ public class MapDBService implements PersistenceService {
 	protected static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
 	protected static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
 
+	protected static final String PK_PROPERTY_NAME = "pk";
+
 	private DB database;
 	private Map<String, HTreeMap<Long, Entity>> dataStorage = new HashMap<>();
+
+	private Map<String, Long> latestPkForType = new HashMap<>();
 
 	@Autowired
 	protected ModelService modelService;
@@ -83,8 +89,25 @@ public class MapDBService implements PersistenceService {
 		return this.dataStorage.get(type.getName());
 	}
 
+	/**
+	 * Try to laod an item with the same unique properties. If there already is
+	 * one stored, the given item is not unique.
+	 * 
+	 * @param model
+	 * @return
+	 */
+	protected boolean isUnique(Item model) {
+		boolean isUnique = true;
+
+		if (!model.isPersisted() && load(model.getClass(), model.getUniqueProperties()).size() > 0) {
+			isUnique = false;
+		}
+
+		return isUnique;
+	}
+
 	@Override
-	public void save(Item model) throws ModelSaveException {
+	public void save(Item model) throws ModelSaveException, ModelNotUniqueException {
 		try {
 			saveInternal(model, true);
 		} catch (IntrospectionException e) {
@@ -93,12 +116,12 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> void saveAll(T... models) throws ModelSaveException {
+	public <T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException {
 		saveAll(Arrays.asList(models));
 	}
 
 	@Override
-	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException {
+	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException {
 		long start = System.currentTimeMillis();
 		long duration = start;
 
@@ -127,15 +150,33 @@ public class MapDBService implements PersistenceService {
 		}
 	}
 
-	protected PK getNextPk(Class<? extends Item> type) {
-		return new PK(getDataStorageForType(type).values().size() + 1, type);
+	protected synchronized PK getNextPk(Class<? extends Item> type) {
+		Long latestPK = latestPkForType.get(type.getName());
+
+		if (latestPK == null) {
+			latestPK = new Long(getDataStorageForType(type).values().size());
+		}
+
+		// increase by one
+		latestPK += 1;
+
+		latestPkForType.put(type.getName(), latestPK);
+
+		return new PK(latestPK, type);
 	}
 
-	protected void saveInternal(Item item, boolean commit) throws IntrospectionException {
+	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
+	protected void saveInternal(Item item, boolean commit) throws IntrospectionException, ModelNotUniqueException {
 
-		// if there is nothing to save, we return immedeiately
+		// if there is nothing to save, we return immediately
 		if (item.isPersisted() && !item.isDirty()) {
 			return;
+		}
+
+		// check if there is already an item with the same unique properties
+		if (!isUnique(item)) {
+			throw new ModelNotUniqueException(
+					"Cannot save model because there is already a model with the same uniqueness criteria");
 		}
 
 		// now iterate over all attributes and check for item references and
@@ -149,13 +190,11 @@ public class MapDBService implements PersistenceService {
 				Object value = modelService.getPropertyValue(item, member.name);
 
 				// ignore pk property
-				if (value != null && !StringUtils.equals(member.name, "pk")) {
+				if (value != null && !StringUtils.equals(member.name, PK_PROPERTY_NAME)) {
 					if (value instanceof Item) {
 						Item valueItem = (Item) item;
 
 						saveInternal(valueItem, commit);
-
-						ClassUtil.invokeMethod(value, "clearDirtyFlag");
 
 						// replace actual item with proxy
 						value = createProxyModel(item);
@@ -177,6 +216,8 @@ public class MapDBService implements PersistenceService {
 			}
 
 			item.pk = storeEntity(entity, item.pk, item.getClass());
+			// refresh(item);
+			clearDirtyFlag(item);
 		} catch (Exception e) {
 			database.rollback();
 		}
@@ -199,7 +240,7 @@ public class MapDBService implements PersistenceService {
 	}
 
 	protected Collection<Item> saveInternalCollection(Collection<Item> items, boolean commit)
-			throws IntrospectionException, CannotCreateModelProxyException {
+			throws IntrospectionException, CannotCreateModelProxyException, ModelNotUniqueException {
 
 		Collection<Item> savedItems = new ArrayList<>();
 
@@ -266,11 +307,17 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
+		clearDirtyFlag(item);
+
 		T loadedItem = load((Class<T>) item.getClass(), item.pk.longValue());
 
 		for (ItemTypePropertyDefinition p : typeService.getItemTypeProperties(item.getClass()).values()) {
 			item.setProperty(p.name, loadedItem.getProperty(p.name));
 		}
+	}
+
+	protected void clearDirtyFlag(Item item) {
+		ClassUtil.invokeMethod(item, "clearDirtyFlag");
 	}
 
 	@Override
@@ -296,6 +343,18 @@ public class MapDBService implements PersistenceService {
 	@Override
 	public void saveDataStorage() {
 		database.close();
+	}
+
+	@Log(logLevel = LogLevel.DEBUG, message = "Clearing database ...")
+	@Override
+	public void clearDataStorage() {
+		for (HTreeMap<Long, Entity> m : dataStorage.values()) {
+			m.clear();
+		}
+
+		saveDataStorage();
+		database.close();
+		initDataStorage();
 	}
 
 }

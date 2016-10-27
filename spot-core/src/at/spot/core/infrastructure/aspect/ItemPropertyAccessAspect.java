@@ -50,7 +50,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.model.Property) && get(* *.*)")
-	protected void getAccess() {
+	final protected void getAccess() {
 	};
 
 	/**
@@ -58,7 +58,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.model.Property) && set(* *.*)")
-	protected void setAccess() {
+	final protected void setAccess() {
 	};
 
 	/*
@@ -66,8 +66,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 */
 
 	@After("setAccess() && notFromPersistencePackage()")
-	public void setPropertyValue(JoinPoint joinPoint) {
-		Property ann = getAnnotation(joinPoint, Property.class);
+	public void setPropertyValue(final JoinPoint joinPoint) {
+		final Property ann = getAnnotation(joinPoint, Property.class);
 
 		if (ann != null && !ann.writable()) {
 			throw new RuntimeException(String.format("Attribute %s is not writable.", createSignature(joinPoint)));
@@ -80,8 +80,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	@Around("getAccess() && notFromPersistencePackage()")
-	public Object getPropertyValue(ProceedingJoinPoint joinPoint) throws Throwable {
-		Property ann = getAnnotation(joinPoint, Property.class);
+	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
+		final Property ann = getAnnotation(joinPoint, Property.class);
 
 		if (ann == null || !ann.readable()) {
 			throw new RuntimeException(String.format("Attribute %s is not readable.", createSignature(joinPoint)));
@@ -115,8 +115,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		return proxyItem;
 	}
 
-	protected Object getPropertyValueInternal(ProceedingJoinPoint joinPoint) throws Throwable {
-		Object[] args = joinPoint.getArgs();
+	protected Object getPropertyValueInternal(final ProceedingJoinPoint joinPoint) throws Throwable {
+		final Object[] args = joinPoint.getArgs();
 		return joinPoint.proceed(args);
 	}
 }

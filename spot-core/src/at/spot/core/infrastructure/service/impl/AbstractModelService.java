@@ -19,7 +19,9 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Override
 	public <T extends Item> T create(Class<T> type) {
-		return getApplicationContext().getBean(type);
+		T item = getApplicationContext().getBean(type);
+
+		return item;
 	}
 
 }

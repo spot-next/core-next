@@ -57,6 +57,9 @@ public class CoreInit extends ModuleInit {
 	public void run() {
 		long start = System.currentTimeMillis();
 
+		// first clear storage, then we start our test
+		// persistenceService.clearDataStorage();
+
 		try {
 
 			List<User> users = new ArrayList<>();
@@ -68,8 +71,8 @@ public class CoreInit extends ModuleInit {
 			User user1 = modelService.create(User.class);
 			User user2 = modelService.create(User.class);
 
-			user1.uid = "user1";
-			user2.uid = "user3";
+			user1.uid = "user-1";
+			user2.uid = "user-2";
 
 			user1.groups.add(group);
 			user2.groups.add(group);
@@ -77,7 +80,9 @@ public class CoreInit extends ModuleInit {
 			users.add(user1);
 			users.add(user2);
 
-			for (int i = 3; i < 10000; i++) {
+			modelService.saveAll(users);
+
+			for (int i = 1; i < 10000; i++) {
 				if (i > 0 && i % 50 == 0) {
 					long duration = System.currentTimeMillis() - start;
 
