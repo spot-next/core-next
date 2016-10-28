@@ -66,14 +66,13 @@ public class MapDBService implements PersistenceService {
 	@Override
 	public void initDataStorage() {
 		try {
+			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
+					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
+					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 			// database =
 			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
 			// DEFAULT_DB_FILEPATH))
-			// .fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
-			// .allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024
-			// * 1024).make();
-			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
-					.transactionEnable().make();
+			// .transactionEnable().make();
 
 			Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
@@ -203,12 +202,12 @@ public class MapDBService implements PersistenceService {
 						} else if (Collection.class.isAssignableFrom(value.getClass())) {
 							value = saveInternalCollection((Collection) value, commit);
 						} else if (Map.class.isAssignableFrom(value.getClass())) {
-							// Map map = (Map) value;
+							// Map items = (Map) value;
 							//
 							// value = saveInternalCollection((Collection)
-							// map.keySet(), commit);
+							// items.keySet(), commit);
 							// value = saveInternalCollection((Collection)
-							// map.values(), commit);
+							// items.values(), commit);
 						}
 					}
 
@@ -381,10 +380,10 @@ public class MapDBService implements PersistenceService {
 	}
 
 	/**
-	 * This is an abstraction of the actual map db data storage.
+	 * This is an abstraction of the actual items db data storage.
 	 */
 	protected static class DataStorage {
-		private HTreeMap<Long, Entity> map = null;
+		private HTreeMap<Long, Entity> items = null;
 		private HTreeMap<Long, Long> uniqueIndex = null;
 
 		private Map<String, Index> indexes = new HashMap<>();
@@ -397,16 +396,15 @@ public class MapDBService implements PersistenceService {
 
 			this.typeDefinition = itemTypeDefinition;
 
-			map = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
+			items = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
 					.valueSerializer(Serializer.JAVA).createOrOpen();
 
 			uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.LONG)
 					.valueSerializer(Serializer.LONG).createOrOpen();
-
 		}
 
 		public Entity get(Long key) {
-			return map.get(key);
+			return items.get(key);
 		}
 
 		public Entity get(int uniqueHash) {
@@ -448,7 +446,7 @@ public class MapDBService implements PersistenceService {
 			long ret = 0;
 
 			try {
-				ret = map.values().size();
+				ret = items.values().size();
 			} catch (DBException e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -462,7 +460,7 @@ public class MapDBService implements PersistenceService {
 				entity.setPK(getNextPk());
 			}
 
-			map.put(entity.getPK(), entity);
+			items.put(entity.getPK(), entity);
 
 			updateUniquenessIndex(entity);
 			indexEntity(entity);
@@ -474,7 +472,7 @@ public class MapDBService implements PersistenceService {
 			for (long pk : longValue) {
 				Entity e = get(pk);
 
-				map.remove(pk);
+				items.remove(pk);
 
 				removeUniquenessIndex(e);
 				removeIndexes(e);
@@ -482,7 +480,7 @@ public class MapDBService implements PersistenceService {
 		}
 
 		public Collection<Entity> values() {
-			return map.getValues();
+			return items.getValues();
 		}
 
 		public void removeUniquenessIndex(Entity entity) {
