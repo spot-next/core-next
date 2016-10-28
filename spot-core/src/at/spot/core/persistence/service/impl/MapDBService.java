@@ -161,12 +161,15 @@ public class MapDBService implements PersistenceService {
 	}
 
 	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
-	protected void saveInternal(Item item, boolean commit) throws IntrospectionException, ModelNotUniqueException {
+	protected void saveInternal(Item item, boolean commit)
+			throws IntrospectionException, ModelNotUniqueException, ModelSaveException {
+
+		boolean unsavedChanges = !item.isPersisted() || item.isDirty();
 
 		// if there is nothing to save, we return immediately
-		if (item.isPersisted() && !item.isDirty()) {
-			return;
-		}
+		// if (item.isPersisted() && !item.isDirty()) {
+		// return;
+		// }
 
 		// check if there is already an item with the same unique properties
 		if (!isUnique(item)) {
@@ -209,15 +212,19 @@ public class MapDBService implements PersistenceService {
 						}
 					}
 
-					entity.setProperty(member.name, value);
+					if (unsavedChanges) {
+						entity.setProperty(member.name, value);
+					}
 				}
 			}
 
-			item.pk = storeEntity(entity, item.pk, item.getClass());
-			// refresh(item);
-			clearDirtyFlag(item);
+			if (unsavedChanges) {
+				item.pk = storeEntity(entity, item.pk, item.getClass());
+				clearDirtyFlag(item);
+			}
 		} catch (Exception e) {
 			database.rollback();
+			throw new ModelSaveException("Could not save model", e);
 		}
 
 		if (commit)
@@ -235,7 +242,8 @@ public class MapDBService implements PersistenceService {
 	}
 
 	protected Collection<Item> saveInternalCollection(Collection<Item> items, boolean commit)
-			throws IntrospectionException, CannotCreateModelProxyException, ModelNotUniqueException {
+			throws IntrospectionException, CannotCreateModelProxyException, ModelNotUniqueException,
+			ModelSaveException {
 
 		Collection<Item> savedItems = new ArrayList<>();
 
