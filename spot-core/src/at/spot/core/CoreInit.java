@@ -82,28 +82,28 @@ public class CoreInit extends ModuleInit {
 
 			modelService.saveAll(users);
 
-			for (int i = 1; i < 10000; i++) {
-				if (i > 0 && i % 50 == 0) {
-					long duration = System.currentTimeMillis() - start;
+			// for (int i = 1; i < 10000; i++) {
+			// if (i > 0 && i % 50 == 0) {
+			// long duration = System.currentTimeMillis() - start;
+			//
+			// if (duration >= 1000) {
+			// // loggingService.debug("Created " + i + " users (" + i
+			// // / (duration / 1000) + " items/s )");
+			// }
+			// }
+			//
+			// User user = modelService.create(User.class);
+			// user.name = "test-" + i;
+			// user.uid = user.name;
+			//
+			// user.groups.add(group);
+			//
+			// users.add(user);
+			// }
 
-					if (duration >= 1000) {
-						// loggingService.debug("Created " + i + " users (" + i
-						// / (duration / 1000) + " items/s )");
-					}
-				}
+			// modelService.saveAll(users);
 
-				User user = modelService.create(User.class);
-				user.name = "test-" + i;
-				user.uid = user.name;
-
-				user.groups.add(group);
-
-				users.add(user);
-			}
-
-			modelService.saveAll(users);
-
-			Map<String, Object> criteria = new HashMap<>();
+			Map<String, Comparable<?>> criteria = new HashMap<>();
 			criteria.put("uid", "user-1");
 
 			User test99 = modelService.get(User.class, criteria);
@@ -113,8 +113,8 @@ public class CoreInit extends ModuleInit {
 			// iterate over all children and check dirty flag
 			modelService.saveAll(user1);
 
-			user1 = modelService.get(User.class, user1.pk);
-			user2 = modelService.get(User.class, user2.pk);
+			user1 = modelService.get(user1.pk);
+			user2 = modelService.get(user2.pk);
 
 			System.out.println(user2.groups.get(0).uid);
 

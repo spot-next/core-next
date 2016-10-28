@@ -5,7 +5,6 @@ import java.util.List;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.annotation.model.Unique;
 import at.spot.core.infrastructure.type.collection.ObservableList;
 import at.spot.core.model.Item;
 import at.spot.core.model.user.User;
@@ -16,8 +15,7 @@ public class MailBox extends Item {
 
 	private static final long serialVersionUID = 1L;
 
-	@Unique
-	@Property
+	@Property(unique = true)
 	public User owner;
 
 	@Property

@@ -26,8 +26,8 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException {
-		persistenceService.saveAll(models);
+	public <T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException {
+		persistenceService.saveAll(items);
 	}
 
 	@Override
@@ -36,22 +36,23 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException {
+	public <T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters)
+			throws ModelNotFoundException {
 		List<T> items = getAll(type, searchParameters);
 
 		return items.size() > 0 ? items.get(0) : null;
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters)
+	public <T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
 			throws ModelNotFoundException {
 
 		return persistenceService.load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, PK pk) throws ModelNotFoundException {
-		return get(type, pk.longValue());
+	public <T extends Item> T get(PK pk) throws ModelNotFoundException {
+		return get((Class<T>) pk.getType(), pk.longValue());
 	}
 
 	@Override
@@ -80,5 +81,27 @@ public class DefaultModelService extends AbstractModelService {
 	@Override
 	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
 		persistenceService.refresh(item);
+	}
+
+	@Override
+	public void remove(PK pk) {
+		persistenceService.remove(pk);
+	}
+
+	@Override
+	public <T extends Item> void remove(Class<T> type, long pk) {
+		persistenceService.remove(new PK(pk, type));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Item> void remove(T item) {
+		persistenceService.remove(item);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Item> void remove(T... items) {
+		persistenceService.remove(items);
 	}
 }

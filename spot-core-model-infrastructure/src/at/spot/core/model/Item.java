@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.annotation.model.Unique;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.infrastructure.type.collection.ObservableChange;
 import at.spot.core.infrastructure.type.collection.Observer;
@@ -89,26 +88,28 @@ public abstract class Item implements Serializable, Observer {
 	public Map<String, Object> getUniqueProperties() {
 		Map<String, Object> uniqueProps = new HashMap<>();
 
-		for (Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Unique.class)) {
-			uniqueProps.put(uniqueField.getName(), ClassUtil.getPrivateField(this, uniqueField.getName()));
+		for (Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Property.class)) {
+			Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
+
+			if (prop.unique()) {
+				uniqueProps.put(uniqueField.getName(), ClassUtil.getPrivateField(this, uniqueField.getName()));
+			}
 		}
 
 		return uniqueProps;
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		boolean ret = false;
+	/**
+	 * Returns a hash code calculated of all properties that are defined as
+	 * unique (with the {@link Property} annotation).
+	 * 
+	 * @return
+	 */
+	public int uniquenessHash() {
+		int hash = 0;
 
-		if (object.getClass().equals(this.getClass())) {
+		hash = getUniqueProperties().hashCode();
 
-			// we directly compare a map of all the unique properties of the
-			// object, ignoring the rest
-			if (getUniqueProperties().equals(((Item) object).getUniqueProperties())) {
-				ret = true;
-			}
-		}
-
-		return ret;
+		return hash;
 	}
 }

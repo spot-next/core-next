@@ -6,6 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Defines an item property. Without this annotation, the values are not stored
+ * in the database.
+ */
 @Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {

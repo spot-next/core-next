@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -60,7 +61,8 @@ public interface PersistenceService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
+	<T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters)
+			throws ModelNotFoundException;
 
 	/**
 	 * Fills the given proxy item with it's property values.
@@ -77,6 +79,21 @@ public interface PersistenceService {
 	 * @return
 	 */
 	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	void remove(PK pk);
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	@SuppressWarnings("unchecked")
+	<T extends Item> void remove(T... items);
 
 	/**
 	 * Initiates the datastorage based on the registeredTypes.

@@ -27,7 +27,7 @@ public class DatabaseMessageSource extends AbstractMessageSource {
 	protected MessageFormat resolveCode(String key, Locale locale) {
 		MessageFormat msg = null;
 
-		Map<String, Object> keyParam = new HashMap<>();
+		Map<String, Comparable<?>> keyParam = new HashMap<>();
 		keyParam.put("key", key);
 
 		List<LocalizationKey> translations = null;

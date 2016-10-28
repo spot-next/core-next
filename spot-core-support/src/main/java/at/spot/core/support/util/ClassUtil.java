@@ -1,6 +1,7 @@
 package at.spot.core.support.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,6 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.reflect.FieldSignature;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.AnnotationUtils;
 
 public class ClassUtil {
 
@@ -124,5 +130,98 @@ public class ClassUtil {
 		classes.addAll(ClassUtils.getAllSuperclasses(object.getClass()));
 
 		return classes;
+	}
+
+	/**
+	 * Checks for the presence of the given annotation on the given joinPoint.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
+		return getAnnotation(joinPoint, annotation) != null;
+	}
+
+	/**
+	 * Returns the given annotation object, if present. If the annotation is not
+	 * found, null is returned.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> A getAnnotation(JoinPoint joinPoint, Class<A> annotation) {
+		A ret = null;
+
+		Signature sig = joinPoint.getSignature();
+
+		if (sig instanceof MethodSignature) {
+			final MethodSignature methodSignature = (MethodSignature) sig;
+			Method method = methodSignature.getMethod();
+
+			if (method.getDeclaringClass().isInterface()) {
+				try {
+					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
+				} catch (NoSuchMethodException | SecurityException e) {
+					//
+				}
+			}
+
+			ret = AnnotationUtils.findAnnotation(method, annotation);
+		} else {
+			FieldSignature fieldSignature = (FieldSignature) sig;
+
+			ret = fieldSignature.getField().getAnnotation(annotation);
+		}
+
+		return ret;
+
+	}
+
+	/**
+	 * Checks for the presence of the given annotation on the given class.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> boolean hasAnnotation(Class<?> type, Class<A> annotation) {
+		return getAnnotation(type, annotation) != null;
+	}
+
+	/**
+	 * Returns the given annotation object, if present. If the annotation is not
+	 * found, null is returned.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> A getAnnotation(Class<?> type, Class<A> annotation) {
+		return type.getAnnotation(annotation);
+	}
+
+	/**
+	 * Checks for the presence of the given annotation on the given member.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> boolean hasAnnotation(AccessibleObject member, Class<A> annotation) {
+		return getAnnotation(member, annotation) != null;
+	}
+
+	/**
+	 * Returns the given annotation object, if present. If the annotation is not
+	 * found, null is returned.
+	 * 
+	 * @param joinPoint
+	 * @param annotation
+	 * @return
+	 */
+	public static <A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation) {
+		return member.getAnnotation(annotation);
 	}
 }

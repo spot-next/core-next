@@ -9,10 +9,10 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import at.spot.core.infrastructure.service.LoggingService;
-import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.management.annotation.Get;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
+import at.spot.core.support.util.ClassUtil;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -26,9 +26,6 @@ import spark.Spark;
 public abstract class AbstractHttpServiceEndpoint implements RemoteInterfaceServiceEndpoint {
 
 	@Autowired
-	protected TypeService typeService;
-
-	@Autowired
 	protected LoggingService loggingService;
 
 	@PostConstruct
@@ -39,7 +36,7 @@ public abstract class AbstractHttpServiceEndpoint implements RemoteInterfaceServ
 		// create routes for GET method
 		try {
 			for (final Method m : this.getClass().getMethods()) {
-				Get annotations = typeService.getAnnotation(m, Get.class);
+				Get annotations = ClassUtil.getAnnotation(m, Get.class);
 
 				if (annotations != null) {
 					Route route = new HttpRoute(this, m);

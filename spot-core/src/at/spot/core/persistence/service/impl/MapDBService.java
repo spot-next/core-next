@@ -66,9 +66,14 @@ public class MapDBService implements PersistenceService {
 	@Override
 	public void initDataStorage() {
 		try {
+			// database =
+			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
+			// DEFAULT_DB_FILEPATH))
+			// .fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
+			// .allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024
+			// * 1024).make();
 			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
-					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
-					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
+					.transactionEnable().make();
 
 			Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
@@ -104,7 +109,7 @@ public class MapDBService implements PersistenceService {
 
 		DataStorage storage = getDataStorageForType(model.getClass());
 
-		if (!model.isPersisted() && storage.get(model.getUniqueProperties()).size() > 0) {
+		if (!model.isPersisted() && storage.get(model.uniquenessHash()) != null) {
 			isUnique = false;
 		}
 
@@ -164,46 +169,48 @@ public class MapDBService implements PersistenceService {
 		}
 
 		// check if there is already an item with the same unique properties
-		// if (!isUnique(item)) {
-		// throw new ModelNotUniqueException(
-		// "Cannot save model because there is already a model with the same
-		// uniqueness criteria");
-		// }
+		if (!isUnique(item)) {
+			throw new ModelNotUniqueException(
+					"Cannot save model because there is already a model with the same uniqueness criteria");
+		}
 
 		// now iterate over all attributes and check for item references and
 		// also save them
 		try {
 			Map<String, ItemTypePropertyDefinition> itemMembers = typeService.getItemTypeProperties(item.getClass());
 
-			Entity entity = new Entity();
+			Entity entity = new Entity(item.pk != null ? item.pk.longValue() : null, item.getClass().getName(),
+					item.uniquenessHash());
 
 			for (ItemTypePropertyDefinition member : itemMembers.values()) {
-				Object value = modelService.getPropertyValue(item, member.name);
-
 				// ignore pk property
-				if (value != null && !StringUtils.equals(member.name, PK_PROPERTY_NAME)) {
-					if (value instanceof Item) {
-						Item valueItem = (Item) item;
+				if (!StringUtils.equalsIgnoreCase(member.name, PK_PROPERTY_NAME)) {
+					Object value = modelService.getPropertyValue(item, member.name);
 
-						saveInternal(valueItem, commit);
+					if (value != null) {
+						if (value instanceof Item) {
+							Item valueItem = (Item) item;
 
-						// replace actual item with proxy
-						value = createProxyModel(item);
-					} else if (value.getClass().isArray()) {
-						value = saveInternalCollection((Collection) Arrays.asList(value), commit);
-					} else if (Collection.class.isAssignableFrom(value.getClass())) {
-						value = saveInternalCollection((Collection) value, commit);
-					} else if (Map.class.isAssignableFrom(value.getClass())) {
-						// Map map = (Map) value;
-						//
-						// value = saveInternalCollection((Collection)
-						// map.keySet(), commit);
-						// value = saveInternalCollection((Collection)
-						// map.values(), commit);
+							saveInternal(valueItem, commit);
+
+							// replace actual item with proxy
+							value = createProxyModel(item);
+						} else if (value.getClass().isArray()) {
+							value = saveInternalCollection((Collection) Arrays.asList(value), commit);
+						} else if (Collection.class.isAssignableFrom(value.getClass())) {
+							value = saveInternalCollection((Collection) value, commit);
+						} else if (Map.class.isAssignableFrom(value.getClass())) {
+							// Map map = (Map) value;
+							//
+							// value = saveInternalCollection((Collection)
+							// map.keySet(), commit);
+							// value = saveInternalCollection((Collection)
+							// map.values(), commit);
+						}
 					}
-				}
 
-				entity.setProperty(member.name, value);
+					entity.setProperty(member.name, value);
+				}
 			}
 
 			item.pk = storeEntity(entity, item.pk, item.getClass());
@@ -218,14 +225,13 @@ public class MapDBService implements PersistenceService {
 	}
 
 	protected PK storeEntity(Entity entity, PK pk, Class<? extends Item> type) {
-		// if (pk == null) {
-		// pk = getDataStorageForType(type) getNextPk(type);
-		// }
-		//
-		// entity.setPK(pk);
-		getDataStorageForType(type).put(entity);
+		if (pk != null) {
+			entity.setPK(pk.longValue());
+		}
 
-		return pk;
+		long newPk = getDataStorageForType(type).put(entity);
+
+		return new PK(newPk, type);
 	}
 
 	protected Collection<Item> saveInternalCollection(Collection<Item> items, boolean commit)
@@ -255,7 +261,7 @@ public class MapDBService implements PersistenceService {
 				ClassUtil.setField(item, property, itemEntity.getProperty(property));
 			}
 
-			item.pk = itemEntity.getPK();
+			item.pk = new PK(itemEntity.getPK(), type);
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new ModelNotFoundException(e);
 		}
@@ -264,7 +270,7 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) {
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
 
 		List<T> foundItems = new ArrayList<>();
 
@@ -311,6 +317,20 @@ public class MapDBService implements PersistenceService {
 		}
 	}
 
+	@Override
+	public void remove(PK pk) {
+		getDataStorageForType(pk.getType()).remove(pk.longValue());
+	}
+
+	@Override
+	public <T extends Item> void remove(T... items) {
+		if (items.length > 0) {
+
+			getDataStorageForType(items[0].getClass())
+					.remove(Arrays.stream(items).mapToLong((i) -> i.pk.longValue()).toArray());
+		}
+	}
+
 	protected void clearDirtyFlag(Item item) {
 		ClassUtil.invokeMethod(item, "clearDirtyFlag");
 	}
@@ -352,70 +372,68 @@ public class MapDBService implements PersistenceService {
 		// initDataStorage();
 	}
 
+	/**
+	 * This is an abstraction of the actual map db data storage.
+	 */
 	protected static class DataStorage {
 		private HTreeMap<Long, Entity> map = null;
+		private HTreeMap<Long, Long> uniqueIndex = null;
 
-		private Map<String, Map<Object, List<Long>>> indexes = new HashMap<>();
+		private Map<String, Index> indexes = new HashMap<>();
 		private Long latestPkForType = null;;
 
-		// private Class<? extends Item> itemType = null;
+		ItemTypeDefinition typeDefinition = null;
 
 		public DataStorage(ItemTypeDefinition itemTypeDefinition,
 				Collection<ItemTypePropertyDefinition> propertyDefinitions) {
 
+			this.typeDefinition = itemTypeDefinition;
+
 			map = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
 					.valueSerializer(Serializer.JAVA).createOrOpen();
 
-			// try {
-			// itemType = (Class<? extends Item>)
-			// Class.forName(itemTypeDefinition.typeClass);
-			// } catch (ClassNotFoundException e) {
-			// //
-			// }
+			uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.LONG)
+					.valueSerializer(Serializer.LONG).createOrOpen();
 
-			// for (ItemTypePropertyDefinition prop : propertyDefinitions) {
-			// NavigableMap<Object, Long> indexMap = new HashMap<Object,
-			// Long>();
-
-			// NavigableSet<Object[]> propertyIndex = new TreeSet<Object[]>();
-			//
-			// Bind.secondaryKey(map, propertyIndex, new Fun.Function2<Boolean,
-			// Integer, Person>() {
-			// @Override
-			// public Boolean run(Integer key, Person value) {
-			// return Boolean.valueOf(value.isMale());
-			// }
-			// });
-			//
-			// }
 		}
 
-		public void indexEntity(Entity entity) {
-			for (String prop : entity.getProperties().keySet()) {
-				if (StringUtils.equalsIgnoreCase(prop, PK_PROPERTY_NAME)) {
-					continue;
-				}
+		public Entity get(Long key) {
+			return map.get(key);
+		}
 
-				Object val = entity.getProperty(prop);
+		public Entity get(int uniqueHash) {
+			Long pk = uniqueIndex.get(uniqueHash);
 
-				Map<Object, List<Long>> values = indexes.get(prop);
-
-				if (values == null) {
-					values = new HashMap<>();
-					indexes.put(prop, values);
-				}
-
-				if (val != null) {
-					List<Long> indexedPKs = values.get(val);
-
-					if (indexedPKs == null) {
-						indexedPKs = new ArrayList<>();
-						values.put(val, indexedPKs);
-					}
-
-					indexedPKs.add(entity.getPK().longValue());
-				}
+			if (pk != null) {
+				return get(pk);
 			}
+
+			return null;
+		}
+
+		protected Index getIndex(String property) {
+			String indexName = typeDefinition.typeCode + "." + property;
+
+			Index propertyIndex = indexes.get(indexName);
+
+			if (propertyIndex == null) {
+				propertyIndex = new Index(indexName);
+				indexes.put(indexName, propertyIndex);
+			}
+
+			return propertyIndex;
+		}
+
+		public Set<Long> get(Map<String, Comparable<?>> criteria) {
+			Map<String, List<Long>> pksForProperty = new TreeMap<>();
+
+			for (String k : criteria.keySet()) {
+				pksForProperty.put(k, getIndex(k).getPk(criteria.get(k)));
+			}
+
+			Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+
+			return commonPKs;
 		}
 
 		public long getEntityCount() {
@@ -425,45 +443,80 @@ public class MapDBService implements PersistenceService {
 				ret = map.values().size();
 			} catch (DBException e) {
 				// TODO: handle exception
+				e.printStackTrace();
 			}
 
 			return ret;
 		}
 
-		public void put(Entity value) {
-			map.put(getNextPk(), value);
-			indexEntity(value);
-		}
-
-		public Entity get(Long key) {
-			return map.get(key);
-		}
-
-		public Set<Long> get(Map<String, Object> criteria) {
-			Map<String, List<Long>> pksForProperty = new TreeMap<>();
-
-			for (String k : criteria.keySet()) {
-				Map<Object, List<Long>> values = indexes.get(k);
-
-				if (values != null && values.values() != null) {
-					pksForProperty.put(k, values.get(criteria.get(k)));
-				}
+		public long put(Entity entity) {
+			if (entity.getPK() == null) {
+				entity.setPK(getNextPk());
 			}
 
-			Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+			map.put(entity.getPK(), entity);
 
-			return commonPKs;
+			updateUniquenessIndex(entity);
+			indexEntity(entity);
+
+			return entity.getPK();
+		}
+
+		public void remove(long... longValue) {
+			for (long pk : longValue) {
+				Entity e = get(pk);
+
+				map.remove(pk);
+
+				removeUniquenessIndex(e);
+				removeIndexes(e);
+			}
 		}
 
 		public Collection<Entity> values() {
 			return map.getValues();
 		}
 
+		public void removeUniquenessIndex(Entity entity) {
+			uniqueIndex.remove(entity.getUniquenessHash());
+		}
+
+		public void updateUniquenessIndex(Entity entity) {
+			uniqueIndex.put(new Long(entity.getUniquenessHash()), entity.getPK());
+		}
+
+		private void removeIndexes(Entity e) {
+
+		}
+
+		/**
+		 * Indexes all item properties.
+		 */
+		public void indexEntity(Entity entity) {
+			for (String prop : entity.getProperties().keySet()) {
+				if (StringUtils.equalsIgnoreCase(prop, PK_PROPERTY_NAME)) {
+					continue;
+				}
+
+				Index index = getIndex(prop);
+
+				Object propValue = entity.getProperty(prop);
+
+				// don't index property values that are not comparables, like
+				// collections
+				if (propValue instanceof Comparable) {
+					index.index((Comparable<?>) propValue, entity.getPK());
+				}
+			}
+		}
+
 		public <T> Set<T> intersection(List<List<T>> list) {
 			Set<T> result = Sets.newHashSet(list.get(0));
+
 			for (List<T> numbers : list) {
 				result = Sets.intersection(result, Sets.newHashSet(numbers));
 			}
+
 			return result;
 		}
 
@@ -476,6 +529,32 @@ public class MapDBService implements PersistenceService {
 			latestPkForType += 1;
 
 			return latestPkForType;
+		}
+
+	}
+
+	protected static class Index {
+		Map<Object, List<Long>> index;
+
+		public Index(String name) {
+			index = database.hashMap(name).keySerializer(Serializer.JAVA).valueSerializer(Serializer.JAVA)
+					.createOrOpen();
+		}
+
+		public void index(Comparable<?> valueKey, Long pk) {
+			List<Long> indexedPks = index.get(valueKey);
+
+			if (indexedPks == null) {
+				indexedPks = new ArrayList<>();
+			}
+
+			indexedPks.add(pk);
+
+			index.put(valueKey, indexedPks);
+		}
+
+		public List<Long> getPk(Comparable<?> valueKey) {
+			return index.get(valueKey);
 		}
 	}
 }

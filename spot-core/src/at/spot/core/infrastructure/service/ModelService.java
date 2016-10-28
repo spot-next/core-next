@@ -34,7 +34,8 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException;
+	@SuppressWarnings("unchecked")
+	<T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be
@@ -59,7 +60,7 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, PK pk) throws ModelNotFoundException;
+	<T extends Item> T get(PK pk) throws ModelNotFoundException;
 
 	/**
 	 * Returns the first {@link Item} based on the given search parameters (key
@@ -68,7 +69,36 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
+	<T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters) throws ModelNotFoundException;
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	void remove(PK pk);
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	<T extends Item> void remove(Class<T> type, long pk);
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	<T extends Item> void remove(T item);
+
+	/**
+	 * Removes the given item.
+	 * 
+	 * @param item
+	 */
+	@SuppressWarnings("unchecked")
+	<T extends Item> void remove(T... items);
 
 	/**
 	 * Refreshes the given model's properties.
@@ -85,7 +115,8 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters) throws ModelNotFoundException;
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
+			throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.

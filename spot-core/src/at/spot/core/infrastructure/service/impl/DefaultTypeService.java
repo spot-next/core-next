@@ -1,8 +1,6 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.beans.Introspector;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -13,14 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
-import org.aspectj.lang.reflect.FieldSignature;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
@@ -31,6 +24,7 @@ import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.ClassUtil;
 
 /**
  * Provides functionality to manage the typesystem.
@@ -90,59 +84,6 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	 */
 
 	@Override
-	public <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
-		return getAnnotation(joinPoint, annotation) != null;
-	}
-
-	public <A extends Annotation> A getAnnotation(JoinPoint joinPoint, Class<A> annotation) {
-		A ret = null;
-
-		Signature sig = joinPoint.getSignature();
-
-		if (sig instanceof MethodSignature) {
-			final MethodSignature methodSignature = (MethodSignature) sig;
-			Method method = methodSignature.getMethod();
-
-			if (method.getDeclaringClass().isInterface()) {
-				try {
-					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
-				} catch (NoSuchMethodException | SecurityException e) {
-					//
-				}
-			}
-
-			ret = AnnotationUtils.findAnnotation(method, annotation);
-		} else {
-			FieldSignature fieldSignature = (FieldSignature) sig;
-
-			ret = fieldSignature.getField().getAnnotation(annotation);
-		}
-
-		return ret;
-
-	}
-
-	@Override
-	public <A extends Annotation> boolean hasAnnotation(Class<? extends Item> type, Class<A> annotation) {
-		return getAnnotation(type, annotation) != null;
-	}
-
-	@Override
-	public <A extends Annotation> A getAnnotation(Class<? extends Item> type, Class<A> annotation) {
-		return type.getAnnotation(annotation);
-	}
-
-	@Override
-	public <A extends Annotation> boolean hasAnnotation(AccessibleObject member, Class<A> annotation) {
-		return getAnnotation(member, annotation) != null;
-	}
-
-	@Override
-	public <A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation) {
-		return member.getAnnotation(annotation);
-	}
-
-	@Override
 	public List<Class<? extends Item>> getItemConcreteTypes(List<ModuleDefinition> moduleDefinitions) {
 		List<Class<? extends Item>> itemTypes = new ArrayList<>();
 
@@ -196,7 +137,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	public ItemTypeDefinition getItemTypeDefinition(String typeCode) {
 		Class<? extends Item> itemType = getType(typeCode);
-		ItemType typeAnnotation = getAnnotation(itemType, ItemType.class);
+		ItemType typeAnnotation = ClassUtil.getAnnotation(itemType, ItemType.class);
 
 		ItemTypeDefinition def = null;
 
@@ -221,7 +162,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		// add all the fields
 		for (Field m : itemType.getFields()) {
-			Property annotation = getAnnotation(m, Property.class);
+			Property annotation = ClassUtil.getAnnotation(m, Property.class);
 
 			if (annotation != null) {
 				ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(),
@@ -234,7 +175,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		// add all the getter methods
 		for (Method m : itemType.getMethods()) {
-			Property annotation = getAnnotation(m, Property.class);
+			Property annotation = ClassUtil.getAnnotation(m, Property.class);
 
 			if (annotation != null && m.getReturnType() != Void.class) {
 				String name = m.getName();
