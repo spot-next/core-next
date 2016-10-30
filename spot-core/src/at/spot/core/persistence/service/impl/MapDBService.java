@@ -8,18 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapdb.DB;
-import org.mapdb.DBException;
 import org.mapdb.DBMaker;
-import org.mapdb.HTreeMap;
-import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Sets;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
@@ -36,18 +30,19 @@ import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
 
 @Service
 public class MapDBService implements PersistenceService {
 
-	protected static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
-	protected static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
+	public static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
+	public static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
 
-	protected static final String PK_PROPERTY_NAME = "pk";
+	public static final String PK_PROPERTY_NAME = "pk";
 
-	private static DB database;
+	static DB database;
 	private Map<String, DataStorage> dataStorage = new HashMap<>();
 
 	@Autowired
@@ -82,7 +77,7 @@ public class MapDBService implements PersistenceService {
 
 			for (ItemTypeDefinition t : itemTypes.values()) {
 				dataStorage.put(t.typeClass,
-						new DataStorage(t, typeService.getItemTypeProperties(t.typeCode).values()));
+						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
 			}
 		} catch (Exception e) {
 			// org.mapdb.DBException$DataCorruption
@@ -116,21 +111,12 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public void save(Item model) throws ModelSaveException, ModelNotUniqueException {
-		try {
-			saveInternal(model, true);
-		} catch (IntrospectionException e) {
-			throw new ModelSaveException(e);
-		}
+	public <T extends Item> void save(T... models) throws ModelSaveException, ModelNotUniqueException {
+		save(Arrays.asList(models));
 	}
 
 	@Override
-	public <T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException {
-		saveAll(Arrays.asList(models));
-	}
-
-	@Override
-	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException {
 		long start = System.currentTimeMillis();
 		long duration = start;
 
@@ -325,8 +311,10 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public void remove(PK pk) {
-		getDataStorageForType(pk.getType()).remove(pk.longValue());
+	public void remove(PK... pks) {
+		for (PK pk : pks) {
+			getDataStorageForType(pk.getType()).remove(pk.longValue());
+		}
 	}
 
 	@Override
@@ -377,190 +365,5 @@ public class MapDBService implements PersistenceService {
 		// saveDataStorage();
 		// database.close();
 		// initDataStorage();
-	}
-
-	/**
-	 * This is an abstraction of the actual items db data storage.
-	 */
-	protected static class DataStorage {
-		private HTreeMap<Long, Entity> items = null;
-		private HTreeMap<Long, Long> uniqueIndex = null;
-
-		private Map<String, Index> indexes = new HashMap<>();
-		private Long latestPkForType = null;;
-
-		ItemTypeDefinition typeDefinition = null;
-
-		public DataStorage(ItemTypeDefinition itemTypeDefinition,
-				Collection<ItemTypePropertyDefinition> propertyDefinitions) {
-
-			this.typeDefinition = itemTypeDefinition;
-
-			items = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
-					.valueSerializer(Serializer.JAVA).createOrOpen();
-
-			uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.LONG)
-					.valueSerializer(Serializer.LONG).createOrOpen();
-		}
-
-		public Entity get(Long key) {
-			return items.get(key);
-		}
-
-		public Entity get(int uniqueHash) {
-			Long pk = uniqueIndex.get(uniqueHash);
-
-			if (pk != null) {
-				return get(pk);
-			}
-
-			return null;
-		}
-
-		protected Index getIndex(String property) {
-			String indexName = typeDefinition.typeCode + "." + property;
-
-			Index propertyIndex = indexes.get(indexName);
-
-			if (propertyIndex == null) {
-				propertyIndex = new Index(indexName);
-				indexes.put(indexName, propertyIndex);
-			}
-
-			return propertyIndex;
-		}
-
-		public Set<Long> get(Map<String, Comparable<?>> criteria) {
-			Map<String, List<Long>> pksForProperty = new TreeMap<>();
-
-			for (String k : criteria.keySet()) {
-				pksForProperty.put(k, getIndex(k).getPk(criteria.get(k)));
-			}
-
-			Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
-
-			return commonPKs;
-		}
-
-		public long getEntityCount() {
-			long ret = 0;
-
-			try {
-				ret = items.values().size();
-			} catch (DBException e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-
-			return ret;
-		}
-
-		public long put(Entity entity) {
-			if (entity.getPK() == null) {
-				entity.setPK(getNextPk());
-			}
-
-			items.put(entity.getPK(), entity);
-
-			updateUniquenessIndex(entity);
-			indexEntity(entity);
-
-			return entity.getPK();
-		}
-
-		public void remove(long... longValue) {
-			for (long pk : longValue) {
-				Entity e = get(pk);
-
-				items.remove(pk);
-
-				removeUniquenessIndex(e);
-				removeIndexes(e);
-			}
-		}
-
-		public Collection<Entity> values() {
-			return items.getValues();
-		}
-
-		public void removeUniquenessIndex(Entity entity) {
-			uniqueIndex.remove(entity.getUniquenessHash());
-		}
-
-		public void updateUniquenessIndex(Entity entity) {
-			uniqueIndex.put(new Long(entity.getUniquenessHash()), entity.getPK());
-		}
-
-		private void removeIndexes(Entity e) {
-
-		}
-
-		/**
-		 * Indexes all item properties.
-		 */
-		public void indexEntity(Entity entity) {
-			for (String prop : entity.getProperties().keySet()) {
-				if (StringUtils.equalsIgnoreCase(prop, PK_PROPERTY_NAME)) {
-					continue;
-				}
-
-				Index index = getIndex(prop);
-
-				Object propValue = entity.getProperty(prop);
-
-				// don't index property values that are not comparables, like
-				// collections
-				if (propValue instanceof Comparable) {
-					index.index((Comparable<?>) propValue, entity.getPK());
-				}
-			}
-		}
-
-		public <T> Set<T> intersection(List<List<T>> list) {
-			Set<T> result = Sets.newHashSet(list.get(0));
-
-			for (List<T> numbers : list) {
-				result = Sets.intersection(result, Sets.newHashSet(numbers));
-			}
-
-			return result;
-		}
-
-		protected synchronized Long getNextPk() {
-			if (latestPkForType == null) {
-				latestPkForType = new Long(getEntityCount());
-			}
-
-			// increase by one
-			latestPkForType += 1;
-
-			return latestPkForType;
-		}
-
-	}
-
-	protected static class Index {
-		Map<Object, List<Long>> index;
-
-		public Index(String name) {
-			index = database.hashMap(name).keySerializer(Serializer.JAVA).valueSerializer(Serializer.JAVA)
-					.createOrOpen();
-		}
-
-		public void index(Comparable<?> valueKey, Long pk) {
-			List<Long> indexedPks = index.get(valueKey);
-
-			if (indexedPks == null) {
-				indexedPks = new ArrayList<>();
-			}
-
-			indexedPks.add(pk);
-
-			index.put(valueKey, indexedPks);
-		}
-
-		public List<Long> getPk(Comparable<?> valueKey) {
-			return index.get(valueKey);
-		}
 	}
 }

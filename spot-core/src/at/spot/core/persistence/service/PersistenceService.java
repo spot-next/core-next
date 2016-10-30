@@ -15,12 +15,12 @@ import at.spot.core.persistence.exception.ModelNotUniqueException;
 @Service
 public interface PersistenceService {
 	/**
-	 * Saves the given model and all of its dependent models.
+	 * Saves the given models and all of its dependent models.
 	 * 
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void save(T... models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Saves the given models and all of its dependent models.
@@ -28,15 +28,7 @@ public interface PersistenceService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(T... models) throws ModelSaveException, ModelNotUniqueException;
-
-	/**
-	 * Saves the given models and all of its dependent models.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	<T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Returns an object based on its PK.
@@ -81,11 +73,11 @@ public interface PersistenceService {
 	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
-	 * Removes the given item.
+	 * Removes the given items.
 	 * 
 	 * @param item
 	 */
-	void remove(PK pk);
+	void remove(PK... pks);
 
 	/**
 	 * Removes the given item.

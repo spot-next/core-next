@@ -27,12 +27,12 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException {
-		persistenceService.saveAll(items);
+		persistenceService.save(items);
 	}
 
 	@Override
 	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException {
-		persistenceService.saveAll(models);
+		persistenceService.save(models);
 	}
 
 	@Override
