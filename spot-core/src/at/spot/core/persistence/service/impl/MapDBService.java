@@ -267,7 +267,13 @@ public class MapDBService implements PersistenceService {
 
 		List<T> foundItems = new ArrayList<>();
 
-		Set<Long> pks = getDataStorageForType(type).get(searchParameters);
+		Set<Long> pks = null;
+		if (searchParameters != null) {
+			getDataStorageForType(type).get(searchParameters);
+		}
+		else {
+			getDataStorageForType(type).getAll();
+		}
 
 		for (Long pk : pks) {
 			try {

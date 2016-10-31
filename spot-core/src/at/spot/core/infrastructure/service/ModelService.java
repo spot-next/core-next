@@ -117,6 +117,15 @@ public interface ModelService {
 	 */
 	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
 			throws ModelNotFoundException;
+	
+	/**
+	 * Returns all objects of the given type
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> List<T> getAll(Class<T> type)
+			throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.

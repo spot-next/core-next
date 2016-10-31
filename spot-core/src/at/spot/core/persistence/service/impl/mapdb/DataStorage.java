@@ -37,6 +37,7 @@ public class DataStorage {
 	public DataStorage(DB database, ItemTypeDefinition itemTypeDefinition,
 			Collection<ItemTypePropertyDefinition> propertyDefinitions) {
 
+		this.database = database;
 		this.typeDefinition = itemTypeDefinition;
 
 		items = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
@@ -71,6 +72,10 @@ public class DataStorage {
 		}
 
 		return propertyIndex;
+	}
+	
+	public Set<Long> getAll() {
+		return items.getKeys();
 	}
 
 	public Set<Long> get(Map<String, Comparable<?>> criteria) {

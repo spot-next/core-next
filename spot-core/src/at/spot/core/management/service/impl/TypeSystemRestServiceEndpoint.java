@@ -11,7 +11,9 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
+import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ConfigurationService;
+import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.LogLevel;
@@ -19,6 +21,7 @@ import at.spot.core.management.annotation.Get;
 import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
+import at.spot.core.model.Item;
 import spark.Request;
 import spark.Response;
 
@@ -36,6 +39,9 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
+	
+	@Autowired
+	protected ModelService modelService;
 
 	@Log(logLevel = LogLevel.INFO, message = "Initiating remote type system access service ...")
 	@PostConstruct
@@ -56,6 +62,18 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 		}
 
 		return types;
+	}
+	
+	@Get(pathMapping = "/models/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	public Object getModels(Request request, Response response) throws ModelNotFoundException {
+
+		List<? extends Item> models = new ArrayList<>();
+		
+		Class<? extends Item> type = typeService.getType(request.params(":typecode"));
+		
+		models = modelService.getAll(type);
+		
+		return models;
 	}
 
 	@Override
