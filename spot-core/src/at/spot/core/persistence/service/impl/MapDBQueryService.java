@@ -1,21 +1,24 @@
 package at.spot.core.persistence.service.impl;
 
-import at.spot.core.persistence.query.Condition;
-import at.spot.core.persistence.query.Operator;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import at.spot.core.persistence.query.Query;
 import at.spot.core.persistence.query.QueryResult;
-
-import at.spot.core.model.user.User;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 
 public class MapDBQueryService implements QueryService {
 
+	@Autowired
+	protected MapDBService mapDbService;
+
 	@Override
 	public QueryResult query(Query query) {
-		QueryResult result = Query.select(User.class)
-				.where(Operator.and(Condition.equals("User.groups.uid", "Group.uid")).or(Condition.like("", "")))
-				.fetch();
+		QueryResult result = null;
 
+		DataStorage storage = mapDbService.getDataStorageForType(query.getType());
+
+		
 		return result;
 	}
 

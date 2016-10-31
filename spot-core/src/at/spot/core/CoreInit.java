@@ -21,7 +21,11 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
+import at.spot.core.persistence.query.Condition;
+import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.QueryService;
 
 /**
  * This is the main entry point for the application. After the application has
@@ -47,6 +51,9 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected EventService eventService;
+	
+	@Autowired
+	protected QueryService queryService;
 
 	@Override
 	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {
@@ -123,6 +130,11 @@ public class CoreInit extends ModuleInit {
 
 			System.out.println(user2.groups.get(0).uid);
 
+			Query query = Query.select(User.class)
+					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true))).build();
+			
+			QueryResult result = queryService.query(query);
+			
 			System.out.print("");
 		} catch (Exception e) {
 			loggingService.exception(e.getMessage());

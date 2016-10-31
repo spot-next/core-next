@@ -2,11 +2,31 @@ package at.spot.core.persistence.query;
 
 import at.spot.core.model.Item;
 
-public interface Query {
+public class Query {
+	protected Class<? extends Item> type;
+	protected Condition condition;
 
-	static <T extends Item> Select select(Class<T> type) {
-		return null;
+	public static Select select(Class<? extends Item> type) {
+		Query query = new Query();
+		query.setType(type);
+
+		return new Select(query);
 	}
 
-	// <T extends Item> SelectAll selectAll(T item);
+	public Class<? extends Item> getType() {
+		return type;
+	}
+
+	void setType(Class<? extends Item> type) {
+		this.type = type;
+	}
+
+	public Condition getCondition() {
+		return condition;
+	}
+
+	void setCondition(Condition condition) {
+		this.condition = condition;
+	}
+
 }
