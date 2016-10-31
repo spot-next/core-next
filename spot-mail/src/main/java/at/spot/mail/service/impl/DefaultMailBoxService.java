@@ -10,6 +10,7 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.user.User;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.mail.model.MailBox;
 import at.spot.mail.service.MailBoxService;
 
@@ -21,8 +22,8 @@ public class DefaultMailBoxService implements MailBoxService {
 
 	@Override
 	public MailBox getMailBoxForUser(User owner) {
-		Map<String, Object> condition = new HashMap<>();
-		condition.put("owner", owner);
+		Map<String, Comparable<?>> condition = new HashMap<>();
+		condition.put("owner.uid", owner.uid);
 
 		MailBox mailbox = null;
 
@@ -34,7 +35,7 @@ public class DefaultMailBoxService implements MailBoxService {
 				mailbox.owner = owner;
 				modelService.save(mailbox);
 			}
-		} catch (ModelNotFoundException | ModelSaveException e) {
+		} catch (ModelNotFoundException | ModelSaveException | ModelNotUniqueException e) {
 			e.printStackTrace();
 		}
 
