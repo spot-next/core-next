@@ -268,38 +268,21 @@ public class MapDBService implements PersistenceService {
 		List<T> foundItems = new ArrayList<>();
 
 		Set<Long> pks = null;
+		
 		if (searchParameters != null) {
-			getDataStorageForType(type).get(searchParameters);
-		}
-		else {
-			getDataStorageForType(type).getAll();
+			pks = getDataStorageForType(type).get(searchParameters);
+		} else {
+			pks = getDataStorageForType(type).getAll();
 		}
 
-		for (Long pk : pks) {
-			try {
-				foundItems.add(load(type, pk));
-			} catch (ModelNotFoundException e) {
-				// ignore it for now
+		if (pks != null) {
+			for (Long pk : pks) {
+				try {
+					foundItems.add(load(type, pk));
+				} catch (ModelNotFoundException e) {
+					// ignore it for now
+				}
 			}
-			//
-			// boolean found = true;
-			//
-			// for (String k : searchParameters.keySet()) {
-			// Object v = searchParameters.get(k);
-			//
-			// if (!e.getProperty(k).equals(v)) {
-			// found = false;
-			// }
-			// }
-			//
-			// if (found) {
-			// try {
-			// foundItems.add(load(type, e.getPK().longValue()));
-			// } catch (ModelNotFoundException e1) {
-			// loggingService.warn(String.format("Couldn't load item with
-			// pk=%s", e.getPK().longValue()));
-			// }
-			// }
 		}
 
 		return foundItems;

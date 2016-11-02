@@ -11,7 +11,7 @@ public interface LoggingService {
 
 	void error(String message);
 
-	void exception(String message);
+	void exception(String message, Throwable exception);
 
 	void log(LogLevel level, String message);
 
@@ -23,8 +23,9 @@ public interface LoggingService {
 
 	void error(String message, Class<?> callingClass);
 
-	void exception(String message, Class<?> callingClass);
+	void exception(String message, Throwable exception, Class<?> callingClass);
 
 	void log(LogLevel level, String message, Class<?> callingClass);
 
+	void log(LogLevel level, String message, Throwable exception, Class<?> callingClass);
 }

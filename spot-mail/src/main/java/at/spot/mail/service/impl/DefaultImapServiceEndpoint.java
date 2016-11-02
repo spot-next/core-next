@@ -43,7 +43,7 @@ public class DefaultImapServiceEndpoint extends AbstractService implements ImapS
 		try {
 			ret = InetAddress.getByName("localhost");
 		} catch (UnknownHostException e) {
-			loggingService.exception(e.getMessage());
+			loggingService.exception(e.getMessage(), e);
 		}
 
 		return ret;

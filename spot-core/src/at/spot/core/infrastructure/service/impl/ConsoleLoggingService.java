@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -47,15 +48,25 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	}
 
 	@Override
-	public void exception(String message, Class<?> callingClass) {
+	public void exception(String message, Throwable exception, Class<?> callingClass) {
 		log(LogLevel.FATAL, message, callingClass);
 	}
 
 	@Override
-	public void log(LogLevel level, String message, Class<?> callingClass) {
-		System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+	public void log(LogLevel level, String message, Throwable exception, Class<?> callingClass) {
+		String msg = message = message;
 
+		if (exception != null) {
+			exception.printStackTrace();
+			msg += "\n" + ExceptionUtils.getStackTrace(exception);
+		}
+
+		System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
 		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
+	}
+
+	public void log(LogLevel level, String message, Class<?> callingClass) {
+		log(level, message, null, callingClass);
 	}
 
 	@Override
@@ -79,8 +90,8 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	}
 
 	@Override
-	public void exception(String message) {
-		log(LogLevel.FATAL, message, getCallingClass());
+	public void exception(String message, Throwable exception) {
+		log(LogLevel.FATAL, message, exception, getCallingClass());
 	}
 
 	@Override

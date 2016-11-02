@@ -1,6 +1,7 @@
 package at.spot.core.management.service.impl;
 
 import static spark.Spark.get;
+import static spark.Spark.exception;
 
 import java.lang.reflect.Method;
 
@@ -44,6 +45,11 @@ public abstract class AbstractHttpServiceEndpoint implements RemoteInterfaceServ
 							annotations.responseTransformer().newInstance());
 				}
 			}
+			
+			exception(Exception.class, (exception, request, response) -> {
+			    loggingService.exception(exception.getMessage(), exception);
+			});
+
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RemoteServiceInitException(e.getMessage(), e);
 		}

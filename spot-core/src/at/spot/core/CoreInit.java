@@ -89,24 +89,24 @@ public class CoreInit extends ModuleInit {
 
 			modelService.saveAll(users);
 
-			for (int i = 1; i < 10000; i++) {
-				if (i > 0 && i % 50 == 0) {
-					long duration = System.currentTimeMillis() - start;
-
-					if (duration >= 1000) {
-						// loggingService.debug("Created " + i + " users (" + i
-						// / (duration / 1000) + " items/s )");
-					}
-				}
-
-				User user = modelService.create(User.class);
-				user.name = "test-" + i;
-				user.uid = user.name;
-
-				user.groups.add(group);
-
-				users.add(user);
-			}
+//			for (int i = 1; i < 10000; i++) {
+//				if (i > 0 && i % 50 == 0) {
+//					long duration = System.currentTimeMillis() - start;
+//
+//					if (duration >= 1000) {
+//						// loggingService.debug("Created " + i + " users (" + i
+//						// / (duration / 1000) + " items/s )");
+//					}
+//				}
+//
+//				User user = modelService.create(User.class);
+//				user.name = "test-" + i;
+//				user.uid = user.name;
+//
+//				user.groups.add(group);
+//
+//				users.add(user);
+//			}
 
 			modelService.saveAll(users);
 
@@ -130,14 +130,14 @@ public class CoreInit extends ModuleInit {
 
 			System.out.println(user2.groups.get(0).uid);
 
-			Query query = Query.select(User.class)
-					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true))).build();
+//			Query query = Query.select(User.class)
+//					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true))).build();
 			
-			QueryResult result = queryService.query(query);
+//			QueryResult result = queryService.query(query);
 			
 			System.out.print("");
 		} catch (Exception e) {
-			loggingService.exception(e.getMessage());
+			loggingService.exception(e.getMessage(), e);
 		}
 
 		// try {

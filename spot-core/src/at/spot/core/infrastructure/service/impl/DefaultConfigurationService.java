@@ -28,7 +28,7 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		try {
 			value = Integer.parseInt(getProperty(key));
 		} catch (NumberFormatException e) {
-			loggingService.exception(String.format("Can't load config key %s", key));
+			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}
 
 		return value;
@@ -41,7 +41,7 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		try {
 			value = Double.parseDouble(getProperty(key));
 		} catch (NumberFormatException e) {
-			loggingService.exception(String.format("Can't load config key %s", key));
+			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}
 
 		return value;

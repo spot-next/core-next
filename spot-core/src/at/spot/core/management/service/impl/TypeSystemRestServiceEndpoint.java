@@ -50,7 +50,7 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 		super.init();
 	}
 	
-	@Get(pathMapping = "/types/", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	@Get(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
 		List<GenericItemDefinitionData> types = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 		return types;
 	}
 	
-	@Get(pathMapping = "/models/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	@Get(pathMapping = "/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public Object getModels(Request request, Response response) throws ModelNotFoundException {
 
 		List<? extends Item> models = new ArrayList<>();

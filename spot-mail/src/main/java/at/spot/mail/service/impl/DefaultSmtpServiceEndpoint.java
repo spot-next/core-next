@@ -64,7 +64,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		try {
 			this.smtpServer.start();
 		} catch (RuntimeException e) {
-			loggingService.exception("Cannot start SMTP server: " + e.getMessage());
+			loggingService.exception("Cannot start SMTP server: " + e.getMessage(), e);
 		}
 
 		runMessageQueueLoop();
@@ -80,7 +80,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 				try {
 					modelService.save(mail);
 				} catch (ModelSaveException | ModelNotUniqueException e) {
-					loggingService.exception("Can't save received mail.");
+					loggingService.exception("Can't save received mail.", e);
 				}
 			}
 		}
@@ -98,7 +98,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			String address = configurationService.getString(CONFIG_KEY_BIND_ADDRESS, DEFAULT_BIND_ADDRESS);
 			ret = InetAddress.getByName(address);
 		} catch (UnknownHostException e) {
-			loggingService.exception(e.getMessage());
+			loggingService.exception(e.getMessage(), e);
 		}
 
 		return ret;
