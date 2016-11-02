@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang3.StringUtils;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -268,12 +270,11 @@ public class MapDBService implements PersistenceService {
 		List<T> foundItems = new ArrayList<>();
 
 		Set<Long> pks = null;
-		
+
 		if (searchParameters != null) {
-			getDataStorageForType(type).get(searchParameters);
-		}
-		else {
-			getDataStorageForType(type).getAll();
+			pks = getDataStorageForType(type).get(searchParameters);
+		} else {
+			pks = getDataStorageForType(type).getAll();
 		}
 
 		if (pks != null) {
@@ -342,7 +343,7 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public void saveDataStorage() {
-		database.close();
+		database.commit();
 	}
 
 	@Log(logLevel = LogLevel.DEBUG, message = "Clearing database ...")
@@ -355,5 +356,11 @@ public class MapDBService implements PersistenceService {
 		// saveDataStorage();
 		// database.close();
 		// initDataStorage();
+	}
+
+	@PreDestroy
+	private void shutdown() {
+		database.commit();
+		database.close();
 	}
 }

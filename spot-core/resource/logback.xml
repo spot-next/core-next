@@ -12,8 +12,7 @@
 		</filter>
 	</appender>
 
-	<appender name="dailyRollingFileAppender"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<File>log/core.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
@@ -34,9 +33,11 @@
 	<logger name="org.springframework.beans.factory" level="WARN" />
 	<logger name="ch.qos.logback" level="WARN" />
 	<logger name="org.reflections.Reflections" level="WARN" />
+	<logger name="org.apache.catalina.core" level="WARN" />
+
 
 	<root>
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="dailyRollingFileAppender" />
 	</root>
 </configuration>

@@ -86,26 +86,26 @@ public class CoreInit extends ModuleInit {
 
 			modelService.saveAll(users);
 
-			// for (int i = 1; i < 10000; i++) {
-			// if (i > 0 && i % 50 == 0) {
-			// long duration = System.currentTimeMillis() - start;
-			//
-			// if (duration >= 1000) {
-			// // loggingService.debug("Created " + i + " users (" + i
-			// // / (duration / 1000) + " items/s )");
-			// }
-			// }
-			//
-			// User user = modelService.create(User.class);
-			// user.name = "test-" + i;
-			// user.uid = user.name;
-			//
-			// user.groups.add(group);
-			//
-			// users.add(user);
-			// }
-			//
-			// modelService.saveAll(users);
+			for (int i = 1; i < 10000; i++) {
+				if (i > 0 && i % 50 == 0) {
+					long duration = System.currentTimeMillis() - start;
+
+					if (duration >= 1000) {
+						// loggingService.debug("Created " + i + " users (" + i
+						// / (duration / 1000) + " items/s )");
+					}
+				}
+
+				User user = modelService.create(User.class);
+				user.name = "test-" + i;
+				user.uid = user.name;
+
+				user.groups.add(group);
+
+				users.add(user);
+			}
+
+			modelService.saveAll(users);
 
 			Map<String, Comparable<?>> criteria = new HashMap<>();
 			criteria.put("uid", "user-1");
@@ -120,12 +120,12 @@ public class CoreInit extends ModuleInit {
 			user1 = modelService.get(User.class, user1.pk);
 			user2 = modelService.get(User.class, user2.pk);
 
-			System.out.println(user1.groups.get(0).uid);
-			System.out.println(user2.groups.get(0).uid);
+			// System.out.println(user1.groups.get(0).uid);
+			// System.out.println(user2.groups.get(0).uid);
 
 			modelService.refresh(user2);
 
-			System.out.println(user2.groups.get(0).uid);
+			// System.out.println(user2.groups.get(0).uid);
 
 			// Query query = Query.select(User.class)
 			// .where(Condition.startsWith("groups.uid", "test",
@@ -134,7 +134,7 @@ public class CoreInit extends ModuleInit {
 			//
 			// QueryResult result = queryService.query(query);
 
-			System.out.print("");
+			// System.out.print("");
 		} catch (Exception e) {
 			loggingService.exception(e.getMessage(), e);
 		}
@@ -161,7 +161,7 @@ public class CoreInit extends ModuleInit {
 		runMigrateScripts();
 
 		// this is just for testing
-		run();
+		// run();
 	}
 
 	@Log(message = "Running data migration scripts ...")

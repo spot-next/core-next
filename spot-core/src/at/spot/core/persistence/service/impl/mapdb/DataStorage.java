@@ -47,14 +47,14 @@ public class DataStorage {
 				.valueSerializer(Serializer.LONG).createOrOpen();
 	}
 
-	public Entity get(Long key) {
+	public synchronized Entity get(Long key) {
 		return items.get(key);
 	}
 
-	public Entity get(int uniqueHash) {
+	public synchronized Entity get(int uniqueHash) {
 		// TODO: why do we have to use a long here although the map is defined
 		// with integer keys?
-		Long pk = uniqueIndex.get(new Long(uniqueHash));
+		Long pk = uniqueIndex.get(uniqueHash);
 
 		if (pk != null) {
 			return get(pk);
@@ -63,7 +63,7 @@ public class DataStorage {
 		return null;
 	}
 
-	protected Index getIndex(String property) {
+	protected synchronized Index getIndex(String property) {
 		String indexName = typeDefinition.typeCode + "." + property;
 
 		Index propertyIndex = indexes.get(indexName);
@@ -80,7 +80,7 @@ public class DataStorage {
 		return items.getKeys();
 	}
 
-	public Set<Long> get(Map<String, Comparable<?>> criteria) {
+	public synchronized Set<Long> get(Map<String, Comparable<?>> criteria) {
 		Map<String, List<Long>> pksForProperty = new TreeMap<>();
 
 		for (String k : criteria.keySet()) {
@@ -105,27 +105,30 @@ public class DataStorage {
 		return ret;
 	}
 
-	public long put(Entity entity) {
+	public synchronized long put(Entity entity) {
 		if (entity.getPK() == null) {
 			entity.setPK(getNextPk());
+		} else {
+			removeUniquenessIndex(entity);
+			removePropertyIndexes(entity);
 		}
 
 		items.put(entity.getPK(), entity);
 
 		updateUniquenessIndex(entity);
-		indexEntity(entity);
+		updatePropertyIndexes(entity);
 
 		return entity.getPK();
 	}
 
-	public void remove(long... longValue) {
+	public synchronized void remove(long... longValue) {
 		for (long pk : longValue) {
 			Entity e = get(pk);
 
 			items.remove(pk);
 
 			removeUniquenessIndex(e);
-			removeIndexes(e);
+			removePropertyIndexes(e);
 		}
 	}
 
@@ -133,22 +136,42 @@ public class DataStorage {
 		return items.getValues();
 	}
 
-	public void removeUniquenessIndex(Entity entity) {
-		uniqueIndex.remove(entity.getUniquenessHash());
+	public synchronized void removeUniquenessIndex(Entity entity) {
+		for (Integer id : uniqueIndex.getKeys()) {
+			Long val = uniqueIndex.get(id);
+
+			if (val != null && val.equals(entity.getPK())) {
+				uniqueIndex.remove(id);
+				break;
+			}
+		}
 	}
 
-	public void updateUniquenessIndex(Entity entity) {
+	public synchronized void updateUniquenessIndex(Entity entity) {
+		// remove old indexes before
+		// removeUniquenessIndex(entity);
+
 		uniqueIndex.put(entity.getUniquenessHash(), entity.getPK());
 	}
 
-	private void removeIndexes(Entity e) {
+	public synchronized void removePropertyIndexes(Entity entity) {
+		for (String prop : entity.getProperties().keySet()) {
+			if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
+				continue;
+			}
 
+			Index index = getIndex(prop);
+
+			index.removeIndex(entity.getPK());
+		}
 	}
 
 	/**
 	 * Indexes all item properties.
 	 */
-	public void indexEntity(Entity entity) {
+	public synchronized void updatePropertyIndexes(Entity entity) {
+		// removePropertyIndexes(entity);
+
 		for (String prop : entity.getProperties().keySet()) {
 			if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
 				continue;

@@ -7,6 +7,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
+		// setLogSettings();
+
 		// find all module init classes
 		Reflections reflections = new Reflections("");
 		Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
@@ -31,5 +33,9 @@ public class Bootstrap {
 		} finally {
 			// MiscUtil.closeQuietly(ctx);
 		}
+	}
+
+	protected static void setLogSettings() {
+		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
 	}
 }

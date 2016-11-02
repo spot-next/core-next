@@ -15,7 +15,7 @@ public class Index {
 		index = database.hashMap(name).keySerializer(Serializer.JAVA).valueSerializer(Serializer.JAVA).createOrOpen();
 	}
 
-	public void index(Comparable<?> valueKey, Long pk) {
+	public synchronized void index(Comparable<?> valueKey, Long pk) {
 		List<Long> indexedPks = index.get(valueKey);
 
 		if (indexedPks == null) {
@@ -25,6 +25,17 @@ public class Index {
 		indexedPks.add(pk);
 
 		index.put(valueKey, indexedPks);
+	}
+
+	public synchronized void removeIndex(Long pk) {
+		for (Object k : index.keySet()) {
+			List<Long> val = index.get(k);
+
+			if (val != null) {
+				val.remove(pk);
+				index.put(k, val);
+			}
+		}
 	}
 
 	public List<Long> getPk(Comparable<?> valueKey) {
