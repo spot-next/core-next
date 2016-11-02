@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
-	
+
 	@Autowired
 	protected ModelService modelService;
 
@@ -49,7 +50,7 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	public void init() throws RemoteServiceInitException {
 		super.init();
 	}
-	
+
 	@Get(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(Request request, Response response) {
 		List<GenericItemDefinitionData> types = new ArrayList<>();
@@ -63,16 +64,30 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 
 		return types;
 	}
-	
+
+	@Get(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	public Object getType(Request request, Response response) {
+		GenericItemDefinitionData ret = null;
+
+		String typeCode = request.params(":typecode");
+
+		if (StringUtils.isNotBlank(typeCode)) {
+			ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(typeCode);
+
+			ret = itemTypeConverter.convert(def);
+		}
+
+		return ret;
+	}
+
 	@Get(pathMapping = "/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public Object getModels(Request request, Response response) throws ModelNotFoundException {
-
 		List<? extends Item> models = new ArrayList<>();
-		
+
 		Class<? extends Item> type = typeService.getType(request.params(":typecode"));
-		
+
 		models = modelService.getAll(type);
-		
+
 		return models;
 	}
 

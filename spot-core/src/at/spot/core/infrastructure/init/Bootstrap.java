@@ -5,8 +5,6 @@ import java.util.Set;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import at.spot.core.support.util.MiscUtil;
-
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
 		// find all module init classes
@@ -31,7 +29,7 @@ public class Bootstrap {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			MiscUtil.closeQuietly(ctx);
+			// MiscUtil.closeQuietly(ctx);
 		}
 	}
 }

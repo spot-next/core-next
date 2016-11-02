@@ -13,10 +13,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.Condition;
-import at.spot.core.persistence.query.Query;
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.EventService;
@@ -131,11 +127,12 @@ public class CoreInit extends ModuleInit {
 
 			System.out.println(user2.groups.get(0).uid);
 
-			Query query = Query.select(User.class)
-					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true)))
-					.build();
-
-			QueryResult result = queryService.query(query);
+			// Query query = Query.select(User.class)
+			// .where(Condition.startsWith("groups.uid", "test",
+			// true).or(Condition.equals("uid", "User-1", true)))
+			// .build();
+			//
+			// QueryResult result = queryService.query(query);
 
 			System.out.print("");
 		} catch (Exception e) {
