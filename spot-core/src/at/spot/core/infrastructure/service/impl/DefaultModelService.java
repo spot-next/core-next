@@ -49,17 +49,11 @@ public class DefaultModelService extends AbstractModelService {
 
 		return persistenceService.load(type, searchParameters);
 	}
-	
+
 	@Override
-	public <T extends Item> List<T> getAll(Class<T> type)
-			throws ModelNotFoundException {
+	public <T extends Item> List<T> getAll(Class<T> type) throws ModelNotFoundException {
 
 		return persistenceService.load(type, null);
-	}
-
-	@Override
-	public <T extends Item> T get(PK pk) throws ModelNotFoundException {
-		return get((Class<T>) pk.getType(), pk.longValue());
 	}
 
 	@Override

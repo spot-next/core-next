@@ -8,10 +8,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import at.spot.core.infrastructure.event.SystemBootCompleteEvent;
+import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
 
 @Component
 class BootEventListener implements ApplicationListener<ContextStartedEvent> {
+
+	@Autowired
+	protected EventService eventService;
 
 	@Autowired
 	protected LoggingService loggingService;
@@ -22,7 +26,6 @@ class BootEventListener implements ApplicationListener<ContextStartedEvent> {
 
 	@EventListener
 	protected void onContextRefreshedEvent(ContextRefreshedEvent event) {
-		loggingService.info("Server start finished.");
 	}
 
 	@EventListener
@@ -32,6 +35,6 @@ class BootEventListener implements ApplicationListener<ContextStartedEvent> {
 
 	@Override
 	public void onApplicationEvent(ContextStartedEvent paramE) {
-		loggingService.info("Server start finished.");
+		eventService.publishEvent(new SystemBootCompleteEvent(this));
 	}
 }

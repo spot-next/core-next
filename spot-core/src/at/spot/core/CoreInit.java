@@ -13,6 +13,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.persistence.query.Condition;
+import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.EventService;
@@ -21,9 +25,6 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
-import at.spot.core.persistence.query.Condition;
-import at.spot.core.persistence.query.Query;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 
@@ -51,7 +52,7 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected EventService eventService;
-	
+
 	@Autowired
 	protected QueryService queryService;
 
@@ -89,26 +90,26 @@ public class CoreInit extends ModuleInit {
 
 			modelService.saveAll(users);
 
-			for (int i = 1; i < 10000; i++) {
-				if (i > 0 && i % 50 == 0) {
-					long duration = System.currentTimeMillis() - start;
-
-					if (duration >= 1000) {
-						// loggingService.debug("Created " + i + " users (" + i
-						// / (duration / 1000) + " items/s )");
-					}
-				}
-
-				User user = modelService.create(User.class);
-				user.name = "test-" + i;
-				user.uid = user.name;
-
-				user.groups.add(group);
-
-				users.add(user);
-			}
-
-			modelService.saveAll(users);
+			// for (int i = 1; i < 10000; i++) {
+			// if (i > 0 && i % 50 == 0) {
+			// long duration = System.currentTimeMillis() - start;
+			//
+			// if (duration >= 1000) {
+			// // loggingService.debug("Created " + i + " users (" + i
+			// // / (duration / 1000) + " items/s )");
+			// }
+			// }
+			//
+			// User user = modelService.create(User.class);
+			// user.name = "test-" + i;
+			// user.uid = user.name;
+			//
+			// user.groups.add(group);
+			//
+			// users.add(user);
+			// }
+			//
+			// modelService.saveAll(users);
 
 			Map<String, Comparable<?>> criteria = new HashMap<>();
 			criteria.put("uid", "user-1");
@@ -120,8 +121,8 @@ public class CoreInit extends ModuleInit {
 			// iterate over all children and check dirty flag
 			modelService.saveAll(user1);
 
-			user1 = modelService.get(user1.pk);
-			user2 = modelService.get(user2.pk);
+			user1 = modelService.get(User.class, user1.pk);
+			user2 = modelService.get(User.class, user2.pk);
 
 			System.out.println(user1.groups.get(0).uid);
 			System.out.println(user2.groups.get(0).uid);
@@ -131,10 +132,11 @@ public class CoreInit extends ModuleInit {
 			System.out.println(user2.groups.get(0).uid);
 
 			Query query = Query.select(User.class)
-					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true))).build();
-			
+					.where(Condition.startsWith("groups.uid", "test", true).or(Condition.equals("uid", "User-1", true)))
+					.build();
+
 			QueryResult result = queryService.query(query);
-			
+
 			System.out.print("");
 		} catch (Exception e) {
 			loggingService.exception(e.getMessage());

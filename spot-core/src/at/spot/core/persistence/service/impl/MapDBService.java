@@ -216,14 +216,14 @@ public class MapDBService implements PersistenceService {
 			database.commit();
 	}
 
-	protected PK storeEntity(Entity entity, PK pk, Class<? extends Item> type) {
+	protected Long storeEntity(Entity entity, Long pk, Class<? extends Item> type) {
 		if (pk != null) {
 			entity.setPK(pk.longValue());
 		}
 
 		long newPk = getDataStorageForType(type).put(entity);
 
-		return new PK(newPk, type);
+		return newPk;
 	}
 
 	protected Collection<Item> saveInternalCollection(Collection<Item> items, boolean commit)
@@ -254,7 +254,7 @@ public class MapDBService implements PersistenceService {
 				ClassUtil.setField(item, property, itemEntity.getProperty(property));
 			}
 
-			item.pk = new PK(itemEntity.getPK(), type);
+			item.pk = itemEntity.getPK();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new ModelNotFoundException(e);
 		}
@@ -270,8 +270,7 @@ public class MapDBService implements PersistenceService {
 		Set<Long> pks = null;
 		if (searchParameters != null) {
 			getDataStorageForType(type).get(searchParameters);
-		}
-		else {
+		} else {
 			getDataStorageForType(type).getAll();
 		}
 

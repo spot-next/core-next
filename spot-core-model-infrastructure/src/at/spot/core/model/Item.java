@@ -11,7 +11,6 @@ import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.infrastructure.type.collection.ObservableChange;
 import at.spot.core.infrastructure.type.collection.Observer;
 import at.spot.core.support.util.ClassUtil;
@@ -23,8 +22,7 @@ public abstract class Item implements Serializable, Observer {
 
 	protected List<String> dirtyAttributes = new ArrayList<>();
 
-	@Property(unique = true)
-	public PK pk;
+	public Long pk;
 
 	@Property
 	public DateTime lastModified;

@@ -10,7 +10,7 @@ import at.spot.core.support.util.MiscUtil;
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
 		// find all module init classes
-		Reflections reflections = new Reflections();
+		Reflections reflections = new Reflections("");
 		Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
 
 		AnnotationConfigApplicationContext ctx = null;
