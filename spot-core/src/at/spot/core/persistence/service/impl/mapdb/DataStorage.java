@@ -25,7 +25,7 @@ import at.spot.core.persistence.service.impl.MapDBService;
  */
 public class DataStorage {
 	private HTreeMap<Long, Entity> items = null;
-	private HTreeMap<Long, Long> uniqueIndex = null;
+	private HTreeMap<Integer, Long> uniqueIndex = null;
 
 	private Map<String, Index> indexes = new HashMap<>();
 	private Long latestPkForType = null;;
@@ -43,7 +43,7 @@ public class DataStorage {
 		items = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
 				.valueSerializer(Serializer.JAVA).createOrOpen();
 
-		uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.LONG)
+		uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.INTEGER)
 				.valueSerializer(Serializer.LONG).createOrOpen();
 	}
 
@@ -52,7 +52,9 @@ public class DataStorage {
 	}
 
 	public Entity get(int uniqueHash) {
-		Long pk = uniqueIndex.get(uniqueHash);
+		// TODO: why do we have to use a long here although the map is defined
+		// with integer keys?
+		Long pk = uniqueIndex.get(new Long(uniqueHash));
 
 		if (pk != null) {
 			return get(pk);
@@ -73,7 +75,7 @@ public class DataStorage {
 
 		return propertyIndex;
 	}
-	
+
 	public Set<Long> getAll() {
 		return items.getKeys();
 	}
@@ -136,7 +138,7 @@ public class DataStorage {
 	}
 
 	public void updateUniquenessIndex(Entity entity) {
-		uniqueIndex.put(new Long(entity.getUniquenessHash()), entity.getPK());
+		uniqueIndex.put(entity.getUniquenessHash(), entity.getPK());
 	}
 
 	private void removeIndexes(Entity e) {

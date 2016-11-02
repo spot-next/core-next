@@ -109,7 +109,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	protected Item loadFullItem(Item proxyItem) throws ModelNotFoundException {
 		if (proxyItem.isProxy) {
-			proxyItem = modelService.get(proxyItem.pk);
+			proxyItem = modelService.get(proxyItem.getClass(), proxyItem.pk);
 		}
 
 		return proxyItem;

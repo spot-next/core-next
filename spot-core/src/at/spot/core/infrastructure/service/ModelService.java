@@ -55,14 +55,6 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns an {@link Item} based on its {@link PK}.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	<T extends Item> T get(PK pk) throws ModelNotFoundException;
-
-	/**
 	 * Returns the first {@link Item} based on the given search parameters (key
 	 * = property name, value = property value).
 	 * 
@@ -117,15 +109,14 @@ public interface ModelService {
 	 */
 	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
 			throws ModelNotFoundException;
-	
+
 	/**
 	 * Returns all objects of the given type
 	 * 
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type)
-			throws ModelNotFoundException;
+	<T extends Item> List<T> getAll(Class<T> type) throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.
