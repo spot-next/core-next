@@ -1,9 +1,10 @@
 package at.spot.core.infrastructure.init;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
 
 @Component
-class BootEventListener implements ApplicationListener<ContextStartedEvent> {
+class BootEventListener {
 
 	@Autowired
 	protected EventService eventService;
@@ -25,16 +26,31 @@ class BootEventListener implements ApplicationListener<ContextStartedEvent> {
 	}
 
 	@EventListener
-	protected void onContextRefreshedEvent(ContextRefreshedEvent event) {
+	public void onContextStarted(final ContextStartedEvent event) {
+		eventService.publishEvent(new SystemBootCompleteEvent(this));
 	}
 
 	@EventListener
-	protected void onBootComplete(SystemBootCompleteEvent event) {
-		loggingService.info("Server start finished.");
+	protected void onContextRefreshedEvent(final ContextRefreshedEvent event) {
+		//
 	}
 
-	@Override
-	public void onApplicationEvent(ContextStartedEvent paramE) {
-		eventService.publishEvent(new SystemBootCompleteEvent(this));
+	@EventListener
+	public void onContextStoppedEvent(final ContextStoppedEvent event) {
+		loggingService.info("Server stopped.");
+	}
+
+	@EventListener
+	public void onContextClosedEvent(final ContextClosedEvent event) {
+		loggingService.info("Spring context closed.");
+	}
+
+	/*
+	 * Custom events
+	 */
+
+	@EventListener
+	protected void onBootComplete(final SystemBootCompleteEvent event) {
+		loggingService.info("Server start finished.");
 	}
 }

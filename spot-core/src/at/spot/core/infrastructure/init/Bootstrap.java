@@ -5,17 +5,15 @@ import java.util.Set;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.fatboyindustrial.gsonjodatime.Converters;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class Bootstrap {
-	public static void main(String[] args) throws Exception {
+	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
+
+	public static void main(final String[] args) throws Exception {
 		// setLogSettings();
 
 		// find all module init classes
-		Reflections reflections = new Reflections("");
-		Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
+		final Reflections reflections = new Reflections("");
+		final Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
 
 		AnnotationConfigApplicationContext ctx = null;
 
@@ -24,7 +22,7 @@ public class Bootstrap {
 			ctx = new AnnotationConfigApplicationContext();
 
 			// register all found module inits in that spring context
-			for (Class<? extends ModuleInit> init : inits) {
+			for (final Class<? extends ModuleInit> init : inits) {
 				init.newInstance().injectBeanDefinition(ctx);
 			}
 
@@ -32,7 +30,7 @@ public class Bootstrap {
 
 			ctx.refresh();
 			ctx.start();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			// MiscUtil.closeQuietly(ctx);
@@ -45,12 +43,5 @@ public class Bootstrap {
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
-	}
-
-	/**
-	 * Sets up gson convertors
-	 */
-	protected static void setupGson() {
-		final Gson gson = Converters.registerDateTime(new GsonBuilder()).create();
 	}
 }
