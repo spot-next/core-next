@@ -61,6 +61,7 @@
 	<alias name="defaultL10nService" alias="l10nService" />
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
+	<alias name="defaultSerializationService" alias="serializationService" />
 
 
 	<!-- converters -->

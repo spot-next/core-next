@@ -1,11 +1,7 @@
 package at.spot.core.management.transformer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-
-import com.google.gson.Gson;
-
+import at.spot.core.infrastructure.service.SerializationService;
+import at.spot.core.infrastructure.spring.support.Registry;
 import spark.ResponseTransformer;
 
 /**
@@ -14,14 +10,11 @@ import spark.ResponseTransformer;
 public class JsonResponseTransformer implements ResponseTransformer {
 
 	@Override
-	public String render(Object object) throws Exception {
-		Gson gson = new Gson();
+	public String render(final Object object) throws Exception {
+		return getSeriaizationService().toJson(object);
+	}
 
-		// Make Serial
-		Writer writer = new OutputStreamWriter(new ByteArrayOutputStream());
-		gson.toJson(object, writer);
-		writer.close();
-
-		return writer.toString();
+	protected SerializationService getSeriaizationService() {
+		return Registry.getApplicationContext().getBean("serializationService", SerializationService.class);
 	}
 }

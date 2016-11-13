@@ -23,6 +23,7 @@ import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
 
@@ -84,9 +85,14 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	public Object getModels(Request request, Response response) throws ModelNotFoundException {
 		List<? extends Item> models = new ArrayList<>();
 
+		int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
+		int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 50);
+		
 		Class<? extends Item> type = typeService.getType(request.params(":typecode"));
-
+		
 		models = modelService.getAll(type);
+		
+		models = models.subList((page - 1) * pageSize, pageSize);
 
 		return models;
 	}

@@ -161,7 +161,7 @@ public class CoreInit extends ModuleInit {
 		runMigrateScripts();
 
 		// this is just for testing
-		// run();
+//		run();
 	}
 
 	@Log(message = "Running data migration scripts ...")

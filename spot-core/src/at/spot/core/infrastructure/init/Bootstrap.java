@@ -5,6 +5,10 @@ import java.util.Set;
 import org.reflections.Reflections;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.fatboyindustrial.gsonjodatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class Bootstrap {
 	public static void main(String[] args) throws Exception {
 		// setLogSettings();
@@ -35,7 +39,18 @@ public class Bootstrap {
 		}
 	}
 
+	/**
+	 * Sets org.reflections logging to warnings, as we scan all package paths.
+	 * This causes a lot of debug messages being logged.
+	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
+	}
+
+	/**
+	 * Sets up gson convertors
+	 */
+	protected static void setupGson() {
+		final Gson gson = Converters.registerDateTime(new GsonBuilder()).create();
 	}
 }

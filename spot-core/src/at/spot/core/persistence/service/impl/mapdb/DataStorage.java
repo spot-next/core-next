@@ -76,7 +76,7 @@ public class DataStorage {
 		return propertyIndex;
 	}
 
-	public Set<Long> getAll() {
+	public synchronized Set<Long> getAll() {
 		return items.getKeys();
 	}
 
