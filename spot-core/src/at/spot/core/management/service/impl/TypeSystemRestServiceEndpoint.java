@@ -3,6 +3,7 @@ package at.spot.core.management.service.impl;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -20,6 +21,7 @@ import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.annotation.Get;
 import at.spot.core.management.data.GenericItemDefinitionData;
+import at.spot.core.management.data.PageableData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
@@ -53,13 +55,13 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	@Get(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public Object getTypes(Request request, Response response) {
-		List<GenericItemDefinitionData> types = new ArrayList<>();
+	public Object getTypes(final Request request, final Response response) {
+		final List<GenericItemDefinitionData> types = new ArrayList<>();
 
-		for (String typeCode : typeService.getItemTypeDefinitions().keySet()) {
-			ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
+		for (final String typeCode : typeService.getItemTypeDefinitions().keySet()) {
+			final ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
 
-			GenericItemDefinitionData d = itemTypeConverter.convert(def);
+			final GenericItemDefinitionData d = itemTypeConverter.convert(def);
 			types.add(d);
 		}
 
@@ -67,13 +69,13 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	@Get(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
-	public Object getType(Request request, Response response) {
+	public Object getType(final Request request, final Response response) {
 		GenericItemDefinitionData ret = null;
 
-		String typeCode = request.params(":typecode");
+		final String typeCode = request.params(":typecode");
 
 		if (StringUtils.isNotBlank(typeCode)) {
-			ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(typeCode);
+			final ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(typeCode);
 
 			ret = itemTypeConverter.convert(def);
 		}
@@ -82,19 +84,18 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	@Get(pathMapping = "/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public Object getModels(Request request, Response response) throws ModelNotFoundException {
+	public Object getModels(final Request request, final Response response) throws ModelNotFoundException {
 		List<? extends Item> models = new ArrayList<>();
 
-		int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
-		int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 50);
-		
-		Class<? extends Item> type = typeService.getType(request.params(":typecode"));
-		
-		models = modelService.getAll(type);
-		
-		models = models.subList((page - 1) * pageSize, pageSize);
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 50);
 
-		return models;
+		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
+
+		models = modelService.getAll(type);
+		models = models.stream().skip(pageSize * (page - 1)).limit(pageSize).collect(Collectors.toList());
+
+		return new PageableData(models, page, pageSize);
 	}
 
 	@Override

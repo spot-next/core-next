@@ -27,15 +27,15 @@ public class DataStorage {
 	private HTreeMap<Long, Entity> items = null;
 	private HTreeMap<Integer, Long> uniqueIndex = null;
 
-	private Map<String, Index> indexes = new HashMap<>();
+	private final Map<String, Index> indexes = new HashMap<>();
 	private Long latestPkForType = null;;
 
-	private DB database;
+	private final DB database;
 
 	ItemTypeDefinition typeDefinition = null;
 
-	public DataStorage(DB database, ItemTypeDefinition itemTypeDefinition,
-			Collection<ItemTypePropertyDefinition> propertyDefinitions) {
+	public DataStorage(final DB database, final ItemTypeDefinition itemTypeDefinition,
+			final Collection<ItemTypePropertyDefinition> propertyDefinitions) {
 
 		this.database = database;
 		this.typeDefinition = itemTypeDefinition;
@@ -47,14 +47,14 @@ public class DataStorage {
 				.valueSerializer(Serializer.LONG).createOrOpen();
 	}
 
-	public synchronized Entity get(Long key) {
+	public synchronized Entity get(final Long key) {
 		return items.get(key);
 	}
 
-	public synchronized Entity get(int uniqueHash) {
+	public synchronized Entity get(final int uniqueHash) {
 		// TODO: why do we have to use a long here although the map is defined
 		// with integer keys?
-		Long pk = uniqueIndex.get(uniqueHash);
+		final Long pk = uniqueIndex.get(uniqueHash);
 
 		if (pk != null) {
 			return get(pk);
@@ -63,8 +63,8 @@ public class DataStorage {
 		return null;
 	}
 
-	protected synchronized Index getIndex(String property) {
-		String indexName = typeDefinition.typeCode + "." + property;
+	protected synchronized Index getIndex(final String property) {
+		final String indexName = typeDefinition.typeCode + "." + property;
 
 		Index propertyIndex = indexes.get(indexName);
 
@@ -80,24 +80,24 @@ public class DataStorage {
 		return items.getKeys();
 	}
 
-	public synchronized Set<Long> get(Map<String, Comparable<?>> criteria) {
-		Map<String, List<Long>> pksForProperty = new TreeMap<>();
+	public synchronized Set<Long> get(final Map<String, Comparable<?>> criteria) {
+		final Map<String, List<Long>> pksForProperty = new TreeMap<>();
 
-		for (String k : criteria.keySet()) {
+		for (final String k : criteria.keySet()) {
 			pksForProperty.put(k, getIndex(k).getPk(criteria.get(k)));
 		}
 
-		Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+		final Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
 
 		return commonPKs;
 	}
 
-	public long getEntityCount() {
+	public synchronized long getEntityCount() {
 		long ret = 0;
 
 		try {
 			ret = items.values().size();
-		} catch (DBException e) {
+		} catch (final DBException e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
@@ -105,7 +105,7 @@ public class DataStorage {
 		return ret;
 	}
 
-	public synchronized long put(Entity entity) {
+	public synchronized long put(final Entity entity) {
 		if (entity.getPK() == null) {
 			entity.setPK(getNextPk());
 		} else {
@@ -121,9 +121,9 @@ public class DataStorage {
 		return entity.getPK();
 	}
 
-	public synchronized void remove(long... longValue) {
-		for (long pk : longValue) {
-			Entity e = get(pk);
+	public synchronized void remove(final long... longValue) {
+		for (final long pk : longValue) {
+			final Entity e = get(pk);
 
 			items.remove(pk);
 
@@ -132,13 +132,13 @@ public class DataStorage {
 		}
 	}
 
-	public Collection<Entity> values() {
+	public synchronized Collection<Entity> values() {
 		return items.getValues();
 	}
 
-	public synchronized void removeUniquenessIndex(Entity entity) {
-		for (Integer id : uniqueIndex.getKeys()) {
-			Long val = uniqueIndex.get(id);
+	public synchronized void removeUniquenessIndex(final Entity entity) {
+		for (final Integer id : uniqueIndex.getKeys()) {
+			final Long val = uniqueIndex.get(id);
 
 			if (val != null && val.equals(entity.getPK())) {
 				uniqueIndex.remove(id);
@@ -147,20 +147,20 @@ public class DataStorage {
 		}
 	}
 
-	public synchronized void updateUniquenessIndex(Entity entity) {
+	public synchronized void updateUniquenessIndex(final Entity entity) {
 		// remove old indexes before
 		// removeUniquenessIndex(entity);
 
 		uniqueIndex.put(entity.getUniquenessHash(), entity.getPK());
 	}
 
-	public synchronized void removePropertyIndexes(Entity entity) {
-		for (String prop : entity.getProperties().keySet()) {
+	public synchronized void removePropertyIndexes(final Entity entity) {
+		for (final String prop : entity.getProperties().keySet()) {
 			if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
 				continue;
 			}
 
-			Index index = getIndex(prop);
+			final Index index = getIndex(prop);
 
 			index.removeIndex(entity.getPK());
 		}
@@ -169,17 +169,17 @@ public class DataStorage {
 	/**
 	 * Indexes all item properties.
 	 */
-	public synchronized void updatePropertyIndexes(Entity entity) {
+	public synchronized void updatePropertyIndexes(final Entity entity) {
 		// removePropertyIndexes(entity);
 
-		for (String prop : entity.getProperties().keySet()) {
+		for (final String prop : entity.getProperties().keySet()) {
 			if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
 				continue;
 			}
 
-			Index index = getIndex(prop);
+			final Index index = getIndex(prop);
 
-			Object propValue = entity.getProperty(prop);
+			final Object propValue = entity.getProperty(prop);
 
 			// don't index property values that are not comparables, like
 			// collections
@@ -189,10 +189,10 @@ public class DataStorage {
 		}
 	}
 
-	public <T> Set<T> intersection(List<List<T>> list) {
+	public <T> Set<T> intersection(final List<List<T>> list) {
 		Set<T> result = Sets.newHashSet(list.get(0));
 
-		for (List<T> numbers : list) {
+		for (final List<T> numbers : list) {
 			result = Sets.intersection(result, Sets.newHashSet(numbers));
 		}
 
