@@ -21,88 +21,94 @@ public class DefaultModelService extends AbstractModelService {
 	protected PersistenceService persistenceService;
 
 	@Override
-	public <T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void save(final T model) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.save(model);
 	}
 
 	@Override
-	public <T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void saveAll(final T... items) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.save(items);
 	}
 
 	@Override
-	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void saveAll(final List<T> models) throws ModelSaveException, ModelNotUniqueException {
 		persistenceService.save(models);
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters)
+	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters)
 			throws ModelNotFoundException {
-		List<T> items = getAll(type, searchParameters);
+
+		// ignore empty search parameters
+		if (searchParameters == null || searchParameters.values().size() == 0) {
+			return null;
+		}
+
+		final List<T> items = getAll(type, searchParameters);
 
 		return items.size() > 0 ? items.get(0) : null;
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters)
 			throws ModelNotFoundException {
 
 		return persistenceService.load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(Class<T> type) throws ModelNotFoundException {
+	public <T extends Item> List<T> getAll(final Class<T> type) throws ModelNotFoundException {
 
 		return persistenceService.load(type, null);
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException {
-		return (T) persistenceService.load(type, pk);
+	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
+		return persistenceService.load(type, pk);
 	}
 
 	@Override
-	public <T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException {
+	public <T extends Item> void loadProxyModel(final T proxyItem) throws ModelNotFoundException {
 		persistenceService.loadProxyModel(proxyItem);
 	}
 
 	@Override
-	public <T extends Item> Object getPropertyValue(T item, String propertyName) {
-		ELParser transformer = new ELParser(propertyName);
+	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+		final ELParser transformer = new ELParser(propertyName);
 
 		return transformer.transform(item);
 	}
 
 	@Override
-	public <T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> type) {
+	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> type) {
 		// TODO Auto-generated method stub
 		return (V) getPropertyValue(item, propertyName);
 	}
 
 	@Override
-	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
+	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		persistenceService.refresh(item);
 	}
 
 	@Override
-	public void remove(PK pk) {
+	public void remove(final PK pk) {
 		persistenceService.remove(pk);
 	}
 
 	@Override
-	public <T extends Item> void remove(Class<T> type, long pk) {
+	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		persistenceService.remove(new PK(pk, type));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Item> void remove(T item) {
+	public <T extends Item> void remove(final T item) {
 		persistenceService.remove(item);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Item> void remove(T... items) {
+	public <T extends Item> void remove(final T... items) {
 		persistenceService.remove(items);
 	}
 }

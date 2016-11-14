@@ -45,7 +45,7 @@ public class LogAspect extends AbstractBaseAspect {
 	// }
 
 	@Around("logAnnotation()")
-	public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Log ann = getAnnotation(joinPoint, Log.class);
 
 		final long startTime = System.currentTimeMillis();
@@ -67,7 +67,9 @@ public class LogAspect extends AbstractBaseAspect {
 		return ret;
 	}
 
-	protected String createLogMessage(JoinPoint joinPoint, String marker, String message, Long duration) {
+	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message,
+			final Long duration) {
+
 		String msg = String.format("%s %s.%s", marker, joinPoint.getTarget().getClass().getSimpleName(),
 				joinPoint.getSignature().getName());
 

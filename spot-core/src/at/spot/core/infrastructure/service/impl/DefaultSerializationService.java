@@ -11,7 +11,7 @@ import at.spot.core.infrastructure.service.SerializationService;
 @Service
 public class DefaultSerializationService implements SerializationService {
 
-	Gson gson;
+	protected Gson gson;
 
 	private DefaultSerializationService() {
 		gson = Converters.registerAll(new GsonBuilder()).create();
@@ -22,6 +22,10 @@ public class DefaultSerializationService implements SerializationService {
 	 */
 	@Override
 	public <T> String toJson(final T object) {
+		if (object == null) {
+			return null;
+		}
+
 		return gson.toJson(object);
 	}
 
@@ -44,25 +48,24 @@ public class DefaultSerializationService implements SerializationService {
 	}
 
 	@Override
-	public <T> T fromJson(final T object, final Class<T> type) {
-		// return gson.fromJson(type, object);
-		return null;
+	public <T> T fromJson(final String value, final Class<T> type) {
+		return gson.fromJson(value, type);
 	}
 
 	@Override
-	public <T> T fromXml(final T object, final Class<T> type) {
+	public <T> T fromXml(final String value, final Class<T> type) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> T fromBson(final T object, final Class<T> type) {
+	public <T> T fromBson(final String value, final Class<T> type) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T> T fromPropertyList(final T object, final Class<T> type) {
+	public <T> T fromPropertyList(final String value, final Class<T> type) {
 		// TODO Auto-generated method stub
 		return null;
 	}

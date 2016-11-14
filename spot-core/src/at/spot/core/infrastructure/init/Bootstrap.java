@@ -9,8 +9,6 @@ public class Bootstrap {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	public static void main(final String[] args) throws Exception {
-		// setLogSettings();
-
 		// find all module init classes
 		final Reflections reflections = new Reflections("");
 		final Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);

@@ -12,47 +12,47 @@ public class MiscUtil {
 	 * 
 	 * @param closableObject
 	 */
-	public static void closeQuietly(Closeable... closableObjects) {
+	public static void closeQuietly(final Closeable... closableObjects) {
 		try {
-			for (Closeable c : closableObjects) {
+			for (final Closeable c : closableObjects) {
 				if (c != null) {
 					c.close();
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// ignore exceptions
 		}
 	}
-	
-	public static int intOrDefault(String value, int defaultValue) {
+
+	public static int intOrDefault(final String value, final int defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			return Integer.parseInt(value);
 		}
-		
+
 		return defaultValue;
 	}
-	
-	public static double longOrDefault(String value, long defaultValue) {
+
+	public static long longOrDefault(final String value, final long defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			return Long.parseLong(value);
 		}
-		
+
 		return defaultValue;
 	}
-	
-	public static double doubleOrDefault(String value, double defaultValue) {
+
+	public static double doubleOrDefault(final String value, final double defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			return Double.parseDouble(value);
 		}
-		
+
 		return defaultValue;
 	}
-	
-	public static double floatOrDefault(String value, float defaultValue) {
+
+	public static float floatOrDefault(final String value, final float defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			return Float.parseFloat(value);
 		}
-		
+
 		return defaultValue;
 	}
 }

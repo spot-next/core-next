@@ -20,6 +20,7 @@ public abstract class Item implements Serializable, Observer {
 
 	private static final long serialVersionUID = 1L;
 
+	protected boolean forceDirty = false;
 	protected List<String> dirtyAttributes = new ArrayList<>();
 
 	public Long pk;
@@ -42,29 +43,41 @@ public abstract class Item implements Serializable, Observer {
 		this.isProxy = false;
 	}
 
-	public Item(boolean isProxy) {
+	public Item(final boolean isProxy) {
 		this.isProxy = isProxy;
 	}
 
-	public Object getProperty(String propertyName) {
+	public Object getProperty(final String propertyName) {
 		return ClassUtil.getPrivateField(this, propertyName);
 	}
 
-	public void setProperty(String propertyName, Object value) {
+	public void setProperty(final String propertyName, final Object value) {
 		ClassUtil.setField(this, propertyName, value);
 	}
 
+	/**
+	 * @return true if the item has a PK. It is assumed that it has been saved
+	 *         before. If you set a PK manually and save the item, an existing
+	 *         item with the same PK will be overwritten.
+	 */
 	public boolean isPersisted() {
-		return pk != null && dirtyAttributes.size() == 0;
+		return pk != null;
 	}
 
 	public boolean isDirty() {
-		return dirtyAttributes.size() > 0;
+		return forceDirty | dirtyAttributes.size() > 0;
 	}
 
-	protected void markAsDirty(String propertyName) {
+	protected void markAsDirty(final String propertyName) {
 		this.dirtyAttributes.add(propertyName);
 		this.lastModified = new DateTime();
+	}
+
+	/**
+	 * Mark the object as dirty, even though it might no be.
+	 */
+	public void markAsDirty() {
+		this.forceDirty = true;
 	}
 
 	protected void clearDirtyFlag() {
@@ -72,7 +85,7 @@ public abstract class Item implements Serializable, Observer {
 	}
 
 	@Override
-	public void notify(String collectionName, ObservableChange change, Object element) {
+	public void notify(final String collectionName, final ObservableChange change, final Object element) {
 		// TODO: this should be done directly in the itempropertyaccessaspect
 		markAsDirty(collectionName);
 	}
@@ -84,10 +97,10 @@ public abstract class Item implements Serializable, Observer {
 	 * @return
 	 */
 	public Map<String, Object> getUniqueProperties() {
-		Map<String, Object> uniqueProps = new HashMap<>();
+		final Map<String, Object> uniqueProps = new HashMap<>();
 
-		for (Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Property.class)) {
-			Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
+		for (final Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Property.class)) {
+			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
 
 			if (prop.unique()) {
 				uniqueProps.put(uniqueField.getName(), ClassUtil.getPrivateField(this, uniqueField.getName()));

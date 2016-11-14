@@ -45,7 +45,7 @@ public class MapDBService implements PersistenceService {
 	public static final String PK_PROPERTY_NAME = "pk";
 
 	static DB database;
-	private Map<String, DataStorage> dataStorage = new HashMap<>();
+	private final Map<String, DataStorage> dataStorage = new HashMap<>();
 
 	@Autowired
 	protected ModelService modelService;
@@ -71,17 +71,17 @@ public class MapDBService implements PersistenceService {
 			// DEFAULT_DB_FILEPATH))
 			// .transactionEnable().make();
 
-			Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
+			final Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
 			// dataStorage =
 			// database.hashMap("items").keySerializer(Serializer.LONG)
 			// .valueSerializer(new ItemSerializer<>()).createOrOpen();
 
-			for (ItemTypeDefinition t : itemTypes.values()) {
+			for (final ItemTypeDefinition t : itemTypes.values()) {
 				dataStorage.put(t.typeClass,
 						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// org.mapdb.DBException$DataCorruption
 			loggingService.error(e.getMessage());
 		}
@@ -89,7 +89,7 @@ public class MapDBService implements PersistenceService {
 		loggingService.debug("MapDB service initialized");
 	}
 
-	protected DataStorage getDataStorageForType(Class<? extends Item> type) {
+	protected DataStorage getDataStorageForType(final Class<? extends Item> type) {
 		return this.dataStorage.get(type.getName());
 	}
 
@@ -100,12 +100,14 @@ public class MapDBService implements PersistenceService {
 	 * @param model
 	 * @return
 	 */
-	protected boolean isUnique(Item model) {
+	protected boolean isUnique(final Item model) {
 		boolean isUnique = true;
 
-		DataStorage storage = getDataStorageForType(model.getClass());
+		final DataStorage storage = getDataStorageForType(model.getClass());
 
-		if (!model.isPersisted() && storage.get(model.uniquenessHash()) != null) {
+		final Entity itemWithSameUniqueness = storage.get(model.uniquenessHash());
+
+		if (itemWithSameUniqueness != null && !(itemWithSameUniqueness.getPK().equals(model.pk))) {
 			isUnique = false;
 		}
 
@@ -113,20 +115,20 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> void save(T... models) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void save(final T... models) throws ModelSaveException, ModelNotUniqueException {
 		save(Arrays.asList(models));
 	}
 
 	@Override
-	public <T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException {
-		long start = System.currentTimeMillis();
+	public <T extends Item> void save(final List<T> models) throws ModelSaveException, ModelNotUniqueException {
+		final long start = System.currentTimeMillis();
 		long duration = start;
 
 		try {
 			long i = 0;
-			int saveAfter = 100;
+			final int saveAfter = 100;
 
-			for (Item model : models) {
+			for (final Item model : models) {
 				saveInternal(model, false);
 
 				if (i > 0 && i % saveAfter == 0) {
@@ -142,21 +144,18 @@ public class MapDBService implements PersistenceService {
 			}
 
 			database.commit();
-		} catch (IntrospectionException e) {
+		} catch (final IntrospectionException e) {
 			throw new ModelSaveException(e);
 		}
 	}
 
 	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
-	protected void saveInternal(Item item, boolean commit)
+	protected void saveInternal(final Item item, final boolean commit)
 			throws IntrospectionException, ModelNotUniqueException, ModelSaveException {
 
-		boolean unsavedChanges = !item.isPersisted() || item.isDirty();
+		final boolean unsavedChanges = !item.isPersisted() || item.isDirty();
 
 		// if there is nothing to save, we return immediately
-		// if (item.isPersisted() && !item.isDirty()) {
-		// return;
-		// }
 
 		// check if there is already an item with the same unique properties
 		if (!isUnique(item)) {
@@ -167,19 +166,20 @@ public class MapDBService implements PersistenceService {
 		// now iterate over all attributes and check for item references and
 		// also save them
 		try {
-			Map<String, ItemTypePropertyDefinition> itemMembers = typeService.getItemTypeProperties(item.getClass());
+			final Map<String, ItemTypePropertyDefinition> itemMembers = typeService
+					.getItemTypeProperties(item.getClass());
 
-			Entity entity = new Entity(item.pk != null ? item.pk.longValue() : null, item.getClass().getName(),
+			final Entity entity = new Entity(item.pk != null ? item.pk : null, item.getClass().getName(),
 					item.uniquenessHash());
 
-			for (ItemTypePropertyDefinition member : itemMembers.values()) {
+			for (final ItemTypePropertyDefinition member : itemMembers.values()) {
 				// ignore pk property
 				if (!StringUtils.equalsIgnoreCase(member.name, PK_PROPERTY_NAME)) {
 					Object value = modelService.getPropertyValue(item, member.name);
 
 					if (value != null) {
 						if (value instanceof Item) {
-							Item valueItem = (Item) item;
+							final Item valueItem = item;
 
 							saveInternal(valueItem, commit);
 
@@ -209,7 +209,7 @@ public class MapDBService implements PersistenceService {
 				item.pk = storeEntity(entity, item.pk, item.getClass());
 				clearDirtyFlag(item);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			database.rollback();
 			throw new ModelSaveException("Could not save model", e);
 		}
@@ -218,23 +218,23 @@ public class MapDBService implements PersistenceService {
 			database.commit();
 	}
 
-	protected Long storeEntity(Entity entity, Long pk, Class<? extends Item> type) {
+	protected Long storeEntity(final Entity entity, final Long pk, final Class<? extends Item> type) {
 		if (pk != null) {
 			entity.setPK(pk.longValue());
 		}
 
-		long newPk = getDataStorageForType(type).put(entity);
+		final long newPk = getDataStorageForType(type).put(entity);
 
 		return newPk;
 	}
 
-	protected Collection<Item> saveInternalCollection(Collection<Item> items, boolean commit)
+	protected Collection<Item> saveInternalCollection(final Collection<Item> items, final boolean commit)
 			throws IntrospectionException, CannotCreateModelProxyException, ModelNotUniqueException,
 			ModelSaveException {
 
-		Collection<Item> savedItems = new ArrayList<>();
+		final Collection<Item> savedItems = new ArrayList<>();
 
-		for (Item v : items) {
+		for (final Item v : items) {
 			if (v != null && v instanceof Item) {
 				saveInternal(v, commit);
 				savedItems.add(createProxyModel(v));
@@ -245,14 +245,14 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException {
-		Entity itemEntity = getDataStorageForType(type).get(pk);
+	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
+		final Entity itemEntity = getDataStorageForType(type).get(pk);
 
 		T item;
 		try {
 			item = type.newInstance();
 
-			for (String property : itemEntity.getProperties().keySet()) {
+			for (final String property : itemEntity.getProperties().keySet()) {
 				ClassUtil.setField(item, property, itemEntity.getProperty(property));
 			}
 
@@ -261,13 +261,13 @@ public class MapDBService implements PersistenceService {
 			throw new ModelNotFoundException(e);
 		}
 
-		return (T) item;
+		return item;
 	}
 
 	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
 
-		List<T> foundItems = new ArrayList<>();
+		final List<T> foundItems = new ArrayList<>();
 
 		Set<Long> pks = null;
 
@@ -278,10 +278,10 @@ public class MapDBService implements PersistenceService {
 		}
 
 		if (pks != null) {
-			for (Long pk : pks) {
+			for (final Long pk : pks) {
 				try {
 					foundItems.add(load(type, pk));
-				} catch (ModelNotFoundException e) {
+				} catch (final ModelNotFoundException e) {
 					// ignore it for now
 				}
 			}
@@ -291,25 +291,25 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
+	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		clearDirtyFlag(item);
 
-		T loadedItem = load((Class<T>) item.getClass(), item.pk.longValue());
+		final T loadedItem = load((Class<T>) item.getClass(), item.pk.longValue());
 
-		for (ItemTypePropertyDefinition p : typeService.getItemTypeProperties(item.getClass()).values()) {
+		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(item.getClass()).values()) {
 			item.setProperty(p.name, loadedItem.getProperty(p.name));
 		}
 	}
 
 	@Override
-	public void remove(PK... pks) {
-		for (PK pk : pks) {
+	public void remove(final PK... pks) {
+		for (final PK pk : pks) {
 			getDataStorageForType(pk.getType()).remove(pk.longValue());
 		}
 	}
 
 	@Override
-	public <T extends Item> void remove(T... items) {
+	public <T extends Item> void remove(final T... items) {
 		if (items.length > 0) {
 
 			getDataStorageForType(items[0].getClass())
@@ -317,17 +317,17 @@ public class MapDBService implements PersistenceService {
 		}
 	}
 
-	protected void clearDirtyFlag(Item item) {
+	protected void clearDirtyFlag(final Item item) {
 		ClassUtil.invokeMethod(item, "clearDirtyFlag");
 	}
 
 	@Override
-	public <T extends Item> void loadProxyModel(T item) throws ModelNotFoundException {
+	public <T extends Item> void loadProxyModel(final T item) throws ModelNotFoundException {
 		refresh(item);
 	}
 
 	@Override
-	public <T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException {
+	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
 		T proxyItem;
 		try {
 			proxyItem = (T) item.getClass().newInstance();

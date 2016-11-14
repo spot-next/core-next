@@ -3,7 +3,6 @@ package at.spot.core.management.service.impl;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -12,27 +11,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.exception.ModelNotFoundException;
+import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
-import at.spot.core.infrastructure.type.LogLevel;
 import at.spot.core.management.annotation.Get;
 import at.spot.core.management.data.GenericItemDefinitionData;
-import at.spot.core.management.data.PageableData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
-import at.spot.core.model.Item;
-import at.spot.core.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
 
 @Service
-public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
+public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
-	private static final String CONFIG_KEY_PORT = "service.typesystem.restservice.port";
+	private static final String CONFIG_KEY_PORT = "service.type.rest.port";
 	private static final int DEFAULT_PORT = 9000;
 
 	@Autowired
@@ -44,18 +37,16 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
-	@Autowired
-	protected ModelService modelService;
-
-	@Log(logLevel = LogLevel.INFO, message = "Initiating remote type system access service ...")
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
+		loggingService.info(String.format("Initiating remote type REST service on port %s", getPort()));
 		super.init();
 	}
 
 	@Get(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public Object getTypes(final Request request, final Response response) {
+	public Object getTypes(final Request request, final Response response) throws UnknownTypeException {
+
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
 
 		for (final String typeCode : typeService.getItemTypeDefinitions().keySet()) {
@@ -69,7 +60,7 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	@Get(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
-	public Object getType(final Request request, final Response response) {
+	public Object getType(final Request request, final Response response) throws UnknownTypeException {
 		GenericItemDefinitionData ret = null;
 
 		final String typeCode = request.params(":typecode");
@@ -81,21 +72,6 @@ public class TypeSystemRestServiceEndpoint extends AbstractHttpServiceEndpoint {
 		}
 
 		return ret;
-	}
-
-	@Get(pathMapping = "/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public Object getModels(final Request request, final Response response) throws ModelNotFoundException {
-		List<? extends Item> models = new ArrayList<>();
-
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 50);
-
-		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
-
-		models = modelService.getAll(type);
-		models = models.stream().skip(pageSize * (page - 1)).limit(pageSize).collect(Collectors.toList());
-
-		return new PageableData(models, page, pageSize);
 	}
 
 	@Override

@@ -9,11 +9,11 @@ public interface SerializationService {
 
 	<T extends Object> String toPropertyList(T object);
 
-	<T extends Object> T fromJson(T object, Class<T> type);
+	<T extends Object> T fromJson(String value, Class<T> type);
 
-	<T extends Object> T fromXml(T object, Class<T> type);
+	<T extends Object> T fromXml(String value, Class<T> type);
 
-	<T extends Object> T fromBson(T object, Class<T> type);
+	<T extends Object> T fromBson(String value, Class<T> type);
 
-	<T extends Object> T fromPropertyList(T object, Class<T> type);
+	<T extends Object> T fromPropertyList(String value, Class<T> type);
 }

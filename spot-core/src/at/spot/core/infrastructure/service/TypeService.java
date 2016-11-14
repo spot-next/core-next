@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.ModuleDefinition;
@@ -25,7 +26,7 @@ public interface TypeService {
 	 * 
 	 * @return
 	 */
-	Map<String, ItemTypeDefinition> getItemTypeDefinitions();
+	Map<String, ItemTypeDefinition> getItemTypeDefinitions() throws UnknownTypeException;
 
 	/**
 	 * Scans the classpath for {@link Item} types and registers them.
@@ -38,7 +39,7 @@ public interface TypeService {
 	 * @param typeCode
 	 * @return
 	 */
-	Class<? extends Item> getType(String typeCode);
+	Class<? extends Item> getType(String typeCode) throws UnknownTypeException;
 
 	/**
 	 * Returns a map of all the @Property annotated properties of the given
@@ -48,7 +49,7 @@ public interface TypeService {
 	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
 	 *         key
 	 */
-	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode);
+	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) throws UnknownTypeException;
 
 	/**
 	 * Returns a map of all the @Property annotated properties of the given
@@ -76,5 +77,5 @@ public interface TypeService {
 	 * @param typeCode
 	 * @return null if there is no item found for the given type code.
 	 */
-	ItemTypeDefinition getItemTypeDefinition(String typeCode);
+	ItemTypeDefinition getItemTypeDefinition(String typeCode) throws UnknownTypeException;
 }
