@@ -15,7 +15,7 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
-import at.spot.core.management.annotation.Get;
+import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
@@ -44,7 +44,7 @@ public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		super.init();
 	}
 
-	@Get(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(final Request request, final Response response) throws UnknownTypeException {
 
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
@@ -59,7 +59,7 @@ public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return types;
 	}
 
-	@Get(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
 	public Object getType(final Request request, final Response response) throws UnknownTypeException {
 		GenericItemDefinitionData ret = null;
 

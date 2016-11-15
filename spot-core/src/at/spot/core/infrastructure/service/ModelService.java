@@ -5,7 +5,6 @@ import java.util.Map;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
@@ -61,28 +60,21 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters) throws ModelNotFoundException;
+	<T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters);
 
 	/**
 	 * Removes the given item.
 	 * 
 	 * @param item
 	 */
-	void remove(PK pk);
+	<T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given item.
 	 * 
 	 * @param item
 	 */
-	<T extends Item> void remove(Class<T> type, long pk);
-
-	/**
-	 * Removes the given item.
-	 * 
-	 * @param item
-	 */
-	<T extends Item> void remove(T item);
+	<T extends Item> void remove(T item) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given item.
@@ -90,13 +82,14 @@ public interface ModelService {
 	 * @param item
 	 */
 	@SuppressWarnings("unchecked")
-	<T extends Item> void remove(T... items);
+	<T extends Item> void remove(T... items) throws ModelNotFoundException;
 
 	/**
 	 * Refreshes the given model's properties.
 	 * 
 	 * @param pk
 	 * @return
+	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
@@ -104,11 +97,33 @@ public interface ModelService {
 	 * Returns an object based on the given search parameters (key = property
 	 * name, value = property value).
 	 * 
-	 * @param pk
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters)
-			throws ModelNotFoundException;
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters);
+
+	/**
+	 * Returns an object based on the given search parameters (key = property
+	 * name, value = property value).
+	 * 
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
+	 * @param start
+	 *            defines the amount of items that are being skipped.
+	 * @param amount
+	 *            starting from the start param this is the amount of items that
+	 *            will be returned.
+	 * @param loadAsProxy
+	 *            the items will be just proxies that are lazy-loaded.
+	 * @return
+	 */
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters, final long start,
+			final long amount, final boolean loadAsProxy);
 
 	/**
 	 * Returns all objects of the given type
@@ -116,7 +131,7 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type) throws ModelNotFoundException;
+	<T extends Item> List<T> getAll(Class<T> type);
 
 	/**
 	 * Returns the item's value of the given property.

@@ -36,8 +36,7 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters)
-			throws ModelNotFoundException {
+	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
 
 		// ignore empty search parameters
 		if (searchParameters == null || searchParameters.values().size() == 0) {
@@ -50,14 +49,19 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters)
-			throws ModelNotFoundException {
-
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
 		return persistenceService.load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type) throws ModelNotFoundException {
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final long start, final long amount, final boolean loadAsProxy) {
+
+		return persistenceService.load(type, searchParameters, start, amount, loadAsProxy);
+	}
+
+	@Override
+	public <T extends Item> List<T> getAll(final Class<T> type) {
 
 		return persistenceService.load(type, null);
 	}
@@ -91,11 +95,6 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public void remove(final PK pk) {
-		persistenceService.remove(pk);
-	}
-
-	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		persistenceService.remove(new PK(pk, type));
 	}
@@ -111,4 +110,5 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void remove(final T... items) {
 		persistenceService.remove(items);
 	}
+
 }

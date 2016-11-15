@@ -43,6 +43,7 @@ public interface PersistenceService {
 	 * 
 	 * @param pk
 	 * @return
+	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
@@ -50,11 +51,33 @@ public interface PersistenceService {
 	 * Returns an object based on the given search parameters (key = property
 	 * name, value = property value).
 	 * 
-	 * @param pk
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters)
-			throws ModelNotFoundException;
+	<T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
+
+	/**
+	 * Returns an object based on the given search parameters (key = property
+	 * name, value = property value).
+	 * 
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
+	 * @param start
+	 *            defines the amount of items that are being skipped.
+	 * @param amount
+	 *            starting from the start param this is the amount of items that
+	 *            will be returned.
+	 * @param loadAsProxy
+	 *            the items will be just proxies that are lazy-loaded.
+	 * @return
+	 */
+	<T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters, long start,
+			long amount, boolean loadAsProxy);
 
 	/**
 	 * Fills the given proxy item with it's property values.

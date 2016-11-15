@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -22,9 +21,7 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
-import at.spot.core.management.annotation.Get;
-import at.spot.core.management.annotation.Post;
-import at.spot.core.management.annotation.Put;
+import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.data.PageableData;
 import at.spot.core.management.exception.RemoteServiceInitException;
@@ -35,6 +32,7 @@ import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
+import spark.route.HttpMethod;
 
 @Service
 public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
@@ -64,27 +62,46 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		super.init();
 	}
 
-	@Get(pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public Object getModels(final Request request, final Response response)
-			throws ModelNotFoundException, UnknownTypeException {
+	/**
+	 * Gets all items of the given item type.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws UnknownTypeException
+	 */
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public Object getModels(final Request request, final Response response) throws UnknownTypeException {
+
+		final RequestStatus status = RequestStatus.success();
 
 		List<? extends Item> models = new ArrayList<>();
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 50);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 100);
 		final String typeCode = request.params(":typecode");
 
 		final Class<? extends Item> type = typeService.getType(typeCode);
 
-		models = modelService.getAll(type);
-		models = models.stream().skip(pageSize * (page - 1)).limit(pageSize).collect(Collectors.toList());
+		models = modelService.getAll(type, null, pageSize * (page - 1), pageSize, false);
 
-		return new PageableData(models, page, pageSize);
+		return returnDataAndStatus(response, status.payload(new PageableData(models, page, pageSize)));
 	}
 
-	@Get(pathMapping = "/v1/models/:typecode/:pk", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	/**
+	 * Gets an item based on the PK.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws ModelNotFoundException
+	 * @throws UnknownTypeException
+	 */
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object getModel(final Request request, final Response response)
 			throws ModelNotFoundException, UnknownTypeException {
+
+		final RequestStatus status = RequestStatus.success();
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
@@ -93,19 +110,30 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final T model = modelService.get(type, pk);
 
 		if (model == null) {
-			response.status(HttpStatus.NOT_FOUND_404);
+			status.httpStatus(HttpStatus.NOT_FOUND_404);
 		}
 
-		return model;
+		return returnDataAndStatus(response, status.payload(model));
 	}
 
-	@Get(pathMapping = "/v1/models/:typecode/query/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	/**
+	 * Gets an item based on the search query.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws UnknownTypeException
+	 */
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object queryModel(final Request request, final Response response)
-			throws ModelNotFoundException, UnknownTypeException {
+			throws UnknownTypeException {
+
+		final RequestStatus status = RequestStatus.success();
 
 		final String typeCode = request.params(":typecode");
-		final Map<String, String[]> query = request.queryMap().toMap();
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+
+		final Map<String, String[]> query = request.queryMap().toMap();
 
 		final Map<String, Comparable<?>> searchParameters = new HashMap<>();
 
@@ -118,35 +146,47 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 					final Object value = serializationService.fromJson(queryValues[0], propertyType);
 
-					if (value instanceof Comparable) {
-						searchParameters.put(prop.name, (Comparable) value);
+					if (value instanceof Comparable | value == null) {
+						searchParameters.put(prop.name, (Comparable<?>) value);
+					} else {
+						status.warn(
+								String.format("Unknown attribute value %s=%S in query", prop.name, value.toString()));
 					}
 				} catch (final ClassNotFoundException e) {
-					throw new ModelNotFoundException(e);
+					throw new UnknownTypeException("Type class not found.");
 				}
+			} else {
+				status.warn(
+						String.format("Query attribute %s passed more than once - only taking the first.", prop.name));
 			}
 		}
 
 		final Item model = modelService.get(type, searchParameters);
 
-		return model;
+		if (model == null) {
+			status.httpStatus(HttpStatus.NOT_FOUND_404);
+		} else {
+			status.payload(model);
+		}
+
+		return returnDataAndStatus(response, status);
 	}
 
 	/**
-	 * Called when a new item should be created.
+	 * Creates a new item. If the item is not unique (based on its unique
+	 * properties), an error is returned.
 	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
-	 * @throws ModelNotUniqueException
 	 */
-	@Put(pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpMethodStatus createModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException, ModelNotUniqueException {
+	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> RequestStatus createModel(final Request request, final Response response)
+			throws UnknownTypeException, ModelSaveException {
 
-		final HttpMethodStatus status = new HttpMethodStatus(true);
+		final RequestStatus status = RequestStatus.success();
 
 		final T item = deserializeItem(request);
 
@@ -155,41 +195,127 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			item.pk = null;
 		}
 
-		modelService.save(item);
-		response.status(HttpStatus.CREATED_201);
+		try {
+			modelService.save(item);
+			response.status(HttpStatus.CREATED_201);
+		} catch (final ModelNotUniqueException e) {
+			status.httpStatus(HttpStatus.CONFLICT_409)
+					.error("Another item with the same uniqueness criteria (but a different PK was found.");
+		}
 
-		return status;
+		return returnDataAndStatus(response, status);
 	}
 
-	@Post(pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpMethodStatus updateModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException, ModelNotUniqueException {
+	/**
+	 * Removes the given item. The PK or a search criteria has to be set.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws UnknownTypeException
+	 * @throws ModelSaveException
+	 */
+	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> RequestStatus deleteModel(final Request request, final Response response)
+			throws UnknownTypeException, ModelSaveException {
 
-		final HttpMethodStatus status = new HttpMethodStatus(true);
+		final RequestStatus status = RequestStatus.success();
+
+		final String typeCode = request.params(":typecode");
+		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+
+		if (pk > -1) {
+			final Class<T> type = (Class<T>) typeService.getType(typeCode);
+			try {
+				modelService.remove(type, pk);
+			} catch (final ModelNotFoundException e) {
+				status.httpStatus(HttpStatus.NOT_FOUND_404).error("Item with given PK not found.");
+			}
+		} else {
+			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("No valid PK given.");
+		}
+
+		return returnDataAndStatus(response, status);
+	}
+
+	/**
+	 * Updates an item with the given values. The PK must be provided. If the
+	 * new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just
+	 * want to update a few fields, use the PATCH Method.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws UnknownTypeException
+	 * @throws ModelSaveException
+	 */
+	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> RequestStatus updateModel(final Request request, final Response response)
+			throws UnknownTypeException, ModelSaveException {
+
+		final RequestStatus status = RequestStatus.success();
 
 		final T item = deserializeItem(request);
 
 		if (item.pk == null) {
-			status.error("You cannot update a new item (PK was null)");
-			status.success(false);
+			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You cannot update a new item (PK was null)");
 		} else {
-			item.markAsDirty();
-			modelService.save(item);
-			response.status(HttpStatus.CREATED_201);
+			try {
+				modelService.save(item);
+				response.status(HttpStatus.ACCEPTED_202);
+				item.markAsDirty();
+			} catch (final ModelNotUniqueException e) {
+				status.httpStatus(HttpStatus.CONFLICT_409)
+						.error("Another item with the same uniqueness criteria (but a different PK was found.");
+			}
 		}
 
-		return status;
+		return returnDataAndStatus(response, status);
 	}
 
-	protected Map<String, Object> returnDataAndStatus(final int httpStatus, final HttpMethodStatus status,
-			final Object data) {
+	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> RequestStatus partiallyUpdateModel(final Request request, final Response response)
+			throws UnknownTypeException, ModelSaveException {
 
-		final Map<String, Object> ret = new HashMap<>();
+		final RequestStatus status = RequestStatus.success();
 
-		ret.put("status", status);
-		ret.put("content", data);
+		// final T itemWithNewValues = deserializeItem(request);
+		//
+		// if (itemWithNewValues.pk == null) {
+		// status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You
+		// cannot update a new item (PK was null)");
+		// } else {
+		// try {
+		// // search old item
+		// final T oldItem = (T) modelService.get(itemWithNewValues.getClass(),
+		// itemWithNewValues.pk);
+		//
+		// modelService.save(itemWithNewValues);
+		// response.status(HttpStatus.ACCEPTED_202);
+		// itemWithNewValues.markAsDirty();
+		// } catch (final ModelNotUniqueException e) {
+		// status.httpStatus(HttpStatus.CONFLICT_409)
+		// .error("Another item with the same uniqueness criteria (but a
+		// different PK was found.");
+		// } catch (final ModelNotFoundException e) {
+		// status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the
+		// given PK found to update.");
+		// }
+		// }
 
-		return ret;
+		return returnDataAndStatus(response, status);
+	}
+
+	protected RequestStatus returnDataAndStatus(final Response response, final RequestStatus status,
+			final Object payload) {
+		status.payload(payload);
+		return returnDataAndStatus(response, status);
+	}
+
+	protected RequestStatus returnDataAndStatus(final Response response, final RequestStatus status) {
+		response.status(status.httpStatus());
+		return status;
 	}
 
 	protected <T extends Item> T deserializeItem(final Request request) throws UnknownTypeException {

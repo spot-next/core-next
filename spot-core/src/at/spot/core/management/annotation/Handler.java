@@ -1,6 +1,5 @@
 package at.spot.core.management.annotation;
 
-import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
 import java.lang.annotation.Retention;
@@ -9,10 +8,13 @@ import java.lang.annotation.Target;
 
 import at.spot.core.management.transformer.PlainTExtResponseTransformer;
 import spark.ResponseTransformer;
+import spark.route.HttpMethod;
 
-@Target({ FIELD, METHOD })
+@Target({ METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Delete {
+public @interface Handler {
+
+	HttpMethod method() default HttpMethod.get;
 
 	/**
 	 * Defines the URL path that will be listened for.

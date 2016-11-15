@@ -8,7 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +63,13 @@ public class MapDBService implements PersistenceService {
 
 	@Autowired
 	protected ConfigurationService configurationService;
+
+	protected ForkJoinPool threadPool;
+
+	@PostConstruct
+	protected void init() {
+		this.threadPool = new ForkJoinPool(10);
+	}
 
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
@@ -266,26 +278,52 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+		return load(type, searchParameters, 0, 0, false);
+	}
 
-		final List<T> foundItems = new ArrayList<>();
+	@Override
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final long start, final long amount, final boolean loadAsProxy) {
+
+		List<T> foundItems = new ArrayList<>();
+
+		final long skip = start >= 0 ? start : 0;
+		final long pageSize = amount >= 0 ? amount : 0;
 
 		Set<Long> pks = null;
 
-		if (searchParameters != null) {
-			pks = getDataStorageForType(type).get(searchParameters);
-		} else {
-			pks = getDataStorageForType(type).getAll();
+		try {
+			pks = threadPool.submit(() -> {
+				Stream<Long> stream = null;
+				if (searchParameters != null && !searchParameters.isEmpty()) {
+					stream = getDataStorageForType(type).get(searchParameters).parallelStream();
+				} else {
+					stream = getDataStorageForType(type).getAll().stream();
+				}
+
+				if (skip >= 0) {
+					stream = stream.skip(start);
+				}
+
+				if (pageSize > 0) {
+					stream = stream.limit(pageSize);
+				}
+
+				return stream.collect(Collectors.toSet());
+			}).get();
+		} catch (InterruptedException | ExecutionException e) {
+			loggingService.exception("Can't load items", e);
 		}
 
-		if (pks != null) {
-			for (final Long pk : pks) {
-				try {
-					foundItems.add(load(type, pk));
-				} catch (final ModelNotFoundException e) {
-					// ignore it for now
-				}
+		foundItems = pks.stream().map((pk) -> {
+			try {
+				return load(type, pk);
+			} catch (final ModelNotFoundException e1) {
+				// ignore it for now
 			}
-		}
+
+			return null;
+		}).collect(Collectors.toList());
 
 		return foundItems;
 	}
