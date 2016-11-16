@@ -2,6 +2,7 @@ package at.spot.core.persistence.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public interface PersistenceService {
 	 *            returned.
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
+	<T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
 
 	/**
 	 * Returns an object based on the given search parameters (key = property
@@ -76,8 +77,8 @@ public interface PersistenceService {
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters, long start,
-			long amount, boolean loadAsProxy);
+	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final int page, final int pageSize, boolean loadAsProxy);
 
 	/**
 	 * Fills the given proxy item with it's property values.

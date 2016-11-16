@@ -7,10 +7,14 @@ import java.util.List;
 import at.spot.core.model.Item;
 
 public class QueryResult<T extends Item> {
-	List<T> results = new ArrayList<>();
+	private List<T> results = new ArrayList<>();
+	private final int pageSize;
+	private final int page;
 
-	public QueryResult(final List<T> results) {
+	public QueryResult(final List<T> results, final int page, final int pageSize) {
 		this.results = Collections.unmodifiableList(results);
+		this.page = page;
+		this.pageSize = pageSize;
 	}
 
 	public List<T> getResult() {
@@ -19,5 +23,13 @@ public class QueryResult<T extends Item> {
 
 	public long count() {
 		return results.size();
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public int getPage() {
+		return page;
 	}
 }

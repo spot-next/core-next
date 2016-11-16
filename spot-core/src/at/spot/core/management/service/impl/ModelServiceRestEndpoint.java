@@ -2,12 +2,14 @@ package at.spot.core.management.service.impl;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
@@ -28,6 +30,7 @@ import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.query.QueryCondition;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
@@ -39,6 +42,9 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	private static final String CONFIG_KEY_PORT = "service.model.rest.port";
 	private static final int DEFAULT_PORT = 9000;
+
+	private static final int DEFAULT_PAGE = 1;
+	private static final int DEFAULT_PAGE_SIZE = 100;
 
 	@Autowired
 	protected TypeService typeService;
@@ -63,7 +69,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets all items of the given item type.
+	 * Gets all items of the given item type. The page index starts at 1.
 	 * 
 	 * @param request
 	 * @param response
@@ -77,13 +83,13 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		List<? extends Item> models = new ArrayList<>();
 
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), 1);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), 100);
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 		final String typeCode = request.params(":typecode");
 
 		final Class<? extends Item> type = typeService.getType(typeCode);
 
-		models = modelService.getAll(type, null, pageSize * (page - 1), pageSize, false);
+		models = modelService.getAll(type, null, page - 1, pageSize, false);
 
 		return returnDataAndStatus(response, status.payload(new PageableData(models, page, pageSize)));
 	}
@@ -117,7 +123,45 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query.
+	 * Gets an item based on the search query. The query is a SPeL expression.
+	 * <br/>
+	 * 
+	 * <br/>
+	 * Example: .../User/query/uid='test-user' & name.contains('Vader') <br/>
+	 * <br/>
+	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)}
+	 * is called.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws UnknownTypeException
+	 */
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/:query", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> Object queryModel(final Request request, final Response response)
+			throws UnknownTypeException {
+
+		final RequestStatus status = RequestStatus.success();
+
+		final String query = request.params(":query");
+
+		if (StringUtils.isNotBlank(query)) {
+			// ELParser.parseExpression(query, contextObjects)
+			// queryService.query(type, condition, orderBy, page, pageSize)
+
+		} else {
+			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Query could not be parsed.");
+		}
+
+		return status;
+	}
+
+	/**
+	 * Gets an item based on the search query. <br/>
+	 * <br/>
+	 * Example: .../User/query/?uid=test-user&name=LordVader. <br/>
+	 * <br/>
+	 * {@link ModelService#get(Class, Map)} is called (=search by example).
 	 * 
 	 * @param request
 	 * @param response
@@ -125,16 +169,17 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> Object queryModel(final Request request, final Response response)
+	public <T extends Item> Object queryModelByExample(final Request request, final Response response)
 			throws UnknownTypeException {
 
 		final RequestStatus status = RequestStatus.success();
 
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
+
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
-
 		final Map<String, String[]> query = request.queryMap().toMap();
-
 		final Map<String, Comparable<?>> searchParameters = new HashMap<>();
 
 		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeProperties(typeCode).values()) {
@@ -161,7 +206,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			}
 		}
 
-		final Item model = modelService.get(type, searchParameters);
+		final List<T> model = modelService.getAll(type, searchParameters, page, pageSize, false);
 
 		if (model == null) {
 			status.httpStatus(HttpStatus.NOT_FOUND_404);

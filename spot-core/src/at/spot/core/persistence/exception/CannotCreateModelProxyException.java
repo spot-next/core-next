@@ -3,11 +3,19 @@ package at.spot.core.persistence.exception;
 public class CannotCreateModelProxyException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public CannotCreateModelProxyException(String message, Throwable rootCause) {
+	public CannotCreateModelProxyException(final String message) {
+		super(message);
+	}
+
+	public CannotCreateModelProxyException(final String message, final Throwable rootCause) {
 		super(message, rootCause);
 	}
 
-	public CannotCreateModelProxyException(Throwable rootCause) {
+	public CannotCreateModelProxyException(final Throwable rootCause) {
 		super(rootCause);
+	}
+
+	public CannotCreateModelProxyException() {
+		super();
 	}
 }

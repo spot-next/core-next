@@ -2,6 +2,7 @@ package at.spot.core.infrastructure.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,20 +51,21 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		return persistenceService.load(type, searchParameters);
+		return persistenceService.load(type, searchParameters).collect(Collectors.toList());
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final long start, final long amount, final boolean loadAsProxy) {
+			final int page, final int pageSize, final boolean loadAsProxy) {
 
-		return persistenceService.load(type, searchParameters, start, amount, loadAsProxy);
+		return persistenceService.load(type, searchParameters, page, pageSize, loadAsProxy)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type) {
 
-		return persistenceService.load(type, null);
+		return persistenceService.load(type, null).collect(Collectors.toList());
 	}
 
 	@Override

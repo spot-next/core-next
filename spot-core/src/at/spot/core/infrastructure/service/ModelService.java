@@ -122,8 +122,8 @@ public interface ModelService {
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters, final long start,
-			final long amount, final boolean loadAsProxy);
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters, int page, int pageSize,
+			boolean loadAsProxy);
 
 	/**
 	 * Returns all objects of the given type
