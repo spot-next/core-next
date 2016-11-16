@@ -273,4 +273,5 @@
 		</dependency>
 	</dependencies>
 	<artifactId>spot-core</artifactId>
+	<packaging>pom</packaging>
 </project>

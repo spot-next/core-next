@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.user.User;
@@ -35,7 +34,7 @@ public class DefaultMailBoxService implements MailBoxService {
 				mailbox.owner = owner;
 				modelService.save(mailbox);
 			}
-		} catch (ModelNotFoundException | ModelSaveException | ModelNotUniqueException e) {
+		} catch (ModelSaveException | ModelNotUniqueException e) {
 			e.printStackTrace();
 		}
 

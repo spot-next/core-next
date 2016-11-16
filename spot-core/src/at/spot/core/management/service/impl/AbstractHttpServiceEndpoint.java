@@ -20,12 +20,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
+import at.spot.core.infrastructure.spring.support.Registry;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
 import at.spot.core.support.util.ClassUtil;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformer;
 import spark.Route;
 import spark.Spark;
 import spark.route.HttpMethod;
@@ -58,36 +60,37 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			for (final Method m : this.getClass().getMethods()) {
 				final Handler handler = ClassUtil.getAnnotation(m, Handler.class);
 
+				ResponseTransformer transformer = Registry.getApplicationContext()
+						.getBean(handler.responseTransformer());
+
 				if (handler != null && handler.method() == HttpMethod.get) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					get(handler.pathMapping(), handler.mimeType(), route, handler.responseTransformer().newInstance());
+					get(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 
 				if (handler != null && handler.method() == HttpMethod.post) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					post(handler.pathMapping(), handler.mimeType(), route, handler.responseTransformer().newInstance());
+					post(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 
 				if (handler != null && handler.method() == HttpMethod.put) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					put(handler.pathMapping(), handler.mimeType(), route, handler.responseTransformer().newInstance());
+					put(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 
 				if (handler != null && handler.method() == HttpMethod.delete) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					delete(handler.pathMapping(), handler.mimeType(), route,
-							handler.responseTransformer().newInstance());
+					delete(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 
 				if (handler != null && handler.method() == HttpMethod.head) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					head(handler.pathMapping(), handler.mimeType(), route, handler.responseTransformer().newInstance());
+					head(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 
 				if (handler != null && handler.method() == HttpMethod.patch) {
 					final Route route = new HttpRoute(this, m, handler.mimeType());
-					patch(handler.pathMapping(), handler.mimeType(), route,
-							handler.responseTransformer().newInstance());
+					patch(handler.pathMapping(), handler.mimeType(), route, transformer);
 				}
 			}
 
