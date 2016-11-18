@@ -55,4 +55,8 @@ public class MiscUtil {
 
 		return defaultValue;
 	}
+
+	public static String removeEnclosingQuotes(final String string) {
+		return string.replaceAll("^\"|\"$", "");
+	}
 }

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import com.fatboyindustrial.gsonjodatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import at.spot.core.infrastructure.service.SerializationService;
 
@@ -50,6 +52,12 @@ public class DefaultSerializationService implements SerializationService {
 	@Override
 	public <T> T fromJson(final String value, final Class<T> type) {
 		return gson.fromJson(value, type);
+	}
+
+	@Override
+	public JsonObject fromJson(final String value) {
+		final JsonElement element = gson.fromJson(value, JsonElement.class);
+		return element.getAsJsonObject();
 	}
 
 	@Override

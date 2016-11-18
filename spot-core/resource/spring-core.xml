@@ -70,9 +70,9 @@
 
 
 	<!-- converters -->
-	<bean name="abstractPopulatingConverter"
-		class="at.spot.core.management.converter.AbstractPopulatingConverter"
-		abstract="true" />
+<!-- 	<bean name="abstractPopulatingConverter" -->
+<!-- 		class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
+<!-- 		abstract="true" /> -->
 
 	<bean name="itemTypeConverter" parent="genericPopulatingConverter">
 		<property name="targetClass"

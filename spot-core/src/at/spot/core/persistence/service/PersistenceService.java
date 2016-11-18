@@ -81,6 +81,29 @@ public interface PersistenceService {
 			final int page, final int pageSize, boolean loadAsProxy);
 
 	/**
+	 * Returns an object based on the given search parameters (key = property
+	 * name, value = property value).
+	 * 
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
+	 * @param start
+	 *            defines the amount of items that are being skipped.
+	 * @param amount
+	 *            starting from the start param this is the amount of items that
+	 *            will be returned.
+	 * @param loadAsProxy
+	 *            the items will be just proxies that are lazy-loaded.
+	 * @param
+	 * @return minCountForParallelStream if the amount of items to be processed
+	 *         is greater than this value, a parallel stream is used instead of
+	 *         a regular one.
+	 */
+	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream);
+
+	/**
 	 * Fills the given proxy item with it's property values.
 	 * 
 	 * @param pk

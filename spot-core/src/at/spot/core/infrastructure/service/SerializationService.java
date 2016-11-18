@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.service;
 
+import com.google.gson.JsonObject;
+
 public interface SerializationService {
 	<T extends Object> String toJson(T object);
 
@@ -10,6 +12,8 @@ public interface SerializationService {
 	<T extends Object> String toPropertyList(T object);
 
 	<T extends Object> T fromJson(String value, Class<T> type);
+
+	JsonObject fromJson(final String value);
 
 	<T extends Object> T fromXml(String value, Class<T> type);
 

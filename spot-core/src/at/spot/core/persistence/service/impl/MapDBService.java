@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -276,29 +277,44 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		return load(type, searchParameters, 0, 0, false);
+		return load(type, searchParameters, 0, 0, false, null);
 	}
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
+		return load(type, searchParameters, 0, 0, false, null);
+	}
+
+	@Override
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream) {
+
 		Stream<T> foundItems = null;
 
 		try {
 			foundItems = threadPool.submit(() -> {
 				Stream<Long> stream = null;
+				Set<Long> pks = null;
+
 				if (searchParameters != null && !searchParameters.isEmpty()) {
-					stream = getDataStorageForType(type).get(searchParameters).parallelStream();
+					pks = getDataStorageForType(type).get(searchParameters);
 				} else {
-					stream = getDataStorageForType(type).getAll().stream();
+					pks = getDataStorageForType(type).getAll();
+				}
+
+				if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {
+					stream = pks.parallelStream();
+				} else {
+					stream = pks.stream();
 				}
 
 				if (page >= 0 && pageSize > 0) {
 					stream = stream.skip(page * pageSize).limit(pageSize);
 				}
 
-				return stream.map((pk) -> {
+				Stream<T> retStream = stream.map((pk) -> {
 					try {
 						return load(type, pk);
 					} catch (final ModelNotFoundException e1) {
@@ -307,6 +323,12 @@ public class MapDBService implements PersistenceService {
 
 					return null;
 				});
+
+				if (pageSize >= minCountForParallelStream) {
+					retStream = retStream.parallel();
+				}
+
+				return retStream;
 			}).get();
 		} catch (InterruptedException | ExecutionException e) {
 			loggingService.exception("Can't load items", e);

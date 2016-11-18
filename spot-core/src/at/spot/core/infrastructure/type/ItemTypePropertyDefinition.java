@@ -6,15 +6,15 @@ package at.spot.core.infrastructure.type;
 public class ItemTypePropertyDefinition {
 
 	public final String name;
-	public final String returnType;
+	public final Class<?> returnType;
 	public final boolean isReadable;
 	public final boolean isWritable;
 	public final boolean isInitial;
 	public final boolean isUnique;
 	public final String itemValueProvider;
 
-	public ItemTypePropertyDefinition(String name, String returnType, boolean isReadable, boolean isWritable,
-			boolean isInitial, boolean isUnique, String itemValueProvider) {
+	public ItemTypePropertyDefinition(final String name, final Class<?> returnType, final boolean isReadable,
+			final boolean isWritable, final boolean isInitial, final boolean isUnique, final String itemValueProvider) {
 
 		this.name = name;
 		this.returnType = returnType;
@@ -23,5 +23,9 @@ public class ItemTypePropertyDefinition {
 		this.isInitial = isInitial;
 		this.isUnique = isUnique;
 		this.itemValueProvider = itemValueProvider;
+	}
+
+	public String returnTypeAsString() {
+		return returnType.getName();
 	}
 }

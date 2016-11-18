@@ -180,9 +180,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			final Property annotation = ClassUtil.getAnnotation(m, Property.class);
 
 			if (annotation != null) {
-				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(),
-						m.getType().getName(), annotation.readable(), annotation.writable(), annotation.initial(),
-						annotation.unique(), annotation.itemValueProvider());
+				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getType(),
+						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
+						annotation.itemValueProvider());
 
 				propertyMembers.put(m.getName(), def);
 			}
@@ -203,9 +203,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 				name = Introspector.decapitalize(name);
 
-				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(),
-						m.getReturnType().getName(), annotation.readable(), annotation.writable(), annotation.initial(),
-						annotation.unique(), annotation.itemValueProvider());
+				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getReturnType(),
+						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
+						annotation.itemValueProvider());
 
 				propertyMembers.put(name, def);
 			}

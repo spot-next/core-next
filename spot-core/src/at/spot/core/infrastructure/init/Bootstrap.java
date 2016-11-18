@@ -13,18 +13,16 @@ public class Bootstrap {
 		final Reflections reflections = new Reflections("");
 		final Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
 
-		AnnotationConfigApplicationContext ctx = null;
+		// create a generic spring context
+		final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 
 		try {
-			// create a generic spring context
-			ctx = new AnnotationConfigApplicationContext();
-
 			// register all found module inits in that spring context
 			for (final Class<? extends ModuleInit> init : inits) {
 				init.newInstance().injectBeanDefinition(ctx);
 			}
 
-			ctx.registerShutdownHook();
+			// ctx.registerShutdownHook();
 
 			ctx.refresh();
 			ctx.start();

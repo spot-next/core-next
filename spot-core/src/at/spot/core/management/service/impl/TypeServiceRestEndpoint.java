@@ -15,6 +15,7 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
+import at.spot.core.infrastructure.type.MimeType;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.exception.RemoteServiceInitException;
@@ -26,7 +27,7 @@ import spark.Response;
 public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	private static final String CONFIG_KEY_PORT = "service.type.rest.port";
-	private static final int DEFAULT_PORT = 9000;
+	private static final int DEFAULT_PORT = 19000;
 
 	@Autowired
 	protected TypeService typeService;
@@ -44,7 +45,7 @@ public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		super.init();
 	}
 
-	@Handler(pathMapping = "/types/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public Object getTypes(final Request request, final Response response) throws UnknownTypeException {
 
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
@@ -59,7 +60,7 @@ public class TypeServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return types;
 	}
 
-	@Handler(pathMapping = "/types/:typecode", mimeType = "application/json", responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public Object getType(final Request request, final Response response) throws UnknownTypeException {
 		GenericItemDefinitionData ret = null;
 

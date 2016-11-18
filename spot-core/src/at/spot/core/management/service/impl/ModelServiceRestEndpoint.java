@@ -6,14 +6,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -21,16 +24,17 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.type.MimeType;
 import at.spot.core.management.annotation.Handler;
-import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.data.PageableData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.exception.QueryException;
 import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
@@ -41,7 +45,7 @@ import spark.route.HttpMethod;
 public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	private static final String CONFIG_KEY_PORT = "service.model.rest.port";
-	private static final int DEFAULT_PORT = 9000;
+	private static final int DEFAULT_PORT = 19000;
 
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
@@ -53,13 +57,12 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	protected ConfigurationService configurationService;
 
 	@Autowired
-	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
-
-	@Autowired
 	protected ModelService modelService;
 
 	@Autowired
 	protected QueryService queryService;
+
+	protected final Gson gson = new Gson();
 
 	@PostConstruct
 	@Override
@@ -76,18 +79,15 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @return
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public Object getModels(final Request request, final Response response) throws UnknownTypeException {
-
 		final RequestStatus status = RequestStatus.success();
 
 		List<? extends Item> models = new ArrayList<>();
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final String typeCode = request.params(":typecode");
-
-		final Class<? extends Item> type = typeService.getType(typeCode);
+		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
 
 		models = modelService.getAll(type, null, page - 1, pageSize, false);
 
@@ -103,7 +103,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelNotFoundException
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object getModel(final Request request, final Response response)
 			throws ModelNotFoundException, UnknownTypeException {
 
@@ -123,7 +123,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a SPeL expression.
+	 * Gets an item based on the search query. The query is a JEXL expression.
 	 * <br/>
 	 * 
 	 * <br/>
@@ -137,18 +137,28 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @return
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/:query", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> Object queryModel(final Request request, final Response response)
+	public <T extends Item> Object queryModelByQuery(final Request request, final Response response)
 			throws UnknownTypeException {
 
 		final RequestStatus status = RequestStatus.success();
 
-		final String query = request.params(":query");
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
+		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
 
-		if (StringUtils.isNotBlank(query)) {
-			// ELParser.parseExpression(query, contextObjects)
-			// queryService.query(type, condition, orderBy, page, pageSize)
+		final String[] queryStrings = request.queryParamsValues("query");
 
+		if (queryStrings != null && queryStrings.length > 0) {
+			final String queryString = MiscUtil.removeEnclosingQuotes(queryStrings[0]);
+
+			try {
+				final QueryResult<T> result = (QueryResult<T>) queryService.query(type, queryString, null, page,
+						pageSize);
+
+				status.payload(result);
+			} catch (final QueryException e) {
+				status.httpStatus(HttpStatus.BAD_REQUEST_400).error("Cannot execute given query: " + e.getMessage());
+			}
 		} else {
 			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Query could not be parsed.");
 		}
@@ -168,10 +178,8 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @return
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object queryModelByExample(final Request request, final Response response)
 			throws UnknownTypeException {
-
 		final RequestStatus status = RequestStatus.success();
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
@@ -179,6 +187,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+
 		final Map<String, String[]> query = request.queryMap().toMap();
 		final Map<String, Comparable<?>> searchParameters = new HashMap<>();
 
@@ -186,19 +195,14 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			final String[] queryValues = query.get(prop.name);
 
 			if (queryValues != null && queryValues.length == 1) {
-				try {
-					final Class<?> propertyType = Class.forName(prop.returnType);
+				final Class<?> propertyType = prop.returnType;
 
-					final Object value = serializationService.fromJson(queryValues[0], propertyType);
+				final Object value = serializationService.fromJson(queryValues[0], propertyType);
 
-					if (value instanceof Comparable | value == null) {
-						searchParameters.put(prop.name, (Comparable<?>) value);
-					} else {
-						status.warn(
-								String.format("Unknown attribute value %s=%S in query", prop.name, value.toString()));
-					}
-				} catch (final ClassNotFoundException e) {
-					throw new UnknownTypeException("Type class not found.");
+				if (value instanceof Comparable | value == null) {
+					searchParameters.put(prop.name, (Comparable<?>) value);
+				} else {
+					status.warn(String.format("Unknown attribute value %s=%S in query", prop.name, value.toString()));
 				}
 			} else {
 				status.warn(
@@ -206,15 +210,28 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			}
 		}
 
-		final List<T> model = modelService.getAll(type, searchParameters, page, pageSize, false);
+		final List<T> models = modelService.getAll(type, searchParameters, page, pageSize, false);
 
-		if (model == null) {
+		if (models == null) {
 			status.httpStatus(HttpStatus.NOT_FOUND_404);
 		} else {
-			status.payload(model);
+			status.payload(models);
 		}
 
 		return returnDataAndStatus(response, status);
+	}
+
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> Object queryModel(final Request request, final Response response)
+			throws UnknownTypeException {
+
+		final String[] queryParamValues = request.queryParamsValues("query");
+
+		if (queryParamValues != null && queryParamValues.length > 0) {
+			return queryModelByQuery(request, response);
+		} else {
+			return queryModelByExample(request, response);
+		}
 	}
 
 	/**
@@ -227,13 +244,13 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> RequestStatus createModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
 		final RequestStatus status = RequestStatus.success();
 
-		final T item = deserializeItem(request);
+		final T item = deserializeToItem(request);
 
 		if (item.pk != null) {
 			status.warn("PK was reset, itmay not be set for new items.");
@@ -260,7 +277,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> RequestStatus deleteModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
@@ -295,13 +312,13 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> RequestStatus updateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
 		final RequestStatus status = RequestStatus.success();
 
-		final T item = deserializeItem(request);
+		final T item = deserializeToItem(request);
 
 		if (item.pk == null) {
 			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You cannot update a new item (PK was null)");
@@ -319,35 +336,57 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return returnDataAndStatus(response, status);
 	}
 
-	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode", mimeType = "application/javascript", responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> RequestStatus partiallyUpdateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
 		final RequestStatus status = RequestStatus.success();
 
-		// final T itemWithNewValues = deserializeItem(request);
-		//
-		// if (itemWithNewValues.pk == null) {
-		// status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You
-		// cannot update a new item (PK was null)");
-		// } else {
-		// try {
-		// // search old item
-		// final T oldItem = (T) modelService.get(itemWithNewValues.getClass(),
-		// itemWithNewValues.pk);
-		//
-		// modelService.save(itemWithNewValues);
-		// response.status(HttpStatus.ACCEPTED_202);
-		// itemWithNewValues.markAsDirty();
-		// } catch (final ModelNotUniqueException e) {
-		// status.httpStatus(HttpStatus.CONFLICT_409)
-		// .error("Another item with the same uniqueness criteria (but a
-		// different PK was found.");
-		// } catch (final ModelNotFoundException e) {
-		// status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the
-		// given PK found to update.");
-		// }
-		// }
+		// get type
+		final String typeCode = request.params(":typecode");
+		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+
+		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+
+		// get body as json object
+		final JsonObject content = deserializeToJsonToken(request);
+
+		if (content != null && pk >= 0) {
+			try {
+				// search old item
+				final T oldItem = modelService.get(type, pk);
+
+				final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
+						.getItemTypeProperties(type);
+
+				for (final Entry<String, JsonElement> prop : content.entrySet()) {
+					final String key = prop.getKey();
+					final JsonElement value = prop.getValue();
+
+					final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
+
+					// if the json property really exists on the item, then
+					// continue
+					if (propDef != null) {
+						final Object parsedValue = gson.fromJson(value, propDef.returnType);
+						oldItem.setProperty(prop.getKey(), parsedValue);
+					}
+				}
+
+				oldItem.markAsDirty();
+
+				modelService.save(oldItem);
+
+				response.status(HttpStatus.ACCEPTED_202);
+			} catch (final ModelNotUniqueException e) {
+				status.httpStatus(HttpStatus.CONFLICT_409)
+						.error("Another item with the same uniqueness criteria (but a different PK was found.");
+			} catch (final ModelNotFoundException e) {
+				status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the given PK found to update.");
+			}
+		} else {
+			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Could not deserialize body json content");
+		}
 
 		return returnDataAndStatus(response, status);
 	}
@@ -363,11 +402,17 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return status;
 	}
 
-	protected <T extends Item> T deserializeItem(final Request request) throws UnknownTypeException {
+	protected <T extends Item> T deserializeToItem(final Request request) throws UnknownTypeException {
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
 
 		return serializationService.fromJson(request.body(), type);
+	}
+
+	protected JsonObject deserializeToJsonToken(final Request request) throws UnknownTypeException {
+		final String content = request.body();
+
+		return serializationService.fromJson(content);
 	}
 
 	@Override

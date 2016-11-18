@@ -1,6 +1,6 @@
 package at.spot.core.persistence.exception;
 
-public class QueryException extends Exception {
+public class QueryException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public QueryException(final String message) {

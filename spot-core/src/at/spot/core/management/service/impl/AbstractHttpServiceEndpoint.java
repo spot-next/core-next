@@ -1,5 +1,6 @@
 package at.spot.core.management.service.impl;
 
+import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.exception;
 import static spark.Spark.get;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,37 +62,45 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			for (final Method m : this.getClass().getMethods()) {
 				final Handler handler = ClassUtil.getAnnotation(m, Handler.class);
 
-				ResponseTransformer transformer = Registry.getApplicationContext()
-						.getBean(handler.responseTransformer());
+				if (handler != null) {
+					ResponseTransformer transformer = null;
+					final String mimeType = handler.mimeType().toString();
+					final Route route = new HttpRoute(this, m, mimeType);
 
-				if (handler != null && handler.method() == HttpMethod.get) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					get(handler.pathMapping(), handler.mimeType(), route, transformer);
-				}
+					if (handler.responseTransformer() != null) {
+						transformer = Registry.getApplicationContext().getBean(handler.responseTransformer());
+					}
 
-				if (handler != null && handler.method() == HttpMethod.post) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					post(handler.pathMapping(), handler.mimeType(), route, transformer);
-				}
+					if (handler.method() == HttpMethod.get) {
+						get(handler.pathMapping(), mimeType, route, transformer);
+					}
 
-				if (handler != null && handler.method() == HttpMethod.put) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					put(handler.pathMapping(), handler.mimeType(), route, transformer);
-				}
+					if (handler.method() == HttpMethod.post) {
+						post(handler.pathMapping(), mimeType, route, transformer);
+					}
 
-				if (handler != null && handler.method() == HttpMethod.delete) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					delete(handler.pathMapping(), handler.mimeType(), route, transformer);
-				}
+					if (handler.method() == HttpMethod.put) {
+						put(handler.pathMapping(), mimeType, route, transformer);
+					}
 
-				if (handler != null && handler.method() == HttpMethod.head) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					head(handler.pathMapping(), handler.mimeType(), route, transformer);
-				}
+					if (handler.method() == HttpMethod.delete) {
+						delete(handler.pathMapping(), mimeType, route, transformer);
+					}
 
-				if (handler != null && handler.method() == HttpMethod.patch) {
-					final Route route = new HttpRoute(this, m, handler.mimeType());
-					patch(handler.pathMapping(), handler.mimeType(), route, transformer);
+					if (handler.method() == HttpMethod.head) {
+						head(handler.pathMapping(), mimeType, route, transformer);
+					}
+
+					if (handler.method() == HttpMethod.patch) {
+						patch(handler.pathMapping(), mimeType, route, transformer);
+					}
+
+					// handler of last resort, eg for 404 error pages
+					// get("*", MimeType.JAVASCRIPT.toString(), (request,
+					// response) -> {
+					// return RequestStatus.notFound().error("The requested URL
+					// is not available.");
+					// }, new JsonResponseTransformer());
 				}
 			}
 
@@ -103,15 +113,26 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				response.body(serializationService.toJson(status));
 			});
 
+			before((request, response) -> {
+				// check permissions
+			});
+
 			// after((request, response) -> {
 			// response.header("Content-Encoding", "gzip");
 			// });
 
 		} catch (final Exception e) {
-			loggingService.warn(
+			loggingService.exception(
 					String.format("Cannot start HTTP service (%s), there is already an instance running on that port",
-							getBeanName()));
+							getBeanName()),
+					e);
 		}
+	}
+
+	@Override
+	@PreDestroy
+	public void shutdown() {
+		Spark.stop();
 	}
 
 	/**

@@ -21,6 +21,13 @@ public interface RemoteInterfaceServiceEndpoint {
 	void init() throws RemoteServiceInitException;
 
 	/**
+	 * Is called when a shutdown signal is received (eg. from spring).
+	 * 
+	 * @throws RemoteServiceInitException
+	 */
+	void shutdown() throws RemoteServiceInitException;
+
+	/**
 	 * Gets the port that is being used for this service.
 	 * 
 	 * @param port

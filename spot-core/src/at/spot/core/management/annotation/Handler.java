@@ -6,7 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import at.spot.core.management.transformer.PlainTExtResponseTransformer;
+import at.spot.core.infrastructure.type.MimeType;
+import at.spot.core.management.transformer.PlainTextResponseTransformer;
 import spark.ResponseTransformer;
 import spark.route.HttpMethod;
 
@@ -24,11 +25,11 @@ public @interface Handler {
 	/**
 	 * Defines the response type.
 	 */
-	String mimeType() default "application/json";
+	MimeType mimeType() default MimeType.JAVASCRIPT;
 
 	/**
 	 * Defines the {@link ResponseTransformer} that will be used to convert the
 	 * response in the desired format.
 	 */
-	Class<? extends ResponseTransformer> responseTransformer() default PlainTExtResponseTransformer.class;
+	Class<? extends ResponseTransformer> responseTransformer() default PlainTextResponseTransformer.class;
 }
