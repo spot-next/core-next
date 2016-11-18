@@ -49,4 +49,10 @@ public class DefaultImapServiceEndpoint extends AbstractService implements ImapS
 		return ret;
 	}
 
+	@Override
+	public void shutdown() throws RemoteServiceInitException {
+		// TODO Auto-generated method stub
+
+	}
+
 }

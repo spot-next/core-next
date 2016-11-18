@@ -43,6 +43,8 @@ import at.spot.core.support.util.ClassUtil;
 @Service
 public class MapDBService implements PersistenceService {
 
+	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
+
 	public static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
 	public static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
 
@@ -284,7 +286,7 @@ public class MapDBService implements PersistenceService {
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
-		return load(type, searchParameters, 0, 0, false, null);
+		return load(type, searchParameters, page, pageSize, loadAsProxy, MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING);
 	}
 
 	@Override
@@ -310,7 +312,7 @@ public class MapDBService implements PersistenceService {
 					stream = pks.stream();
 				}
 
-				if (page >= 0 && pageSize > 0) {
+				if (pageSize > 0) {
 					stream = stream.skip(page * pageSize).limit(pageSize);
 				}
 
@@ -324,7 +326,7 @@ public class MapDBService implements PersistenceService {
 					return null;
 				});
 
-				if (pageSize >= minCountForParallelStream) {
+				if (minCountForParallelStream != null && (pageSize >= minCountForParallelStream)) {
 					retStream = retStream.parallel();
 				}
 
