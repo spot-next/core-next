@@ -37,16 +37,34 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
 				<configuration>
-					<jarpath>target/</jarpath>
-					<archive>
-						<manifest>
-							<mainClass>at.spot.mail.MailInit</mainClass>
-						</manifest>
-					</archive>
+					<transformers>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+							<manifestEntries>
+								<Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class>
+							</manifestEntries>
+						</transformer>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+							<resource>META-INF/spring.handlers</resource>
+						</transformer>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+							<resource>META-INF/spring.schemas</resource>
+						</transformer>
+					</transformers>
 				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -132,46 +150,33 @@
 
 		<!-- third party libs -->
 
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.github.tntim96</groupId> -->
+<!-- 			<artifactId>fakesmtp</artifactId> -->
+<!-- 			<version>2.0</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.slf4j</groupId> -->
+<!-- 					<artifactId>slf4j-api</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>ch.qos.logback</groupId> -->
+<!-- 					<artifactId>logback-classic</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+
 		<dependency>
-			<groupId>com.github.tntim96</groupId>
-			<artifactId>fakesmtp</artifactId>
-			<version>2.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.subethamail</groupId>
+			<artifactId>subethasmtp</artifactId>
+			<version>3.1.7</version>
 		</dependency>
-
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.dhatim</groupId> -->
-		<!-- <artifactId>fakesmtp-server</artifactId> -->
-		<!-- <version>0.0.6</version> -->
-		<!-- </dependency> -->
-
-
-
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.subethamail</groupId> -->
-		<!-- <artifactId>subethasmtp</artifactId> -->
-		<!-- <version>3.1.7</version> -->
-		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.james</groupId>
 			<artifactId>james-server-core-library</artifactId>
 			<version>3.0-M2</version>
 		</dependency>
-
-
-
 
 	</dependencies>
 </project>

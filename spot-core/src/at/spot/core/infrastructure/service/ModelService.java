@@ -5,6 +5,7 @@ import java.util.Map;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
@@ -24,7 +25,7 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be
@@ -34,7 +35,8 @@ public interface ModelService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	<T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void saveAll(T... items)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be
@@ -43,7 +45,8 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void saveAll(List<T> models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
 	 * Returns an {@link Item} based on its PK.

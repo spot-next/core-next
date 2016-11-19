@@ -4,6 +4,8 @@ package at.spot.core.infrastructure.service.impl;
 import java.util.List;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,19 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 
 	@Autowired
 	protected List<Properties> configuration;
+
+	@PostConstruct
+	public void init() {
+		// List<Properties> props =
+		// Registry.getApplicationContext().getBeanNamesForType(Properties.class);
+
+		// Collections.sort(configuration, new Comparator<Properties>() {
+		// @Override
+		// public int compare(Properties o1, Properties o2) {
+		// return 0;
+		// }
+		// });
+	}
 
 	@Override
 	public String getString(String key) {

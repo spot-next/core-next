@@ -169,4 +169,9 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			return "User";
 		}
 	}
+
+	@Override
+	public void shutdown() throws RemoteServiceInitException {
+		smtpServer.stop();
+	}
 }

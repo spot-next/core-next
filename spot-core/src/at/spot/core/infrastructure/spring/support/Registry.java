@@ -1,13 +1,9 @@
 package at.spot.core.infrastructure.spring.support;
 
-import javax.inject.Singleton;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.stereotype.Component;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
@@ -19,9 +15,7 @@ import at.spot.core.persistence.service.PersistenceService;
  * some getters for commonly used Services.
  *
  */
-@Component
-@Singleton
-public class Registry implements ApplicationContextAware {
+public class Registry {
 
 	private static ApplicationContext context;
 
@@ -30,8 +24,7 @@ public class Registry implements ApplicationContextAware {
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
 
-	@Override
-	public void setApplicationContext(ApplicationContext ctx) throws BeansException {
+	public static void setApplicationContext(ApplicationContext ctx) throws BeansException {
 		context = ctx;
 	}
 

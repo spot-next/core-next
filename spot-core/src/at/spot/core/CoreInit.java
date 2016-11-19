@@ -55,7 +55,7 @@ public class CoreInit extends ModuleInit {
 	@Override
 	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
-		reader.loadBeanDefinitions("spring-core.xml");
+		reader.loadBeanDefinitions("classpath:spring-core.xml");
 	}
 
 	public void run() {
@@ -161,7 +161,7 @@ public class CoreInit extends ModuleInit {
 		runMigrateScripts();
 
 		// this is just for testing
-//		run();
+		// run();
 	}
 
 	@Log(message = "Running data migration scripts ...")

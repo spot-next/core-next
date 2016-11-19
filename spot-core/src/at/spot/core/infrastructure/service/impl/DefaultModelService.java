@@ -1,14 +1,20 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
+import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -21,18 +27,31 @@ public class DefaultModelService extends AbstractModelService {
 	@Autowired
 	protected PersistenceService persistenceService;
 
+	@Autowired
+	protected ValidationService validationService;
+
 	@Override
-	public <T extends Item> void save(final T model) throws ModelSaveException, ModelNotUniqueException {
-		persistenceService.save(model);
+	public <T extends Item> void save(final T model)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+
+		saveAll(model);
 	}
 
 	@Override
-	public <T extends Item> void saveAll(final T... items) throws ModelSaveException, ModelNotUniqueException {
-		persistenceService.save(items);
+	public <T extends Item> void saveAll(final T... models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+
+		saveAll(Arrays.asList(models));
 	}
 
 	@Override
-	public <T extends Item> void saveAll(final List<T> models) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void saveAll(final List<T> models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+
+		for (T model : models) {
+			validateModel(model);
+		}
+
 		persistenceService.save(models);
 	}
 
@@ -113,4 +132,11 @@ public class DefaultModelService extends AbstractModelService {
 		persistenceService.remove(items);
 	}
 
+	protected <T extends Item> void validateModel(T model) throws ModelValidationException {
+		Set<ConstraintViolation<T>> errors = validationService.validate(model);
+
+		if (!errors.isEmpty()) {
+			throw new ModelValidationException(errors);
+		}
+	}
 }

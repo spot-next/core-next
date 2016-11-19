@@ -11,8 +11,6 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
 
-<!-- 	<import resource="classpath*:spring-core.xml" /> -->
-
 	<context:spring-configured />
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
@@ -21,6 +19,7 @@
 
 	<util:properties id="mailConfiguration" location="classpath*:mail.properties"
 		scope="singleton" />
+
 
 	<!-- model package scan path -->
 	<bean id="mailModuleDefinition" class="at.spot.core.infrastructure.type.ModuleDefinition">

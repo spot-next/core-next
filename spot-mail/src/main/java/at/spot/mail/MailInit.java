@@ -25,7 +25,7 @@ public class MailInit extends ModuleInit {
 	@Override
 	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
-		reader.loadBeanDefinitions("spring-mail.xml");
+		reader.loadBeanDefinitions("classpath:spring-mail.xml");
 	}
 
 	@Log(message = "Starting mail module ...")

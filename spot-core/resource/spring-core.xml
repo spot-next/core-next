@@ -50,11 +50,17 @@
 		</property>
 	</bean>
 
-	<util:properties id="coreConfiguration" location="classpath*:core.properties" scope="singleton" />
+	<!-- JSR-303 validator for spring -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<util:properties id="coreConfiguration" location="classpath*:core.properties"
+		scope="singleton" />
+	<!-- <alias name="coreConfiguration" alias="configuration" /> -->
 
 
 	<!-- aliases -->
-	
+
 	<!-- services -->
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="consoleLoggingService" alias="loggingService" />
@@ -65,14 +71,14 @@
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
 	<alias name="defaultSerializationService" alias="serializationService" />
-	
+
 	<!-- strategies -->
 
 
 	<!-- converters -->
-<!-- 	<bean name="abstractPopulatingConverter" -->
-<!-- 		class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
-<!-- 		abstract="true" /> -->
+	<!-- <bean name="abstractPopulatingConverter" -->
+	<!-- class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
+	<!-- abstract="true" /> -->
 
 	<bean name="itemTypeConverter" parent="genericPopulatingConverter">
 		<property name="targetClass"
@@ -83,6 +89,8 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean name="abstractService" class="at.spot.core.infrastructure.service.impl.AbstractService" abstract="true" />
+
+	<bean name="abstractService"
+		class="at.spot.core.infrastructure.service.impl.AbstractService"
+		abstract="true" />
 </beans>

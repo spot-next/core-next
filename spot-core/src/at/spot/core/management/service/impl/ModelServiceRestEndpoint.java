@@ -18,8 +18,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.ModelService;
@@ -33,8 +37,6 @@ import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
@@ -45,7 +47,7 @@ import spark.route.HttpMethod;
 public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	private static final String CONFIG_KEY_PORT = "service.model.rest.port";
-	private static final int DEFAULT_PORT = 19000;
+	private static final int DEFAULT_PORT = 19001;
 
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
@@ -260,7 +262,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		try {
 			modelService.save(item);
 			response.status(HttpStatus.CREATED_201);
-		} catch (final ModelNotUniqueException e) {
+		} catch (final ModelNotUniqueException | ModelValidationException e) {
 			status.httpStatus(HttpStatus.CONFLICT_409)
 					.error("Another item with the same uniqueness criteria (but a different PK was found.");
 		}
@@ -327,7 +329,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				modelService.save(item);
 				response.status(HttpStatus.ACCEPTED_202);
 				item.markAsDirty();
-			} catch (final ModelNotUniqueException e) {
+			} catch (final ModelNotUniqueException | ModelValidationException e) {
 				status.httpStatus(HttpStatus.CONFLICT_409)
 						.error("Another item with the same uniqueness criteria (but a different PK was found.");
 			}
@@ -378,7 +380,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				modelService.save(oldItem);
 
 				response.status(HttpStatus.ACCEPTED_202);
-			} catch (final ModelNotUniqueException e) {
+			} catch (final ModelNotUniqueException | ModelValidationException e) {
 				status.httpStatus(HttpStatus.CONFLICT_409)
 						.error("Another item with the same uniqueness criteria (but a different PK was found.");
 			} catch (final ModelNotFoundException e) {
