@@ -1,5 +1,6 @@
 package at.spot.core.persistence.service.impl;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -41,7 +42,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final QueryCondition<T> query,
 			final Comparator<T> orderBy, final int page, final int pageSize) throws QueryException {
 
-		List<T> items = null;
+		List<T> items = Collections.emptyList();
 
 		try {
 			items = threadPool.submit((Callable<List<T>>) () -> {
@@ -57,7 +58,12 @@ public class DefaultQueryService extends AbstractService implements QueryService
 				return stream.collect(Collectors.toList());
 			}).get();
 		} catch (InterruptedException | ExecutionException e) {
-			throw new QueryException("Cannot execute search query.", e);
+
+			if (e.getCause() instanceof QueryException) {
+				throw (QueryException) e.getCause();
+			}
+
+			throw new QueryException("Cannot execute search query: " + e.getMessage(), e);
 		} catch (final QueryException e) {
 			throw e;
 		}
@@ -77,33 +83,37 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final String jexlQuery,
 			final Comparator<T> orderBy, final int page, final int pageSize) throws QueryException {
 
-		final QueryResult<T> result = query(type, (QueryCondition<T>) (item) -> {
-			try {
-				// Create or retrieve an engine
-				final JexlEngine jexl = new JexlBuilder().create();
-
-				// Create an jexl expression
-				final String jexlExp = jexlQuery;
-				final JexlExpression e = jexl.createExpression(jexlExp);
-
-				// Create a context and add data
-				final JexlContext jc = new MapContext();
-				jc.set("item", item);
-
-				// Now evaluate the expression, getting the result
-				final Object ev = e.evaluate(jc);
-
-				if (ev instanceof Boolean) {
-					return (Boolean) ev;
-				} else {
-					return false;
-				}
-			} catch (final JexlException e) {
-				throw new QueryException(e.getMessage(), e);
-			}
+		final QueryResult<T> result = query(type, (i) -> {
+			return evaluateJexl(jexlQuery, i);
 		}, orderBy, page, pageSize);
 
 		return result;
+	}
+
+	protected <T extends Item> boolean evaluateJexl(final String jexlQuery, final T item) {
+		try {
+			// Create or retrieve an engine
+			final JexlEngine jexl = new JexlBuilder().create();
+
+			// Create an jexl expression
+			final String jexlExp = jexlQuery;
+			final JexlExpression e = jexl.createExpression(jexlExp);
+
+			// Create a context and add data
+			final JexlContext jc = new MapContext();
+			jc.set("item", item);
+
+			// Now evaluate the expression, getting the result
+			final Object ev = e.evaluate(jc);
+
+			if (ev instanceof Boolean) {
+				return (Boolean) ev;
+			} else {
+				return false;
+			}
+		} catch (final JexlException e) {
+			throw new QueryException(e.getMessage(), e);
+		}
 	}
 
 	@PostConstruct

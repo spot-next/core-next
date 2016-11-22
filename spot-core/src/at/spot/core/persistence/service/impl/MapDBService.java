@@ -313,7 +313,7 @@ public class MapDBService implements PersistenceService {
 				}
 
 				if (pageSize > 0) {
-					stream = stream.skip(page * pageSize).limit(pageSize);
+					stream = stream.skip((page - 1) * pageSize).limit(pageSize);
 				}
 
 				Stream<T> retStream = stream.map((pk) -> {

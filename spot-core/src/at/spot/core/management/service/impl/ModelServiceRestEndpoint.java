@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -17,9 +18,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -37,6 +35,8 @@ import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
@@ -262,9 +262,16 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		try {
 			modelService.save(item);
 			response.status(HttpStatus.CREATED_201);
-		} catch (final ModelNotUniqueException | ModelValidationException e) {
+		} catch (final ModelNotUniqueException e) {
 			status.httpStatus(HttpStatus.CONFLICT_409)
 					.error("Another item with the same uniqueness criteria (but a different PK was found.");
+		} catch (final ModelValidationException e) {
+			final List<String> messages = e.getConstraintViolations().stream().map((c) -> {
+				return String.format("%s.%s could not be set to {%s}: %s", c.getRootBean().getClass().getSimpleName(),
+						c.getPropertyPath(), c.getInvalidValue(), c.getMessage());
+			}).collect(Collectors.toList());
+
+			status.httpStatus(HttpStatus.CONFLICT_409).error(String.join("\n", messages));
 		}
 
 		return returnDataAndStatus(response, status);
