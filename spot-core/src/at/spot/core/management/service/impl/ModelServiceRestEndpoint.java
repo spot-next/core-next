@@ -91,7 +91,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
 
-		models = modelService.getAll(type, null, page - 1, pageSize, false);
+		models = modelService.getAll(type, null, page, pageSize, false);
 
 		return returnDataAndStatus(response, status.payload(new PageableData(models, page, pageSize)));
 	}
@@ -286,7 +286,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> RequestStatus deleteModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 

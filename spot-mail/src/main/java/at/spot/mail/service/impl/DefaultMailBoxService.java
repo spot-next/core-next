@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.user.User;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -20,8 +21,8 @@ public class DefaultMailBoxService implements MailBoxService {
 	protected ModelService modelService;
 
 	@Override
-	public MailBox getMailBoxForUser(User owner) {
-		Map<String, Comparable<?>> condition = new HashMap<>();
+	public MailBox getMailBoxForUser(final User owner) {
+		final Map<String, Comparable<?>> condition = new HashMap<>();
 		condition.put("owner.uid", owner.uid);
 
 		MailBox mailbox = null;
@@ -34,7 +35,7 @@ public class DefaultMailBoxService implements MailBoxService {
 				mailbox.owner = owner;
 				modelService.save(mailbox);
 			}
-		} catch (ModelSaveException | ModelNotUniqueException e) {
+		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
 			e.printStackTrace();
 		}
 
@@ -43,7 +44,7 @@ public class DefaultMailBoxService implements MailBoxService {
 	}
 
 	@Override
-	public MailBox getMailBoxByAlias(String alias) {
+	public MailBox getMailBoxByAlias(final String alias) {
 		// TODO Auto-generated method stub
 		return null;
 	}

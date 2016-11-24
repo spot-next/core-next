@@ -23,6 +23,7 @@ import org.subethamail.smtp.server.SMTPServer;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.type.LogLevel;
@@ -63,7 +64,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 
 		try {
 			this.smtpServer.start();
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			loggingService.exception("Cannot start SMTP server: " + e.getMessage(), e);
 		}
 
@@ -79,7 +80,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			if (mail != null) {
 				try {
 					modelService.save(mail);
-				} catch (ModelSaveException | ModelNotUniqueException e) {
+				} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
 					loggingService.exception("Can't save received mail.", e);
 				}
 			}
@@ -91,13 +92,14 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		return configurationService.getInteger(CONFIG_KEY_PORT, DEFAULT_PORT);
 	}
 
+	@Override
 	public InetAddress getBindAddress() {
 		InetAddress ret = null;
 
 		try {
-			String address = configurationService.getString(CONFIG_KEY_BIND_ADDRESS, DEFAULT_BIND_ADDRESS);
+			final String address = configurationService.getString(CONFIG_KEY_BIND_ADDRESS, DEFAULT_BIND_ADDRESS);
 			ret = InetAddress.getByName(address);
-		} catch (UnknownHostException e) {
+		} catch (final UnknownHostException e) {
 			loggingService.exception(e.getMessage(), e);
 		}
 
@@ -105,17 +107,18 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	}
 
 	@Override
-	public boolean accept(String paramString1, String paramString2) {
+	public boolean accept(final String paramString1, final String paramString2) {
 		return true;
 	}
 
 	@Override
-	public void deliver(String from, String recipient, InputStream data) throws TooMuchDataException, IOException {
+	public void deliver(final String from, final String recipient, final InputStream data)
+			throws TooMuchDataException, IOException {
 		saveMail(from, recipient, data);
 	}
 
-	protected void saveMail(String from, String recipient, InputStream data) throws IOException {
-		Mail mail = new Mail();
+	protected void saveMail(final String from, final String recipient, final InputStream data) throws IOException {
+		final Mail mail = new Mail();
 
 		mail.sender = from;
 		mail.toRecipients.add(recipient);
@@ -128,12 +131,14 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	final class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {
 		private static final String LOGIN_MECHANISM = "LOGIN";
 
+		@Override
 		public AuthenticationHandler create() {
 			return new SMTPAuthHandler();
 		}
 
+		@Override
 		public List<String> getAuthenticationMechanisms() {
-			List result = new ArrayList();
+			final List result = new ArrayList();
 			result.add("LOGIN");
 			return result;
 		}
@@ -149,7 +154,8 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			this.pass = 0;
 		}
 
-		public String auth(String clientInput) {
+		@Override
+		public String auth(final String clientInput) {
 			String prompt;
 
 			if (++this.pass == 1) {
@@ -165,6 +171,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			return prompt;
 		}
 
+		@Override
 		public Object getIdentity() {
 			return "User";
 		}

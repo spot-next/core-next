@@ -53,11 +53,13 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Autowired
 	protected I18nService i18nService;
 
-	protected Locale defaultLocale = i18nService.getDefaultLocale();
+	protected Locale defaultLocale;
 
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
+		defaultLocale = i18nService.getDefaultLocale();
+
 		try {
 			Spark.port(getPort());
 		} catch (final Exception e) {
