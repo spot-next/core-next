@@ -156,7 +156,7 @@ public class MapDBService implements PersistenceService {
 				i++;
 			}
 
-			database.commit();
+			saveDataStorage();
 		} catch (final IntrospectionException e) {
 			throw new ModelSaveException(e);
 		}
@@ -355,6 +355,8 @@ public class MapDBService implements PersistenceService {
 		for (final PK pk : pks) {
 			getDataStorageForType(pk.getType()).remove(pk.longValue());
 		}
+
+		saveDataStorage();
 	}
 
 	@Override
@@ -364,6 +366,8 @@ public class MapDBService implements PersistenceService {
 			getDataStorageForType(items[0].getClass())
 					.remove(Arrays.stream(items).mapToLong((i) -> i.pk.longValue()).toArray());
 		}
+
+		saveDataStorage();
 	}
 
 	protected void clearDirtyFlag(final Item item) {

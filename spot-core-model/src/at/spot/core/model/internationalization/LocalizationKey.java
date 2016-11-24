@@ -4,10 +4,10 @@ import java.util.Locale;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
 import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.model.KeyValuePair;
+import at.spot.core.model.Item;
 
 @ItemType
-public class LocalizationKey extends KeyValuePair<String> {
+public class LocalizationKey extends Item {
 
 	private static final long serialVersionUID = 1L;
 
