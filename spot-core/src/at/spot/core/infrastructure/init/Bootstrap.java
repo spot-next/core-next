@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.GenericApplicationContext;
 
 import at.spot.core.infrastructure.spring.support.Registry;
@@ -30,6 +32,8 @@ public class Bootstrap {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	public static void main(final String[] args) throws Exception {
+		setDefaultLocale();
+
 		// find all module init classes
 		final Reflections reflections = new Reflections(
 				new ConfigurationBuilder().setUrls(ClasspathHelper.forJavaClassPath()));
@@ -49,7 +53,7 @@ public class Bootstrap {
 			}
 
 			{ // register command line properties
-				BootstrapOptions opts = parseCommandLine(args);
+				final BootstrapOptions opts = parseCommandLine(args);
 
 				if (StringUtils.isNotBlank(opts.getPropertyFile())) {
 					loadPropeperties(ctx, opts.getPropertyFile());
@@ -66,6 +70,10 @@ public class Bootstrap {
 		}
 	}
 
+	protected static void setDefaultLocale() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
+	}
+
 	/**
 	 * Get command line arguments, eg. for getting the custom *.properties file.
 	 * 
@@ -73,15 +81,15 @@ public class Bootstrap {
 	 * @return
 	 * @throws ParseException
 	 */
-	protected static BootstrapOptions parseCommandLine(String... args) throws ParseException {
-		BootstrapOptions ret = new BootstrapOptions();
+	protected static BootstrapOptions parseCommandLine(final String... args) throws ParseException {
+		final BootstrapOptions ret = new BootstrapOptions();
 
-		Options options = new Options();
+		final Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("p").withDescription("application the properties file").hasArg()
 				.withArgName("properties").create("properties"));
 
-		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = parser.parse(options, args);
+		final CommandLineParser parser = new DefaultParser();
+		final CommandLine cmd = parser.parse(options, args);
 
 		if (cmd.hasOption("p")) {
 			ret.setPropertyFile(cmd.getOptionValue("p"));
@@ -97,7 +105,7 @@ public class Bootstrap {
 	 * @param propertyFile
 	 * @throws IOException
 	 */
-	protected static void loadPropeperties(GenericApplicationContext springContext, String propertyFile)
+	protected static void loadPropeperties(final GenericApplicationContext springContext, final String propertyFile)
 			throws IOException {
 
 		// System.out.println("Loading properties: " + opts.getPropertyFile());
@@ -106,7 +114,7 @@ public class Bootstrap {
 		Path propPath = Paths.get(propertyFile);
 
 		if (!propPath.isAbsolute()) {
-			Path currentDir = Paths.get(System.getProperty("user.dir"));
+			final Path currentDir = Paths.get(System.getProperty("user.dir"));
 			propPath = currentDir.resolve(propPath);
 		}
 
@@ -115,10 +123,10 @@ public class Bootstrap {
 		try {
 			propStream = new FileInputStream(propPath.toFile());
 
-			Properties prop = new Properties();
+			final Properties prop = new Properties();
 			prop.load(propStream);
 
-			ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) springContext)
+			final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) springContext)
 					.getBeanFactory();
 			beanFactory.registerSingleton("applicationConfiguration", prop);
 		} finally {

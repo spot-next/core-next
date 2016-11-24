@@ -43,21 +43,35 @@
 
 
 	<!-- spring beans -->
-	<bean id="messageSource"
-		class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basename">
-			<value>locale/messages</value>
-		</property>
+	<!-- define properties based parent messagesource -->
+	<bean id="reloadableMessageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames"
+			value="classpath:locale/validation,classpath:locale/messages" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<alias name="l10nService" alias="messageInterpolator" />
+	<alias name="l10nService" alias="messageSource" />
+	<bean id="defaultL10nService"
+		class="at.spot.core.infrastructure.service.impl.DefaultL10nService">
+		<property name="parentMessageSource" ref="reloadableMessageSource" />
 	</bean>
 
 	<!-- JSR-303 validator for spring -->
-	<bean id="validator"
-		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<alias name="javaxValidator" alias="validator" />
+	<bean id="javaxValidator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+
+		<!-- set the l10n service as message sources -->
+		<property name="validationMessageSource" ref="l10nService" />
+		<property name="messageInterpolator" ref="l10nService" />
+	</bean>
 
 	<util:properties id="coreConfiguration" location="classpath*:core.properties"
 		scope="singleton" />
 	<!-- <alias name="coreConfiguration" alias="configuration" /> -->
-
 
 	<!-- aliases -->
 
@@ -70,7 +84,8 @@
 	<alias name="defaultL10nService" alias="l10nService" />
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
-	<alias name="defaultSerializationService" alias="serializationService" />
+	<alias name="defaultValidationService" alias="validationService" />
+
 
 	<!-- strategies -->
 

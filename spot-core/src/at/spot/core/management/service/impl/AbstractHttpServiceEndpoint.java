@@ -12,13 +12,16 @@ import static spark.Spark.put;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 
+import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -47,6 +50,11 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Autowired
 	protected LoggingService loggingService;
 
+	@Autowired
+	protected I18nService i18nService;
+
+	protected Locale defaultLocale = i18nService.getDefaultLocale();
+
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
@@ -56,9 +64,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			loggingService.warn(e.getMessage());
 		}
 
-		try {
-			// create routes for HTTP methods
-
+		try { // create routes for HTTP methods
 			for (final Method m : this.getClass().getMethods()) {
 				final Handler handler = ClassUtil.getAnnotation(m, Handler.class);
 
@@ -115,6 +121,10 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 			before((request, response) -> {
 				// check permissions
+
+				// set the default locale in every new request thread that is
+				// being created
+				LocaleContextHolder.setLocale(defaultLocale);
 			});
 
 			// after((request, response) -> {

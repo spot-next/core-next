@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.I18nService;
@@ -13,7 +14,7 @@ import at.spot.core.infrastructure.service.I18nService;
 @Service
 public class DefaultI18nService implements I18nService {
 
-	protected Locale defaultLocale = null;
+	protected Locale defaultLocale = Locale.ENGLISH;
 	protected Currency defaultCurrency = null;
 
 	@Override
@@ -23,8 +24,7 @@ public class DefaultI18nService implements I18nService {
 
 	@Override
 	public Locale getCurrentLocale() {
-		// TODO Auto-generated method stub
-		return null;
+		return LocaleContextHolder.getLocale();
 	}
 
 	@Override

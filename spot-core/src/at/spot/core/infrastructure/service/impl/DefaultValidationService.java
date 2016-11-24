@@ -18,12 +18,12 @@ public class DefaultValidationService implements ValidationService {
 	protected Validator validator;
 
 	@Override
-	public <T extends Object> Set<ConstraintViolation<T>> validate(T object) throws ValidationException {
-		// Errors errors = new BeanPropertyBindingResult(object,
+	public <T extends Object> Set<ConstraintViolation<T>> validate(final T object) throws ValidationException {
+		// final Errors errors = new BeanPropertyBindingResult(object,
 		// object.getClass().getSimpleName());
 		// validator.validate(object, errors);
 
-		Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
+		final Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
 
 		return constraintViolations;
 	}
