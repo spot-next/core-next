@@ -114,13 +114,29 @@
       <id>libs-release</id>
       <url>http://repo.spring.io/libs-release/</url>
     </repository>
+    <repository>
+      <id>spOt-mvn-repo</id>
+      <url>${myMavenRepo.read.url}</url>
+    </repository>
   </repositories>
+  <distributionManagement>
+    <repository>
+      <id>spot.mymavenreop.com</id>
+      <url>${myMavenRepo.write.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>spot.mymavenreop.como</id>
+      <url>${myMavenRepo.write.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <junit.version>4.10</junit.version>
     <java.version>1.8</java.version>
+    <myMavenRepo.read.url>https://mymavenrepo.com/repo/3ouNW8GM7pIvFC4OycLg/</myMavenRepo.read.url>
     <spring.shell.version>1.2.0.RELEASE</spring.shell.version>
     <aspectj.version>1.8.9</aspectj.version>
     <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
+    <myMavenRepo.write.url>https://mymavenrepo.com/repo/OAXA3zueFpNfePLPKMV3/</myMavenRepo.write.url>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <log4j.version>1.2.17</log4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

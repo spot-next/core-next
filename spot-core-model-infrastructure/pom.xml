@@ -5,6 +5,56 @@
 	<artifactId>spot-core-model-infrastructure</artifactId>
 	<version>0.0.1</version>
 
+	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring.version>4.3.3.RELEASE</spring.version>
+		<log4j.version>1.2.17</log4j.version>
+		<junit.version>4.10</junit.version>
+
+		<!-- for deployment -->
+		<myMavenRepo.write.url>https://mymavenrepo.com/repo/OAXA3zueFpNfePLPKMV3/</myMavenRepo.write.url>
+		<myMavenRepo.read.url>https://mymavenrepo.com/repo/3ouNW8GM7pIvFC4OycLg/</myMavenRepo.read.url>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot.mymavenreop.com</id>
+			<url>${myMavenRepo.write.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot.mymavenreop.como</id>
+			<url>${myMavenRepo.write.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>mvnrepository</id>
+			<name>mvnrepository</name>
+			<url>http://www.mvnrepository.com</url>
+		</repository>
+		<repository>
+			<id>oss.sonatype.org</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>libs-milestone</id>
+			<url>http://repo.spring.io/libs-milestone/</url>
+		</repository>
+		<repository>
+			<id>libs-release</id>
+			<url>http://repo.spring.io/libs-release/</url>
+		</repository>
+
+		<!-- public read repo -->
+		<repository>
+			<id>spOt-mvn-repo</id>
+			<url>${myMavenRepo.read.url}</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>testsrc</testSourceDirectory>
@@ -37,6 +87,6 @@
 			<artifactId>spot-core-support</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+
 	</dependencies>
 </project>

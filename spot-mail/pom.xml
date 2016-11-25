@@ -15,7 +15,22 @@
 		<aspectj.version>1.8.9</aspectj.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
+
+		<!-- for deployment -->
+		<myMavenRepo.write.url>https://mymavenrepo.com/repo/OAXA3zueFpNfePLPKMV3/</myMavenRepo.write.url>
+		<myMavenRepo.read.url>https://mymavenrepo.com/repo/3ouNW8GM7pIvFC4OycLg/</myMavenRepo.read.url>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot.mymavenreop.com</id>
+			<url>${myMavenRepo.write.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot.mymavenreop.como</id>
+			<url>${myMavenRepo.write.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<repositories>
 		<repository>
@@ -24,12 +39,22 @@
 			<url>http://www.mvnrepository.com</url>
 		</repository>
 		<repository>
+			<id>oss.sonatype.org</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
 			<id>libs-milestone</id>
 			<url>http://repo.spring.io/libs-milestone/</url>
 		</repository>
 		<repository>
 			<id>libs-release</id>
 			<url>http://repo.spring.io/libs-release/</url>
+		</repository>
+
+		<!-- public read repo -->
+		<repository>
+			<id>spOt-mvn-repo</id>
+			<url>${myMavenRepo.read.url}</url>
 		</repository>
 	</repositories>
 
@@ -150,21 +175,21 @@
 
 		<!-- third party libs -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.github.tntim96</groupId> -->
-<!-- 			<artifactId>fakesmtp</artifactId> -->
-<!-- 			<version>2.0</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.slf4j</groupId> -->
-<!-- 					<artifactId>slf4j-api</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>ch.qos.logback</groupId> -->
-<!-- 					<artifactId>logback-classic</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.github.tntim96</groupId> -->
+		<!-- <artifactId>fakesmtp</artifactId> -->
+		<!-- <version>2.0</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-api</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>ch.qos.logback</groupId> -->
+		<!-- <artifactId>logback-classic</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.subethamail</groupId>
