@@ -23,6 +23,7 @@ import org.subethamail.smtp.server.SMTPServer;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.type.LogLevel;
@@ -79,7 +80,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			if (mail != null) {
 				try {
 					modelService.save(mail);
-				} catch (ModelSaveException | ModelNotUniqueException e) {
+				} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
 					loggingService.exception("Can't save received mail.", e);
 				}
 			}
