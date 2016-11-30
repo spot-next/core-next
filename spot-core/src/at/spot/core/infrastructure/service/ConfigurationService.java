@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.service;
 
+import java.util.Properties;
+
 public interface ConfigurationService {
 
 	/**
@@ -59,4 +61,11 @@ public interface ConfigurationService {
 	 * @throws Exception
 	 */
 	Double getDouble(String key, Double defaultValue);
+
+	/**
+	 * Loads a {@link Properties} object in the configuration service.
+	 * 
+	 * @param configuration
+	 */
+	void load(Properties... configuration);
 }

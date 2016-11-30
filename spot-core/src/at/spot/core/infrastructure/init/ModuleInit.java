@@ -1,11 +1,18 @@
 package at.spot.core.infrastructure.init;
 
+import java.util.LinkedHashSet;
+import java.util.Properties;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 public abstract class ModuleInit {
+
+	protected static Set<Properties> configProperties = new LinkedHashSet<>();
+
 	/**
 	 * Initializes a module with the given parent application context (from the
 	 * {@link Bootstrap}).
@@ -13,6 +20,11 @@ public abstract class ModuleInit {
 	 * @param parentContext
 	 */
 	@PostConstruct
+	public void init() {
+		configProperties.add(getConfiguration());
+		initialize();
+	}
+
 	public abstract void initialize();
 
 	/**
@@ -23,4 +35,11 @@ public abstract class ModuleInit {
 	 * @param parentContext
 	 */
 	public abstract void injectBeanDefinition(BeanDefinitionRegistry parentContext);
+
+	/**
+	 * Returns the {@link Properties} for current {@link ModuleInit}.
+	 * 
+	 * @return
+	 */
+	public abstract Properties getConfiguration();
 }

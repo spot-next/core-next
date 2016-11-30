@@ -1,13 +1,12 @@
 
 package at.spot.core.infrastructure.service.impl;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Properties;
-
-import javax.annotation.PostConstruct;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
@@ -15,34 +14,21 @@ import at.spot.core.infrastructure.service.ConfigurationService;
 @Service
 public class DefaultConfigurationService extends AbstractService implements ConfigurationService {
 
-	@Autowired
-	protected List<Properties> configuration;
-
-	@PostConstruct
-	public void init() {
-		// List<Properties> props =
-		// Registry.getApplicationContext().getBeanNamesForType(Properties.class);
-
-		// Collections.sort(configuration, new Comparator<Properties>() {
-		// @Override
-		// public int compare(Properties o1, Properties o2) {
-		// return 0;
-		// }
-		// });
-	}
+	// order is important here
+	protected Set<Properties> configurations = new LinkedHashSet<>();
 
 	@Override
-	public String getString(String key) {
+	public String getString(final String key) {
 		return getProperty(key);
 	}
 
 	@Override
-	public Integer getInteger(String key) {
+	public Integer getInteger(final String key) {
 		Integer value = null;
 
 		try {
 			value = Integer.parseInt(getProperty(key));
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}
 
@@ -50,12 +36,12 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	}
 
 	@Override
-	public Double getDouble(String key) {
+	public Double getDouble(final String key) {
 		Double value = null;
 
 		try {
 			value = Double.parseDouble(getProperty(key));
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}
 
@@ -63,14 +49,14 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	}
 
 	@Override
-	public String getString(String key, String defaultValue) {
-		String val = getString(key);
+	public String getString(final String key, final String defaultValue) {
+		final String val = getString(key);
 
 		return val != null ? val : defaultValue;
 	}
 
 	@Override
-	public Integer getInteger(String key, Integer defaultValue) {
+	public Integer getInteger(final String key, final Integer defaultValue) {
 		Integer val = getInteger(key);
 
 		if (val == null) {
@@ -81,7 +67,7 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	}
 
 	@Override
-	public Double getDouble(String key, Double defaultValue) {
+	public Double getDouble(final String key, final Double defaultValue) {
 		Double val = getDouble(key);
 
 		if (val == null) {
@@ -97,10 +83,10 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	 * @param key
 	 * @return
 	 */
-	protected String getProperty(String key) {
+	protected String getProperty(final String key) {
 		String value = null;
 
-		for (Properties prop : configuration) {
+		for (final Properties prop : configurations) {
 			value = prop.getProperty(key);
 
 			if (StringUtils.isNotBlank(value)) {
@@ -109,5 +95,12 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		}
 
 		return value;
+	}
+
+	@Override
+	public void load(final Properties... configuration) {
+		if (configuration != null) {
+			configurations.addAll(Arrays.asList(configuration));
+		}
 	}
 }

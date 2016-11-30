@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.support.util.PropertyUtil;
 
 /**
  * This is the main entry point for the application. After the application has
@@ -32,6 +35,7 @@ import at.spot.core.persistence.service.QueryService;
 @EnableAsync
 @EnableScheduling
 @Service
+@Order(value = 1)
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -53,22 +57,22 @@ public class CoreInit extends ModuleInit {
 	protected QueryService queryService;
 
 	@Override
-	public void injectBeanDefinition(BeanDefinitionRegistry parentContext) {
-		BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
+	public void injectBeanDefinition(final BeanDefinitionRegistry parentContext) {
+		final BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
 		reader.loadBeanDefinitions("classpath:spring-core.xml");
 	}
 
 	public void run() {
-		long start = System.currentTimeMillis();
+		final long start = System.currentTimeMillis();
 
 		// first clear storage, then we start our test
 		// persistenceService.clearDataStorage();
 
 		try {
 
-			List<User> users = new ArrayList<>();
+			final List<User> users = new ArrayList<>();
 
-			UserGroup group = modelService.create(UserGroup.class);
+			final UserGroup group = modelService.create(UserGroup.class);
 			group.name = "tester group";
 			group.uid = "test-group";
 
@@ -88,7 +92,7 @@ public class CoreInit extends ModuleInit {
 
 			for (int i = 1; i < 10000; i++) {
 				if (i > 0 && i % 50 == 0) {
-					long duration = System.currentTimeMillis() - start;
+					final long duration = System.currentTimeMillis() - start;
 
 					if (duration >= 1000) {
 						// loggingService.debug("Created " + i + " users (" + i
@@ -96,7 +100,7 @@ public class CoreInit extends ModuleInit {
 					}
 				}
 
-				User user = modelService.create(User.class);
+				final User user = modelService.create(User.class);
 				user.name = "test-" + i;
 				user.uid = user.name;
 
@@ -107,10 +111,10 @@ public class CoreInit extends ModuleInit {
 
 			modelService.saveAll(users);
 
-			Map<String, Comparable<?>> criteria = new HashMap<>();
+			final Map<String, Comparable<?>> criteria = new HashMap<>();
 			criteria.put("uid", "user-1");
 
-			User test99 = modelService.get(User.class, criteria);
+			final User test99 = modelService.get(User.class, criteria);
 
 			user1.groups.get(0).uid = "abc";
 
@@ -135,7 +139,7 @@ public class CoreInit extends ModuleInit {
 			// QueryResult result = queryService.query(query);
 
 			// System.out.print("");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			loggingService.exception(e.getMessage(), e);
 		}
 
@@ -173,5 +177,10 @@ public class CoreInit extends ModuleInit {
 	protected void setupTypeInfrastrucutre() {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
+	}
+
+	@Override
+	public Properties getConfiguration() {
+		return PropertyUtil.loadPropertiesFromClassPath("classpath:core.properties");
 	}
 }

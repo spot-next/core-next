@@ -69,10 +69,6 @@
 		<property name="messageInterpolator" ref="l10nService" />
 	</bean>
 
-	<util:properties id="coreConfiguration" location="classpath*:core.properties"
-		scope="singleton" />
-	<!-- <alias name="coreConfiguration" alias="configuration" /> -->
-
 	<!-- aliases -->
 
 	<!-- services -->

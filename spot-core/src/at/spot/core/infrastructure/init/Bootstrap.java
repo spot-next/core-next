@@ -1,8 +1,6 @@
 package at.spot.core.infrastructure.init;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
@@ -19,14 +17,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.GenericApplicationContext;
 
+import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.spring.support.Registry;
-import at.spot.core.support.util.MiscUtil;
+import at.spot.core.support.util.PropertyUtil;
 
 public class Bootstrap {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
@@ -52,6 +49,9 @@ public class Bootstrap {
 				}
 			}
 
+			ctx.registerShutdownHook();
+			ctx.refresh();
+
 			{ // register command line properties
 				final BootstrapOptions opts = parseCommandLine(args);
 
@@ -60,8 +60,6 @@ public class Bootstrap {
 				}
 			}
 
-			ctx.registerShutdownHook();
-			ctx.refresh();
 			ctx.start();
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -108,8 +106,6 @@ public class Bootstrap {
 	protected static void loadPropeperties(final GenericApplicationContext springContext, final String propertyFile)
 			throws IOException {
 
-		// System.out.println("Loading properties: " + opts.getPropertyFile());
-
 		// resolve path
 		Path propPath = Paths.get(propertyFile);
 
@@ -118,20 +114,13 @@ public class Bootstrap {
 			propPath = currentDir.resolve(propPath);
 		}
 
-		InputStream propStream = null;
+		final ConfigurationService configService = springContext.getBean(ConfigurationService.class);
 
-		try {
-			propStream = new FileInputStream(propPath.toFile());
-
-			final Properties prop = new Properties();
-			prop.load(propStream);
-
-			final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) springContext)
-					.getBeanFactory();
-			beanFactory.registerSingleton("applicationConfiguration", prop);
-		} finally {
-			MiscUtil.closeQuietly(propStream);
+		for (final Properties p : ModuleInit.configProperties) {
+			configService.load(p);
 		}
+
+		configService.load(PropertyUtil.loadPropertiesFromClassPath(propPath.toFile()));
 	}
 
 	/**
