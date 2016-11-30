@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
@@ -21,10 +20,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.GenericApplicationContext;
 
-import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.spring.support.Registry;
-import at.spot.core.support.util.PropertyUtil;
 
+/**
+ * This is the main entry point to startup a spOt instance. First the classpath
+ * is scanned for {@link ModuleInit} implementations (there should be one for
+ * each spot module) which it then tries to load. The init classes take care of
+ * all necessary initialization for their module.
+ */
 public class Bootstrap {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
@@ -43,6 +46,8 @@ public class Bootstrap {
 		Registry.setApplicationContext(ctx);
 
 		try {
+			ConfigurationHolder configHolder = setupConfigurationHolder(ctx);
+
 			{ // register all found module inits in that spring context
 				for (final Class<? extends ModuleInit> init : inits) {
 					init.newInstance().injectBeanDefinition(ctx);
@@ -56,7 +61,7 @@ public class Bootstrap {
 				final BootstrapOptions opts = parseCommandLine(args);
 
 				if (StringUtils.isNotBlank(opts.getPropertyFile())) {
-					loadPropeperties(ctx, opts.getPropertyFile());
+					loadPropeperties(configHolder, opts.getPropertyFile());
 				}
 			}
 
@@ -66,6 +71,22 @@ public class Bootstrap {
 		} finally {
 			// MiscUtil.closeQuietly(ctx);
 		}
+	}
+
+	protected static ConfigurationHolder setupConfigurationHolder(GenericApplicationContext context) {
+		// final GenericBeanDefinition beanDefinition = new
+		// GenericBeanDefinition();
+		// beanDefinition.setBeanClass(ConfigurationHolder.class);
+		// beanDefinition.setScope("singleton");
+
+		// ((BeanDefinitionRegistry) context.getBeanFactory())
+		// .registerBeanDefinition(ConfigurationHolder.class.getSimpleName(),
+		// beanDefinition);
+
+		ConfigurationHolder holder = context.getBeanFactory().createBean(ConfigurationHolder.class);
+
+		// return context.getBean(ConfigurationHolder.class);
+		return holder;
 	}
 
 	protected static void setDefaultLocale() {
@@ -103,7 +124,7 @@ public class Bootstrap {
 	 * @param propertyFile
 	 * @throws IOException
 	 */
-	protected static void loadPropeperties(final GenericApplicationContext springContext, final String propertyFile)
+	protected static void loadPropeperties(ConfigurationHolder configHolder, final String propertyFile)
 			throws IOException {
 
 		// resolve path
@@ -114,13 +135,7 @@ public class Bootstrap {
 			propPath = currentDir.resolve(propPath);
 		}
 
-		final ConfigurationService configService = springContext.getBean(ConfigurationService.class);
-
-		for (final Properties p : ModuleInit.configProperties) {
-			configService.load(p);
-		}
-
-		configService.load(PropertyUtil.loadPropertiesFromClassPath(propPath.toFile()));
+		configHolder.addConfigruation(propPath.toFile());
 	}
 
 	/**

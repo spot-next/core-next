@@ -62,6 +62,10 @@ public class CoreInit extends ModuleInit {
 		reader.loadBeanDefinitions("classpath:spring-core.xml");
 	}
 
+	// public CoreInit(ConfigurationHolder configHolder) {
+	// configHolder.addConfigruation("core.properties");
+	// }
+
 	public void run() {
 		final long start = System.currentTimeMillis();
 

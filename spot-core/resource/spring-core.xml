@@ -91,7 +91,7 @@
 	<!-- class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
 	<!-- abstract="true" /> -->
 
-	<bean name="itemTypeConverter" parent="genericPopulatingConverter">
+	<bean id="itemTypeConverter" parent="genericPopulatingConverter">
 		<property name="targetClass"
 			value="at.spot.core.management.data.GenericItemDefinitionData" />
 		<property name="populators">
@@ -101,7 +101,7 @@
 		</property>
 	</bean>
 
-	<bean name="abstractService"
+	<bean id="abstractService"
 		class="at.spot.core.infrastructure.service.impl.AbstractService"
 		abstract="true" />
 </beans>

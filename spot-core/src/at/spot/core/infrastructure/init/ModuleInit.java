@@ -1,17 +1,22 @@
 package at.spot.core.infrastructure.init;
 
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 public abstract class ModuleInit {
 
-	protected static Set<Properties> configProperties = new LinkedHashSet<>();
+	@Autowired
+	protected ConfigurationHolder configHolder;
+
+	public ModuleInit() {
+		// ConfigurationHolder holder = Reg
+		System.out.println("");
+	}
 
 	/**
 	 * Initializes a module with the given parent application context (from the
@@ -21,7 +26,6 @@ public abstract class ModuleInit {
 	 */
 	@PostConstruct
 	public void init() {
-		configProperties.add(getConfiguration());
 		initialize();
 	}
 

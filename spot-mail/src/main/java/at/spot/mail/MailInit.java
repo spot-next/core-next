@@ -33,6 +33,10 @@ public class MailInit extends ModuleInit {
 		reader.loadBeanDefinitions("classpath:spring-mail.xml");
 	}
 
+	// public MailInit(ConfigurationHolder configHolder) {
+	// configHolder.addConfigruation("mail.properties");
+	// }
+
 	@Log(message = "Starting mail module ...")
 	@Override
 	public void initialize() {
