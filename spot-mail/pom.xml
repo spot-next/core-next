@@ -4,6 +4,7 @@
 	<groupId>at.spot.mail</groupId>
 	<artifactId>spot-mail</artifactId>
 	<version>0.0.1</version>
+	<name>spOt mail server</name>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -15,21 +16,27 @@
 		<aspectj.version>1.8.9</aspectj.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
+
+		<!-- nexus repositry -->
+		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<repositories>
 		<repository>
-			<id>mvnrepository</id>
-			<name>mvnrepository</name>
-			<url>http://www.mvnrepository.com</url>
-		</repository>
-		<repository>
-			<id>libs-milestone</id>
-			<url>http://repo.spring.io/libs-milestone/</url>
-		</repository>
-		<repository>
-			<id>libs-release</id>
-			<url>http://repo.spring.io/libs-release/</url>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
 		</repository>
 	</repositories>
 
@@ -63,6 +70,10 @@
 						<goals>
 							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<minimizeJar>true</minimizeJar>
+							<outputFile>${project.build.directory}/spot-core-${version}-fat.jar</outputFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -76,50 +87,50 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.8</version>
-				<configuration>
-					<showWeaveInfo>true</showWeaveInfo>
-					<source>1.8</source>
-					<target>1.8</target>
-					<Xlint>ignore</Xlint>
-					<complianceLevel>${java.version}</complianceLevel>
-					<encoding>UTF-8</encoding>
-					<verbose>true</verbose>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-						<aspectLibrary>
-							<groupId>at.spot.core</groupId>
-							<artifactId>spot-core</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjtools</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+			<!-- <plugin> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <artifactId>aspectj-maven-plugin</artifactId> -->
+			<!-- <version>1.8</version> -->
+			<!-- <configuration> -->
+			<!-- <showWeaveInfo>true</showWeaveInfo> -->
+			<!-- <source>1.8</source> -->
+			<!-- <target>1.8</target> -->
+			<!-- <Xlint>ignore</Xlint> -->
+			<!-- <complianceLevel>${java.version}</complianceLevel> -->
+			<!-- <encoding>UTF-8</encoding> -->
+			<!-- <verbose>true</verbose> -->
+			<!-- <aspectLibraries> -->
+			<!-- <aspectLibrary> -->
+			<!-- <groupId>org.springframework</groupId> -->
+			<!-- <artifactId>spring-aspects</artifactId> -->
+			<!-- </aspectLibrary> -->
+			<!-- <aspectLibrary> -->
+			<!-- <groupId>at.spot.core</groupId> -->
+			<!-- <artifactId>spot-core</artifactId> -->
+			<!-- </aspectLibrary> -->
+			<!-- </aspectLibraries> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>compile</goal> -->
+			<!-- <goal>test-compile</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- <dependencies> -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.aspectj</groupId> -->
+			<!-- <artifactId>aspectjrt</artifactId> -->
+			<!-- <version>${aspectj.version}</version> -->
+			<!-- </dependency> -->
+			<!-- <dependency> -->
+			<!-- <groupId>org.aspectj</groupId> -->
+			<!-- <artifactId>aspectjtools</artifactId> -->
+			<!-- <version>${aspectj.version}</version> -->
+			<!-- </dependency> -->
+			<!-- </dependencies> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
@@ -150,21 +161,21 @@
 
 		<!-- third party libs -->
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.github.tntim96</groupId> -->
-<!-- 			<artifactId>fakesmtp</artifactId> -->
-<!-- 			<version>2.0</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.slf4j</groupId> -->
-<!-- 					<artifactId>slf4j-api</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>ch.qos.logback</groupId> -->
-<!-- 					<artifactId>logback-classic</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.github.tntim96</groupId> -->
+		<!-- <artifactId>fakesmtp</artifactId> -->
+		<!-- <version>2.0</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-api</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>ch.qos.logback</groupId> -->
+		<!-- <artifactId>logback-classic</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.subethamail</groupId>
@@ -177,6 +188,5 @@
 			<artifactId>james-server-core-library</artifactId>
 			<version>3.0-M2</version>
 		</dependency>
-
 	</dependencies>
 </project>

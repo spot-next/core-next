@@ -12,7 +12,29 @@
 		<spring.version>4.3.3.RELEASE</spring.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
+		
+		<!-- nexus repositry -->
+		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
