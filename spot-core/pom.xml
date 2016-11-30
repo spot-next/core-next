@@ -2,6 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.spot.core</groupId>
+	<artifactId>spot-core</artifactId>
 	<version>0.0.5</version>
 	<name>spOt core module</name>
 
@@ -16,45 +17,26 @@
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.10</junit.version>
 
-		<!-- for deployment -->
-		<myMavenRepo.write.url>https://mymavenrepo.com/repo/OAXA3zueFpNfePLPKMV3/</myMavenRepo.write.url>
-		<myMavenRepo.read.url>https://mymavenrepo.com/repo/3ouNW8GM7pIvFC4OycLg/</myMavenRepo.read.url>
+		<!-- nexus repositry -->
+		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
 	</properties>
 
 	<distributionManagement>
 		<repository>
-			<id>spot.mymavenreop.com</id>
-			<url>${myMavenRepo.write.url}</url>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
 		</repository>
 		<snapshotRepository>
-			<id>spot.mymavenreop.como</id>
-			<url>${myMavenRepo.write.url}</url>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
 		</snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
 		<repository>
-			<id>mvnrepository</id>
-			<name>mvnrepository</name>
-			<url>http://www.mvnrepository.com</url>
-		</repository>
-		<repository>
-			<id>oss.sonatype.org</id>
-			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<id>libs-milestone</id>
-			<url>http://repo.spring.io/libs-milestone/</url>
-		</repository>
-		<repository>
-			<id>libs-release</id>
-			<url>http://repo.spring.io/libs-release/</url>
-		</repository>
-
-		<!-- public read repo -->
-		<repository>
-			<id>spOt-mvn-repo</id>
-			<url>${myMavenRepo.read.url}</url>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
 		</repository>
 	</repositories>
 
@@ -73,7 +55,7 @@
 		</testResources>
 
 		<plugins>
-			<!-- building -->
+			<!-- packaging -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -102,6 +84,10 @@
 						<goals>
 							<goal>shade</goal>
 						</goals>
+						<configuration>
+							<minimizeJar>true</minimizeJar>
+							<outputFile>${project.build.directory}/spot-core-${version}-fat.jar</outputFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -318,5 +304,4 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
-	<artifactId>spot-core</artifactId>
 </project>
