@@ -10,15 +10,15 @@ import at.spot.core.support.util.PropertyUtil;
 public class ConfigurationHolder {
 	protected static Set<Properties> configProperties = new LinkedHashSet<>();
 
-	public void addConfigruation(String configurationFile) {
+	public void addConfigruation(final String configurationFile) {
 		addConfigruation(PropertyUtil.loadPropertiesFromClassPath(new File(configurationFile)));
 	}
 
-	public void addConfigruation(File configurationFile) {
-		addConfigruation(PropertyUtil.loadPropertiesFromClassPath(configuration));
+	public void addConfigruation(final File configurationFile) {
+		addConfigruation(PropertyUtil.loadPropertiesFromClassPath(configurationFile));
 	}
 
-	public void addConfigruation(Properties configuration) {
+	public void addConfigruation(final Properties configuration) {
 		configProperties.add(configuration);
 	}
 

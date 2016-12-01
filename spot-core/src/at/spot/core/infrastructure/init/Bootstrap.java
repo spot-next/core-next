@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,14 +12,15 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
+import org.springframework.beans.factory.access.BootstrapException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.GenericApplicationContext;
 
+import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.support.util.SpringUtil;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -33,11 +33,7 @@ public class Bootstrap {
 
 	public static void main(final String[] args) throws Exception {
 		setDefaultLocale();
-
-		// find all module init classes
-		final Reflections reflections = new Reflections(
-				new ConfigurationBuilder().setUrls(ClasspathHelper.forJavaClassPath()));
-		final Set<Class<? extends ModuleInit>> inits = reflections.getSubTypesOf(ModuleInit.class);
+		setLogSettings();
 
 		// create a generic spring context
 		final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
@@ -46,24 +42,24 @@ public class Bootstrap {
 		Registry.setApplicationContext(ctx);
 
 		try {
-			ConfigurationHolder configHolder = setupConfigurationHolder(ctx);
+			// setupConfigurationHolder(ctx);
 
-			{ // register all found module inits in that spring context
-				for (final Class<? extends ModuleInit> init : inits) {
-					init.newInstance().injectBeanDefinition(ctx);
+			final ConfigurationHolder configHolder = new ConfigurationHolder();
+
+			{ // parse command line properties
+				final BootstrapOptions opts = parseCommandLine(args);
+
+				// load application config
+				if (StringUtils.isNotBlank(opts.getPropertyFile())) {
+					loadPropeperties(configHolder, opts.getPropertyFile());
 				}
+
+				// start initialization
+				setupInitClass(ctx, opts.getInitClass());
 			}
 
 			ctx.registerShutdownHook();
 			ctx.refresh();
-
-			{ // register command line properties
-				final BootstrapOptions opts = parseCommandLine(args);
-
-				if (StringUtils.isNotBlank(opts.getPropertyFile())) {
-					loadPropeperties(configHolder, opts.getPropertyFile());
-				}
-			}
 
 			ctx.start();
 		} catch (final Exception e) {
@@ -73,20 +69,15 @@ public class Bootstrap {
 		}
 	}
 
-	protected static ConfigurationHolder setupConfigurationHolder(GenericApplicationContext context) {
-		// final GenericBeanDefinition beanDefinition = new
-		// GenericBeanDefinition();
-		// beanDefinition.setBeanClass(ConfigurationHolder.class);
-		// beanDefinition.setScope("singleton");
+	protected static void setupConfigurationHolder(final GenericApplicationContext context) {
+		SpringUtil.registerBean(((BeanDefinitionRegistry) context.getBeanFactory()), ConfigurationHolder.class, null,
+				true);
+	}
 
-		// ((BeanDefinitionRegistry) context.getBeanFactory())
-		// .registerBeanDefinition(ConfigurationHolder.class.getSimpleName(),
-		// beanDefinition);
+	protected static void setupInitClass(final GenericApplicationContext context,
+			final Class<? extends ModuleInit> initClass) {
 
-		ConfigurationHolder holder = context.getBeanFactory().createBean(ConfigurationHolder.class);
-
-		// return context.getBean(ConfigurationHolder.class);
-		return holder;
+		SpringUtil.registerBean(((BeanDefinitionRegistry) context.getBeanFactory()), initClass, null, true);
 	}
 
 	protected static void setDefaultLocale() {
@@ -114,6 +105,20 @@ public class Bootstrap {
 			ret.setPropertyFile(cmd.getOptionValue("p"));
 		}
 
+		Class<? extends ModuleInit> initClass = CoreInit.class;
+
+		if (cmd.hasOption("i")) {
+			final String initClassName = cmd.getOptionValue("i");
+
+			try {
+				initClass = (Class<? extends ModuleInit>) Class.forName(initClassName);
+			} catch (ClassNotFoundException | ClassCastException e) {
+				throw new BootstrapException(String.format("Could not load init class %s", initClassName));
+			}
+		}
+
+		ret.setInitClass(initClass);
+
 		return ret;
 	}
 
@@ -124,7 +129,7 @@ public class Bootstrap {
 	 * @param propertyFile
 	 * @throws IOException
 	 */
-	protected static void loadPropeperties(ConfigurationHolder configHolder, final String propertyFile)
+	protected static void loadPropeperties(final ConfigurationHolder configHolder, final String propertyFile)
 			throws IOException {
 
 		// resolve path

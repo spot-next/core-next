@@ -12,8 +12,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.support.util.PropertyUtil;
 
@@ -22,7 +22,7 @@ import at.spot.core.support.util.PropertyUtil;
 @EnableScheduling
 @DependsOn("coreInit")
 @Order(value = 1)
-public class MailInit extends ModuleInit {
+public class MailInit extends CoreInit {
 
 	@Autowired
 	protected LoggingService loggingService;

@@ -3,7 +3,6 @@ package at.spot.core.infrastructure.service.impl;
 import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.model.ItemType;
@@ -27,6 +25,7 @@ import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.support.util.SpringUtil;
 
 /**
  * Provides functionality to manage the typesystem.
@@ -57,32 +56,24 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	protected void registerType(final Class<?> type, final String scope) {
-		final GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(type);
-		beanDefinition.setLazyInit(false);
-		beanDefinition.setAbstract(Modifier.isAbstract(type.getModifiers()));
-		beanDefinition.setAutowireCandidate(true);
-		beanDefinition.setScope(scope);
+		final ItemType ann = type.getAnnotation(ItemType.class);
 
 		String beanName = type.getSimpleName();
-
-		final ItemType ann = type.getAnnotation(ItemType.class);
 
 		// use the annotated itemtype name, it should
 		if (ann != null && StringUtils.isNotBlank(ann.typeCode())) {
 			beanName = ann.typeCode();
 		}
 
-		getBeanFactory().registerBeanDefinition(beanName, beanDefinition);
+		SpringUtil.registerBean(getBeanFactory(), type, beanName, "prototype", null);
 
 		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
 	}
 
 	/*
 	 * *************************************************************************
-	 * **************************** ANNOTATIONS
+	 * ANNOTATIONS
 	 * *************************************************************************
-	 * *************************
 	 */
 
 	@Override
@@ -105,9 +96,8 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	/*
 	 * *************************************************************************
-	 * **************************** ITEM TYPE DEFINITIONS
+	 * ITEM TYPE DEFINITIONS
 	 * *************************************************************************
-	 * *************************
 	 */
 
 	@Override
