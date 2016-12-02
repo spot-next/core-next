@@ -51,7 +51,8 @@ public class LogAspect extends AbstractBaseAspect {
 		final long startTime = System.currentTimeMillis();
 
 		if (ann != null && ann.before()) {
-			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, "Before", ann.message(), null),
+			loggingService.log(ann.logLevel(),
+					createLogMessage(joinPoint, "Before", ann.message(), ann.messageArguments(), null),
 					joinPoint.getTarget().getClass());
 		}
 
@@ -60,7 +61,8 @@ public class LogAspect extends AbstractBaseAspect {
 		final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
 
 		if (ann != null && ann.after()) {
-			loggingService.log(ann.logLevel(), createLogMessage(joinPoint, "After", null, runDuration),
+			loggingService.log(ann.logLevel(),
+					createLogMessage(joinPoint, "After", null, ann.messageArguments(), runDuration),
 					joinPoint.getTarget().getClass());
 		}
 
@@ -68,13 +70,13 @@ public class LogAspect extends AbstractBaseAspect {
 	}
 
 	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message,
-			final Long duration) {
+			final String[] arguments, final Long duration) {
 
 		String msg = String.format("%s %s.%s", marker, joinPoint.getTarget().getClass().getSimpleName(),
 				joinPoint.getSignature().getName());
 
 		if (StringUtils.isNotBlank(message)) {
-			msg = message;
+			msg = String.format(message, arguments);
 		}
 
 		if (duration != null) {

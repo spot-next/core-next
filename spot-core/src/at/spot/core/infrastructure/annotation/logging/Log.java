@@ -21,4 +21,6 @@ public @interface Log {
 	LogLevel logLevel() default LogLevel.INFO;
 
 	String message() default "";
+
+	String[] messageArguments() default {};
 }

@@ -149,7 +149,7 @@ public class CoreInit extends ModuleInit {
 	 * STARTUP FUNCTIONALITY
 	 */
 
-	@Log(message = "Starting spOt core ...")
+	@Log(message = "Starting spOt core ... ")
 	@Override
 	public void initialize() {
 		setupTypeInfrastrucutre();
