@@ -1,21 +1,16 @@
 
 package at.spot.core.infrastructure.service.impl;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
+import at.spot.core.infrastructure.spring.support.Registry;
 
 @Service
 public class DefaultConfigurationService extends AbstractService implements ConfigurationService {
-
-	// order is important here
-	protected Set<Properties> configurations = new LinkedHashSet<>();
 
 	@Override
 	public String getString(final String key) {
@@ -86,7 +81,7 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	protected String getProperty(final String key) {
 		String value = null;
 
-		for (final Properties prop : configurations) {
+		for (final Properties prop : Registry.getAppConfiguration().getConfiguration()) {
 			value = prop.getProperty(key);
 
 			if (StringUtils.isNotBlank(value)) {
@@ -95,12 +90,5 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		}
 
 		return value;
-	}
-
-	@Override
-	public void load(final Properties... configuration) {
-		if (configuration != null) {
-			configurations.addAll(Arrays.asList(configuration));
-		}
 	}
 }

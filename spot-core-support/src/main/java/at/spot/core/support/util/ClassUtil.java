@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,27 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 public class ClassUtil {
 
+	public static List<Class<?>> getAllSuperClasses(final Class<?> type, final Class<?> stopClass,
+			final boolean includeStopClass) {
+
+		final List<Class<?>> superClasses = new LinkedList<>();
+
+		Class<?> currentType = type;
+
+		while (!currentType.getSuperclass().equals(stopClass)) {
+			final Class<?> superClass = currentType.getSuperclass();
+
+			superClasses.add(superClass);
+			currentType = superClass;
+		}
+
+		if (includeStopClass) {
+			superClasses.add(currentType.getSuperclass());
+		}
+
+		return superClasses;
+	}
+
 	/**
 	 * Set the field value for the given object. This silently fails if
 	 * something goes wrong. something goes wrong.
@@ -27,7 +49,7 @@ public class ClassUtil {
 	 * @param fieldName
 	 * @param value
 	 */
-	public static void setField(Object object, String fieldName, Object value) {
+	public static void setField(final Object object, final String fieldName, final Object value) {
 		Field field;
 		try {
 			field = object.getClass().getField(fieldName);
@@ -46,11 +68,11 @@ public class ClassUtil {
 	 * @param fieldName
 	 * @param value
 	 */
-	public static Object getPrivateField(Object object, String fieldName) {
+	public static Object getPrivateField(final Object object, final String fieldName) {
 		Object retVal = null;
 
 		try {
-			Field field = object.getClass().getField(fieldName);
+			final Field field = object.getClass().getField(fieldName);
 			field.setAccessible(true);
 			retVal = field.get(object);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
@@ -69,14 +91,14 @@ public class ClassUtil {
 	 * @param args
 	 * @return
 	 */
-	public static Object invokeMethod(Object object, String methodName, Object... args) {
+	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
 		Object retVal = null;
 
-		Class<?>[] paramArgs = new Class<?>[args.length];
+		final Class<?>[] paramArgs = new Class<?>[args.length];
 
 		int i = 0;
 
-		for (Object arg : args) {
+		for (final Object arg : args) {
 			paramArgs[i] = arg.getClass();
 			i++;
 		}
@@ -84,7 +106,7 @@ public class ClassUtil {
 		Method method = null;
 
 		// iterate over all superclasses and look for given method
-		for (Class<?> c : getAllAssignableClasses(object)) {
+		for (final Class<?> c : getAllAssignableClasses(object)) {
 			try {
 				method = c.getDeclaredMethod(methodName, paramArgs);
 
@@ -109,11 +131,12 @@ public class ClassUtil {
 		return retVal;
 	}
 
-	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(Object object, Class<A> annotation) {
-		Set<Field> annotatedFields = new HashSet<>();
+	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Object object,
+			final Class<A> annotation) {
+		final Set<Field> annotatedFields = new HashSet<>();
 
-		for (Class<?> c : getAllAssignableClasses(object)) {
-			for (Field field : c.getDeclaredFields()) {
+		for (final Class<?> c : getAllAssignableClasses(object)) {
+			for (final Field field : c.getDeclaredFields()) {
 				if (field.isAnnotationPresent(annotation)) {
 					annotatedFields.add(field);
 				}
@@ -124,8 +147,8 @@ public class ClassUtil {
 
 	}
 
-	public static List<Class<?>> getAllAssignableClasses(Object object) {
-		List<Class<?>> classes = new ArrayList<>();
+	public static List<Class<?>> getAllAssignableClasses(final Object object) {
+		final List<Class<?>> classes = new ArrayList<>();
 		classes.add(object.getClass());
 		classes.addAll(ClassUtils.getAllSuperclasses(object.getClass()));
 
@@ -139,7 +162,7 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> boolean hasAnnotation(JoinPoint joinPoint, Class<A> annotation) {
+	public static <A extends Annotation> boolean hasAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		return getAnnotation(joinPoint, annotation) != null;
 	}
 
@@ -151,10 +174,10 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> A getAnnotation(JoinPoint joinPoint, Class<A> annotation) {
+	public static <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		A ret = null;
 
-		Signature sig = joinPoint.getSignature();
+		final Signature sig = joinPoint.getSignature();
 
 		if (sig instanceof MethodSignature) {
 			final MethodSignature methodSignature = (MethodSignature) sig;
@@ -170,7 +193,7 @@ public class ClassUtil {
 
 			ret = AnnotationUtils.findAnnotation(method, annotation);
 		} else {
-			FieldSignature fieldSignature = (FieldSignature) sig;
+			final FieldSignature fieldSignature = (FieldSignature) sig;
 
 			ret = fieldSignature.getField().getAnnotation(annotation);
 		}
@@ -186,7 +209,7 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> boolean hasAnnotation(Class<?> type, Class<A> annotation) {
+	public static <A extends Annotation> boolean hasAnnotation(final Class<?> type, final Class<A> annotation) {
 		return getAnnotation(type, annotation) != null;
 	}
 
@@ -198,7 +221,7 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> A getAnnotation(Class<?> type, Class<A> annotation) {
+	public static <A extends Annotation> A getAnnotation(final Class<?> type, final Class<A> annotation) {
 		return type.getAnnotation(annotation);
 	}
 
@@ -209,7 +232,8 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> boolean hasAnnotation(AccessibleObject member, Class<A> annotation) {
+	public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
+			final Class<A> annotation) {
 		return getAnnotation(member, annotation) != null;
 	}
 
@@ -221,7 +245,7 @@ public class ClassUtil {
 	 * @param annotation
 	 * @return
 	 */
-	public static <A extends Annotation> A getAnnotation(AccessibleObject member, Class<A> annotation) {
+	public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
 		return member.getAnnotation(annotation);
 	}
 }

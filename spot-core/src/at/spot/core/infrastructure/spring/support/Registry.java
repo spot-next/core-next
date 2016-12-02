@@ -5,6 +5,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import at.spot.core.infrastructure.init.Configuration;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -23,8 +24,9 @@ public class Registry {
 	private static TypeService typeService;
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
+	private static Configuration configuration;
 
-	public static void setApplicationContext(ApplicationContext ctx) throws BeansException {
+	public static void setApplicationContext(final ApplicationContext ctx) throws BeansException {
 		context = ctx;
 	}
 
@@ -69,7 +71,15 @@ public class Registry {
 		return loggingService;
 	}
 
-	public static <T> T getBean(String beanName, Class<T> beanType) {
+	public static <T> T getBean(final String beanName, final Class<T> beanType) {
 		return context.getBean(beanName, beanType);
+	}
+
+	public static void setAppConfiguration(final Configuration configuration) {
+		Registry.configuration = configuration;
+	}
+
+	public static Configuration getAppConfiguration() {
+		return configuration;
 	}
 }

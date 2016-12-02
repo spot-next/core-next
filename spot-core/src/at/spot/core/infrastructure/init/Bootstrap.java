@@ -1,9 +1,11 @@
 package at.spot.core.infrastructure.init;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -13,14 +15,16 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.access.BootstrapException;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.GenericApplicationContext;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.spring.support.Registry;
-import at.spot.core.support.util.SpringUtil;
+import at.spot.core.support.util.ClassUtil;
+import at.spot.core.support.util.PropertyUtil;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -32,6 +36,15 @@ public class Bootstrap {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	public static void main(final String[] args) throws Exception {
+		bootstrap(parseCommandLine(args));
+	}
+
+	/**
+	 * This is the main entry point for the bootstrap mechanism.
+	 * 
+	 * @param options
+	 */
+	protected static void bootstrap(final BootstrapOptions options) {
 		setDefaultLocale();
 		setLogSettings();
 
@@ -42,21 +55,16 @@ public class Bootstrap {
 		Registry.setApplicationContext(ctx);
 
 		try {
-			// setupConfigurationHolder(ctx);
+			final List<ModuleConfig> moduleConfigs = loadModuleConfig(options);
 
-			final ConfigurationHolder configHolder = new ConfigurationHolder();
+			// load the config properties
+			loadConfiguration(moduleConfigs, options);
 
-			{ // parse command line properties
-				final BootstrapOptions opts = parseCommandLine(args);
+			// load spring configs
+			loadSpringConfiguration(ctx, moduleConfigs, options);
 
-				// load application config
-				if (StringUtils.isNotBlank(opts.getPropertyFile())) {
-					loadPropeperties(configHolder, opts.getPropertyFile());
-				}
-
-				// start initialization
-				setupInitClass(ctx, opts.getInitClass());
-			}
+			// start initialization and load init config into config holder
+			// setupInitClass(ctx, options.getInitClass(), configHolder);
 
 			ctx.registerShutdownHook();
 			ctx.refresh();
@@ -69,19 +77,89 @@ public class Bootstrap {
 		}
 	}
 
-	protected static void setupConfigurationHolder(final GenericApplicationContext context) {
-		SpringUtil.registerBean(((BeanDefinitionRegistry) context.getBeanFactory()), ConfigurationHolder.class, null,
-				true);
+	protected static List<ModuleConfig> loadModuleConfig(final BootstrapOptions options) {
+		final List<ModuleConfig> moduleConfigs = new LinkedList<>();
+
+		moduleConfigs.add(ClassUtil.getAnnotation(options.getInitClass(), ModuleConfig.class));
+
+		for (final Class<?> c : ClassUtil.getAllSuperClasses(options.getInitClass(), ModuleInit.class, true)) {
+			final ModuleConfig conf = ClassUtil.getAnnotation(c, ModuleConfig.class);
+
+			if (conf != null) {
+				moduleConfigs.add(conf);
+			}
+		}
+
+		// reverse the order, this is necessary to load the configs in the
+		// correct order
+		Collections.reverse(moduleConfigs);
+
+		return moduleConfigs;
 	}
 
-	protected static void setupInitClass(final GenericApplicationContext context,
-			final Class<? extends ModuleInit> initClass) {
+	/**
+	 * Load the configuration properties. First the {@link ModuleInit}'s
+	 * properties file (set in the {@link ModuleConfig} annotation) will be
+	 * loaded. Then the properties file passed via command line will be loaded,
+	 * possibly overriding module config properties.
+	 * 
+	 * @param moduleConfig2
+	 * 
+	 * @param options
+	 * @return
+	 * @throws IOException
+	 */
+	protected static void loadConfiguration(final List<ModuleConfig> moduleConfigs, final BootstrapOptions options)
+			throws IOException {
 
-		SpringUtil.registerBean(((BeanDefinitionRegistry) context.getBeanFactory()), initClass, null, true);
+		final ConfigurationHolder configHolder = new ConfigurationHolder();
+
+		// load module's config properties
+		for (final ModuleConfig c : moduleConfigs) {
+			if (StringUtils.isNotBlank(c.appConfigFile())) {
+				final Properties prop = PropertyUtil.loadPropertiesFromClasspath(c.appConfigFile());
+
+				if (prop != null) {
+					configHolder.addConfigruation(prop);
+				}
+			}
+		}
+
+		// load application config, possibly override module configs
+		if (StringUtils.isNotBlank(options.getAppConfigFile())) {
+			final Properties prop = PropertyUtil.loadPropertiesFromFile(options.getAppConfigFile());
+
+			if (prop != null) {
+				configHolder.addConfigruation(prop);
+			}
+		}
+
+		Registry.setAppConfiguration(configHolder);
 	}
 
-	protected static void setDefaultLocale() {
-		LocaleContextHolder.setLocale(Locale.ENGLISH);
+	/**
+	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
+	 * necessary, so that the spring context of this module can be merged with
+	 * the parent context.
+	 * 
+	 * @param parentContext
+	 */
+	protected static void loadSpringConfiguration(final BeanDefinitionRegistry context,
+			final List<ModuleConfig> moduleConfigs, final BootstrapOptions options) {
+
+		final BeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+
+		// load module's spring config
+		for (final ModuleConfig c : moduleConfigs) {
+			if (StringUtils.isNotBlank(c.springConfigFile())) {
+				reader.loadBeanDefinitions(c.springConfigFile());
+			}
+		}
+
+		// get application spring config
+		if (StringUtils.isNotBlank(options.getSpringConfigFile())) {
+			reader.loadBeanDefinitions(options.getSpringConfigFile());
+		}
 	}
 
 	/**
@@ -96,13 +174,21 @@ public class Bootstrap {
 
 		final Options options = new Options();
 		options.addOption(OptionBuilder.withLongOpt("p").withDescription("application the properties file").hasArg()
-				.withArgName("properties").create("properties"));
+				.withArgName("appconfig").create("appconfig"));
+		options.addOption(OptionBuilder.withLongOpt("s").withDescription("spring config file").hasArg()
+				.withArgName("springconfig").create("springconfig"));
+		options.addOption(OptionBuilder.withLongOpt("i").withDescription("application the properties file").hasArg()
+				.withArgName("initclass").create("initclass"));
 
 		final CommandLineParser parser = new DefaultParser();
 		final CommandLine cmd = parser.parse(options, args);
 
 		if (cmd.hasOption("p")) {
-			ret.setPropertyFile(cmd.getOptionValue("p"));
+			ret.setAppConfigFile(cmd.getOptionValue("p"));
+		}
+
+		if (cmd.hasOption("s")) {
+			ret.setSpringConfigFile(cmd.getOptionValue("s"));
 		}
 
 		Class<? extends ModuleInit> initClass = CoreInit.class;
@@ -123,31 +209,17 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Inject custom properties into the spring context.
-	 * 
-	 * @param springContext
-	 * @param propertyFile
-	 * @throws IOException
-	 */
-	protected static void loadPropeperties(final ConfigurationHolder configHolder, final String propertyFile)
-			throws IOException {
-
-		// resolve path
-		Path propPath = Paths.get(propertyFile);
-
-		if (!propPath.isAbsolute()) {
-			final Path currentDir = Paths.get(System.getProperty("user.dir"));
-			propPath = currentDir.resolve(propPath);
-		}
-
-		configHolder.addConfigruation(propPath.toFile());
-	}
-
-	/**
 	 * Sets org.reflections logging to warnings, as we scan all package paths.
 	 * This causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
+	}
+
+	/**
+	 * Sets default locale, overriding the system default.
+	 */
+	protected static void setDefaultLocale() {
+		LocaleContextHolder.setLocale(Locale.ENGLISH);
 	}
 }

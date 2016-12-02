@@ -85,8 +85,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<minimizeJar>true</minimizeJar>
-							<outputFile>${project.build.directory}/spot-core-${version}-fat.jar</outputFile>
+							<outputFile>${project.build.directory}/spot-core-${project.version}-fat.jar</outputFile>
 						</configuration>
 					</execution>
 				</executions>

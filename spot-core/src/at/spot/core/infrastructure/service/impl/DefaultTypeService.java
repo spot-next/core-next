@@ -26,6 +26,7 @@ import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.SpringUtil;
+import at.spot.core.support.util.SpringUtil.BeanScope;
 
 /**
  * Provides functionality to manage the typesystem.
@@ -65,7 +66,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			beanName = ann.typeCode();
 		}
 
-		SpringUtil.registerBean(getBeanFactory(), type, beanName, "prototype", null);
+		SpringUtil.registerBean(getBeanFactory(), type, beanName, BeanScope.prototype, null, false);
 
 		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
 	}

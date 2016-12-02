@@ -1,32 +1,45 @@
 package at.spot.core.support.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.springframework.util.ResourceUtils;
+import org.jboss.logging.Logger;
 
 public class PropertyUtil {
 
+	private static Logger LOG = Logger.getLogger(PropertyUtil.class);
+
 	/**
-	 * Loads a {@link Properties} from a file from the classpath. The file path
-	 * has to be start with "classpath:".
+	 * Loads a {@link Properties} from a file.
 	 * 
-	 * @param fileName
+	 * @param propertyFile
+	 *            if it is a relative path "user.dir" will be used to resolve
+	 *            it.
 	 * @return null if file can't be found
 	 */
-	public static Properties loadPropertiesFromClassPath(final String fileName) {
-		File propfile = null;
+	public static Properties loadPropertiesFromFile(final String propertyFile) {
+		Path propPath = Paths.get(propertyFile);
 
-		try {
-			propfile = ResourceUtils.getFile(fileName);
-		} catch (final FileNotFoundException e) {
-			// ignore
+		if (!propPath.isAbsolute()) {
+			final Path currentDir = Paths.get(System.getProperty("user.dir"));
+			propPath = currentDir.resolve(propPath);
 		}
 
-		return loadPropertiesFromClassPath(propfile);
+		return loadPropertiesFromFile(propPath.toFile());
+	}
+
+	/**
+	 * Loads {@link Properties} from the classpath.
+	 * 
+	 * @param classPathFileName
+	 * @return
+	 */
+	public static Properties loadPropertiesFromClasspath(final String classPathFileName) {
+		return loadPropertiesFromFile(PropertyUtil.class.getClassLoader().getResource(classPathFileName).getPath());
 	}
 
 	/**
@@ -35,13 +48,16 @@ public class PropertyUtil {
 	 * @param file
 	 * @return null if file can't be found
 	 */
-	public static Properties loadPropertiesFromClassPath(final File file) {
-		final Properties prop = new Properties();
+	public static Properties loadPropertiesFromFile(final File file) {
+		Properties prop = null;
 
 		try {
-			prop.load(new FileReader(file));
+			final FileReader reader = new FileReader(file);
+
+			prop = new Properties();
+			prop.load(reader);
 		} catch (final IOException e) {
-			// ignore
+			LOG.warn(e.getMessage());
 		}
 
 		return prop;

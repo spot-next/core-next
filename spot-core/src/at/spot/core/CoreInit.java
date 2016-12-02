@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionReader;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
+import at.spot.core.infrastructure.init.ModuleConfig;
 import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
@@ -25,7 +22,6 @@ import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
-import at.spot.core.support.util.PropertyUtil;
 
 /**
  * This is the main entry point for the application. After the application has
@@ -36,6 +32,7 @@ import at.spot.core.support.util.PropertyUtil;
 @EnableScheduling
 @Service
 @Order(value = 1)
+@ModuleConfig(appConfigFile = "core.properties", springConfigFile = "spring-core.xml")
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -55,16 +52,6 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected QueryService queryService;
-
-	@Override
-	public void injectBeanDefinition(final BeanDefinitionRegistry parentContext) {
-		final BeanDefinitionReader reader = new XmlBeanDefinitionReader(parentContext);
-		reader.loadBeanDefinitions("classpath:spring-core.xml");
-	}
-
-	// public CoreInit(ConfigurationHolder configHolder) {
-	// configHolder.addConfigruation("core.properties");
-	// }
 
 	public void run() {
 		final long start = System.currentTimeMillis();
@@ -181,10 +168,5 @@ public class CoreInit extends ModuleInit {
 	protected void setupTypeInfrastrucutre() {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
-	}
-
-	@Override
-	public Properties getConfiguration() {
-		return PropertyUtil.loadPropertiesFromClassPath("classpath:core.properties");
 	}
 }

@@ -67,8 +67,6 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		} catch (final RuntimeException e) {
 			loggingService.exception("Cannot start SMTP server: " + e.getMessage(), e);
 		}
-
-		runMessageQueueLoop();
 	}
 
 	protected void runMessageQueueLoop() {
@@ -114,18 +112,23 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	@Override
 	public void deliver(final String from, final String recipient, final InputStream data)
 			throws TooMuchDataException, IOException {
+
 		saveMail(from, recipient, data);
 	}
 
-	protected void saveMail(final String from, final String recipient, final InputStream data) throws IOException {
+	protected synchronized void saveMail(final String from, final String recipient, final InputStream data)
+			throws IOException {
 		final Mail mail = new Mail();
 
 		mail.sender = from;
 		mail.toRecipients.add(recipient);
 		mail.content = IOUtils.toString(data, "UTF-8");
 
-		// add new mail to the message queue
-		mailQueue.add(mail);
+		try {
+			modelService.save(mail);
+		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
+			loggingService.exception("Can't save received mail.", e);
+		}
 	}
 
 	final class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {

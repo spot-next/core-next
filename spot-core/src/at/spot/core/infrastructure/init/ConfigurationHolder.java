@@ -1,28 +1,29 @@
 package at.spot.core.infrastructure.init;
 
 import java.io.File;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import at.spot.core.support.util.PropertyUtil;
 
-public class ConfigurationHolder {
-	protected static Set<Properties> configProperties = new LinkedHashSet<>();
+public class ConfigurationHolder implements Configuration {
+	protected static List<Properties> configProperties = new LinkedList<>();
 
 	public void addConfigruation(final String configurationFile) {
-		addConfigruation(PropertyUtil.loadPropertiesFromClassPath(new File(configurationFile)));
+		addConfigruation(PropertyUtil.loadPropertiesFromFile(new File(configurationFile)));
 	}
 
 	public void addConfigruation(final File configurationFile) {
-		addConfigruation(PropertyUtil.loadPropertiesFromClassPath(configurationFile));
+		addConfigruation(PropertyUtil.loadPropertiesFromFile(configurationFile));
 	}
 
 	public void addConfigruation(final Properties configuration) {
-		configProperties.add(configuration);
+		configProperties.add(0, configuration);
 	}
 
-	public Set<Properties> getConfiguration() {
+	@Override
+	public List<Properties> getConfiguration() {
 		return configProperties;
 	}
 }
