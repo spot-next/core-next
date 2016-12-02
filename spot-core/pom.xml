@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.spot.core</groupId>
 	<artifactId>spot-core</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 	<name>spOt core module</name>
 
 	<properties>

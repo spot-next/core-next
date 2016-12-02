@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.spot.mail</groupId>
 	<artifactId>spot-mail</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>spOt mail server</name>
 
 	<properties>
@@ -138,7 +138,7 @@
 		<dependency>
 			<groupId>at.spot.core</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>0.0.5</version>
+			<version>0.0.6</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
