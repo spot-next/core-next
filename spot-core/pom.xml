@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.spot.core</groupId>
+	<groupId>at.spot</groupId>
 	<artifactId>spot-core</artifactId>
-	<version>0.0.6</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>spOt core module</name>
 
 	<properties>
@@ -37,8 +37,16 @@
 		<repository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>10</updatePolicy>
+			</snapshots>
 		</repository>
 	</repositories>
+
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -85,7 +93,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<outputFile>${project.build.directory}/spot-core-${project.version}-fat.jar</outputFile>
+							<outputFile>${project.build.directory}/${artifactId}-${project.version}-fat.jar</outputFile>
 						</configuration>
 					</execution>
 				</executions>
@@ -146,19 +154,19 @@
 	<dependencies>
 		<!-- spot modules -->
 		<dependency>
-			<groupId>at.spot.core.model-infrastructure</groupId>
+			<groupId>at.spot</groupId>
 			<artifactId>spot-core-model-infrastructure</artifactId>
-			<version>0.0.1</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>at.spot.core.model</groupId>
-			<artifactId>spot-core-model</artifactId>
-			<version>0.0.1</version>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-core-base-models</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>at.spot.core.support</groupId>
+			<groupId>at.spot</groupId>
 			<artifactId>spot-core-support</artifactId>
-			<version>0.0.1</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- aspectj -->

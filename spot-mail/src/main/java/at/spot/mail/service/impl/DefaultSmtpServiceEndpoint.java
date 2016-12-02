@@ -141,7 +141,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 
 		@Override
 		public List<String> getAuthenticationMechanisms() {
-			final List result = new ArrayList();
+			final List<String> result = new ArrayList<>();
 			result.add("LOGIN");
 			return result;
 		}
