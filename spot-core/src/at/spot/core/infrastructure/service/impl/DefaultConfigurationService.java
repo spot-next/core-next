@@ -22,7 +22,11 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		Integer value = null;
 
 		try {
-			value = Integer.parseInt(getProperty(key));
+			final String v = getProperty(key);
+
+			if (v != null) {
+				value = Integer.parseInt(v);
+			}
 		} catch (final NumberFormatException e) {
 			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}

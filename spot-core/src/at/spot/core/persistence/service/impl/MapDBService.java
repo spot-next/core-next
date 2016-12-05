@@ -46,7 +46,7 @@ public class MapDBService implements PersistenceService {
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
 
 	public static final String CONFIG_KEY_STORAGE_FILE = "service.persistence.mapdb.filepath";
-	public static final String DEFAULT_DB_FILEPATH = "/var/tmp/storage.db";
+	public static final String DEFAULT_DB_FILEPATH = "/private/tmp/storage.db";
 
 	public static final String PK_PROPERTY_NAME = "pk";
 

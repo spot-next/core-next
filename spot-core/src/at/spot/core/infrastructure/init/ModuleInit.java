@@ -16,7 +16,9 @@ public abstract class ModuleInit {
 	}
 
 	/**
-	 * Implements the module's initialization process.
+	 * This is a hook to customize the initialization process. It is called
+	 * after {@link Bootstrap} has finished doing the basic initialization (load
+	 * config properties and spring configuration).
 	 */
 	public abstract void initialize();
 }

@@ -44,7 +44,7 @@ public class Bootstrap {
 	 * 
 	 * @param options
 	 */
-	protected static void bootstrap(final BootstrapOptions options) {
+	public static void bootstrap(final BootstrapOptions options) {
 		setDefaultLocale();
 		setLogSettings();
 
@@ -75,6 +75,8 @@ public class Bootstrap {
 		} finally {
 			// MiscUtil.closeQuietly(ctx);
 		}
+
+		System.out.println("");
 	}
 
 	protected static List<ModuleConfig> loadModuleConfig(final BootstrapOptions options) {

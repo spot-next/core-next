@@ -7,8 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.LoggingService;
@@ -28,32 +29,32 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	Map<Class<?>, Logger> loggers = new HashMap<>();
 
 	@Override
-	public void debug(String message, Class<?> callingClass) {
+	public void debug(final String message, final Class<?> callingClass) {
 		log(LogLevel.DEBUG, message, callingClass);
 	}
 
 	@Override
-	public void info(String message, Class<?> callingClass) {
+	public void info(final String message, final Class<?> callingClass) {
 		log(LogLevel.INFO, message, callingClass);
 	}
 
 	@Override
-	public void warn(String message, Class<?> callingClass) {
+	public void warn(final String message, final Class<?> callingClass) {
 		log(LogLevel.WARN, message, callingClass);
 	}
 
 	@Override
-	public void error(String message, Class<?> callingClass) {
+	public void error(final String message, final Class<?> callingClass) {
 		log(LogLevel.ERROR, message, callingClass);
 	}
 
 	@Override
-	public void exception(String message, Throwable exception, Class<?> callingClass) {
+	public void exception(final String message, final Throwable exception, final Class<?> callingClass) {
 		log(LogLevel.FATAL, message, callingClass);
 	}
 
 	@Override
-	public void log(LogLevel level, String message, Throwable exception, Class<?> callingClass) {
+	public void log(final LogLevel level, String message, final Throwable exception, final Class<?> callingClass) {
 		String msg = message = message;
 
 		if (exception != null) {
@@ -65,37 +66,38 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
 	}
 
-	public void log(LogLevel level, String message, Class<?> callingClass) {
+	@Override
+	public void log(final LogLevel level, final String message, final Class<?> callingClass) {
 		log(level, message, null, callingClass);
 	}
 
 	@Override
-	public void debug(String message) {
+	public void debug(final String message) {
 		log(LogLevel.DEBUG, message, getCallingClass());
 	}
 
 	@Override
-	public void info(String message) {
+	public void info(final String message) {
 		log(LogLevel.INFO, message, getCallingClass());
 	}
 
 	@Override
-	public void warn(String message) {
+	public void warn(final String message) {
 		log(LogLevel.WARN, message, getCallingClass());
 	}
 
 	@Override
-	public void error(String message) {
+	public void error(final String message) {
 		log(LogLevel.ERROR, message, getCallingClass());
 	}
 
 	@Override
-	public void exception(String message, Throwable exception) {
+	public void exception(final String message, final Throwable exception) {
 		log(LogLevel.FATAL, message, exception, getCallingClass());
 	}
 
 	@Override
-	public void log(LogLevel level, String message) {
+	public void log(final LogLevel level, final String message) {
 		log(level, message, getCallingClass());
 	}
 
@@ -114,11 +116,11 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	 * @param type
 	 * @return
 	 */
-	protected Logger getLoggerForClass(Class<?> type) {
+	protected Logger getLoggerForClass(final Class<?> type) {
 		Logger logger = loggers.get(type);
 
 		if (logger == null) {
-			logger = Logger.getLogger(type);
+			logger = LogManager.getLogger(type);
 			loggers.put(type, logger);
 		}
 
@@ -132,15 +134,15 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	protected Class<?> getCallingClass() {
 		Class<?> callingClass = null;
 
-		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 
 		for (int i = 1; i < stack.length; i++) {
-			StackTraceElement o = stack[i];
+			final StackTraceElement o = stack[i];
 
 			if (!StringUtils.equalsIgnoreCase(o.getClassName(), this.getClass().getName())) {
 				try {
 					callingClass = Class.forName(o.getClassName());
-				} catch (ClassNotFoundException e) {
+				} catch (final ClassNotFoundException e) {
 					// ignore, as this should never happen
 				}
 				break;

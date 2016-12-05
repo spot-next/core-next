@@ -16,14 +16,14 @@ public @interface ModuleConfig {
 	 * 
 	 * @return
 	 */
-	String appConfigFile();
+	String appConfigFile() default "";
 
 	/**
 	 * Returns the spring configuration file.
 	 * 
 	 * @return
 	 */
-	String springConfigFile();
+	String springConfigFile() default "";
 
 	/**
 	 * Returns the spring configuration class. This overrides the

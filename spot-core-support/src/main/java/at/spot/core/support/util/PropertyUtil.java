@@ -3,6 +3,7 @@ package at.spot.core.support.util;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -39,7 +40,17 @@ public class PropertyUtil {
 	 * @return
 	 */
 	public static Properties loadPropertiesFromClasspath(final String classPathFileName) {
-		return loadPropertiesFromFile(PropertyUtil.class.getClassLoader().getResource(classPathFileName).getPath());
+		final InputStream input = PropertyUtil.class.getClassLoader().getResourceAsStream(classPathFileName);
+
+		final Properties prop = new Properties();
+
+		try {
+			prop.load(input);
+		} catch (final IOException e) {
+			LOG.warn(e.getMessage());
+		}
+
+		return prop;
 	}
 
 	/**

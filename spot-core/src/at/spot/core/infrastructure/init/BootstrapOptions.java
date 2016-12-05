@@ -11,7 +11,6 @@ public class BootstrapOptions {
 
 	public BootstrapOptions setAppConfigFile(final String propertyFile) {
 		this.appConfigFile = propertyFile;
-
 		return this;
 	}
 
@@ -19,16 +18,18 @@ public class BootstrapOptions {
 		return initClass;
 	}
 
-	public void setInitClass(final Class<? extends ModuleInit> initClass) {
+	public BootstrapOptions setInitClass(final Class<? extends ModuleInit> initClass) {
 		this.initClass = initClass;
+		return this;
 	}
 
 	public String getSpringConfigFile() {
 		return springConfigFile;
 	}
 
-	public void setSpringConfigFile(final String springConfigFile) {
+	public BootstrapOptions setSpringConfigFile(final String springConfigFile) {
 		this.springConfigFile = springConfigFile;
+		return this;
 	}
 
 }
