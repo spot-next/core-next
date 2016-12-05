@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
+import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.init.ModuleConfig;
 import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.service.EventService;
@@ -151,7 +152,7 @@ public class CoreInit extends ModuleInit {
 
 	@Log(message = "Starting spOt core ... ")
 	@Override
-	public void initialize() {
+	public void initialize() throws ModuleInitializationException {
 		setupTypeInfrastrucutre();
 		runMigrateScripts();
 

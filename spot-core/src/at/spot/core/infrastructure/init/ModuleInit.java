@@ -2,6 +2,8 @@ package at.spot.core.infrastructure.init;
 
 import javax.annotation.PostConstruct;
 
+import at.spot.core.infrastructure.exception.ModuleInitializationException;
+
 public abstract class ModuleInit {
 
 	/**
@@ -11,7 +13,7 @@ public abstract class ModuleInit {
 	 * @param parentContext
 	 */
 	@PostConstruct
-	public void init() {
+	public void init() throws ModuleInitializationException {
 		initialize();
 	}
 
@@ -20,5 +22,5 @@ public abstract class ModuleInit {
 	 * after {@link Bootstrap} has finished doing the basic initialization (load
 	 * config properties and spring configuration).
 	 */
-	public abstract void initialize();
+	public abstract void initialize() throws ModuleInitializationException;
 }

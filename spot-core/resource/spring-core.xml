@@ -51,8 +51,11 @@
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
-	<alias name="l10nService" alias="messageInterpolator" />
-	<alias name="l10nService" alias="messageSource" />
+	<alias name="defaultMessageInterpolator" alias="messageInterpolator" />
+	<alias name="defaultMessageSource" alias="messageSource" />
+
+	<alias name="l10nService" alias="defaultMessageInterpolator" />
+	<alias name="l10nService" alias="defaultMessageSource" />
 	<bean id="defaultL10nService"
 		class="at.spot.core.infrastructure.service.impl.DefaultL10nService">
 		<property name="parentMessageSource" ref="reloadableMessageSource" />
@@ -81,9 +84,11 @@
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
 	<alias name="defaultValidationService" alias="validationService" />
-
+	<alias name="defaultUserService" alias="userService" />
+	<alias name="defaultAuthenticationService" alias="authenticationService" />
 
 	<!-- strategies -->
+	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
 
 
 	<!-- converters -->
