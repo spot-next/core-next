@@ -9,17 +9,40 @@ import at.spot.core.model.user.UserGroup;
 
 public interface UserService {
 
-	void createUser(String userId) throws DuplicateUserException;
+	/**
+	 * Creates an empty {@link User} object, only setting the given userId.
+	 * 
+	 * @param userId
+	 * @return the newly created {@link User}.
+	 * @throws DuplicateUserException
+	 */
+	<U extends User> U createUser(Class<U> type, String userId) throws DuplicateUserException;
 
-	User getUser(String uid);
+	/**
+	 * @param uid
+	 *            the user's uid
+	 * @return the given user or null, if the user is not found.
+	 */
+	<U extends User> U getUser(String uid);
 
-	List<User> getAllUsers();
+	/**
+	 * @return all available {@link User}s (even subtypes).
+	 */
+	<U extends User> List<U> getAllUsers();
 
-	List<UserGroup> getAllUserGroups();
+	/**
+	 * @return all available {@link UserGroup}s (even subtypes).
+	 */
+	<U extends UserGroup> List<U> getAllUserGroups();
 
-	UserGroup getUserGroup(String uid);
+	/**
+	 * 
+	 * @param uid
+	 * @return the {@link UserGroup}
+	 */
+	<U extends UserGroup> U getUserGroup(String uid);
 
-	Set<UserGroup> getAllGroupsOfUser(String uid);
+	<U extends UserGroup> Set<U> getAllGroupsOfUser(String uid);
 
 	boolean isUserInGroup(String userUid, String groupUid);
 

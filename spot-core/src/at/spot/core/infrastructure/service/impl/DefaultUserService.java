@@ -24,19 +24,33 @@ public class DefaultUserService extends AbstractService implements UserService {
 	protected ModelService modelService;
 
 	@Override
-	public User getUser(final String uid) {
-		final Map<String, Comparable<?>> params = new HashMap<>();
-		params.put("uid", uid);
+	public <U extends User> U createUser(final Class<U> type, final String userId) throws DuplicateUserException {
+		final U user = modelService.create(type);
+		user.uid = userId;
 
-		return modelService.get(User.class, params);
+		try {
+			modelService.save(user);
+		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
+			throw new DuplicateUserException();
+		}
+
+		return user;
 	}
 
 	@Override
-	public UserGroup getUserGroup(final String uid) {
+	public <U extends User> U getUser(final String uid) {
 		final Map<String, Comparable<?>> params = new HashMap<>();
 		params.put("uid", uid);
 
-		return modelService.get(UserGroup.class, params);
+		return (U) modelService.get(User.class, params);
+	}
+
+	@Override
+	public <U extends UserGroup> U getUserGroup(final String uid) {
+		final Map<String, Comparable<?>> params = new HashMap<>();
+		params.put("uid", uid);
+
+		return (U) modelService.get(UserGroup.class, params);
 	}
 
 	@Override
@@ -51,24 +65,12 @@ public class DefaultUserService extends AbstractService implements UserService {
 	}
 
 	@Override
-	public void createUser(final String userId) throws DuplicateUserException {
-		final User user = modelService.create(User.class);
-		user.uid = userId;
-
-		try {
-			modelService.save(user);
-		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-			throw new DuplicateUserException();
-		}
+	public <U extends User> List<U> getAllUsers() {
+		return (List<U>) modelService.getAll(User.class);
 	}
 
 	@Override
-	public List<User> getAllUsers() {
-		return modelService.getAll(User.class);
-	}
-
-	@Override
-	public List<UserGroup> getAllUserGroups() {
-		return modelService.getAll(UserGroup.class);
+	public <U extends UserGroup> List<U> getAllUserGroups() {
+		return (List<U>) modelService.getAll(UserGroup.class);
 	}
 }

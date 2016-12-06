@@ -26,7 +26,13 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	protected UserService userService;
 
 	@Override
-	public User getAuthenticatedUser(final String name, final String encryptedPassword) {
+	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
+		String encryptedPassword = password;
+
+		if (!isEncrypted) {
+			encryptedPassword = encryptPassword(password);
+		}
+
 		final User user = userService.getUser(name);
 
 		if (user != null) {
@@ -39,8 +45,8 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	}
 
 	@Override
-	public void setPassword(final User user, final String rawPassword) throws ModelSaveException {
-		user.password = encryptPassword(rawPassword);
+	public void setPassword(final User user, final String plainPassword) throws ModelSaveException {
+		user.password = encryptPassword(plainPassword);
 
 		try {
 			modelService.save(user);
@@ -50,7 +56,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	}
 
 	@Override
-	public String encryptPassword(final String rawPassword) {
-		return passwordEncryptionStrategy.encryptPassword(rawPassword);
+	public String encryptPassword(final String plainPassword) {
+		return passwordEncryptionStrategy.encryptPassword(plainPassword);
 	}
 }
