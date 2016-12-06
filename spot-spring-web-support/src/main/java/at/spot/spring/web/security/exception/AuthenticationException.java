@@ -8,4 +8,8 @@ public class AuthenticationException extends org.springframework.security.core.A
 		super(msg);
 	}
 
+	public AuthenticationException(final String msg, final Throwable rootCause) {
+		super(msg, rootCause);
+	}
+
 }

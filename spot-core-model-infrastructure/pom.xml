@@ -39,7 +39,7 @@
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>10</updatePolicy>
+				<updatePolicy>interval:300</updatePolicy>
 			</snapshots>
 		</repository>
 	</repositories>
