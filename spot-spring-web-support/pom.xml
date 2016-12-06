@@ -7,8 +7,45 @@
 	<name>spring web support module</name>
 
 	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.1.3.RELEASE</spring.version>
+		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
+		<spring.shell.version>1.2.0.RELEASE</spring.shell.version>
+		<aspectj.version>1.8.9</aspectj.version>
+		<log4j.version>2.7</log4j.version>
+		<junit.version>4.10</junit.version>
+
+		<!-- nexus repositry -->
+		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>10</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 
 
 	<build>
@@ -47,5 +84,19 @@
 			<artifactId>spring-security-taglibs</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>javax.servlet</groupId> -->
+		<!-- <artifactId>javax.servlet-api</artifactId> -->
+		<!-- <version>3.1.0.redhat-1</version> -->
+		<!-- </dependency> -->
 	</dependencies>
 </project>

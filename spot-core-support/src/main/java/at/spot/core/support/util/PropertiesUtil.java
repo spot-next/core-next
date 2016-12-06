@@ -10,9 +10,9 @@ import java.util.Properties;
 
 import org.jboss.logging.Logger;
 
-public class PropertyUtil {
+public class PropertiesUtil {
 
-	private static Logger LOG = Logger.getLogger(PropertyUtil.class);
+	private static Logger LOG = Logger.getLogger(PropertiesUtil.class);
 
 	/**
 	 * Loads a {@link Properties} from a file.
@@ -40,7 +40,7 @@ public class PropertyUtil {
 	 * @return
 	 */
 	public static Properties loadPropertiesFromClasspath(final String classPathFileName) {
-		final InputStream input = PropertyUtil.class.getClassLoader().getResourceAsStream(classPathFileName);
+		final InputStream input = PropertiesUtil.class.getClassLoader().getResourceAsStream(classPathFileName);
 
 		final Properties prop = new Properties();
 

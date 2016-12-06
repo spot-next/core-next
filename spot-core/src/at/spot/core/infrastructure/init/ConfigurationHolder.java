@@ -5,17 +5,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import at.spot.core.support.util.PropertyUtil;
+import at.spot.core.support.util.PropertiesUtil;
 
 public class ConfigurationHolder implements Configuration {
 	protected static List<Properties> configProperties = new LinkedList<>();
 
 	public void addConfigruation(final String configurationFile) {
-		addConfigruation(PropertyUtil.loadPropertiesFromFile(new File(configurationFile)));
+		addConfigruation(PropertiesUtil.loadPropertiesFromFile(new File(configurationFile)));
 	}
 
 	public void addConfigruation(final File configurationFile) {
-		addConfigruation(PropertyUtil.loadPropertiesFromFile(configurationFile));
+		addConfigruation(PropertiesUtil.loadPropertiesFromFile(configurationFile));
 	}
 
 	public void addConfigruation(final Properties configuration) {

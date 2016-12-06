@@ -1,6 +1,8 @@
 package at.spot.spring.web;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +15,11 @@ import at.spot.core.infrastructure.init.BootstrapOptions;
 import at.spot.core.infrastructure.init.ModuleInit;
 import at.spot.core.infrastructure.spring.support.Registry;
 
-public interface WebModuleInit extends WebApplicationInitializer {
+/**
+ * This interface extends the {@link ModuleInit} with some more functionality
+ * with web container support.
+ */
+public interface WebModuleInit extends WebApplicationInitializer, ServletContextListener {
 	@Override
 	default void onStartup(final ServletContext servletContext) throws ServletException {
 		bootSpotCore(getModuleInitClass(), getApplicationConfigProperties(), null);
@@ -25,6 +31,20 @@ public interface WebModuleInit extends WebApplicationInitializer {
 
 		setupServlets(servletContext, context);
 		setupFilters(servletContext, context);
+		setupListeners(servletContext);
+	}
+
+	/**
+	 * Registers {@link ServletContextListener}s. By default the
+	 * {@link WebModuleInit} class is registered as listener too. Althrought the
+	 * {@link WebModuleInit#contextInitialized(ServletContextEvent)} and
+	 * {@link WebModuleInit#contextDestroyed(ServletContextEvent)} by default
+	 * don't do anything.
+	 * 
+	 * @param servletContext
+	 */
+	default void setupListeners(final ServletContext servletContext) {
+		servletContext.addListener(this);
 	}
 
 	/**
@@ -95,4 +115,12 @@ public interface WebModuleInit extends WebApplicationInitializer {
 	 * @param context
 	 */
 	void setupFilters(final ServletContext servletContext, final ApplicationContext context);
+
+	@Override
+	default void contextInitialized(final ServletContextEvent event) {
+	}
+
+	@Override
+	default void contextDestroyed(final ServletContextEvent event) {
+	}
 }

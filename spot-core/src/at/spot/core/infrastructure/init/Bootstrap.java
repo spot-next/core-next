@@ -24,7 +24,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.spring.support.Registry;
 import at.spot.core.support.util.ClassUtil;
-import at.spot.core.support.util.PropertyUtil;
+import at.spot.core.support.util.PropertiesUtil;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -119,7 +119,7 @@ public class Bootstrap {
 		// load module's config properties
 		for (final ModuleConfig c : moduleConfigs) {
 			if (StringUtils.isNotBlank(c.appConfigFile())) {
-				final Properties prop = PropertyUtil.loadPropertiesFromClasspath(c.appConfigFile());
+				final Properties prop = PropertiesUtil.loadPropertiesFromClasspath(c.appConfigFile());
 
 				if (prop != null) {
 					configHolder.addConfigruation(prop);
@@ -129,7 +129,7 @@ public class Bootstrap {
 
 		// load application config, possibly override module configs
 		if (StringUtils.isNotBlank(options.getAppConfigFile())) {
-			final Properties prop = PropertyUtil.loadPropertiesFromFile(options.getAppConfigFile());
+			final Properties prop = PropertiesUtil.loadPropertiesFromFile(options.getAppConfigFile());
 
 			if (prop != null) {
 				configHolder.addConfigruation(prop);
