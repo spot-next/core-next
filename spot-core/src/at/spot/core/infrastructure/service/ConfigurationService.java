@@ -60,4 +60,21 @@ public interface ConfigurationService {
 	 */
 	Double getDouble(String key, Double defaultValue);
 
+	/**
+	 * Returns a Boolean value for the given key or null, if the key doesn't
+	 * exist.
+	 * 
+	 * @param key
+	 */
+	Boolean getBoolean(String key);
+
+	/**
+	 * Returns a Boolean value for the given key or null, if the key doesn't
+	 * exist.
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 */
+	boolean getBoolean(String key, boolean defaultValue);
+
 }

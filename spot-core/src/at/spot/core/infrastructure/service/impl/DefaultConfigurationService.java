@@ -95,4 +95,28 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 
 		return value;
 	}
+
+	@Override
+	public Boolean getBoolean(final String key) {
+		Boolean value = null;
+
+		try {
+			value = Boolean.parseBoolean(getProperty(key));
+		} catch (final NumberFormatException e) {
+			loggingService.exception(String.format("Can't load config key %s", key), e);
+		}
+
+		return value;
+	}
+
+	@Override
+	public boolean getBoolean(final String key, final boolean defaultValue) {
+		Boolean b = getBoolean(key);
+
+		if (b == null) {
+			b = defaultValue;
+		}
+
+		return b;
+	}
 }

@@ -10,8 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.type.LogLevel;
 
@@ -23,8 +25,12 @@ import at.spot.core.infrastructure.type.LogLevel;
 @Service
 public class ConsoleLoggingService extends AbstractService implements LoggingService {
 
-	private static String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
-	private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+	private static final String CONFIG_KEY_LOG_TO_CONSOLE = "service.logging.sys.console";
+	private static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+	private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+
+	@Autowired
+	protected ConfigurationService configurationService;
 
 	Map<Class<?>, Logger> loggers = new HashMap<>();
 
@@ -62,8 +68,15 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 			msg += "\n" + ExceptionUtils.getStackTrace(exception);
 		}
 
-		System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+		if (logToConsole()) {
+			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+		}
+
 		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
+	}
+
+	protected boolean logToConsole() {
+		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, true);
 	}
 
 	@Override
@@ -145,6 +158,7 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 				} catch (final ClassNotFoundException e) {
 					// ignore, as this should never happen
 				}
+
 				break;
 			}
 		}
