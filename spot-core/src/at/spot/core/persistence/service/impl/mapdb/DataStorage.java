@@ -2,6 +2,7 @@ package at.spot.core.persistence.service.impl.mapdb;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,13 @@ public class DataStorage {
 		final Map<String, List<Long>> pksForProperty = new TreeMap<>();
 
 		for (final String k : criteria.keySet()) {
-			pksForProperty.put(k, getIndex(k).getPk(criteria.get(k)));
+			final Comparable<?> v = criteria.get(k);
+
+			final List<Long> pk = getIndex(k).getPk(v);
+
+			if (pk != null) {
+				pksForProperty.put(k, getIndex(k).getPk(v));
+			}
 		}
 
 		final Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
@@ -190,13 +197,17 @@ public class DataStorage {
 	}
 
 	public <T> Set<T> intersection(final List<List<T>> list) {
-		Set<T> result = Sets.newHashSet(list.get(0));
+		if (list != null && list.size() > 0) {
+			Set<T> result = Sets.newHashSet(list.get(0));
 
-		for (final List<T> numbers : list) {
-			result = Sets.intersection(result, Sets.newHashSet(numbers));
+			for (final List<T> numbers : list) {
+				result = Sets.intersection(result, Sets.newHashSet(numbers));
+			}
+
+			return result;
+		} else {
+			return Collections.emptySet();
 		}
-
-		return result;
 	}
 
 	protected synchronized Long getNextPk() {

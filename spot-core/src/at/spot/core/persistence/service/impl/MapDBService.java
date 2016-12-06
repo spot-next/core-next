@@ -293,7 +293,8 @@ public class MapDBService implements PersistenceService {
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream) {
 
-		Stream<T> foundItems = null;
+		// prevent NPES
+		Stream<T> foundItems = new ArrayList<T>().stream();
 
 		try {
 			foundItems = threadPool.submit(() -> {
