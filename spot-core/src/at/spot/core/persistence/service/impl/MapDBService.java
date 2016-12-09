@@ -186,8 +186,9 @@ public class MapDBService implements PersistenceService {
 					item.uniquenessHash());
 
 			for (final ItemTypePropertyDefinition member : itemMembers.values()) {
-				// ignore pk property
-				if (!StringUtils.equalsIgnoreCase(member.name, PK_PROPERTY_NAME)) {
+				// ignore pk property and relation properties
+				if (!StringUtils.equalsIgnoreCase(member.name, PK_PROPERTY_NAME) && !member.isRelationProperty) {
+
 					Object value = modelService.getPropertyValue(item, member.name);
 
 					if (value != null) {
@@ -260,6 +261,10 @@ public class MapDBService implements PersistenceService {
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
 		final Entity itemEntity = getDataStorageForType(type).get(pk);
+
+		if (itemEntity == null) {
+			throw new ModelNotFoundException(String.format("Model with pk=%s not found", pk));
+		}
 
 		T item;
 		try {

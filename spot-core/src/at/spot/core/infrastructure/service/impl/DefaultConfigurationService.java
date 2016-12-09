@@ -101,7 +101,12 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 		Boolean value = null;
 
 		try {
-			value = Boolean.parseBoolean(getProperty(key));
+			final String v = getProperty(key);
+
+			// null is treated as false
+			if (v != null) {
+				value = Boolean.parseBoolean(v);
+			}
 		} catch (final NumberFormatException e) {
 			loggingService.exception(String.format("Can't load config key %s", key), e);
 		}

@@ -3,7 +3,7 @@ package at.spot.core.infrastructure.service;
 import java.util.List;
 import java.util.Map;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;

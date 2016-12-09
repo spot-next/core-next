@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.Item;
 
 @ItemType

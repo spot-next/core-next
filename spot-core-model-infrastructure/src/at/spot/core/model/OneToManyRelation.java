@@ -1,17 +1,17 @@
-package at.spot.core.model.user;
+package at.spot.core.model;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.model.Item;
 
 @ItemType
-public abstract class Principal extends Item {
+public class OneToManyRelation<SOURCE extends Item, TARGET extends Item> extends Relation<SOURCE, TARGET> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Property(unique = true)
-	public String uid;
+	public SOURCE source;
 
 	@Property
-	public String name;
+	public TARGET target;
+
 }

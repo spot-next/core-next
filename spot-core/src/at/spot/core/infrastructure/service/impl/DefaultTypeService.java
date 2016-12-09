@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.beans.Introspector;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,13 +16,15 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.type.ItemTypePropertyRelationDefinition;
 import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
@@ -68,7 +71,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		SpringUtil.registerBean(getBeanFactory(), type, beanName, BeanScope.prototype, null, false);
 
-		loggingService.debug(String.format("Registering type: %s", type.getSimpleName()));
+		loggingService.debug(String.format("Registering type: %s", beanName));
 	}
 
 	/*
@@ -168,12 +171,13 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		// add all the fields
 		for (final Field m : itemType.getFields()) {
-			final Property annotation = ClassUtil.getAnnotation(m, Property.class);
+			final Property propertyAnn = ClassUtil.getAnnotation(m, Property.class);
 
-			if (annotation != null) {
+			if (propertyAnn != null) {
+
 				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getType(),
-						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
-						annotation.itemValueProvider());
+						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
+						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
 
 				propertyMembers.put(m.getName(), def);
 			}
@@ -181,9 +185,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		// add all the getter methods
 		for (final Method m : itemType.getMethods()) {
-			final Property annotation = ClassUtil.getAnnotation(m, Property.class);
+			final Property propertyAnn = ClassUtil.getAnnotation(m, Property.class);
 
-			if (annotation != null && m.getReturnType() != Void.class) {
+			if (propertyAnn != null && m.getReturnType() != Void.class) {
 				String name = m.getName();
 
 				if (StringUtils.startsWithIgnoreCase(name, "get")) {
@@ -195,14 +199,25 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				name = Introspector.decapitalize(name);
 
 				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getReturnType(),
-						annotation.readable(), annotation.writable(), annotation.initial(), annotation.unique(),
-						annotation.itemValueProvider());
+						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
+						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
 
 				propertyMembers.put(name, def);
 			}
 		}
 
 		return propertyMembers;
+	}
+
+	protected ItemTypePropertyRelationDefinition getRelationDefinition(final Class<? extends Item> itemType,
+			final AccessibleObject member, final String memberName) {
+
+		final Relation r = ClassUtil.getAnnotation(member, Relation.class);
+
+		final ItemTypePropertyRelationDefinition def = new ItemTypePropertyRelationDefinition(r.type(), r.endType(),
+				r.relationItemType());
+
+		return def;
 	}
 
 	@Override

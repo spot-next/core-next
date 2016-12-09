@@ -1,8 +1,10 @@
 package at.spot.core.model.internationalization;
 
-import at.spot.core.infrastructure.annotation.model.Property;
+import java.util.Locale;
+
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.Item;
-import at.spot.core.infrastructure.annotation.model.ItemType;
 
 @ItemType
 public class Language extends Item {
@@ -10,5 +12,5 @@ public class Language extends Item {
 	private static final long serialVersionUID = 1L;
 
 	@Property(unique = true)
-	public String isoCode;
+	public Locale locale;
 }

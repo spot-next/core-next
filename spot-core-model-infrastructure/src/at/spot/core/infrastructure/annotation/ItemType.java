@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.annotation.model;
+package at.spot.core.infrastructure.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 

@@ -1,22 +1,16 @@
-package at.spot.core.model.internationalization;
-
-import java.util.Locale;
+package at.spot.core.model;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.model.Item;
 
 @ItemType
-public class LocalizationKey extends Item {
+public class ManyToManyRelation<SOURCE extends Item, TARGET extends Item> extends Relation<SOURCE, TARGET> {
 
 	private static final long serialVersionUID = 1L;
 
 	@Property(unique = true)
-	public String key;
+	public SOURCE source;
 
 	@Property(unique = true)
-	public Locale locale;
-
-	@Property
-	public String value;
+	public TARGET target;
 }

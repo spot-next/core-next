@@ -10,11 +10,11 @@ import at.spot.core.support.util.ClassUtil;
 @Configurable
 public abstract class AbstractBaseAspect {
 
-	protected <A extends Annotation> A getAnnotation(JoinPoint joinPoint, Class<A> annotation) {
+	protected <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		return ClassUtil.getAnnotation(joinPoint, annotation);
 	}
 
-	protected String createSignature(JoinPoint joinPoint) {
+	protected String createSignature(final JoinPoint joinPoint) {
 		return String.format("%s.%s", joinPoint.getSignature().getClass().getSimpleName(),
 				joinPoint.getSignature().getName());
 	}

@@ -1,6 +1,6 @@
 package at.spot.core.model.configuration;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
+import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.model.KeyValuePair;
 
 @ItemType

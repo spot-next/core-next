@@ -68,12 +68,17 @@ public class ClassUtil {
 	 * @param fieldName
 	 * @param value
 	 */
-	public static Object getPrivateField(final Object object, final String fieldName) {
+	public static Object getField(final Object object, final String fieldName,
+			final boolean includeInAccessableFields) {
 		Object retVal = null;
 
 		try {
 			final Field field = object.getClass().getField(fieldName);
-			field.setAccessible(true);
+
+			if (includeInAccessableFields) {
+				field.setAccessible(true);
+			}
+
 			retVal = field.get(object);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			// silently fail
@@ -195,7 +200,7 @@ public class ClassUtil {
 		} else {
 			final FieldSignature fieldSignature = (FieldSignature) sig;
 
-			ret = fieldSignature.getField().getAnnotation(annotation);
+			ret = fieldSignature.getField().getDeclaredAnnotation(annotation);
 		}
 
 		return ret;

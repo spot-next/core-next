@@ -1,7 +1,7 @@
 package at.spot.core.model;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 
 @ItemType
 public abstract class KeyValuePair<K, V> extends Item {

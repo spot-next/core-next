@@ -1,10 +1,9 @@
 package at.spot.core.model.user;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 
 @ItemType
 public class UserGroup extends Principal {
@@ -15,5 +14,8 @@ public class UserGroup extends Principal {
 	public UserGroup parent;
 
 	@Property(isReference = true)
-	public final List<User> users = new ArrayList<>();
+	public List<User> users;
+
+	@Property(isReference = true)
+	public List<UserGroup> subGroups;
 }

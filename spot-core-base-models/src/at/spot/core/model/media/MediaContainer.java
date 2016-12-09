@@ -2,9 +2,9 @@ package at.spot.core.model.media;
 
 import org.springframework.util.MimeType;
 
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.Item;
-import at.spot.core.infrastructure.annotation.model.ItemType;
 
 @ItemType
 public class MediaContainer extends Item {

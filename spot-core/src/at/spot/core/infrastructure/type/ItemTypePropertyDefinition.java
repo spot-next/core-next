@@ -1,9 +1,12 @@
 package at.spot.core.infrastructure.type;
 
+import java.io.Serializable;
+
 /**
  * Represents an item type property definition
  */
-public class ItemTypePropertyDefinition {
+public class ItemTypePropertyDefinition implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	public final String name;
 	public final Class<?> returnType;
@@ -12,9 +15,11 @@ public class ItemTypePropertyDefinition {
 	public final boolean isInitial;
 	public final boolean isUnique;
 	public final String itemValueProvider;
+	public final ItemTypePropertyRelationDefinition relationDefinition;
 
 	public ItemTypePropertyDefinition(final String name, final Class<?> returnType, final boolean isReadable,
-			final boolean isWritable, final boolean isInitial, final boolean isUnique, final String itemValueProvider) {
+			final boolean isWritable, final boolean isInitial, final boolean isUnique, final String itemValueProvider,
+			final ItemTypePropertyRelationDefinition relationDefinition) {
 
 		this.name = name;
 		this.returnType = returnType;
@@ -23,6 +28,7 @@ public class ItemTypePropertyDefinition {
 		this.isInitial = isInitial;
 		this.isUnique = isUnique;
 		this.itemValueProvider = itemValueProvider;
+		this.relationDefinition = relationDefinition;
 	}
 
 	public String returnTypeAsString() {

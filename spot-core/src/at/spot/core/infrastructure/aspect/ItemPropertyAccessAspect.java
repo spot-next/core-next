@@ -1,5 +1,8 @@
 package at.spot.core.infrastructure.aspect;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,12 +12,15 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.FieldSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import at.spot.core.infrastructure.annotation.model.Property;
-import at.spot.core.infrastructure.exception.ModelNotFoundException;
+import at.spot.core.infrastructure.annotation.Property;
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.infrastructure.type.OneToManyRelationProxyList;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.service.QueryService;
 import at.spot.core.persistence.valueprovider.ItemPropertyValueProvider;
 import at.spot.core.support.util.ClassUtil;
 
@@ -22,7 +28,10 @@ import at.spot.core.support.util.ClassUtil;
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	@Autowired
-	ModelService modelService;
+	protected ModelService modelService;
+
+	@Autowired
+	protected QueryService queryService;
 
 	// @Autowired
 	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders;
@@ -90,29 +99,41 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		// if the target is a proxy item, we load it first, then we invoke the
 		// getter functionality
 		if (joinPoint.getTarget() instanceof Item) {
-			Item i = (Item) joinPoint.getTarget();
+			final Item i = (Item) joinPoint.getTarget();
 
 			if (i.isProxy) {
 				modelService.loadProxyModel(i);
 			}
 		}
 
+		// handle relation annotation
+		final Relation rel = getAnnotation(joinPoint, Relation.class);
+
+		if (rel != null) {
+			final Object propertyValue = getPropertyValueInternal(joinPoint);
+
+			if (propertyValue == null) {
+
+				final ParameterizedType paramType = (ParameterizedType) ((FieldSignature) joinPoint.getSignature())
+						.getField().getGenericType();
+
+				final Class collectionType = (Class) paramType.getActualTypeArguments()[0];
+
+				final List referenceList = new OneToManyRelationProxyList(ArrayList.class, (Item) joinPoint.getTarget(),
+						joinPoint.getSignature().getName(), collectionType, rel.referenceProperty(),
+						rel.relationItemType(), modelService);
+
+				ClassUtil.setField(joinPoint.getTarget(), joinPoint.getSignature().getName(), referenceList);
+			}
+		}
+
 		// if there's a value provider configured, use it
 		if (StringUtils.isNotBlank(ann.itemValueProvider())) {
-			ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider().toString());
+			final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider().toString());
 			return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
 		} else { // get currently stored object
-			Object retVal = getPropertyValueInternal(joinPoint);
-			return retVal;
+			return getPropertyValueInternal(joinPoint);
 		}
-	}
-
-	protected Item loadFullItem(Item proxyItem) throws ModelNotFoundException {
-		if (proxyItem.isProxy) {
-			proxyItem = modelService.get(proxyItem.getClass(), proxyItem.pk);
-		}
-
-		return proxyItem;
 	}
 
 	protected Object getPropertyValueInternal(final ProceedingJoinPoint joinPoint) throws Throwable {

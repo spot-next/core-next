@@ -9,14 +9,15 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
+import at.spot.core.infrastructure.type.ExtendedAttributes;
 import at.spot.core.infrastructure.type.collection.ObservableChange;
 import at.spot.core.infrastructure.type.collection.Observer;
 import at.spot.core.support.util.ClassUtil;
 
 @ItemType
-public abstract class Item implements Serializable, Observer {
+public abstract class Item<E extends ExtendedAttributes> implements Serializable, Observer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,6 +31,33 @@ public abstract class Item implements Serializable, Observer {
 
 	@Property
 	public DateTime created;
+
+	@Property
+	protected Map<Class<E>, E> extendedAttributes = new HashMap<>();
+
+	/**
+	 * This property hold {@link ExtendedAttributes} objects. It's an easy way
+	 * to customize an {@link ItemType} object without subclassing it.<br />
+	 * 
+	 * @param attributeType
+	 * @return
+	 * @throws InstantiationException
+	 */
+	public E getExtendedAttribute(final Class<E> attributeType) throws InstantiationException {
+		E ea = extendedAttributes.get(attributeType);
+
+		if (ea == null) {
+			try { // create new object in case there is none
+				ea = attributeType.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new InstantiationException("Could not instantiate extended attribute type");
+			}
+
+			extendedAttributes.put(attributeType, ea);
+		}
+
+		return ea;
+	}
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this
@@ -48,7 +76,7 @@ public abstract class Item implements Serializable, Observer {
 	}
 
 	public Object getProperty(final String propertyName) {
-		return ClassUtil.getPrivateField(this, propertyName);
+		return ClassUtil.getField(this, propertyName, true);
 	}
 
 	public void setProperty(final String propertyName, final Object value) {
@@ -103,7 +131,7 @@ public abstract class Item implements Serializable, Observer {
 			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
 
 			if (prop.unique()) {
-				uniqueProps.put(uniqueField.getName(), ClassUtil.getPrivateField(this, uniqueField.getName()));
+				uniqueProps.put(uniqueField.getName(), ClassUtil.getField(this, uniqueField.getName(), true));
 			}
 		}
 

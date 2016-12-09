@@ -1,11 +1,15 @@
 package at.spot.core.model.internationalization;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
-import at.spot.core.infrastructure.annotation.model.ItemType;
-import at.spot.core.infrastructure.annotation.model.Property;
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.Item;
 
 @ItemType
@@ -19,5 +23,11 @@ public class Country extends Item {
 	public String isoCode;
 
 	@Property
-	public String name;
+	public String shortName;
+
+	@Property
+	public String longName;
+
+	@Property
+	public List<Locale> locales = new ArrayList<Locale>();
 }
