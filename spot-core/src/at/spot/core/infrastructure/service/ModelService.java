@@ -7,9 +7,18 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 public interface ModelService {
+
+	/**
+	 * Creates a new proxy item that references the given item.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
 	 * Creates an unsaved instance of the given type.

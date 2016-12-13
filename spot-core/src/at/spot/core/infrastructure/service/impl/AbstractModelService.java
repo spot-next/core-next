@@ -7,6 +7,8 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.CannotCreateModelProxyException;
+import at.spot.core.support.util.ClassUtil;
 
 @Service
 public abstract class AbstractModelService extends AbstractService implements ModelService {
@@ -18,10 +20,25 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected LoggingService loggingService;
 
 	@Override
-	public <T extends Item> T create(Class<T> type) {
-		T item = getApplicationContext().getBean(type);
-
+	public <T extends Item> T create(final Class<T> type) {
+		final T item = getApplicationContext().getBean(type);
+		setTypeCode(item);
 		return item;
 	}
 
+	protected <T extends Item> void setTypeCode(final T item) {
+		ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
+	}
+
+	@Override
+	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
+		T proxyItem;
+
+		proxyItem = (T) create(item.getClass());
+		ClassUtil.setField(proxyItem, "isProxy", true);
+
+		proxyItem.pk = item.pk;
+
+		return proxyItem;
+	}
 }

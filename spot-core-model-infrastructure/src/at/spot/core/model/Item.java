@@ -12,17 +12,15 @@ import org.joda.time.DateTime;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.type.ExtendedAttributes;
-import at.spot.core.infrastructure.type.collection.ObservableChange;
-import at.spot.core.infrastructure.type.collection.Observer;
 import at.spot.core.support.util.ClassUtil;
 
 @ItemType
-public abstract class Item<E extends ExtendedAttributes> implements Serializable, Observer {
+public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected boolean forceDirty = false;
-	protected List<String> dirtyAttributes = new ArrayList<>();
+	protected transient boolean forceDirty = false;
+	protected transient List<String> dirtyAttributes = new ArrayList<>();
 
 	public Long pk;
 
@@ -32,32 +30,10 @@ public abstract class Item<E extends ExtendedAttributes> implements Serializable
 	@Property
 	public DateTime created;
 
+	protected String typeCode;
+
 	@Property
-	protected Map<Class<E>, E> extendedAttributes = new HashMap<>();
-
-	/**
-	 * This property hold {@link ExtendedAttributes} objects. It's an easy way
-	 * to customize an {@link ItemType} object without subclassing it.<br />
-	 * 
-	 * @param attributeType
-	 * @return
-	 * @throws InstantiationException
-	 */
-	public E getExtendedAttribute(final Class<E> attributeType) throws InstantiationException {
-		E ea = extendedAttributes.get(attributeType);
-
-		if (ea == null) {
-			try { // create new object in case there is none
-				ea = attributeType.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new InstantiationException("Could not instantiate extended attribute type");
-			}
-
-			extendedAttributes.put(attributeType, ea);
-		}
-
-		return ea;
-	}
+	protected Map<Class<ExtendedAttributes>, ExtendedAttributes> extendedAttributes = new HashMap<>();
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this
@@ -73,6 +49,31 @@ public abstract class Item<E extends ExtendedAttributes> implements Serializable
 
 	public Item(final boolean isProxy) {
 		this.isProxy = isProxy;
+	}
+
+	/**
+	 * This property hold {@link ExtendedAttributes} objects. It's an easy way
+	 * to customize an {@link ItemType} object without subclassing it.<br />
+	 * 
+	 * @param attributeType
+	 * @return
+	 * @throws InstantiationException
+	 */
+	public <E extends ExtendedAttributes> E getExtendedAttribute(final Class<E> attributeType)
+			throws InstantiationException {
+		E ea = (E) extendedAttributes.get(attributeType);
+
+		if (ea == null) {
+			try { // create new object in case there is none
+				ea = attributeType.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new InstantiationException("Could not instantiate extended attribute type");
+			}
+
+			extendedAttributes.put((Class<ExtendedAttributes>) attributeType, ea);
+		}
+
+		return ea;
 	}
 
 	public Object getProperty(final String propertyName) {
@@ -96,7 +97,7 @@ public abstract class Item<E extends ExtendedAttributes> implements Serializable
 		return forceDirty | dirtyAttributes.size() > 0;
 	}
 
-	protected void markAsDirty(final String propertyName) {
+	public void markAsDirty(final String propertyName) {
 		this.dirtyAttributes.add(propertyName);
 		this.lastModified = new DateTime();
 	}
@@ -110,12 +111,6 @@ public abstract class Item<E extends ExtendedAttributes> implements Serializable
 
 	protected void clearDirtyFlag() {
 		this.dirtyAttributes.clear();
-	}
-
-	@Override
-	public void notify(final String collectionName, final ObservableChange change, final Object element) {
-		// TODO: this should be done directly in the itempropertyaccessaspect
-		markAsDirty(collectionName);
 	}
 
 	/**
@@ -151,4 +146,5 @@ public abstract class Item<E extends ExtendedAttributes> implements Serializable
 
 		return hash;
 	}
+
 }

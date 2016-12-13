@@ -84,7 +84,7 @@ public class Bootstrap {
 
 		moduleConfigs.add(ClassUtil.getAnnotation(options.getInitClass(), ModuleConfig.class));
 
-		for (final Class<?> c : ClassUtil.getAllSuperClasses(options.getInitClass(), ModuleInit.class, true)) {
+		for (final Class<?> c : ClassUtil.getAllSuperClasses(options.getInitClass(), ModuleInit.class, true, false)) {
 			final ModuleConfig conf = ClassUtil.getAnnotation(c, ModuleConfig.class);
 
 			if (conf != null) {

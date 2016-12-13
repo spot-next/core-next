@@ -42,6 +42,17 @@ public interface TypeService {
 	Class<? extends Item> getType(String typeCode) throws UnknownTypeException;
 
 	/**
+	 * Returns the typeCode (from {@link ItemType#typeCode()} of the given
+	 * class. If this property is not set, the {@link Class#getSimpleName()} is
+	 * returned instead.
+	 * 
+	 * @param itemType
+	 * @return
+	 * @throws UnknownTypeException
+	 */
+	String getTypeCode(Class<? extends Item> itemType);
+
+	/**
 	 * Returns a map of all the @Property annotated properties of the given
 	 * item.
 	 * 

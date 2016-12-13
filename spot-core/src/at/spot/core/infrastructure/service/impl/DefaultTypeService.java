@@ -125,6 +125,19 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
+	public String getTypeCode(final Class<? extends Item> itemType) {
+		final ItemType ann = ClassUtil.getAnnotation(itemType, ItemType.class);
+
+		String typeCode = ann.typeCode();
+
+		if (StringUtils.isBlank(typeCode)) {
+			typeCode = itemType.getSimpleName();
+		}
+
+		return typeCode;
+	}
+
+	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() throws UnknownTypeException {
 		final String[] typeCodes = getApplicationContext().getBeanNamesForType(Item.class);
 
@@ -214,8 +227,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		final Relation r = ClassUtil.getAnnotation(member, Relation.class);
 
-		final ItemTypePropertyRelationDefinition def = new ItemTypePropertyRelationDefinition(r.type(), r.endType(),
-				r.relationItemType());
+		ItemTypePropertyRelationDefinition def = null;
+
+		if (r != null) {
+			def = new ItemTypePropertyRelationDefinition(r.type(), r.referencedType(), r.mappedTo());
+		}
 
 		return def;
 	}

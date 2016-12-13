@@ -9,6 +9,8 @@ import at.spot.core.persistence.query.QueryResult;
 
 public interface QueryService {
 
+	<T extends Item> QueryResult<T> query(Class<T> type, QueryCondition<T> query) throws QueryException;
+
 	<T extends Item> QueryResult<T> query(Class<T> type, QueryCondition<T> query, Comparator<T> orderBy, int page,
 			int pageSize) throws QueryException;
 

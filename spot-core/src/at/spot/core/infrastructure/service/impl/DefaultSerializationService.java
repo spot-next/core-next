@@ -16,7 +16,7 @@ public class DefaultSerializationService implements SerializationService {
 	protected Gson gson;
 
 	private DefaultSerializationService() {
-		gson = Converters.registerAll(new GsonBuilder()).create();
+		gson = Converters.registerAll(new GsonBuilder().serializeNulls()).create();
 	}
 
 	/**

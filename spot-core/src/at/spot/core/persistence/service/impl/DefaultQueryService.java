@@ -39,6 +39,12 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	protected PersistenceService persistenceService;
 
 	@Override
+	public <T extends Item> QueryResult<T> query(final Class<T> type, final QueryCondition<T> query)
+			throws QueryException {
+		return query(type, query, null, -1, -1);
+	}
+
+	@Override
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final QueryCondition<T> query,
 			final Comparator<T> orderBy, final int page, final int pageSize) throws QueryException {
 

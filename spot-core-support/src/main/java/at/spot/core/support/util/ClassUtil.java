@@ -5,11 +5,14 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.aspectj.lang.JoinPoint;
@@ -20,25 +23,31 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 public class ClassUtil {
 
-	public static List<Class<?>> getAllSuperClasses(final Class<?> type, final Class<?> stopClass,
-			final boolean includeStopClass) {
+	private static final Logger LOG = Logger.getLogger(ClassUtil.class.getSimpleName());
 
-		final List<Class<?>> superClasses = new LinkedList<>();
+	public static List<Class<?>> getAllSuperClasses(final Class<?> type, final Class<?> stopClass,
+			final boolean includeStopClass, final boolean includeStartClass) {
+
+		final List<Class<?>> types = new LinkedList<>();
+
+		if (includeStartClass) {
+			types.add(type);
+		}
 
 		Class<?> currentType = type;
 
 		while (!currentType.getSuperclass().equals(stopClass)) {
 			final Class<?> superClass = currentType.getSuperclass();
 
-			superClasses.add(superClass);
+			types.add(superClass);
 			currentType = superClass;
 		}
 
 		if (includeStopClass) {
-			superClasses.add(currentType.getSuperclass());
+			types.add(currentType.getSuperclass());
 		}
 
-		return superClasses;
+		return types;
 	}
 
 	/**
@@ -50,13 +59,16 @@ public class ClassUtil {
 	 * @param value
 	 */
 	public static void setField(final Object object, final String fieldName, final Object value) {
-		Field field;
-		try {
-			field = object.getClass().getField(fieldName);
-			field.setAccessible(true);
-			field.set(object, value);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// silently fail
+		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+			try {
+				final Field field = c.getDeclaredField(fieldName);
+				field.setAccessible(true);
+				field.set(object, value);
+				break;
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				// silently fail
+				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
+			}
 		}
 	}
 
@@ -70,18 +82,23 @@ public class ClassUtil {
 	 */
 	public static Object getField(final Object object, final String fieldName,
 			final boolean includeInAccessableFields) {
+
 		Object retVal = null;
 
-		try {
-			final Field field = object.getClass().getField(fieldName);
+		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+			try {
+				final Field field = object.getClass().getField(fieldName);
 
-			if (includeInAccessableFields) {
-				field.setAccessible(true);
+				if (includeInAccessableFields) {
+					field.setAccessible(true);
+				}
+
+				retVal = field.get(object);
+				break;
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+				// silently fail
+				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
 			}
-
-			retVal = field.get(object);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			// silently fail
 		}
 
 		return retVal;
@@ -120,6 +137,9 @@ public class ClassUtil {
 				}
 			} catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 				// silently fail
+				if (method != null) {
+					LOG.log(Level.INFO, String.format("Can't find method %s", method.getName()));
+				}
 			}
 		}
 
@@ -130,6 +150,9 @@ public class ClassUtil {
 				retVal = method.invoke(object, args);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				// silently fail
+				if (method != null) {
+					LOG.log(Level.INFO, String.format("Can't invoke method %s", method.getName()));
+				}
 			}
 		}
 
@@ -192,7 +215,10 @@ public class ClassUtil {
 				try {
 					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
 				} catch (NoSuchMethodException | SecurityException e) {
-					//
+					// silently fail
+					if (annotation != null) {
+						LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+					}
 				}
 			}
 
@@ -252,5 +278,32 @@ public class ClassUtil {
 	 */
 	public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
 		return member.getAnnotation(annotation);
+	}
+
+	public static <A extends Annotation> A getAnnotation(final Class<?> type, final String fieldName,
+			final Class<A> annotation) {
+
+		try {
+			return getAnnotation(type.getField(fieldName), annotation);
+		} catch (NoSuchFieldException | SecurityException e) {
+			// silently ignore
+			if (annotation != null) {
+				LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+			}
+		}
+
+		return null;
+	}
+
+	public static Class<?> getGenericCollectionType(final FieldSignature field) {
+		return getGenericCollectionType(field.getField());
+	}
+
+	public static Class<?> getGenericCollectionType(final Field field) {
+		final ParameterizedType paramType = (ParameterizedType) field.getGenericType();
+
+		final Class<?> collectionType = (Class<?>) paramType.getActualTypeArguments()[0];
+
+		return collectionType;
 	}
 }
