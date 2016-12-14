@@ -11,11 +11,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
@@ -27,7 +28,7 @@ import org.springframework.core.annotation.AnnotationUtils;
  */
 public class ClassUtil {
 
-	private static final Logger LOG = Logger.getLogger(ClassUtil.class.getSimpleName());
+	private static final Logger LOG = LogManager.getLogger(ClassUtil.class);
 
 	/**
 	 * Returns a {@link Field} instance from the given {@link Class} object. If
@@ -52,7 +53,7 @@ public class ClassUtil {
 				field = c.getField(fieldName);
 				break;
 			} catch (NoSuchFieldException | SecurityException e) {
-				LOG.warning(String.format("Field not found: %s", fieldName));
+				LOG.log(Level.INFO, String.format("Field not found: %s", fieldName));
 			}
 		}
 
