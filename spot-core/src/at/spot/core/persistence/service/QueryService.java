@@ -12,8 +12,8 @@ public interface QueryService {
 	<T extends Item> QueryResult<T> query(Class<T> type, QueryCondition<T> query) throws QueryException;
 
 	<T extends Item> QueryResult<T> query(Class<T> type, QueryCondition<T> query, Comparator<T> orderBy, int page,
-			int pageSize) throws QueryException;
+			int pageSize, boolean returnProxies) throws QueryException;
 
 	<T extends Item> QueryResult<T> query(Class<T> type, String jexlQuery, Comparator<T> orderBy, final int page,
-			final int pageSize) throws QueryException;
+			final int pageSize, boolean returnProxies) throws QueryException;
 }

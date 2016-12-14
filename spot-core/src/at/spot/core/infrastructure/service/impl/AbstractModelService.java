@@ -7,9 +7,9 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.support.util.ClassUtil;
 
+@SuppressWarnings("unchecked")
 @Service
 public abstract class AbstractModelService extends AbstractService implements ModelService {
 
@@ -31,14 +31,20 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	}
 
 	@Override
-	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
-		T proxyItem;
+	public <T extends Item> T createProxyModel(final Class<T> itemType, final long pk) {
 
-		proxyItem = (T) create(item.getClass());
+		T proxyItem = null;
+
+		proxyItem = create(itemType);
 		ClassUtil.setField(proxyItem, "isProxy", true);
 
-		proxyItem.pk = item.pk;
+		proxyItem.pk = pk;
 
 		return proxyItem;
+	}
+
+	@Override
+	public <T extends Item> T createProxyModel(final T item) {
+		return createProxyModel((Class<T>) item.getClass(), item.pk);
 	}
 }

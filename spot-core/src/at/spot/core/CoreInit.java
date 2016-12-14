@@ -17,6 +17,7 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.user.Address;
 import at.spot.core.model.user.AddressType;
 import at.spot.core.model.user.User;
+import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 
@@ -60,7 +61,12 @@ public class CoreInit extends ModuleInit {
 			final User user1 = modelService.create(User.class);
 			user1.uid = "test1";
 
-			modelService.save(user1);
+			final UserGroup userGroup1 = modelService.create(UserGroup.class);
+			userGroup1.uid = "group1";
+			final UserGroup userGroup2 = modelService.create(UserGroup.class);
+			userGroup2.uid = "group2";
+
+			modelService.saveAll(user1, userGroup1, userGroup2);
 
 			final AddressType at = modelService.create(AddressType.class);
 			at.code = "private";
@@ -69,13 +75,17 @@ public class CoreInit extends ModuleInit {
 			address1.type = at;
 			address1.owner = user1;
 
-			modelService.save(at);
 			modelService.save(address1);
 
 			modelService.refresh(user1);
+			System.out.println(user1.addresses);
+
+			user1.addresses.remove(address1);
+			modelService.save(user1);
 
 			System.out.println(user1.addresses);
 			System.out.println("");
+
 			// final List<User> users = new ArrayList<>();
 			//
 			// final UserGroup group = modelService.create(UserGroup.class);
@@ -171,7 +181,7 @@ public class CoreInit extends ModuleInit {
 		runMigrateScripts();
 
 		// this is just for testing
-		run();
+		// run();
 	}
 
 	@Log(message = "Running data migration scripts ...")

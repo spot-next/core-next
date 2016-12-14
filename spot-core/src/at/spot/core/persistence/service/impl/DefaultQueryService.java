@@ -20,6 +20,7 @@ import org.apache.commons.jexl3.MapContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.QueryException;
@@ -38,22 +39,26 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	@Autowired
 	protected PersistenceService persistenceService;
 
+	@Autowired
+	protected ModelService modelService;
+
 	@Override
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final QueryCondition<T> query)
 			throws QueryException {
-		return query(type, query, null, -1, -1);
+		return query(type, query, null, -1, -1, false);
 	}
 
 	@Override
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final QueryCondition<T> query,
-			final Comparator<T> orderBy, final int page, final int pageSize) throws QueryException {
+			final Comparator<T> orderBy, final int page, final int pageSize, final boolean returnProxies)
+			throws QueryException {
 
 		List<T> items = Collections.emptyList();
 
 		try {
 			items = threadPool.submit((Callable<List<T>>) () -> {
 				Stream<T> stream = persistenceService.load(type, null, page, pageSize, false,
-						MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING);
+						MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING, returnProxies);
 
 				if (orderBy != null) {
 					stream = stream.sorted(orderBy);
@@ -64,7 +69,6 @@ public class DefaultQueryService extends AbstractService implements QueryService
 				return stream.collect(Collectors.toList());
 			}).get();
 		} catch (InterruptedException | ExecutionException e) {
-
 			if (e.getCause() instanceof QueryException) {
 				throw (QueryException) e.getCause();
 			}
@@ -87,11 +91,12 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	 */
 	@Override
 	public <T extends Item> QueryResult<T> query(final Class<T> type, final String jexlQuery,
-			final Comparator<T> orderBy, final int page, final int pageSize) throws QueryException {
+			final Comparator<T> orderBy, final int page, final int pageSize, final boolean returnProxies)
+			throws QueryException {
 
 		final QueryResult<T> result = query(type, (i) -> {
 			return evaluateJexl(jexlQuery, i);
-		}, orderBy, page, pageSize);
+		}, orderBy, page, pageSize, false);
 
 		return result;
 	}

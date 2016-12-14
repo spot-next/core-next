@@ -1,9 +1,12 @@
 package at.spot.core.support.util;
 
 import java.io.Closeable;
+import java.lang.reflect.Array;
+import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 
+@SuppressWarnings("unchecked")
 public class MiscUtil {
 
 	/**
@@ -58,5 +61,13 @@ public class MiscUtil {
 
 	public static String removeEnclosingQuotes(final String string) {
 		return string.replaceAll("^\"|\"$", "");
+	}
+
+	public static <T> T[] toArray(final Collection<T> collection, final Class<T> arrayType) {
+		T[] ret = null;
+
+		ret = collection.toArray((T[]) Array.newInstance(arrayType, 0));
+
+		return ret;
 	}
 }

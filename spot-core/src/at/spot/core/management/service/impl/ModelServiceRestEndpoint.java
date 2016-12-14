@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.spot.core.infrastructure.exception.DeserializationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
@@ -155,7 +156,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 			try {
 				final QueryResult<T> result = (QueryResult<T>) queryService.query(type, queryString, null, page,
-						pageSize);
+						pageSize, false);
 
 				status.payload(result);
 			} catch (final QueryException e) {
@@ -199,7 +200,12 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			if (queryValues != null && queryValues.length == 1) {
 				final Class<?> propertyType = prop.returnType;
 
-				final Object value = serializationService.fromJson(queryValues[0], propertyType);
+				Object value;
+				try {
+					value = serializationService.fromJson(queryValues[0], propertyType);
+				} catch (final DeserializationException e) {
+					return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
+				}
 
 				if (value instanceof Comparable | value == null) {
 					searchParameters.put(prop.name, (Comparable<?>) value);
@@ -252,7 +258,13 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final RequestStatus status = RequestStatus.success();
 
-		final T item = deserializeToItem(request);
+		T item = null;
+
+		try {
+			item = deserializeToItem(request);
+		} catch (final DeserializationException e) {
+			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
+		}
 
 		if (item.pk != null) {
 			status.warn("PK was reset, itmay not be set for new items.");
@@ -327,7 +339,13 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final RequestStatus status = RequestStatus.success();
 
-		final T item = deserializeToItem(request);
+		T item = null;
+
+		try {
+			item = deserializeToItem(request);
+		} catch (final DeserializationException e) {
+			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
+		}
 
 		if (item.pk == null) {
 			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You cannot update a new item (PK was null)");
@@ -357,43 +375,40 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-		// get body as json object
-		final JsonObject content = deserializeToJsonToken(request);
+		try {
+			// get body as json object
+			final JsonObject content = deserializeToJsonToken(request);
 
-		if (content != null && pk >= 0) {
-			try {
-				// search old item
-				final T oldItem = modelService.get(type, pk);
+			// search old item
+			final T oldItem = modelService.get(type, pk);
 
-				final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
-						.getItemTypeProperties(type);
+			final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService.getItemTypeProperties(type);
 
-				for (final Entry<String, JsonElement> prop : content.entrySet()) {
-					final String key = prop.getKey();
-					final JsonElement value = prop.getValue();
+			for (final Entry<String, JsonElement> prop : content.entrySet()) {
+				final String key = prop.getKey();
+				final JsonElement value = prop.getValue();
 
-					final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
+				final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
 
-					// if the json property really exists on the item, then
-					// continue
-					if (propDef != null) {
-						final Object parsedValue = gson.fromJson(value, propDef.returnType);
-						oldItem.setProperty(prop.getKey(), parsedValue);
-					}
+				// if the json property really exists on the item, then
+				// continue
+				if (propDef != null) {
+					final Object parsedValue = gson.fromJson(value, propDef.returnType);
+					modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
 				}
-
-				oldItem.markAsDirty();
-
-				modelService.save(oldItem);
-
-				response.status(HttpStatus.ACCEPTED_202);
-			} catch (final ModelNotUniqueException | ModelValidationException e) {
-				status.httpStatus(HttpStatus.CONFLICT_409)
-						.error("Another item with the same uniqueness criteria (but a different PK was found.");
-			} catch (final ModelNotFoundException e) {
-				status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the given PK found to update.");
 			}
-		} else {
+
+			oldItem.markAsDirty();
+
+			modelService.save(oldItem);
+
+			response.status(HttpStatus.ACCEPTED_202);
+		} catch (final ModelNotUniqueException | ModelValidationException e) {
+			status.httpStatus(HttpStatus.CONFLICT_409)
+					.error("Another item with the same uniqueness criteria (but a different PK was found.");
+		} catch (final ModelNotFoundException e) {
+			status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the given PK found to update.");
+		} catch (final DeserializationException e) {
 			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Could not deserialize body json content");
 		}
 
@@ -411,17 +426,20 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return status;
 	}
 
-	protected <T extends Item> T deserializeToItem(final Request request) throws UnknownTypeException {
+	protected <T extends Item> T deserializeToItem(final Request request)
+			throws DeserializationException, UnknownTypeException {
+
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
 
 		return serializationService.fromJson(request.body(), type);
 	}
 
-	protected JsonObject deserializeToJsonToken(final Request request) throws UnknownTypeException {
+	protected JsonObject deserializeToJsonToken(final Request request)
+			throws UnknownTypeException, DeserializationException {
 		final String content = request.body();
 
-		return serializationService.fromJson(content);
+		return serializationService.fromJson(content, JsonElement.class).getAsJsonObject();
 	}
 
 	@Override

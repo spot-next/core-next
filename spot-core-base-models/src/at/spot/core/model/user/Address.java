@@ -14,8 +14,6 @@ import at.spot.core.model.internationalization.Country;
 public class Address extends Item {
 	private static final long serialVersionUID = 1L;
 
-	// @Relation(type = RelationType.OneToMany, endType =
-	// RelationEndType.Source, relationItemType = AddressToUserRelation.class)
 	@NotNull
 	@Property(unique = true)
 	public Item owner;

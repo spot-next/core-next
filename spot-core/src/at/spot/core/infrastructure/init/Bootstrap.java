@@ -10,7 +10,7 @@ import java.util.Properties;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
@@ -171,16 +171,17 @@ public class Bootstrap {
 	 * @return
 	 * @throws ParseException
 	 */
+	@SuppressWarnings("unchecked")
 	protected static BootstrapOptions parseCommandLine(final String... args) throws ParseException {
 		final BootstrapOptions ret = new BootstrapOptions();
 
 		final Options options = new Options();
-		options.addOption(OptionBuilder.withLongOpt("p").withDescription("application the properties file").hasArg()
-				.withArgName("appconfig").create("appconfig"));
-		options.addOption(OptionBuilder.withLongOpt("s").withDescription("spring config file").hasArg()
-				.withArgName("springconfig").create("springconfig"));
-		options.addOption(OptionBuilder.withLongOpt("i").withDescription("application the properties file").hasArg()
-				.withArgName("initclass").create("initclass"));
+		options.addOption(Option.builder("appconfig").longOpt("p").desc("application the properties file").hasArg()
+				.argName("appconfig").build());
+		options.addOption(Option.builder("springconfig").longOpt("s").desc("spring config file").hasArg()
+				.argName("springconfig").build());
+		options.addOption(Option.builder("initclass").longOpt("i").desc("application the properties file").hasArg()
+				.argName("initclass").build());
 
 		final CommandLineParser parser = new DefaultParser();
 		final CommandLine cmd = parser.parse(options, args);

@@ -60,8 +60,10 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	}
 
 	@Override
-	public void log(final LogLevel level, String message, final Throwable exception, final Class<?> callingClass) {
-		String msg = message = message;
+	public void log(final LogLevel level, final String message, final Throwable exception,
+			final Class<?> callingClass) {
+
+		String msg = message;
 
 		if (exception != null) {
 			exception.printStackTrace();
@@ -69,7 +71,7 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 		}
 
 		if (logToConsole()) {
-			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), message));
+			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), msg));
 		}
 
 		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);

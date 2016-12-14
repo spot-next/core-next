@@ -1,9 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.el.ExpressionFactory;
@@ -53,8 +51,8 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 		// if no message has been found we return the key again
 		if (StringUtils.isBlank(message)) {
-			// message = String.format("<%s>", key);
-			throw new NoSuchMessageException(key);
+			message = String.format("<%s>", key);
+			// throw new NoSuchMessageException(key);
 		}
 
 		return message;
@@ -65,7 +63,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 		final QueryResult<LocalizationKey> locResult = queryService.query(LocalizationKey.class, (i) -> {
 			return i.key.equals(key) && i.locale.equals(locale);
-		}, null, 0, 0);
+		}, null, 0, 0, false);
 
 		if (locResult.count() >= 1) {
 			return locResult.getResult().get(0).value;
@@ -125,8 +123,6 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	protected String interpolateMessage(String message, final Context context) {
-		final Map<String, Object> args = new HashMap<String, Object>();
-
 		for (final String key : context.getConstraintDescriptor().getAttributes().keySet()) {
 			message = message.replace("{" + key + "}",
 					context.getConstraintDescriptor().getAttributes().get(key).toString());

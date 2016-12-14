@@ -89,7 +89,9 @@
 
 	<!-- strategies -->
 	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
-
+	<alias name="defaultJsonSerializationStrategy" alias="jsonSerializationStrategy" />
+	<alias name="xmlSerializationStrategy" alias="xmlSerializationStrategy" />
+	
 
 	<!-- converters -->
 	<!-- <bean name="abstractPopulatingConverter" -->

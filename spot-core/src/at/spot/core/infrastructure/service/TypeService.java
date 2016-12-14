@@ -83,6 +83,15 @@ public interface TypeService {
 	Map<String, ItemTypePropertyDefinition> getUniqueItemTypeProperties(Class<? extends Item> itemType);
 
 	/**
+	 * Returns true if given property is set to unique for the given item type.
+	 * 
+	 * @param type
+	 * @param propertyName
+	 * @return
+	 */
+	boolean isPropertyUnique(Class<? extends Item> type, String propertyName);
+
+	/**
 	 * Returns the item definition for the given type.
 	 * 
 	 * @param typeCode

@@ -19,6 +19,7 @@ import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.ELParser;
 
 @Service
@@ -48,7 +49,7 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
-		for (T model : models) {
+		for (final T model : models) {
 			validateModel(model);
 		}
 
@@ -98,19 +99,6 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
-		final ELParser transformer = new ELParser(propertyName);
-
-		return transformer.transform(item);
-	}
-
-	@Override
-	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> type) {
-		// TODO Auto-generated method stub
-		return (V) getPropertyValue(item, propertyName);
-	}
-
-	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		persistenceService.refresh(item);
 	}
@@ -132,11 +120,29 @@ public class DefaultModelService extends AbstractModelService {
 		persistenceService.remove(items);
 	}
 
-	protected <T extends Item> void validateModel(T model) throws ModelValidationException {
-		Set<ConstraintViolation<T>> errors = validationService.validate(model);
+	protected <T extends Item> void validateModel(final T model) throws ModelValidationException {
+		final Set<ConstraintViolation<T>> errors = validationService.validate(model);
 
 		if (!errors.isEmpty()) {
-			throw new ModelValidationException(errors);
+			throw new ModelValidationException(errors.iterator().next().getMessage(), errors);
 		}
 	}
+
+	@Override
+	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+		return getPropertyValue(item, propertyName, Item.class);
+	}
+
+	@Override
+	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
+		final ELParser<T, V> transformer = new ELParser<>(propertyName);
+
+		return transformer.transform(item);
+	}
+
+	@Override
+	public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
+		ClassUtil.setField(item, propertyName, propertyValue);
+	}
+
 }

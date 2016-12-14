@@ -15,18 +15,70 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.core.annotation.AnnotationUtils;
 
+/**
+ * Helper utility to handle all kinds of reflection stuff.
+ */
 public class ClassUtil {
 
 	private static final Logger LOG = Logger.getLogger(ClassUtil.class.getSimpleName());
 
-	public static List<Class<?>> getAllSuperClasses(final Class<?> type, final Class<?> stopClass,
+	/**
+	 * Returns a {@link Field} instance from the given {@link Class} object. If
+	 * the field does not exist, null is returned.
+	 * 
+	 * @param type
+	 * @param fieldName
+	 * @param includeSuperTypes
+	 *            if this is true all super classes till and including
+	 *            {@link Object} will be invoked.
+	 * @return
+	 */
+	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
+			final boolean includeSuperTypes) {
+
+		assert StringUtils.isNotBlank(fieldName);
+
+		Field field = null;
+
+		for (final Class<?> c : getAllSuperClasses(type, Object.class, true, true)) {
+			try {
+				field = c.getField(fieldName);
+				break;
+			} catch (NoSuchFieldException | SecurityException e) {
+				LOG.warning(String.format("Field not found: %s", fieldName));
+			}
+		}
+
+		return field;
+	}
+
+	/**
+	 * Returns all super classes of the given {@link Class} in the order <most
+	 * concrete class> to {@link Object}.
+	 * 
+	 * @param type
+	 * @param stopClass
+	 *            {@link Object} if null
+	 * @param includeStopClass
+	 *            if this is true, the stop class will be included. defaults to
+	 * @param includeStartClass
+	 *            if this is true, the given {@link Class} is included in the
+	 *            result
+	 * @return a sorted list of all super classes of the given class.
+	 */
+	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
 			final boolean includeStopClass, final boolean includeStartClass) {
+
+		if (stopClass == null) {
+			stopClass = Object.class;
+		}
 
 		final List<Class<?>> types = new LinkedList<>();
 
@@ -87,7 +139,7 @@ public class ClassUtil {
 
 		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
 			try {
-				final Field field = object.getClass().getField(fieldName);
+				final Field field = c.getField(fieldName);
 
 				if (includeInAccessableFields) {
 					field.setAccessible(true);

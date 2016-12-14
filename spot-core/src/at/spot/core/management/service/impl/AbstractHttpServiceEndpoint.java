@@ -21,6 +21,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
@@ -118,7 +119,12 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				final RequestStatus status = RequestStatus.serverError().error(exception.getMessage());
 
 				response.status(status.httpStatus());
-				response.body(serializationService.toJson(status));
+
+				try {
+					response.body(serializationService.toJson(status));
+				} catch (final SerializationException e) {
+					response.body("Cannot serialize error response body");
+				}
 			});
 
 			before((request, response) -> {

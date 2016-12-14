@@ -41,6 +41,7 @@ import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.support.util.MiscUtil;
 
 @Service
 public class MapDBService implements PersistenceService {
@@ -200,8 +201,10 @@ public class MapDBService implements PersistenceService {
 
 						// handle relation properties
 						if (value instanceof RelationProxyList) {
-							final List proxyListDirtyItems = ((RelationProxyList) value).getItemsToAdd();
-							saveInternalCollection(proxyListDirtyItems, commit);
+							final RelationProxyList proxyList = ((RelationProxyList) value);
+
+							saveInternalCollection(proxyList.getItemsToUpdate(), commit);
+							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
 						}
 
 						if (value instanceof Item) {
@@ -276,19 +279,20 @@ public class MapDBService implements PersistenceService {
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		return load(type, searchParameters, 0, 0, false, null);
+		return load(type, searchParameters, 0, 0, false, null, false);
 	}
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
-		return load(type, searchParameters, page, pageSize, loadAsProxy, MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING);
+		return load(type, searchParameters, page, pageSize, loadAsProxy, MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING, false);
 	}
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream) {
+			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
+			final boolean returnProxies) {
 
 		// prevent NPES
 		Stream<T> foundItems = new ArrayList<T>().stream();
@@ -316,7 +320,11 @@ public class MapDBService implements PersistenceService {
 
 				Stream<T> retStream = stream.map((pk) -> {
 					try {
-						return load(type, pk);
+						if (returnProxies) {
+							return createProxyModel(type, pk);
+						} else {
+							return load(type, pk);
+						}
 					} catch (final ModelNotFoundException e1) {
 						// ignore it for now
 					}
@@ -386,9 +394,11 @@ public class MapDBService implements PersistenceService {
 			if (p.relationDefinition != null) {
 				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
 
-				final List proxyList = new RelationProxyList(rel, referencingItem.pk, p.name, () -> {
-					referencingItem.markAsDirty(p.name);
-				});
+				final List<Item> proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(),
+						referencingItem.pk, typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name,
+						() -> {
+							referencingItem.markAsDirty(p.name);
+						});
 
 				ClassUtil.setField(referencingItem, p.name, proxyList);
 			}
@@ -426,8 +436,12 @@ public class MapDBService implements PersistenceService {
 	}
 
 	@Override
-	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
+	public <T extends Item> T createProxyModel(final T item) {
 		return modelService.createProxyModel(item);
+	}
+
+	protected <T extends Item> T createProxyModel(final Class<T> type, final long pk) {
+		return modelService.createProxyModel(type, pk);
 	}
 
 	@Override

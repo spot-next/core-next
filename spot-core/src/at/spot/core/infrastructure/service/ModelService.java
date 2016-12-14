@@ -7,7 +7,6 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 public interface ModelService {
@@ -18,7 +17,15 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
+	<T extends Item> T createProxyModel(Class<T> itemType, long pk);
+
+	/**
+	 * Creates a new proxy item that references the given item.
+	 * 
+	 * @param pk
+	 * @return
+	 */
+	<T extends Item> T createProxyModel(T item);
 
 	/**
 	 * Creates an unsaved instance of the given type.
@@ -146,6 +153,14 @@ public interface ModelService {
 	<T extends Item> List<T> getAll(Class<T> type);
 
 	/**
+	 * If the given model is a proxy item (=only the pk is filled) then all of
+	 * it's properties are filled.
+	 * 
+	 * @param item
+	 */
+	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
+
+	/**
 	 * Returns the item's value of the given property.
 	 * 
 	 * @param item
@@ -159,15 +174,18 @@ public interface ModelService {
 	 * 
 	 * @param item
 	 * @param propertyName
+	 * @param valueType
 	 * @return
 	 */
-	<T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> type);
+	<T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> valueType);
 
 	/**
-	 * If the given model is a proxy item (=only the pk is filled) then all of
-	 * it's properties are filled.
+	 * Sets the {@link Item}'s property to the given value.
 	 * 
 	 * @param item
+	 * @param propertyName
+	 * @param propertyValue
 	 */
-	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
+	<T extends Item> void setPropertyValue(T item, String propertyName, Object propertyValue);
+
 }

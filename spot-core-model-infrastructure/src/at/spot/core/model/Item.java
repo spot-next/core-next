@@ -22,15 +22,17 @@ public abstract class Item implements Serializable {
 	protected transient boolean forceDirty = false;
 	protected transient List<String> dirtyAttributes = new ArrayList<>();
 
+	@Property
+	protected Map<String, Object> dynamicProperties = new HashMap<>();
+
 	public Long pk;
+	protected String typeCode;
 
 	@Property
 	public DateTime lastModified;
 
 	@Property
 	public DateTime created;
-
-	protected String typeCode;
 
 	@Property
 	protected Map<Class<ExtendedAttributes>, ExtendedAttributes> extendedAttributes = new HashMap<>();
@@ -61,6 +63,7 @@ public abstract class Item implements Serializable {
 	 */
 	public <E extends ExtendedAttributes> E getExtendedAttribute(final Class<E> attributeType)
 			throws InstantiationException {
+
 		E ea = (E) extendedAttributes.get(attributeType);
 
 		if (ea == null) {
@@ -76,12 +79,25 @@ public abstract class Item implements Serializable {
 		return ea;
 	}
 
-	public Object getProperty(final String propertyName) {
-		return ClassUtil.getField(this, propertyName, true);
+	/**
+	 * Returns the given dynamic property or null if not found.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	public Object getDynamicProperty(final String propertyName) {
+		return dynamicProperties.get(propertyName);
 	}
 
+	/**
+	 * Sets (and possibly overwrites) the given dynamic property with the given
+	 * value.
+	 * 
+	 * @param propertyName
+	 * @param value
+	 */
 	public void setProperty(final String propertyName, final Object value) {
-		ClassUtil.setField(this, propertyName, value);
+		dynamicProperties.put(propertyName, value);
 	}
 
 	/**
@@ -126,7 +142,13 @@ public abstract class Item implements Serializable {
 			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
 
 			if (prop.unique()) {
-				uniqueProps.put(uniqueField.getName(), ClassUtil.getField(this, uniqueField.getName(), true));
+				Object propertyValue = ClassUtil.getField(this, uniqueField.getName(), true);
+
+				if (propertyValue instanceof Item) {
+					propertyValue = ((Item) propertyValue).uniquenessHash();
+				}
+
+				uniqueProps.put(uniqueField.getName(), propertyValue);
 			}
 		}
 
@@ -147,4 +169,18 @@ public abstract class Item implements Serializable {
 		return hash;
 	}
 
+	@Override
+	public boolean equals(final Object obj) {
+		Item item = null;
+
+		if (obj instanceof Item) {
+			item = (Item) obj;
+		}
+
+		if (item != null) {
+			return this.pk == item.pk;
+		}
+
+		return super.equals(item);
+	}
 }

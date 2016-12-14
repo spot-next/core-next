@@ -109,7 +109,6 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	protected Object getPropertyValueInternal(final ProceedingJoinPoint joinPoint) throws Throwable {
-		final Object[] args = joinPoint.getArgs();
-		return joinPoint.proceed();
+		return joinPoint.proceed(joinPoint.getArgs());
 	}
 }

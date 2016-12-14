@@ -249,6 +249,17 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 
-		return null;
+		return uniqueProps;
+	}
+
+	@Override
+	public boolean isPropertyUnique(final Class<? extends Item> type, final String propertyName) {
+		final ItemTypePropertyDefinition def = getUniqueItemTypeProperties(type).get(propertyName);
+
+		if (def != null) {
+			return def.isUnique;
+		}
+
+		return false;
 	}
 }

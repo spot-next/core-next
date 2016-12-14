@@ -10,6 +10,7 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.user.User;
+import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.security.strategy.PasswordEncryptionStrategy;
 
@@ -23,7 +24,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	protected PasswordEncryptionStrategy passwordEncryptionStrategy;
 
 	@Autowired
-	protected UserService userService;
+	protected UserService<User, UserGroup> userService;
 
 	@Override
 	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
