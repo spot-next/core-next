@@ -14,6 +14,7 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.UserService;
+import at.spot.core.model.ItemTypeConstants;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -43,7 +44,7 @@ public class DefaultUserService extends AbstractService implements UserService<U
 		final Map<String, Comparable<?>> params = new HashMap<>();
 		params.put("uid", uid);
 
-		return modelService.get(User.class, params);
+		return modelService.get(getUserType(), params);
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class DefaultUserService extends AbstractService implements UserService<U
 		final Map<String, Comparable<?>> params = new HashMap<>();
 		params.put("uid", uid);
 
-		return modelService.get(UserGroup.class, params);
+		return modelService.get(getUserGroupType(), params);
 	}
 
 	@Override
@@ -66,11 +67,23 @@ public class DefaultUserService extends AbstractService implements UserService<U
 
 	@Override
 	public List<User> getAllUsers() {
-		return modelService.getAll(User.class);
+		return modelService.getAll(getUserType());
 	}
 
 	@Override
 	public List<UserGroup> getAllUserGroups() {
-		return modelService.getAll(UserGroup.class);
+		return modelService.getAll(getUserGroupType());
+	}
+
+	protected Class<User> getUserType() {
+		final Class<User> userType = (Class<User>) getApplicationContext().getBean(ItemTypeConstants.USER).getClass();
+		return userType;
+	}
+
+	protected Class<UserGroup> getUserGroupType() {
+		final Class<UserGroup> userGroupType = (Class<UserGroup>) getApplicationContext()
+				.getBean(ItemTypeConstants.USER_GROUP).getClass();
+
+		return userGroupType;
 	}
 }

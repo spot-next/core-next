@@ -14,7 +14,6 @@ import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.type.ExtendedAttributes;
 import at.spot.core.support.util.ClassUtil;
 
-@ItemType
 public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = 1L;

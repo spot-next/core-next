@@ -8,9 +8,10 @@ import javax.validation.constraints.NotNull;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.Item;
+import at.spot.core.model.ItemTypeConstants;
 import at.spot.core.model.internationalization.Country;
 
-@ItemType
+@ItemType(typeCode = ItemTypeConstants.ADDRESS)
 public class Address extends Item {
 	private static final long serialVersionUID = 1L;
 

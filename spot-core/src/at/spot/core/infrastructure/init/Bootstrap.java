@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.init;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +24,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.type.ModuleDefinition;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
+import at.spot.core.support.util.SpringUtil;
+import at.spot.core.support.util.SpringUtil.BeanScope;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -156,11 +160,20 @@ public class Bootstrap {
 			if (StringUtils.isNotBlank(c.springConfigFile())) {
 				reader.loadBeanDefinitions(c.springConfigFile());
 			}
+
+			SpringUtil.registerBean(context, ModuleDefinition.class, null, c.moduleName(), BeanScope.singleton,
+					Arrays.asList(c.moduleName(), c.modelPackagePaths()), false);
 		}
 
 		// get application spring config
 		if (StringUtils.isNotBlank(options.getSpringConfigFile())) {
 			reader.loadBeanDefinitions(options.getSpringConfigFile());
+		}
+
+		// if another module init class is registered, we override coreInit.
+		if (options.getInitClass() != null) {
+			SpringUtil.registerBean(context, options.getInitClass(), null, "coreInit", BeanScope.singleton, null,
+					false);
 		}
 	}
 

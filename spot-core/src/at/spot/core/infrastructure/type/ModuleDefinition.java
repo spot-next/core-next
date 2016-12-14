@@ -1,20 +1,22 @@
 package at.spot.core.infrastructure.type;
 
-public class ModuleDefinition {
-	private String moduleName;
-	private String modelPackagePath;
+import java.util.List;
 
-	public ModuleDefinition(String moduleName, String modelPackagePath) {
+public class ModuleDefinition {
+	private final String moduleName;
+	private final List<String> modelPackagePaths;
+
+	public ModuleDefinition(final String moduleName, final List<String> modelPackagePaths) {
 		this.moduleName = moduleName;
-		this.modelPackagePath = modelPackagePath;
+		this.modelPackagePaths = modelPackagePaths;
 	}
 
 	public String getModuleName() {
 		return moduleName;
 	}
 
-	public String getModelPackagePath() {
-		return modelPackagePath;
+	public List<String> getModelPackagePaths() {
+		return modelPackagePaths;
 	}
 
 }

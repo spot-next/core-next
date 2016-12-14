@@ -51,8 +51,8 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 		// if no message has been found we return the key again
 		if (StringUtils.isBlank(message)) {
-			message = String.format("<%s>", key);
-			// throw new NoSuchMessageException(key);
+			// message = String.format("<%s>", key);
+			throw new NoSuchMessageException(key);
 		}
 
 		return message;

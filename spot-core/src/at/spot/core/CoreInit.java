@@ -1,7 +1,6 @@
 package at.spot.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,9 @@ import at.spot.core.persistence.service.QueryService;
 @EnableAsync
 @EnableScheduling
 @Service
-@Order(value = 1)
-@ModuleConfig(appConfigFile = "core.properties", springConfigFile = "spring-core.xml")
+// @Order(value = 1)
+@ModuleConfig(moduleName = "core", modelPackagePaths = {
+		"at.spot.core.model" }, appConfigFile = "core.properties", springConfigFile = "spring-core.xml")
 public class CoreInit extends ModuleInit {
 
 	@Autowired

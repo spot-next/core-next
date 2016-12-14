@@ -32,4 +32,14 @@ public @interface ModuleConfig {
 	 * @return
 	 */
 	Class<?> springConfigClass() default ModuleInit.class;
+
+	/**
+	 * Defines the unique module name.
+	 */
+	String moduleName();
+
+	/**
+	 * Defines the scan paths for item models.
+	 */
+	String[] modelPackagePaths();
 }

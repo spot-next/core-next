@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public interface TypeService {
 	 * 
 	 * @param packages
 	 */
-	List<Class<? extends Item>> getItemConcreteTypes(List<ModuleDefinition> moduleDefinitions);
+	List<Class<? extends Item>> getItemConcreteTypes(Collection<ModuleDefinition> moduleDefinitions);
 
 	/**
 	 * Return a map of all concrete registered types. Abstract types are not

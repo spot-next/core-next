@@ -17,5 +17,5 @@ public @interface ItemType {
 	/**
 	 * This is the bean name of the item.
 	 */
-	String typeCode() default "";
+	String typeCode();
 }

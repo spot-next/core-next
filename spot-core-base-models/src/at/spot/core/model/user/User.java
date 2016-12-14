@@ -8,8 +8,9 @@ import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.type.RelationType;
+import at.spot.core.model.ItemTypeConstants;
 
-@ItemType
+@ItemType(typeCode = ItemTypeConstants.USER)
 public class User extends Principal {
 	private static final long serialVersionUID = 1L;
 

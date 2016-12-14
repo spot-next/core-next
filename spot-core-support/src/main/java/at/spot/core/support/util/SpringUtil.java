@@ -27,7 +27,8 @@ public class SpringUtil {
 	 * @constructorArguments
 	 */
 	public static void registerBean(final BeanDefinitionRegistry beanFactory, final Class<?> type, final String beanId,
-			final BeanScope scope, final List<? extends Object> constructorArguments, final boolean lazyInit) {
+			final String alias, final BeanScope scope, final List<? extends Object> constructorArguments,
+			final boolean lazyInit) {
 
 		final GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		beanDefinition.setBeanClass(type);
@@ -57,5 +58,15 @@ public class SpringUtil {
 		}
 
 		beanFactory.registerBeanDefinition(id, beanDefinition);
+
+		if (StringUtils.isNotBlank(alias)) {
+			registerAlias(beanFactory, id, alias);
+		}
+	}
+
+	public static void registerAlias(final BeanDefinitionRegistry beanFactory, final String beanId,
+			final String alias) {
+
+		beanFactory.registerAlias(beanId, alias);
 	}
 }

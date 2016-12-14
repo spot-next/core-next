@@ -1,17 +1,15 @@
-package at.spot.core.model.internationalization;
+package at.spot.core.model.user;
 
-import javax.validation.constraints.NotNull;
+import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.model.ItemTypeConstants;
 
-@ItemType(typeCode = ItemTypeConstants.REGION)
-public class Region extends Country {
-
+@ItemType(typeCode = ItemTypeConstants.USER)
+public class Customer extends User {
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
 	@Property
-	public Country country;
+	public DateTime birthday;
 }

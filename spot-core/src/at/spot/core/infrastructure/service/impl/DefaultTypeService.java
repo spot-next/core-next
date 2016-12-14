@@ -5,14 +5,16 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.spring.support.Registry;
 import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyRelationDefinition;
@@ -38,8 +41,8 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	@Autowired
-	protected List<ModuleDefinition> moduleDefinitions;
+	// @Autowired
+	// protected List<ModuleDefinition> moduleDefinitions;
 
 	@Autowired
 	protected LoggingService loggingService;
@@ -52,7 +55,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public void registerTypes() {
-		for (final Class<?> clazz : getItemConcreteTypes(moduleDefinitions)) {
+		final Map<String, ModuleDefinition> moduleDefinitions = Registry.getApplicationContext()
+				.getBeansOfType(ModuleDefinition.class);
+
+		for (final Class<?> clazz : getItemConcreteTypes(moduleDefinitions.values())) {
 			if (clazz.isAnnotationPresent(ItemType.class)) {
 				registerType(clazz, "prototype");
 			}
@@ -62,16 +68,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	protected void registerType(final Class<?> type, final String scope) {
 		final ItemType ann = type.getAnnotation(ItemType.class);
 
-		String beanName = type.getSimpleName();
+		final String alias = getTypeCode((Class<? extends Item>) type);
+		SpringUtil.registerBean(getBeanFactory(), type, type.getSimpleName(), alias, BeanScope.prototype, null, false);
 
-		// use the annotated itemtype name, it should
-		if (ann != null && StringUtils.isNotBlank(ann.typeCode())) {
-			beanName = ann.typeCode();
-		}
-
-		SpringUtil.registerBean(getBeanFactory(), type, beanName, BeanScope.prototype, null, false);
-
-		loggingService.debug(String.format("Registering type: %s", beanName));
+		loggingService.debug(String.format("Registering type: %s", alias));
 	}
 
 	/*
@@ -81,11 +81,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	 */
 
 	@Override
-	public List<Class<? extends Item>> getItemConcreteTypes(final List<ModuleDefinition> moduleDefinitions) {
+	public List<Class<? extends Item>> getItemConcreteTypes(final Collection<ModuleDefinition> moduleDefinitions) {
 		final List<Class<? extends Item>> itemTypes = new ArrayList<>();
 
 		for (final ModuleDefinition m : moduleDefinitions) {
-			final Reflections reflections = new Reflections(m.getModelPackagePath());
+			final Reflections reflections = new Reflections(m.getModelPackagePaths());
 			final Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
 
 			for (final Class<?> clazz : annotated) {
@@ -112,8 +112,8 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Class<? extends Item> type = null;
 
 		try {
-			type = getApplicationContext().getBean(typeCode, Item.class).getClass();
-		} catch (final BeansException e) {
+			type = getApplicationContext().getBean(typeCode.toLowerCase(), Item.class).getClass();
+		} catch (final Exception e) {
 			throw new UnknownTypeException(e);
 		}
 
@@ -134,12 +134,20 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			typeCode = itemType.getSimpleName();
 		}
 
-		return typeCode;
+		return typeCode.toLowerCase();
 	}
 
 	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() throws UnknownTypeException {
-		final String[] typeCodes = getApplicationContext().getBeanNamesForType(Item.class);
+		final String[] beanIds = getApplicationContext().getBeanNamesForType(Item.class);
+
+		final List<String> typeCodes = Arrays.asList(beanIds).stream().map((i) -> {
+			final String[] aliases = getApplicationContext().getAliases(i);
+
+			return (aliases != null && aliases.length > 0) ? aliases[0] : null;
+		}).filter((i) -> {
+			return StringUtils.isNotBlank(i);
+		}).collect(Collectors.toList());
 
 		final Map<String, ItemTypeDefinition> alltypes = new HashMap<>();
 
