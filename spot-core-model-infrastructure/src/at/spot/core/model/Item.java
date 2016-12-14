@@ -171,16 +171,10 @@ public abstract class Item implements Serializable {
 
 	@Override
 	public boolean equals(final Object obj) {
-		Item item = null;
-
-		if (obj instanceof Item) {
-			item = (Item) obj;
+		if (obj != null && this.getClass().equals(obj.getClass())) {
+			return this.pk == ((Item) obj).pk;
 		}
 
-		if (item != null) {
-			return this.pk == item.pk;
-		}
-
-		return super.equals(item);
+		return super.equals(obj);
 	}
 }
