@@ -169,6 +169,12 @@ public abstract class Item implements Serializable {
 		return hash;
 	}
 
+	/**
+	 * If the type and the pk of the given object is the same as the current
+	 * object, both are equal.
+	 * 
+	 * @see Object#equals(Object)
+	 */
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj != null && this.getClass().equals(obj.getClass())) {
