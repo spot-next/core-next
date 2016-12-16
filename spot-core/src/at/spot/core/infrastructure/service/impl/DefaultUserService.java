@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -20,14 +21,15 @@ import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 @Service
-public class DefaultUserService extends AbstractService implements UserService<User, UserGroup> {
+public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
+		implements UserService<U, G> {
 
 	@Autowired
 	protected ModelService modelService;
 
 	@Override
-	public User createUser(final Class<User> type, final String userId) throws DuplicateUserException {
-		final User user = modelService.create(type);
+	public U createUser(final Class<U> type, final String userId) throws DuplicateUserException {
+		final U user = modelService.create(type);
 		user.uid = userId;
 
 		try {
@@ -40,7 +42,7 @@ public class DefaultUserService extends AbstractService implements UserService<U
 	}
 
 	@Override
-	public User getUser(final String uid) {
+	public U getUser(final String uid) {
 		final Map<String, Comparable<?>> params = new HashMap<>();
 		params.put("uid", uid);
 
@@ -48,7 +50,7 @@ public class DefaultUserService extends AbstractService implements UserService<U
 	}
 
 	@Override
-	public UserGroup getUserGroup(final String uid) {
+	public G getUserGroup(final String uid) {
 		final Map<String, Comparable<?>> params = new HashMap<>();
 		params.put("uid", uid);
 
@@ -61,28 +63,28 @@ public class DefaultUserService extends AbstractService implements UserService<U
 	}
 
 	@Override
-	public Set<UserGroup> getAllGroupsOfUser(final String uid) {
-		return new HashSet<UserGroup>(getUser(uid).groups);
+	public Set<G> getAllGroupsOfUser(final String uid) {
+		return new HashSet<G>((Collection<? extends G>) getUser(uid).groups);
 	}
 
 	@Override
-	public List<User> getAllUsers() {
+	public List<U> getAllUsers() {
 		return modelService.getAll(getUserType());
 	}
 
 	@Override
-	public List<UserGroup> getAllUserGroups() {
+	public List<G> getAllUserGroups() {
 		return modelService.getAll(getUserGroupType());
 	}
 
-	protected Class<User> getUserType() {
-		final Class<User> userType = (Class<User>) getApplicationContext().getBean(ItemTypeConstants.USER).getClass();
+	protected Class<U> getUserType() {
+		final Class<U> userType = (Class<U>) getApplicationContext().getBean(ItemTypeConstants.USER).getClass();
 		return userType;
 	}
 
-	protected Class<UserGroup> getUserGroupType() {
-		final Class<UserGroup> userGroupType = (Class<UserGroup>) getApplicationContext()
-				.getBean(ItemTypeConstants.USER_GROUP).getClass();
+	protected Class<G> getUserGroupType() {
+		final Class<G> userGroupType = (Class<G>) getApplicationContext().getBean(ItemTypeConstants.USER_GROUP)
+				.getClass();
 
 		return userGroupType;
 	}

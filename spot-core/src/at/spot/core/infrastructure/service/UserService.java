@@ -7,7 +7,7 @@ import at.spot.core.infrastructure.exception.DuplicateUserException;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 
-public interface UserService<U, G> {
+public interface UserService<U extends User, G extends UserGroup> {
 
 	/**
 	 * Creates an empty {@link User} object, only setting the given userId.

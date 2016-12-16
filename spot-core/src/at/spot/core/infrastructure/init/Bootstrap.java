@@ -161,7 +161,7 @@ public class Bootstrap {
 				reader.loadBeanDefinitions(c.springConfigFile());
 			}
 
-			SpringUtil.registerBean(context, ModuleDefinition.class, null, c.moduleName(), BeanScope.singleton,
+			SpringUtil.registerBean(context, ModuleDefinition.class, c.moduleName(), null, BeanScope.singleton,
 					Arrays.asList(c.moduleName(), c.modelPackagePaths()), false);
 		}
 
