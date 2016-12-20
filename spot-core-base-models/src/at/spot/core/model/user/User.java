@@ -2,8 +2,6 @@ package at.spot.core.model.user;
 
 import java.util.List;
 
-import org.joda.time.DateTime;
-
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
@@ -21,10 +19,6 @@ public class User extends Principal {
 	@Property
 	public String password;
 
-	@Property
-	public DateTime birthDate;
-
-	@Property
 	public String emailAddress;
 
 	@Relation(type = RelationType.OneToMany, referencedType = Address.class, mappedTo = "owner")

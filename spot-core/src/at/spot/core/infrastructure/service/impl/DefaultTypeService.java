@@ -41,9 +41,6 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	// @Autowired
-	// protected List<ModuleDefinition> moduleDefinitions;
-
 	@Autowired
 	protected LoggingService loggingService;
 

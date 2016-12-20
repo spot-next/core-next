@@ -11,11 +11,12 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -27,9 +28,11 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.type.ItemTypeDefinition;
 import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.type.MimeType;
 import at.spot.core.management.annotation.Handler;
+import at.spot.core.management.data.GenericItemDefinitionData;
 import at.spot.core.management.data.PageableData;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.transformer.JsonResponseTransformer;
@@ -45,10 +48,10 @@ import spark.Response;
 import spark.route.HttpMethod;
 
 @Service
-public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
+public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
-	private static final String CONFIG_KEY_PORT = "service.model.rest.port";
-	private static final int DEFAULT_PORT = 19001;
+	private static final String CONFIG_KEY_PORT = "service.typesystem.rest.port";
+	private static final int DEFAULT_PORT = 19000;
 
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
@@ -65,14 +68,53 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	@Autowired
 	protected QueryService queryService;
 
-	protected final Gson gson = new Gson();
+	@Autowired
+	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
-		loggingService.info(String.format("Initiating remote model REST service on port %s", getPort()));
+		loggingService.info(String.format("Initiating remote type system REST service on port %s", getPort()));
 		super.init();
 	}
+
+	/*
+	 * TYPES
+	 */
+
+	@Handler(pathMapping = "/types/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	public Object getTypes(final Request request, final Response response) throws UnknownTypeException {
+
+		final List<GenericItemDefinitionData> types = new ArrayList<>();
+
+		for (final String typeCode : typeService.getItemTypeDefinitions().keySet()) {
+			final ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
+
+			final GenericItemDefinitionData d = itemTypeConverter.convert(def);
+			types.add(d);
+		}
+
+		return types;
+	}
+
+	@Handler(pathMapping = "/types/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	public Object getType(final Request request, final Response response) throws UnknownTypeException {
+		GenericItemDefinitionData ret = null;
+
+		final String typeCode = request.params(":typecode");
+
+		if (StringUtils.isNotBlank(typeCode)) {
+			final ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(typeCode);
+
+			ret = itemTypeConverter.convert(def);
+		}
+
+		return ret;
+	}
+
+	/*
+	 * MODELS
+	 */
 
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
@@ -393,7 +435,7 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				// if the json property really exists on the item, then
 				// continue
 				if (propDef != null) {
-					final Object parsedValue = gson.fromJson(value, propDef.returnType);
+					final Object parsedValue = serializationService.fromJson(value.toString(), propDef.returnType);
 					modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
 				}
 			}
@@ -441,6 +483,10 @@ public class ModelServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		return serializationService.fromJson(content, JsonElement.class).getAsJsonObject();
 	}
+
+	/*
+	 * 
+	 */
 
 	@Override
 	public int getPort() {
