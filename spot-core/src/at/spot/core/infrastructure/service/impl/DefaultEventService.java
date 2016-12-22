@@ -1,25 +1,25 @@
-package at.spot.core.infrastructure.service;
+package at.spot.core.infrastructure.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.service.impl.AbstractService;
+import at.spot.core.infrastructure.service.EventService;
 
-@Component
+@Service
 public class DefaultEventService extends AbstractService implements EventService {
 
 	@Autowired
 	protected ApplicationEventPublisher publisher;
 
 	@Override
-	public void publishEvent(ApplicationEvent applicationEvent) {
+	public void publishEvent(final ApplicationEvent applicationEvent) {
 		publisher.publishEvent(applicationEvent);
 	}
 
 	@Override
-	public void publishEvent(Object eventObject) {
+	public void publishEvent(final Object eventObject) {
 		publisher.publishEvent(eventObject);
 	}
 }

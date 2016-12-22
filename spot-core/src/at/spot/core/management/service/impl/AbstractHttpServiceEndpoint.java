@@ -25,11 +25,15 @@ import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
+import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.type.Session;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
+import at.spot.core.model.user.User;
+import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
 import spark.Request;
 import spark.Response;
@@ -53,6 +57,12 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 	@Autowired
 	protected I18nService i18nService;
+
+	@Autowired
+	protected AuthenticationService authenticationService;
+
+	@Autowired
+	protected SessionService sessionService;
 
 	protected Locale defaultLocale;
 
@@ -128,7 +138,14 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			});
 
 			before((request, response) -> {
-				// check permissions
+				// authenticate
+				final User authenticatedUser = authenticationService.getAuthenticatedUser("uid", "pw", true);
+
+				// set authentication to session
+				final Session session = sessionService.createSession();
+				if (session.isAnonymousUser()) {
+					session.user(authenticatedUser);
+				}
 
 				// set the default locale in every new request thread that is
 				// being created

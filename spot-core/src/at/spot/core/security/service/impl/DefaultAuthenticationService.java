@@ -1,4 +1,4 @@
-package at.spot.core.security.service;
+package at.spot.core.security.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.security.service.AuthenticationService;
+import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.security.strategy.PasswordEncryptionStrategy;
 
 @Service
