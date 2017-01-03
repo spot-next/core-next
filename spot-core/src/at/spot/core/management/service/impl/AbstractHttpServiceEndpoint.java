@@ -11,12 +11,14 @@ import static spark.Spark.put;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -48,6 +50,8 @@ import spark.route.HttpMethod;
  *
  */
 public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
+
+	private static final String BASIC_AUTHENTICATION_TYPE = "Basic";
 
 	@Autowired
 	protected SerializationService serializationService;
@@ -138,18 +142,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			});
 
 			before((request, response) -> {
-				// authenticate
-				final User authenticatedUser = authenticationService.getAuthenticatedUser("uid", "pw", true);
-
-				// set authentication to session
-				final Session session = sessionService.createSession();
-				if (session.isAnonymousUser()) {
-					session.user(authenticatedUser);
-				}
-
-				// set the default locale in every new request thread that is
-				// being created
-				LocaleContextHolder.setLocale(defaultLocale);
+				setupSession(request, response);
+				setupLocale();
 			});
 
 			// after((request, response) -> {
@@ -162,6 +156,82 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 							getBeanName()),
 					e);
 		}
+	}
+
+	/**
+	 * Sets up sessions and handles user authentication.
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	protected void setupSession(final Request request, final Response response) {
+		// check if the web session has already a reference to the
+		// backend session
+		String spotSessionId = request.session().attribute("spotSessionId");
+
+		Session spotSession = null;
+
+		// if yes then we fetch the backend session
+		if (StringUtils.isNotBlank(spotSessionId)) {
+			spotSession = sessionService.getSession(spotSessionId);
+		}
+
+		// if it is null we create a new one
+		if (spotSession == null) {
+			spotSession = sessionService.createSession(true);
+			spotSessionId = spotSession.getId();
+
+			// and store the session id in the web session
+			request.session().attribute("spotSessionId", spotSessionId);
+		}
+
+		if (spotSession.isAnonymousUser()) {
+			// authenticate
+			final User authenticatedUser = authenticate(request);
+
+			if (authenticatedUser != null) {
+				spotSession.user(authenticatedUser);
+			} else {
+				response.header("WWW-Authenticate", BASIC_AUTHENTICATION_TYPE);
+				Spark.halt(401);
+			}
+		}
+	}
+
+	/**
+	 * Uses the {@link AuthenticationService} to authenticate a user using a
+	 * basic authentication request header fields.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	protected User authenticate(final Request request) {
+		final String encodedHeader = StringUtils.substringAfter(request.headers("Authorization"),
+				BASIC_AUTHENTICATION_TYPE);
+
+		String decodedHeader = null;
+
+		if (StringUtils.isNotBlank(encodedHeader)) {
+			decodedHeader = new String(Base64.getDecoder().decode(encodedHeader));
+		}
+
+		final String[] credentials = StringUtils.split(decodedHeader, ":");
+
+		User authenticatedUser = null;
+
+		if (credentials != null && credentials.length == 2) {
+			authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
+		}
+
+		return authenticatedUser;
+	}
+
+	/**
+	 * Set the default locale in every new request thread that is being created
+	 */
+	protected void setupLocale() {
+		LocaleContextHolder.setLocale(defaultLocale);
 	}
 
 	@Override
@@ -261,4 +331,5 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			return new RequestStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
 		};
 	}
+
 }

@@ -6,6 +6,8 @@ import at.spot.core.model.user.User;
 
 public class Session {
 
+	protected boolean isValid = true;
+
 	protected String id;
 	protected User user;
 	protected Object rawSession;
@@ -38,5 +40,13 @@ public class Session {
 
 	public Object attribute(final String name, final Object value) {
 		return attributes.put(name, value);
+	}
+
+	public boolean isValid() {
+		return isValid;
+	}
+
+	public void invalidate() {
+		this.isValid = false;
 	}
 }
