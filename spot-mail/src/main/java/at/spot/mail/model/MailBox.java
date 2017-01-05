@@ -8,7 +8,7 @@ import at.spot.core.model.Item;
 import at.spot.core.model.user.User;
 import at.spot.mail.type.MailBoxType;
 
-@ItemType
+@ItemType(typeCode = "mailBox")
 public class MailBox extends Item {
 
 	private static final long serialVersionUID = 1L;

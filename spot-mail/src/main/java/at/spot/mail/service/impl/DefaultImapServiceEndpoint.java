@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.type.LogLevel;
+import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.mail.service.ImapServiceEndpoint;
 

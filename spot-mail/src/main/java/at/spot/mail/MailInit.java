@@ -7,13 +7,14 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.init.ModuleConfig;
+import at.spot.core.infrastructure.support.init.ModuleConfig;
 
 @Service
 @EnableAsync
 @EnableScheduling
 @Order(value = 1)
-@ModuleConfig(appConfigFile = "mail.properties", springConfigFile = "spring-mail.xml")
+@ModuleConfig(moduleName = "mail", modelPackagePaths = {
+		"at.spot.mail.model" }, appConfigFile = "mail.properties", springConfigFile = "spring-mail.xml")
 public class MailInit extends CoreInit {
 
 	@Log(message = "Starting mail module ...")

@@ -26,7 +26,7 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.type.LogLevel;
+import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.mail.model.Mail;
