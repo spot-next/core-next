@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.support.spring.Registry;
 
 @Service
 public class DefaultConfigurationService extends AbstractService implements ConfigurationService {

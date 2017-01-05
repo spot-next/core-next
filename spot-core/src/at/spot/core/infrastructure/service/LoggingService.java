@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.service;
 
-import at.spot.core.infrastructure.type.LogLevel;
+import at.spot.core.infrastructure.support.LogLevel;
 
 public interface LoggingService {
 	void debug(String message);

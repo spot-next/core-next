@@ -1,4 +1,4 @@
-package at.spot.core.management.data;
+package at.spot.core.management.support.data;
 
 import java.util.Collections;
 import java.util.List;

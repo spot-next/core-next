@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.init;
+package at.spot.core.infrastructure.support.init;
 
 import java.io.File;
 import java.util.LinkedList;

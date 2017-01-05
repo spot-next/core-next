@@ -66,7 +66,7 @@
 		<property name="messageInterpolator" ref="l10nService" />
 	</bean>
 
-	<!-- aliases -->
+	<!-- ALIASES -->
 
 	<!-- services -->
 	<alias name="defaultTypeService" alias="typeService" />
@@ -80,6 +80,7 @@
 	<alias name="defaultValidationService" alias="validationService" />
 	<alias name="defaultUserService" alias="userService" />
 	<alias name="defaultAuthenticationService" alias="authenticationService" />
+	<alias name="defaultSessionService" alias="sessionService" />
 
 	<!-- strategies -->
 	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
@@ -94,7 +95,7 @@
 
 	<bean id="itemTypeConverter" parent="genericPopulatingConverter">
 		<property name="targetClass"
-			value="at.spot.core.management.data.GenericItemDefinitionData" />
+			value="at.spot.core.management.support.data.GenericItemDefinitionData" />
 		<property name="populators">
 			<list>
 				<ref bean="itemTypePopulator" />

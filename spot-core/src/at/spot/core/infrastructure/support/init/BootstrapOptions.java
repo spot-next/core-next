@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.init;
+package at.spot.core.infrastructure.support.init;
 
 public class BootstrapOptions {
 	protected String appConfigFile;

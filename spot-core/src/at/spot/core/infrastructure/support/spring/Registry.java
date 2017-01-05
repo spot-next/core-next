@@ -1,14 +1,14 @@
-package at.spot.core.infrastructure.spring.support;
+package at.spot.core.infrastructure.support.spring;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import at.spot.core.infrastructure.init.Configuration;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.support.init.Configuration;
 import at.spot.core.persistence.service.PersistenceService;
 
 /**

@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.type;
+package at.spot.core.infrastructure.support.init;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
-package at.spot.core.management.data;
+package at.spot.core.management.support.data;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 
 /**
  * This is a generic item type DTO implementation.

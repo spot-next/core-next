@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
-import at.spot.core.infrastructure.type.LogLevel;
+import at.spot.core.infrastructure.support.LogLevel;
 
 /**
  * This logging service maintains a list of {@link Logger}s for each class that

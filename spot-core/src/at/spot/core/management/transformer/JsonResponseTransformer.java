@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.SerializationService;
-import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.support.spring.Registry;
 import spark.ResponseTransformer;
 
 /**

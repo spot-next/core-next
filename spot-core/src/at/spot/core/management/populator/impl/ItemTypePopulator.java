@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.infrastructure.type.ItemTypeDefinition;
-import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
-import at.spot.core.management.data.GenericItemDefinitionData;
+import at.spot.core.infrastructure.support.ItemTypeDefinition;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.management.populator.Populator;
+import at.spot.core.management.support.data.GenericItemDefinitionData;
 import at.spot.core.model.Item;
 
 /**

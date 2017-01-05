@@ -29,11 +29,12 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.spring.support.Registry;
-import at.spot.core.infrastructure.type.Session;
+import at.spot.core.infrastructure.support.Session;
+import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
+import at.spot.core.management.support.HttpAuthorizationType;
 import at.spot.core.model.user.User;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
@@ -50,8 +51,6 @@ import spark.route.HttpMethod;
  *
  */
 public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
-
-	private static final String BASIC_AUTHENTICATION_TYPE = "Basic";
 
 	@Autowired
 	protected SerializationService serializationService;
@@ -192,7 +191,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			if (authenticatedUser != null) {
 				spotSession.user(authenticatedUser);
 			} else {
-				response.header("WWW-Authenticate", BASIC_AUTHENTICATION_TYPE);
+				response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
 				Spark.halt(401);
 			}
 		}
@@ -207,21 +206,24 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	 * @return
 	 */
 	protected User authenticate(final Request request) {
-		final String encodedHeader = StringUtils.substringAfter(request.headers("Authorization"),
-				BASIC_AUTHENTICATION_TYPE);
-
-		String decodedHeader = null;
-
-		if (StringUtils.isNotBlank(encodedHeader)) {
-			decodedHeader = new String(Base64.getDecoder().decode(encodedHeader));
-		}
-
-		final String[] credentials = StringUtils.split(decodedHeader, ":");
+		final String encodedHeader = StringUtils.trim(
+				StringUtils.substringAfter(request.headers("Authorization"), HttpAuthorizationType.BASIC.toString()));
 
 		User authenticatedUser = null;
 
-		if (credentials != null && credentials.length == 2) {
-			authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
+		if (StringUtils.isNotBlank(encodedHeader)) {
+			final String decodedHeader = new String(Base64.getDecoder().decode(encodedHeader));
+
+			final String[] credentials = StringUtils.split(decodedHeader, ":", 2);
+
+			if (credentials != null && credentials.length == 2) {
+				/*
+				 * the http authentication password is encoded in MD5, by
+				 * default we are also using the MD5 password strategy, so we
+				 * simply set {@link AuthenticationService#isEncrypted} to true
+				 */
+				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
+			}
 		}
 
 		return authenticatedUser;
@@ -231,7 +233,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	 * Set the default locale in every new request thread that is being created
 	 */
 	protected void setupLocale() {
-		LocaleContextHolder.setLocale(defaultLocale);
+		LocaleContextHolder.setLocale(i18nService.getDefaultLocale());
 	}
 
 	@Override

@@ -21,7 +21,9 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Override
 	public <T extends Item> T create(final Class<T> type) {
-		final T item = getApplicationContext().getBean(type);
+		final String typeCode = typeService.getTypeCode(type);
+
+		final T item = getApplicationContext().getBean(typeCode, type);
 		setTypeCode(item);
 		return item;
 	}

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import at.spot.core.infrastructure.type.MimeType;
+import at.spot.core.infrastructure.support.MimeType;
 import at.spot.core.management.transformer.PlainTextResponseTransformer;
 import spark.ResponseTransformer;
 import spark.route.HttpMethod;

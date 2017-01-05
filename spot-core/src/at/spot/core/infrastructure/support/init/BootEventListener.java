@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.init;
+package at.spot.core.infrastructure.support.init;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextClosedEvent;

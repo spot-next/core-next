@@ -6,7 +6,7 @@ import org.springframework.shell.plugin.support.DefaultBannerProvider;
 import org.springframework.stereotype.Component;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.support.spring.Registry;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

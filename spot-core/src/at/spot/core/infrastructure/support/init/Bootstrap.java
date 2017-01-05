@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.init;
+package at.spot.core.infrastructure.support.init;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,8 +23,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import at.spot.core.CoreInit;
-import at.spot.core.infrastructure.spring.support.Registry;
-import at.spot.core.infrastructure.type.ModuleDefinition;
+import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
 import at.spot.core.support.util.SpringUtil;

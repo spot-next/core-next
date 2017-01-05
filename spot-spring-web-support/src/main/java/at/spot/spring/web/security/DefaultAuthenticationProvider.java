@@ -75,7 +75,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	 * @param user
 	 * @return
 	 */
-	public boolean isAdminUser(final User user) {
+	protected boolean isAdminUser(final User user) {
 		final String adminUserName = configurationService.getString(ADMIN_USER_NAME_KEY, DEFAULT_ADMIN_USER_NAME);
 
 		return StringUtils.equals(user.uid, adminUserName);

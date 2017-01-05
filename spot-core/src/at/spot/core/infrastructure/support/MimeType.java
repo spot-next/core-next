@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.type;
+package at.spot.core.infrastructure.support;
 
 public enum MimeType {
 	JAVASCRIPT("application/javascript"), JSON("application/json"), PLAINTEXT("text/plain"),;

@@ -10,10 +10,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
 
-import at.spot.core.infrastructure.init.Bootstrap;
-import at.spot.core.infrastructure.init.BootstrapOptions;
-import at.spot.core.infrastructure.init.ModuleInit;
-import at.spot.core.infrastructure.spring.support.Registry;
+import at.spot.core.infrastructure.support.init.Bootstrap;
+import at.spot.core.infrastructure.support.init.BootstrapOptions;
+import at.spot.core.infrastructure.support.init.ModuleInit;
+import at.spot.core.infrastructure.support.spring.Registry;
 
 /**
  * This interface extends the {@link ModuleInit} with some more functionality
@@ -118,6 +118,9 @@ public interface WebModuleInit extends WebApplicationInitializer, ServletContext
 
 	@Override
 	default void contextInitialized(final ServletContextEvent event) {
+		// register a session listener that connects the web session to the spot
+		// session service
+		// event.getServletContext().addListener(WebSessionListener.class);
 	}
 
 	@Override

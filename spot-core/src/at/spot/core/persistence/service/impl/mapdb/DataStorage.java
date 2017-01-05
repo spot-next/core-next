@@ -17,8 +17,8 @@ import org.mapdb.Serializer;
 
 import com.google.common.collect.Sets;
 
-import at.spot.core.infrastructure.type.ItemTypeDefinition;
-import at.spot.core.infrastructure.type.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.support.ItemTypeDefinition;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.persistence.service.impl.MapDBService;
 
 /**

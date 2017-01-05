@@ -5,18 +5,24 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.annotation.logging.Log;
+import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
-import at.spot.core.infrastructure.init.ModuleConfig;
-import at.spot.core.infrastructure.init.ModuleInit;
+import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.service.UserService;
+import at.spot.core.infrastructure.support.init.ModuleConfig;
+import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.model.user.Address;
 import at.spot.core.model.user.AddressType;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 
@@ -38,6 +44,12 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected ModelService modelService;
+
+	@Autowired
+	protected ConfigurationService configurationService;
+
+	@Autowired
+	protected UserService<User, UserGroup> userService;
 
 	@Autowired
 	protected LoggingService loggingService;
@@ -178,15 +190,11 @@ public class CoreInit extends ModuleInit {
 	@Override
 	public void initialize() throws ModuleInitializationException {
 		setupTypeInfrastrucutre();
+		importInitialData();
 		runMigrateScripts();
 
 		// this is just for testing
 		// run();
-	}
-
-	@Log(message = "Running data migration scripts ...")
-	protected void runMigrateScripts() {
-		// not yet implemented
 	}
 
 	@Log(message = "Setting up type registry ...")
@@ -194,4 +202,32 @@ public class CoreInit extends ModuleInit {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
 	}
+
+	@Log(message = "Importing initial data ...")
+	protected void importInitialData() throws ModuleInitializationException {
+		final String adminUserName = configurationService.getString(CoreConstants.CONFIG_KEY_DEFAULT_ADMIN_USERNAME,
+				CoreConstants.DEFAULT_ADMIN_USERNAME);
+		final String adminPassword = configurationService.getString(CoreConstants.CONFIG_KEY_DEFAULT_ADMIN_PASSWORD,
+				CoreConstants.DEFAULT_ADMIN_PASSWORD);
+
+		User admin = userService.getUser(adminUserName);
+
+		if (admin == null) {
+			admin = modelService.create(User.class);
+			admin.uid = adminUserName;
+			admin.password = adminPassword;
+
+			try {
+				modelService.save(admin);
+			} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
+				throw new ModuleInitializationException("Couln't create admin user account.", e);
+			}
+		}
+	}
+
+	@Log(message = "Running data migration scripts ...")
+	protected void runMigrateScripts() {
+		// not yet implemented
+	}
+
 }
