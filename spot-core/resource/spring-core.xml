@@ -70,10 +70,10 @@
 
 	<!-- services -->
 	<alias name="defaultTypeService" alias="typeService" />
-	<alias name="consoleLoggingService" alias="loggingService" />
+	<alias name="mapDBService" alias="persistenceService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="defaultQueryService" alias="queryService" />
-	<alias name="mapDBService" alias="persistenceService" />
+	<alias name="consoleLoggingService" alias="loggingService" />
 	<alias name="defaultL10nService" alias="l10nService" />
 	<alias name="defaultI18nService" alias="i18nService" />
 	<alias name="defaultConfigurationService" alias="configurationService" />
@@ -81,6 +81,7 @@
 	<alias name="defaultUserService" alias="userService" />
 	<alias name="defaultAuthenticationService" alias="authenticationService" />
 	<alias name="defaultSessionService" alias="sessionService" />
+	<alias name="dummyAccessControlService" alias="accessControlService" />
 
 	<!-- strategies -->
 	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />

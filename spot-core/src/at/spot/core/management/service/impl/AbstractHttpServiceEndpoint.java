@@ -186,7 +186,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 		if (spotSession.isAnonymousUser()) {
 			// authenticate
-			final User authenticatedUser = authenticate(request);
+			final User authenticatedUser = authenticate(request, response);
 
 			if (authenticatedUser != null) {
 				spotSession.user(authenticatedUser);
@@ -205,7 +205,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	 * @param response
 	 * @return
 	 */
-	protected User authenticate(final Request request) {
+	protected User authenticate(final Request request, Response response) {
 		final String encodedHeader = StringUtils.trim(
 				StringUtils.substringAfter(request.headers("Authorization"), HttpAuthorizationType.BASIC.toString()));
 

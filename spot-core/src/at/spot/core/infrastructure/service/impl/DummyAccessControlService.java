@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
+import org.springframework.stereotype.Service;
+
 import at.spot.core.infrastructure.service.AccessControlService;
 import at.spot.core.model.Item;
 
@@ -8,6 +10,7 @@ import at.spot.core.model.Item;
  * returns always true.
  *
  */
+@Service
 public class DummyAccessControlService implements AccessControlService {
 
 	@Override
