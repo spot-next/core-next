@@ -10,7 +10,6 @@ import j2html.tags.ContainerTag;
  * <button type="button" class="btn btn-default">Default</button>
  */
 public class Button extends AbstractComponent {
-
 	protected String caption;
 	protected ButtonStyle style = ButtonStyle.Default;
 
@@ -21,8 +20,14 @@ public class Button extends AbstractComponent {
 	}
 
 	public Button style(final ButtonStyle style) {
+		if (style != null) {
+			updateClientComponent("addClass", style.toString());
+		} else {
+			updateClientComponent("removeClass", style.toString());
+		}
+
 		this.style = style;
-		controller().invokeComponentManipulation(this, "addClass", style.toString());
+
 		return this;
 	}
 
@@ -32,7 +37,9 @@ public class Button extends AbstractComponent {
 
 	public Button caption(final String caption) {
 		this.caption = caption;
-		controller().invokeComponentManipulation(this, "text", caption);
+
+		updateClientComponent("text", caption);
+
 		return this;
 	}
 

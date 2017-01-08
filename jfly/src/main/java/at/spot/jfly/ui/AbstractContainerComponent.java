@@ -30,13 +30,13 @@ public class AbstractContainerComponent extends AbstractComponent {
 
 	public <C extends AbstractContainerComponent> C addChild(final AbstractComponent component) {
 		children.add(component);
-		controller().invokeFunctionCall("jfly", "addChildComponent", this.uuid(), component.build().render());
+		updateClient("jfly", "addChildComponent", this.uuid(), component.build().render());
 		return (C) this;
 	}
 
 	public <C extends AbstractContainerComponent> C removeChild(final AbstractComponent component) {
 		children.remove(component);
-		controller().invokeFunctionCall("jfly", "removeChildComponent", this.uuid(), component.uuid());
+		updateClient("jfly", "removeChildComponent", this.uuid(), component.uuid());
 		return (C) this;
 	}
 

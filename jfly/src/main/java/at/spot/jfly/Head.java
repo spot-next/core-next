@@ -14,6 +14,24 @@ public class Head extends AbstractComponent {
 
 	public Head() {
 		super("head");
+
+		// necessary for the default components
+		addDefaultStyles();
+		addDefaultScripts();
+	}
+
+	private Head addDefaultStyles() {
+		stylesheet(new Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"));
+
+		return this;
+	}
+
+	protected Head addDefaultScripts() {
+		script(new Script("http://zeptojs.com/zepto.min.js"));
+		script(new Script("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"));
+		script(new Script("/script/jfly.js"));
+
+		return this;
 	}
 
 	public Head title(final String title) {

@@ -72,6 +72,10 @@ public class ComponentController {
 		context.set(session);
 	}
 
+	public boolean isCalledInRequest() {
+		return getCurrentSession() != null;
+	}
+
 	protected Session getCurrentSession() {
 		return context.get();
 	}
@@ -112,6 +116,7 @@ public class ComponentController {
 	 */
 	public void invokeComponentManipulation(final Component component, final String method,
 			final Object... parameters) {
+
 		final Map<String, Object> message = new HashMap<>();
 
 		message.put("type", "objectManipulation");

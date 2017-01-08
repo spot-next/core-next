@@ -63,9 +63,9 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		this.visible = visible;
 
 		if (visible) {
-			controller().invokeFunctionCall("jfly", "showComponent", this.uuid());
+			updateClient("jfly", "showComponent", this.uuid());
 		} else {
-			controller().invokeFunctionCall("jfly", "hideComponent", this.uuid());
+			updateClient("jfly", "hideComponent", this.uuid());
 		}
 
 		return (C) this;
@@ -105,8 +105,20 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 	@Override
 	public <C extends AbstractComponent> C redraw() {
-		ComponentController.instance().invokeComponentManipulation(this, "replace", build().render());
+		updateClientComponent("replace", build().render());
 		return (C) this;
+	}
+
+	protected void updateClientComponent(final String method, final Object... params) {
+		if (controller().isCalledInRequest()) {
+			controller().invokeComponentManipulation(this, method, params);
+		}
+	}
+
+	protected void updateClient(final String object, final String function, final Object... params) {
+		if (controller().isCalledInRequest()) {
+			controller().invokeFunctionCall(object, function, params);
+		}
 	}
 
 	/*
@@ -117,10 +129,10 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	public <C extends AbstractComponent> C onEvent(final JsEvent eventType, final EventHandler handler) {
 		if (handler != null) {
 			this.eventHandlers.put(eventType, handler);
-			controller().invokeFunctionCall("jfly", "registerEvent", this.uuid(), eventType);
+			updateClient("jfly", "registerEvent", this.uuid(), eventType);
 		} else {
 			this.eventHandlers.remove(eventType);
-			controller().invokeFunctionCall("jfly", "unregisterEvent", this.uuid(), eventType);
+			updateClient("jfly", "unregisterEvent", this.uuid(), eventType);
 		}
 
 		return (C) this;

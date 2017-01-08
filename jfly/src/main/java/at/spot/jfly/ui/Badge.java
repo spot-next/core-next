@@ -20,7 +20,9 @@ public class Badge extends AbstractComponent {
 
 	public Badge text(final String text) {
 		this.text = text;
-		controller().invokeComponentManipulation(this, "text", text);
+
+		updateClientComponent("text", text);
+
 		return this;
 	}
 

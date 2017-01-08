@@ -8,7 +8,6 @@ import at.spot.jfly.style.LabelStyle;
  * <button type="button" class="btn btn-default">Default</button>
  */
 public class Label extends Badge {
-
 	private LabelStyle style;
 
 	public Label(final String text) {
@@ -17,8 +16,14 @@ public class Label extends Badge {
 	}
 
 	public Label style(final LabelStyle style) {
+		if (style != null) {
+			updateClientComponent("addClass", style.toString());
+		} else {
+			updateClientComponent("removeClass", style.toString());
+		}
+
 		this.style = style;
-		controller().invokeComponentManipulation(this, "addClass", style.toString());
+
 		return this;
 	}
 
