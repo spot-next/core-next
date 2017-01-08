@@ -7,6 +7,7 @@ import at.spot.jfly.Script;
 import at.spot.jfly.Stylesheet;
 import at.spot.jfly.style.ButtonStyle;
 import at.spot.jfly.ui.Button;
+import at.spot.jfly.ui.NavBar;
 import j2html.TagCreator;
 
 public class DemoApplication extends JFlyApplication {
@@ -24,7 +25,7 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final Body body = new Body().add(TagCreator.h1("Hello World!"));
+		final Body body = new Body().add(new NavBar());
 
 		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
 		button.onClick(e -> {

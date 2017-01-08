@@ -1,7 +1,5 @@
 package at.spot.jfly;
 
-import java.security.cert.Extension;
-
 import at.spot.jfly.demo.DemoApplication;
 import spark.Request;
 import spark.Response;
@@ -22,12 +20,12 @@ public class Server {
 		Spark.staticFileLocation("/web");
 		Spark.webSocket("/com", ComponentController.instance());
 		Spark.get("/", (req, res) -> render(req, res, appClass));
-		Spark.exception((Class<? extends Exception>) Extension.class, (ex, reg, res) -> ex.printStackTrace());
+		Spark.exception(Exception.class, (ex, reg, res) -> ex.printStackTrace());
 		Spark.init();
 	}
 
-	protected String render(final Request request, final Response response, final Class<? extends JFlyApplication> appClass)
-			throws InstantiationException, IllegalAccessException {
+	protected String render(final Request request, final Response response,
+			final Class<? extends JFlyApplication> appClass) throws InstantiationException, IllegalAccessException {
 
 		JFlyApplication app = request.session().attribute("application");
 
