@@ -7,7 +7,10 @@ import at.spot.jfly.Script;
 import at.spot.jfly.Stylesheet;
 import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ButtonStyle;
+import at.spot.jfly.style.LabelStyle;
+import at.spot.jfly.ui.Badge;
 import at.spot.jfly.ui.Button;
+import at.spot.jfly.ui.Label;
 import at.spot.jfly.ui.NavBar;
 import j2html.TagCreator;
 
@@ -26,9 +29,13 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final Body body = new Body().addChild(new NavBar());
-
+		final NavBar navBar = new NavBar();
+		final Body body = new Body().addChild(navBar);
 		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
+		navBar.addChild(button);
+		navBar.addChild(new Label("test").style(LabelStyle.Danger));
+		navBar.addChild(new Badge("42"));
+
 		button.onEvent(JsEvent.click, e -> {
 			System.out.println("Click from: " + e.getSource().uuid());
 
@@ -36,8 +43,6 @@ public class DemoApplication extends JFlyApplication {
 
 			body.addChild(TagCreator.h1("test"));
 		});
-
-		body.addChild(button);
 
 		return body;
 	}

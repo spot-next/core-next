@@ -1,10 +1,9 @@
 package at.spot.jfly.ui;
 
-import at.spot.jfly.AbstractComponent;
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 
-public class NavBar extends AbstractComponent {
+public class NavBar extends AbstractContainerComponent {
 
 	public NavBar() {
 		super("nav");
@@ -12,13 +11,13 @@ public class NavBar extends AbstractComponent {
 
 	@Override
 	public ContainerTag build() {
-		ContainerTag raw = TagCreator.nav();
+		final ContainerTag raw = super.build();
 
 		raw.withClass("navbar navbar-default");
 		// raw.attr("data-toggle", "collapse");
 		// raw.attr("role", "navigation");
 
-		ContainerTag container = TagCreator.div();
+		final ContainerTag container = TagCreator.div();
 		container.withClass("navbar-header");
 
 		raw.with(container);

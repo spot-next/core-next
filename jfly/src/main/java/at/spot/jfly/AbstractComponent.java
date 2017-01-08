@@ -17,6 +17,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 	protected String tagName;
 	protected String uuid;
+	protected String baseStyleClass = "badge";
 
 	private boolean visible = true;
 
@@ -74,8 +75,16 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return ComponentController.instance();
 	}
 
+	protected void setBaseStyleClass(final String baseStyleClass) {
+		this.baseStyleClass = baseStyleClass;
+	}
+
+	protected String getBaseStyleClass() {
+		return baseStyleClass;
+	}
+
 	protected String getStyleClasses() {
-		String classes = StringUtils.join(styleClasses, " ");
+		String classes = getBaseStyleClass() + " " + StringUtils.join(styleClasses, " ");
 
 		if (!visibility()) {
 			classes += " hidden";

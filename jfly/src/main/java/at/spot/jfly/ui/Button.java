@@ -17,6 +17,7 @@ public class Button extends AbstractComponent {
 	public Button(final String caption) {
 		super("button");
 		caption(caption);
+		setBaseStyleClass("btn");
 	}
 
 	public Button style(final ButtonStyle style) {
@@ -41,9 +42,7 @@ public class Button extends AbstractComponent {
 
 	@Override
 	protected String getStyleClasses() {
-		String classes = super.getStyleClasses();
-
-		classes += " btn " + style.toString();
+		final String classes = super.getStyleClasses() + style.toString();
 
 		return classes;
 	}
