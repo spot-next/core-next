@@ -31,9 +31,9 @@ public class DemoApplication extends JFlyApplication {
 		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
 		button.onEvent(JsEvent.click, e -> {
 			System.out.println("Click from: " + e.getSource().uuid());
-			button.onEvent(JsEvent.mouseover, e2 -> {
-				button.visibility(false);
-			});
+
+			button.caption("hello world");
+
 			body.addChild(TagCreator.h1("test"));
 		});
 

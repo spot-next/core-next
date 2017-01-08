@@ -94,6 +94,12 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return raw;
 	}
 
+	@Override
+	public <C extends AbstractComponent> C redraw() {
+		ComponentController.instance().invokeComponentManipulation(this, "replace", build().render());
+		return (C) this;
+	}
+
 	/*
 	 * Events
 	 */
