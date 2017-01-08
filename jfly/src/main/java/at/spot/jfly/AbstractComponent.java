@@ -14,7 +14,7 @@ import at.spot.jfly.event.JsEvents;
 import at.spot.jfly.event.OnClickEvent;
 import j2html.tags.ContainerTag;
 
-public abstract class AbstractComponent implements Component {
+public abstract class AbstractComponent implements Component, Comparable<AbstractComponent> {
 
 	protected String tagName;
 	protected String uuid;
@@ -118,5 +118,14 @@ public abstract class AbstractComponent implements Component {
 		final EventHandler<E> handler = (EventHandler<E>) eventHandlers.get(event.getClass());
 
 		handler.handle(event);
+	}
+
+	@Override
+	public int compareTo(final AbstractComponent o) {
+		if (o == null) {
+			return 1;
+		}
+
+		return uuid().compareTo(o.uuid());
 	}
 }
