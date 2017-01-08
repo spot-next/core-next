@@ -21,6 +21,7 @@ public class Button extends AbstractComponent {
 
 	public Button style(final ButtonStyle style) {
 		this.style = style;
+		controller().invokeComponentManipulation(this, "addClass", style.toString());
 		return this;
 	}
 
@@ -30,6 +31,7 @@ public class Button extends AbstractComponent {
 
 	public Button caption(final String caption) {
 		this.caption = caption;
+		controller().invokeComponentManipulation(this, "text", caption);
 		return this;
 	}
 

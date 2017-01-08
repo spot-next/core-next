@@ -1,8 +1,8 @@
 package at.spot.jfly;
 
-import at.spot.jfly.event.AbstractEvent;
+import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
-import at.spot.jfly.event.OnClickEvent;
+import at.spot.jfly.event.JsEvent;
 import j2html.tags.ContainerTag;
 
 public interface Component {
@@ -14,7 +14,13 @@ public interface Component {
 	 */
 	ContainerTag build();
 
-	<C extends AbstractComponent> C onClick(final EventHandler<OnClickEvent> handler);
+	// <C extends AbstractComponent> C onClick(final EventHandler<OnClickEvent>
+	// handler);
 
-	<E extends AbstractEvent> void handleEvent(final E event);
+	// <C extends AbstractComponent> C onMouseOver(final
+	// EventHandler<OnMouseOverEvent> handler);
+
+	<C extends AbstractComponent> C onEvent(JsEvent eventType, EventHandler handler);
+
+	<E extends Event> void handleEvent(final E event);
 }

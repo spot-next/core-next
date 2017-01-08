@@ -8,10 +8,9 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
-import at.spot.jfly.event.AbstractEvent;
+import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
-import at.spot.jfly.event.JsEvents;
-import at.spot.jfly.event.OnClickEvent;
+import at.spot.jfly.event.JsEvent;
 import j2html.tags.ContainerTag;
 
 public abstract class AbstractComponent implements Component, Comparable<AbstractComponent> {
@@ -26,8 +25,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	/*
 	 * Event handlers
 	 */
-	protected Map<Class<? extends AbstractEvent>, EventHandler<? extends AbstractEvent>> eventHandlers = new HashMap<>();
-	protected Set<JsEvents> registeredEvents = new HashSet<>();
+	protected Map<JsEvent, EventHandler> eventHandlers = new HashMap<>();
 
 	/*
 	 * Initialization
@@ -47,8 +45,8 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	 * Properties
 	 */
 
-	public Set<JsEvents> registeredEvents() {
-		return this.registeredEvents;
+	public Set<JsEvent> registeredEvents() {
+		return this.eventHandlers.keySet();
 	}
 
 	@Override
@@ -64,9 +62,9 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		this.visible = visible;
 
 		if (visible) {
-			controller().invoke(this, "show");
+			controller().invokeFunctionCall("jfly", "showComponent", this.uuid());
 		} else {
-			controller().invoke(this, "hide");
+			controller().invokeFunctionCall("jfly", "hideComponent", this.uuid());
 		}
 
 		return (C) this;
@@ -101,21 +99,21 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	 */
 
 	@Override
-	public <C extends AbstractComponent> C onClick(final EventHandler<OnClickEvent> handler) {
+	public <C extends AbstractComponent> C onEvent(final JsEvent eventType, final EventHandler handler) {
 		if (handler != null) {
-			registeredEvents.add(JsEvents.click);
-			this.eventHandlers.put(OnClickEvent.class, handler);
+			this.eventHandlers.put(eventType, handler);
+			controller().invokeFunctionCall("jfly", "registerEvent", this.uuid(), eventType);
 		} else {
-			registeredEvents.remove(JsEvents.click);
-			this.eventHandlers.remove(OnClickEvent.class);
+			this.eventHandlers.remove(eventType);
+			controller().invokeFunctionCall("jfly", "unregisterEvent", this.uuid(), eventType);
 		}
 
 		return (C) this;
 	}
 
 	@Override
-	public <E extends AbstractEvent> void handleEvent(final E event) {
-		final EventHandler<E> handler = (EventHandler<E>) eventHandlers.get(event.getClass());
+	public void handleEvent(final Event event) {
+		final EventHandler handler = eventHandlers.get(event.getEventType());
 
 		handler.handle(event);
 	}

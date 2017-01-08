@@ -1,6 +1,6 @@
 package at.spot.jfly.event;
 
-public enum JsEvents {
+public enum JsEvent {
 	click("click"),
 	mousedown("mousedown"),
 	mouseup("mouseup"),
@@ -29,7 +29,7 @@ public enum JsEvents {
 
 	private String id;
 
-	private JsEvents(final String id) {
+	private JsEvent(final String id) {
 		this.id = id;
 	}
 

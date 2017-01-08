@@ -19,8 +19,13 @@ jfly.connection.onmessage = function (e) {
 	
 	var message = JSON.parse(e.data);
 	
-	var component = jfly.findComponent(message.uuid);
-	component[message.method].apply(component, message.methodParams);
+	if (message.type == "objectManipulation") {
+		var component = jfly.findComponent(message.componentUuid);
+		component[message.method].apply(component, message.params);
+	} else if (message.type == "functionCall") {
+		var func = window[message.object][message.func];
+		func.apply(func, message.params)
+	}
 };
 
 jfly.toString = function(object) {
@@ -41,10 +46,40 @@ jfly.sendMessage = function(message) {
 	jfly.connection.send(jfly.toString(message));
 };
 
-jfly.findComponent = function(uuid) {
-	var component = $("[uuid='" + uuid + "']");
+jfly.findComponent = function(componentUuid) {
+	var component = $("[uuid='" + componentUuid + "']");
 	
 	return component;
+};
+
+jfly.removeComponent = function(componentUuid) {
+	jfly.findComponent(componentUuid).remove();
+};
+
+jfly.removeChildComponent = function(containerUuid, childUuid) {
+	jfly.findComponent(containerUuid).find("[uuid='" + uuid + "']").remove();
+};
+
+jfly.addChildComponent = function(containerUuid, child) {
+	jfly.findComponent(containerUuid).append(child);
+};
+
+jfly.hideComponent = function(componentUuid) {
+	jfly.findComponent(componentUuid).addClass("hidden");
+};
+
+jfly.showComponent = function(componentUuid) {
+	jfly.findComponent(componentUuid).removeClass("hidden");
+};
+
+jfly.registerEvent = function(componentUuid, event) {
+	jfly.findComponent(componentUuid).on(event, function(event){
+		jfly.handleEvent(this, event);
+	});
+};
+
+jfly.unregisterEvent = function(componentUuid, event) {
+	jfly.findComponent(componentUuid).unbind(event);
 };
 
 /*

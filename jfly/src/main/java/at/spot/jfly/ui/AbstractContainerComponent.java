@@ -8,26 +8,35 @@ import at.spot.jfly.Component;
 import j2html.tags.ContainerTag;
 
 public class AbstractContainerComponent extends AbstractComponent {
-	List<Component> components = new ArrayList<>();
+	List<AbstractComponent> children = new ArrayList<>();
 
 	protected AbstractContainerComponent(final String tagName) {
 		super(tagName);
 	}
 
-	public <C extends AbstractContainerComponent> C add(final ContainerTag tag) {
-		add(new GenericComponent(tag));
+	public List<AbstractComponent> children() {
+		return children;
+	}
+
+	public <C extends AbstractComponent> C children(final List<C> children) {
+		this.children = (List<AbstractComponent>) children;
 		return (C) this;
 	}
 
-	public <C extends AbstractContainerComponent> C add(final Component component) {
-		components.add(component);
-		controller().invoke(this, "append", component.build().render());
+	public <C extends AbstractContainerComponent> C addChild(final ContainerTag tag) {
+		addChild(new GenericComponent(tag));
 		return (C) this;
 	}
 
-	public <C extends AbstractContainerComponent> C remove(final Component component) {
-		components.remove(component);
+	public <C extends AbstractContainerComponent> C addChild(final AbstractComponent component) {
+		children.add(component);
+		controller().invokeFunctionCall("jfly", "addChildComponent", this.uuid(), component.build().render());
+		return (C) this;
+	}
 
+	public <C extends AbstractContainerComponent> C removeChild(final AbstractComponent component) {
+		children.remove(component);
+		controller().invokeFunctionCall("jfly", "removeChildComponent", this.uuid(), component.uuid());
 		return (C) this;
 	}
 
@@ -35,7 +44,7 @@ public class AbstractContainerComponent extends AbstractComponent {
 	public ContainerTag build() {
 		final ContainerTag raw = super.build();
 
-		for (final Component c : components) {
+		for (final Component c : children) {
 			raw.with(c.build());
 		}
 

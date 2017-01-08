@@ -17,7 +17,8 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import at.spot.jfly.event.OnClickEvent;
+import at.spot.jfly.event.Event;
+import at.spot.jfly.event.JsEvent;
 
 @WebSocket
 public class ComponentController {
@@ -52,14 +53,16 @@ public class ComponentController {
 		System.out.println("Got: " + message); // Print message
 		// session.getRemote().sendString(message); // and send it back
 
-		final JsonObject msg = new Gson().fromJson(message, JsonObject.class);
+		final Gson gson = new Gson();
+
+		final JsonObject msg = gson.fromJson(message, JsonObject.class);
 
 		final String componentUuid = msg.get("uuid").getAsString();
 
 		if (StringUtils.isNotBlank(componentUuid)) {
 			final Component component = registeredComponents.get(componentUuid);
 			final String event = msg.get("event").getAsString();
-			final JsonObject payload = msg.get("payload").getAsJsonObject();
+			final Map<String, Object> payload = gson.fromJson(msg.get("payload"), Map.class);
 
 			handleEvent(component, event, payload);
 		}
@@ -77,26 +80,52 @@ public class ComponentController {
 		registeredComponents.put(component.uuid(), component);
 	}
 
-	protected void handleEvent(final Component component, final String event, final JsonObject payload) {
-		switch (event) {
-		case "click":
-			component.handleEvent(new OnClickEvent(component));
-			break;
-
-		default:
-			break;
-		}
+	protected void handleEvent(final Component component, final String event, final Map<String, Object> payload) {
+		final JsEvent e = JsEvent.valueOf(event);
+		component.handleEvent(new Event(e, component, payload));
 	}
 
-	public void invoke(final Component component, final String method, final Object... parameters) {
-		final Map<String, Object> content = new HashMap<>();
-		content.put("uuid", component.uuid());
-		content.put("method", method);
-		content.put("methodParams", parameters);
+	/**
+	 * Calls a javascript function an passes the given parameters.
+	 * 
+	 * @param method
+	 * @param parameters
+	 */
+	public void invokeFunctionCall(final String object, final String functionCall, final Object... parameters) {
+		final Map<String, Object> message = new HashMap<>();
 
+		message.put("type", "functionCall");
+		message.put("object", object);
+		message.put("func", functionCall);
+		message.put("params", parameters);
+
+		invoke(message);
+	}
+
+	/**
+	 * Calls a javascript function on the given object with the given
+	 * parameters.
+	 * 
+	 * @param component
+	 * @param method
+	 * @param parameters
+	 */
+	public void invokeComponentManipulation(final Component component, final String method,
+			final Object... parameters) {
+		final Map<String, Object> message = new HashMap<>();
+
+		message.put("type", "objectManipulation");
+		message.put("componentUuid", component.uuid());
+		message.put("method", method);
+		message.put("params", parameters);
+
+		invoke(message);
+	}
+
+	public void invoke(final Map<String, Object> message) {
 		try {
 			if (getCurrentSession() != null) {
-				getCurrentSession().getRemote().sendString(new Gson().toJson(content));
+				getCurrentSession().getRemote().sendString(new Gson().toJson(message));
 			}
 		} catch (final IOException e) {
 			// throw new RemoteException("Cannot reach remote client", e);

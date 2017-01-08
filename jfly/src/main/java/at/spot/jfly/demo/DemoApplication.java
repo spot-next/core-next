@@ -5,6 +5,7 @@ import at.spot.jfly.Head;
 import at.spot.jfly.JFlyApplication;
 import at.spot.jfly.Script;
 import at.spot.jfly.Stylesheet;
+import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ButtonStyle;
 import at.spot.jfly.ui.Button;
 import at.spot.jfly.ui.NavBar;
@@ -25,16 +26,18 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final Body body = new Body().add(new NavBar());
+		final Body body = new Body().addChild(new NavBar());
 
 		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
-		button.onClick(e -> {
+		button.onEvent(JsEvent.click, e -> {
 			System.out.println("Click from: " + e.getSource().uuid());
-			button.visibility(false);
-			body.add(TagCreator.h1("test"));
+			button.onEvent(JsEvent.mouseover, e2 -> {
+				button.visibility(false);
+			});
+			body.addChild(TagCreator.h1("test"));
 		});
 
-		body.add(button);
+		body.addChild(button);
 
 		return body;
 	}
