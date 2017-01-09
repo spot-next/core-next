@@ -1,5 +1,6 @@
 package at.spot.jfly;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,16 +12,17 @@ import org.apache.commons.lang3.StringUtils;
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
 import at.spot.jfly.event.JsEvent;
+import at.spot.jfly.style.Style;
 import j2html.tags.ContainerTag;
 
 public abstract class AbstractComponent implements Component, Comparable<AbstractComponent> {
 
 	protected String tagName;
 	protected String uuid;
-	protected String baseStyleClass = "badge";
 
 	private boolean visible = true;
 
+	private final Set<Style> styles = new HashSet<>();
 	private final Set<String> styleClasses = new HashSet<>();
 
 	/*
@@ -45,6 +47,10 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	/*
 	 * Properties
 	 */
+
+	public String tagName() {
+		return this.tagName;
+	}
 
 	public Set<JsEvent> registeredEvents() {
 		return this.eventHandlers.keySet();
@@ -75,16 +81,57 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return ComponentController.instance();
 	}
 
-	protected void setBaseStyleClass(final String baseStyleClass) {
-		this.baseStyleClass = baseStyleClass;
+	public <C extends AbstractComponent> C addStyle(final Style style) {
+		if (style != null) {
+			this.styles.add(style);
+			updateClientComponent("addClass", style);
+		}
+
+		return (C) this;
 	}
 
-	protected String getBaseStyleClass() {
-		return baseStyleClass;
+	public <C extends AbstractComponent> C addStyleClass(final String styleClass) {
+		if (StringUtils.isNotBlank(styleClass)) {
+			this.styleClasses.add(styleClass);
+			updateClientComponent("addClass", styleClass);
+		}
+
+		return (C) this;
 	}
 
-	protected String getStyleClasses() {
-		String classes = getBaseStyleClass() + " " + StringUtils.join(styleClasses, " ");
+	public <C extends AbstractComponent> C removeStyle(final Style style) {
+		if (style != null) {
+			this.styles.remove(style);
+			updateClientComponent("removeClass", style);
+		}
+
+		return (C) this;
+	}
+
+	public <C extends AbstractComponent> C removeStyleClass(final String styleClass) {
+		if (StringUtils.isNotBlank(styleClass)) {
+			this.styleClasses.remove(styleClass);
+			updateClientComponent("removeClass", styleClass);
+		}
+		return (C) this;
+	}
+
+	/**
+	 * Returns an immutable set of the styles.
+	 */
+	public Set<Style> styles() {
+		return Collections.unmodifiableSet(styles);
+	}
+
+	/**
+	 * Returns an immutable set of the style classes.
+	 */
+	public Set<String> styleClasses() {
+		return Collections.unmodifiableSet(styleClasses);
+	}
+
+	protected String getCssStyleString() {
+		String classes = StringUtils.join(styles, " ") + " " + StringUtils.join(styleClasses, " ");
 
 		if (!visibility()) {
 			classes += " hidden";
@@ -97,6 +144,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	public ContainerTag build() {
 		final ContainerTag raw = new ContainerTag(tagName);
 
+		raw.withClass(getCssStyleString());
 		raw.attr("uuid", uuid());
 		raw.attr("registeredEvents", StringUtils.join(registeredEvents(), " "));
 

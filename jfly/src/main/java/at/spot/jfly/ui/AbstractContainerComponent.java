@@ -44,10 +44,14 @@ public class AbstractContainerComponent extends AbstractComponent {
 	public ContainerTag build() {
 		final ContainerTag raw = super.build();
 
-		for (final Component c : children) {
-			raw.with(c.build());
-		}
+		buildChildren(raw);
 
 		return raw;
+	}
+
+	protected void buildChildren(ContainerTag container) {
+		for (final Component c : children) {
+			container.with(c.build());
+		}
 	}
 }

@@ -1,12 +1,11 @@
 package at.spot.jfly.style;
 
-public enum LabelStyle {
-	Default("label-default"),
-	Primary("label-primary"),
-	Success("label-success"),
-	Info("label-info"),
-	Warning("label-warning"),
-	Danger("label-danger"),;
+/**
+ * All possible predefined styles for labels.
+ */
+public enum LabelStyle implements Style {
+	Default("label-default"), Primary("label-primary"), Success("label-success"), Info("label-info"), Warning(
+			"label-warning"), Danger("label-danger"),;
 
 	private String styleClass;
 

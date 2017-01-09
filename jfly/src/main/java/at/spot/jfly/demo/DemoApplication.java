@@ -7,9 +7,11 @@ import at.spot.jfly.JFlyApplication;
 import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ButtonStyle;
 import at.spot.jfly.style.LabelStyle;
+import at.spot.jfly.style.NavbarStyle;
 import at.spot.jfly.ui.Badge;
 import at.spot.jfly.ui.Button;
 import at.spot.jfly.ui.Label;
+import at.spot.jfly.ui.LinkAction;
 import at.spot.jfly.ui.NavBar;
 import j2html.TagCreator;
 
@@ -24,31 +26,32 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final NavBar navBar = new NavBar();
-		final Body body = new Body().addChild(navBar);
-		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
-		final Button logoutButton = new Button("Logout").style(ButtonStyle.Success);
+		final NavBar navBar = new NavBar().addStyle(NavbarStyle.Inverse);
 
-		navBar.addChild(button);
-		navBar.addChild(logoutButton);
-		navBar.addChild(new Label("test").style(LabelStyle.Danger));
-		navBar.addChild(new Badge("42"));
-
-		logoutButton.onEvent(JsEvent.click, e -> {
+		navBar.header(new LinkAction("spOt"));
+		navBar.addChild(new LinkAction("Settings").location("#settings"));
+		navBar.addChild(new LinkAction("Logout").onEvent(JsEvent.click, (e) -> {
 			ComponentController.instance().invokeFunctionCall("jfly", "reloadApp");
 			ComponentController.instance().closeCurrentSession();
-		});
+		}));
+
+		final Body body = new Body().addChild(navBar);
+		final Button button = new Button("Say hello!").addStyle(ButtonStyle.Success);
+
+		body.addChild(button);
+		body.addChild(new Label("test").addStyle(LabelStyle.Danger));
+		body.addChild(new Badge("42"));
 
 		button.onEvent(JsEvent.click, e -> {
 			body.addChild(TagCreator.h1("hello world"));
 		});
 
 		button.onEvent(JsEvent.mouseover, e -> {
-			button.caption("over");
+			button.text("over");
 		});
 
 		button.onEvent(JsEvent.mouseout, e -> {
-			button.caption("and out");
+			button.text("and out");
 		});
 
 		return body;

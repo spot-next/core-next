@@ -1,41 +1,15 @@
 package at.spot.jfly.ui;
 
-import at.spot.jfly.AbstractComponent;
-import j2html.tags.ContainerTag;
+import at.spot.jfly.style.ComponentStyle;
 
 /**
- * Implements a bootstrap button:<br>
+ * Implements a bootstrap badge:<br>
  * <br>
  * <button type="button" class="btn btn-default">Default</button>
  */
-public class Badge extends AbstractComponent {
-
-	private String text;
-
+public class Badge extends AbstractTextComponent {
 	public Badge(final String text) {
-		super("span");
-		setBaseStyleClass("badge");
-		text(text);
+		super(text);
+		addStyle(ComponentStyle.Badge);
 	}
-
-	public Badge text(final String text) {
-		this.text = text;
-
-		updateClientComponent("text", text);
-
-		return this;
-	}
-
-	public String text() {
-		return this.text;
-	}
-
-	@Override
-	public ContainerTag build() {
-		final ContainerTag raw = super.build();
-		raw.withText(text).withClass(getStyleClasses());
-
-		return raw;
-	}
-
 }

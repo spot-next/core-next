@@ -1,6 +1,9 @@
 package at.spot.jfly.style;
 
-public enum ButtonStyle {
+/**
+ * All possible predefined styles for buttons.
+ */
+public enum ButtonStyle implements Style {
 	Default("btn-default"), Primary("btn-primary"), Success("btn-success"), Info("btn-info"), Warning(
 			"btn-warning"), Danger("btn-danger"), Link("btn-link"),;
 
