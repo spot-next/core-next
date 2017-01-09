@@ -46,6 +46,10 @@ jfly.sendMessage = function(message) {
 	jfly.connection.send(jfly.toString(message));
 };
 
+jfly.reloadApp = function() {
+	location.reload();
+};
+
 jfly.findComponent = function(componentUuid) {
 	var component = $("[uuid='" + componentUuid + "']");
 	

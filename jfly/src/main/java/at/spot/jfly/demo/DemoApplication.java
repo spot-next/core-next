@@ -1,6 +1,7 @@
 package at.spot.jfly.demo;
 
 import at.spot.jfly.Body;
+import at.spot.jfly.ComponentController;
 import at.spot.jfly.Head;
 import at.spot.jfly.JFlyApplication;
 import at.spot.jfly.event.JsEvent;
@@ -26,16 +27,28 @@ public class DemoApplication extends JFlyApplication {
 		final NavBar navBar = new NavBar();
 		final Body body = new Body().addChild(navBar);
 		final Button button = new Button("Say hello!").style(ButtonStyle.Success);
+		final Button logoutButton = new Button("Logout").style(ButtonStyle.Success);
+
 		navBar.addChild(button);
+		navBar.addChild(logoutButton);
 		navBar.addChild(new Label("test").style(LabelStyle.Danger));
 		navBar.addChild(new Badge("42"));
 
+		logoutButton.onEvent(JsEvent.click, e -> {
+			ComponentController.instance().invokeFunctionCall("jfly", "reloadApp");
+			ComponentController.instance().closeCurrentSession();
+		});
+
 		button.onEvent(JsEvent.click, e -> {
-			System.out.println("Click from: " + e.getSource().uuid());
+			body.addChild(TagCreator.h1("hello world"));
+		});
 
-			button.caption("hello world");
+		button.onEvent(JsEvent.mouseover, e -> {
+			button.caption("over");
+		});
 
-			body.addChild(TagCreator.h1("test"));
+		button.onEvent(JsEvent.mouseout, e -> {
+			button.caption("and out");
 		});
 
 		return body;

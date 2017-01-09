@@ -38,12 +38,12 @@ public class ComponentController {
 
 	@OnWebSocketConnect
 	public void connected(final Session session) {
-		sessions.add(session);
+		addSession(session);
 	}
 
 	@OnWebSocketClose
 	public void closed(final Session session, final int statusCode, final String reason) {
-		sessions.remove(session);
+		closeSession(session);
 	}
 
 	@OnWebSocketMessage
@@ -51,7 +51,6 @@ public class ComponentController {
 		setCurrentSession(session);
 
 		System.out.println("Got: " + message); // Print message
-		// session.getRemote().sendString(message); // and send it back
 
 		final Gson gson = new Gson();
 
@@ -66,6 +65,27 @@ public class ComponentController {
 
 			handleEvent(component, event, payload);
 		}
+	}
+
+	protected void addSession(final Session session) {
+		sessions.add(session);
+	}
+
+	protected void closeSession(final Session session) {
+		if (session != null) {
+			try {
+				session.disconnect();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+
+			session.close();
+			sessions.remove(session);
+		}
+	}
+
+	public void closeCurrentSession() {
+		closeSession(getCurrentSession());
 	}
 
 	protected void setCurrentSession(final Session session) {
