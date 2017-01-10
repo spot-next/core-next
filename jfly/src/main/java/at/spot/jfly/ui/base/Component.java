@@ -1,13 +1,18 @@
-package at.spot.jfly;
+package at.spot.jfly.ui.base;
+
+import com.google.gson.Gson;
 
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
 import at.spot.jfly.event.JsEvent;
-import at.spot.jfly.ui.AbstractComponent;
 import j2html.tags.ContainerTag;
 
 public interface Component {
 
+	/**
+	 * This unique identifier is used to identify the component on the client
+	 * and bind it to the server-side component instance.
+	 */
 	String uuid();
 
 	/**
@@ -38,4 +43,11 @@ public interface Component {
 	 * @return
 	 */
 	<C extends AbstractComponent> C redraw();
+
+	/**
+	 * Serializes the component's state into a json string.
+	 */
+	default String toJson() {
+		return new Gson().toJson(this);
+	}
 }

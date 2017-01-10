@@ -1,4 +1,4 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.base;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,11 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import at.spot.jfly.Component;
 import j2html.tags.ContainerTag;
 
 public class AbstractContainerComponent extends AbstractComponent {
-	List<Component> children = new ArrayList<>();
+	protected List<Component> children = new ArrayList<>();
 
 	protected AbstractContainerComponent(final String tagName) {
 		super(tagName);

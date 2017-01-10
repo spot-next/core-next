@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.JsEvent;
+import at.spot.jfly.ui.base.Component;
 
 @WebSocket
 public class ComponentController {
@@ -39,6 +40,8 @@ public class ComponentController {
 	@OnWebSocketConnect
 	public void connected(final Session session) {
 		addSession(session);
+		setCurrentSession(session);
+		sendInitialComponentStates(session);
 	}
 
 	@OnWebSocketClose
@@ -109,6 +112,15 @@ public class ComponentController {
 		component.handleEvent(new Event(e, component, payload));
 	}
 
+	protected void sendInitialComponentStates(Session session) {
+		final Map<String, Object> message = new HashMap<>();
+
+		message.put("type", "componentInitialization");
+		message.put("componentStates", registeredComponents);
+
+		sendMessage(message);
+	}
+
 	/**
 	 * Calls a javascript function an passes the given parameters.
 	 * 
@@ -123,7 +135,7 @@ public class ComponentController {
 		message.put("func", functionCall);
 		message.put("params", parameters);
 
-		invoke(message);
+		sendMessage(message);
 	}
 
 	/**
@@ -144,10 +156,10 @@ public class ComponentController {
 		message.put("method", method);
 		message.put("params", parameters);
 
-		invoke(message);
+		sendMessage(message);
 	}
 
-	public void invoke(final Map<String, Object> message) {
+	public void sendMessage(final Map<String, Object> message) {
 		try {
 			if (getCurrentSession() != null) {
 				getCurrentSession().getRemote().sendString(new Gson().toJson(message));
@@ -156,6 +168,18 @@ public class ComponentController {
 			// throw new RemoteException("Cannot reach remote client", e);
 			System.out.println("error");
 		}
+	}
+
+	public void updateComponentData(Component component) {
+		// String data = component.toJson();
+
+		final Map<String, Object> message = new HashMap<>();
+
+		message.put("type", "componentUpdate");
+		message.put("componentUuid", component.uuid());
+		message.put("componentState", component);
+
+		sendMessage(message);
 	}
 
 }

@@ -1,4 +1,4 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.base;
 
 import j2html.tags.ContainerTag;
 

@@ -1,5 +1,6 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.navigation;
 
+import at.spot.jfly.ui.base.AbstractContainerComponent;
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 

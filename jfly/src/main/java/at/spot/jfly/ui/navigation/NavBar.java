@@ -1,9 +1,11 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.navigation;
 
-import at.spot.jfly.Component;
 import at.spot.jfly.layout.Alignment;
 import at.spot.jfly.style.ComponentType;
 import at.spot.jfly.style.NavbarStyle;
+import at.spot.jfly.ui.base.AbstractContainerComponent;
+import at.spot.jfly.ui.base.AbstractTextComponent;
+import at.spot.jfly.ui.base.Component;
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 

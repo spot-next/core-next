@@ -1,4 +1,4 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.base;
 
 import at.spot.jfly.style.GlyphIcon;
 

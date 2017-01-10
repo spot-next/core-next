@@ -1,6 +1,7 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.display;
 
 import at.spot.jfly.style.LabelStyle;
+import at.spot.jfly.ui.base.AbstractTextComponent;
 
 /**
  * Implements a bootstrap label:<br>

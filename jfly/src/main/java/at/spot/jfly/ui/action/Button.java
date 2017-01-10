@@ -1,7 +1,8 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.action;
 
 import at.spot.jfly.style.ButtonStyle;
 import at.spot.jfly.style.ComponentType;
+import at.spot.jfly.ui.base.AbstractActionComponent;
 
 /**
  * Implements a bootstrap button:<br>

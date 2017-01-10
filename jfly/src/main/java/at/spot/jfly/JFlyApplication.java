@@ -2,6 +2,9 @@ package at.spot.jfly;
 
 import static j2html.TagCreator.html;
 
+import at.spot.jfly.ui.html.Body;
+import at.spot.jfly.ui.html.Head;
+
 public abstract class JFlyApplication {
 
 	final private Head head;

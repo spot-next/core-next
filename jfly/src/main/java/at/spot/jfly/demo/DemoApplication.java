@@ -1,18 +1,18 @@
 package at.spot.jfly.demo;
 
-import at.spot.jfly.Body;
 import at.spot.jfly.ComponentController;
-import at.spot.jfly.Head;
 import at.spot.jfly.JFlyApplication;
 import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ButtonStyle;
 import at.spot.jfly.style.LabelStyle;
 import at.spot.jfly.style.NavbarStyle;
-import at.spot.jfly.ui.Badge;
-import at.spot.jfly.ui.Button;
-import at.spot.jfly.ui.Label;
-import at.spot.jfly.ui.LinkAction;
-import at.spot.jfly.ui.NavBar;
+import at.spot.jfly.ui.action.Button;
+import at.spot.jfly.ui.action.LinkAction;
+import at.spot.jfly.ui.display.Badge;
+import at.spot.jfly.ui.display.Label;
+import at.spot.jfly.ui.html.Body;
+import at.spot.jfly.ui.html.Head;
+import at.spot.jfly.ui.navigation.NavBar;
 import j2html.TagCreator;
 
 public class DemoApplication extends JFlyApplication {
@@ -43,11 +43,8 @@ public class DemoApplication extends JFlyApplication {
 		body.addChildren(new Badge("42"));
 
 		button.onEvent(JsEvent.click, e -> {
-			body.addChildren(TagCreator.h1("hello world"));
-		});
-
-		button.onEvent(JsEvent.mouseover, e -> {
 			button.text("over");
+			body.addChildren(TagCreator.h1("hello world"));
 		});
 
 		button.onEvent(JsEvent.mouseout, e -> {

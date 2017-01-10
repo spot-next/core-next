@@ -1,6 +1,6 @@
 jfly = {};
 
-jfly.connection = new WebSocket('ws://' + window.location.hostname + ":" + window.location.port + '/com'); 
+jfly.connection = {};
 
 // When the connection is open, send some data to the server
 jfly.connection.onopen = function () {
@@ -19,12 +19,16 @@ jfly.connection.onmessage = function (e) {
 	
 	var message = JSON.parse(e.data);
 	
-	if (message.type == "objectManipulation") {
+	if (message.type == "componentInitialization") {
+		fly.uicontroller.data.components = message.componentStates;
+	} else if (message.type == "objectManipulation") {
 		var component = jfly.findComponent(message.componentUuid);
 		component[message.method].apply(component, message.params);
 	} else if (message.type == "functionCall") {
 		var func = window[message.object][message.func];
 		func.apply(func, message.params)
+	} else if (message.type == "componentUpdate") {
+		jfly.uicontroller.data.component[message.componentUuid] = message.componentState;
 	}
 };
 
@@ -86,33 +90,47 @@ jfly.unregisterEvent = function(componentUuid, event) {
 	jfly.findComponent(componentUuid).unbind(event);
 };
 
-/*
- * Find all generated ui components and listen for all possible events
- */
 jfly.init = function() {
-	$("[uuid]").forEach(function(elem) {
-		var elem = $(elem);
-		
-		var events = elem.attr("registeredEvents");
-		
-		if (events !== "") {
-			elem.on(events, function(event){
-				jfly.handleEvent(this, event);
-			});
-		}
-	});
+	jfly.connection = new WebSocket('ws://' + window.location.hostname + ":" + window.location.port + '/com');
 };
 
 /*
  * Init jfly when page is ready
  */
 Zepto(function($) {
-	jfly.init();
-	
-	Vue.component('navbar', VueStrap.navbar);
-
-	new Vue({
-		el: '#content'
+	jfly.uicontroller = new Vue({
+		el: '#content',
+		components: {
+			"navbar": VueStrap.navbar,
+		},
+		methods: {
+			handleEvent: function(event) {
+				var message = {
+					"uuid": $(event.currentTarget).attr("uuid"),
+					"event": event.type,
+					"payload": event,
+				};
+				
+				jfly.sendMessage(message);
+			},
+			getComponentStateProperty(componentUuid, propertyName) {
+				jfly.uicontroller.data[property]
+			}
+		},
+		computed: {
+			
+		},
+		data: {
+			componentStates: {
+			}
+		},
+		template: {
+			
+		}
 	});
+	
+	jfly.uicontroller.data = {};
+	
+	jfly.init();
 });
 

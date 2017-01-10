@@ -1,4 +1,6 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.action;
+
+import at.spot.jfly.ui.base.AbstractActionComponent;
 
 /**
  * Implements a generic link.

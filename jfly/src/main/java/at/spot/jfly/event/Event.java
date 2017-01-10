@@ -2,7 +2,7 @@ package at.spot.jfly.event;
 
 import java.util.Map;
 
-import at.spot.jfly.Component;
+import at.spot.jfly.ui.base.Component;
 
 public class Event {
 	private final JsEvent eventType;

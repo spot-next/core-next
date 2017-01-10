@@ -1,4 +1,4 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.base;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import at.spot.jfly.Component;
 import at.spot.jfly.ComponentController;
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
@@ -24,8 +23,8 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 	private final String uuid;
 
-	private String tagName;
-	private ComponentType componentType;
+	private transient String tagName;
+	private transient ComponentType componentType;
 	private boolean visible = true;
 
 	private final Set<String> styleClasses = new HashSet<>();
@@ -33,7 +32,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	/*
 	 * Event handlers
 	 */
-	protected Map<JsEvent, EventHandler> eventHandlers = new HashMap<>();
+	protected transient Map<JsEvent, EventHandler> eventHandlers = new HashMap<>();
 
 	/*
 	 * Initialization
@@ -165,7 +164,10 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 		raw.withClass(getCssStyleString());
 		raw.attr("uuid", uuid());
-		raw.attr("registeredEvents", StringUtils.join(registeredEvents(), " "));
+
+		for (JsEvent event : registeredEvents()) {
+			raw.attr("v-on:" + event.toString(), "handleEvent");
+		}
 
 		if (componentType != null) {
 			raw.attr("type", componentType.toString());
@@ -178,6 +180,12 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	public <C extends AbstractComponent> C redraw() {
 		updateClientComponent("replace", build().render());
 		return (C) this;
+	}
+
+	protected void updateClientComponent() {
+		if (controller().isCalledInRequest()) {
+			controller().updateComponentData(this);
+		}
 	}
 
 	protected void updateClientComponent(final String method, final Object... params) {

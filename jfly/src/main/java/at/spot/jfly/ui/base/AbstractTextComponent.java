@@ -1,8 +1,8 @@
-package at.spot.jfly.ui;
+package at.spot.jfly.ui.base;
 
 import j2html.tags.ContainerTag;
 
-public class AbstractTextComponent extends AbstractComponent {
+public abstract class AbstractTextComponent extends AbstractComponent {
 	private String text;
 
 	public AbstractTextComponent(final String tagName, final String text) {
@@ -17,7 +17,7 @@ public class AbstractTextComponent extends AbstractComponent {
 	public <C extends AbstractTextComponent> C text(final String text) {
 		this.text = text;
 
-		// updateClientComponent("text", text);
+		updateClientComponent();
 
 		return (C) this;
 	}
