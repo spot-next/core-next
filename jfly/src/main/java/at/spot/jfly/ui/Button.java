@@ -1,6 +1,7 @@
 package at.spot.jfly.ui;
 
-import at.spot.jfly.style.ComponentStyle;
+import at.spot.jfly.style.ButtonStyle;
+import at.spot.jfly.style.ComponentType;
 
 /**
  * Implements a bootstrap button:<br>
@@ -10,6 +11,7 @@ import at.spot.jfly.style.ComponentStyle;
 public class Button extends AbstractActionComponent {
 	public Button(final String text) {
 		super("button", text);
-		addStyle(ComponentStyle.Button);
+		componentType(ComponentType.Button);
+		addStyleClasses(ButtonStyle.Success.toString());
 	}
 }

@@ -10,7 +10,7 @@ public class LinkAction extends AbstractActionComponent {
 		super("a", text);
 	}
 
-	public LinkAction location(String location) {
+	public LinkAction location(final String location) {
 		this.location = location;
 		return this;
 	}

@@ -1,10 +1,14 @@
 package at.spot.jfly.style;
 
 /**
- * All general predefined styles.
+ * NavBar related styles.
  */
 public enum NavbarStyle implements Style {
-	Default("navbar-default"), Inverse("navbar-inverse");
+	Default("default"),
+	Inverse("navbar inverse"),
+	NavBarHeader("navbar-header"),
+	NavBarContent("nav navbar-nav"),
+	NavBarBrand("navbar-brand");
 
 	private String styleClass;
 

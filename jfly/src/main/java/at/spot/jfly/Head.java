@@ -3,6 +3,7 @@ package at.spot.jfly;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.spot.jfly.ui.AbstractComponent;
 import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 
@@ -22,13 +23,20 @@ public class Head extends AbstractComponent {
 
 	private Head addDefaultStyles() {
 		stylesheet(new Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"));
+		stylesheet(new Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"));
 
 		return this;
 	}
 
 	protected Head addDefaultScripts() {
+		// vue.js draws the client components
+		script(new Script("/script/vue.js"));
+		// vue-strap provides bootstrap css compatible widgets
+		script(new Script("/script/vue-strap.min.js"));
+
+		// jquery alternative
 		script(new Script("http://zeptojs.com/zepto.min.js"));
-		script(new Script("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"));
+		// custom code
 		script(new Script("/script/jfly.js"));
 
 		return this;

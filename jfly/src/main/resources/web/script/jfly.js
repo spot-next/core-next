@@ -108,4 +108,11 @@ jfly.init = function() {
  */
 Zepto(function($) {
 	jfly.init();
+	
+	Vue.component('navbar', VueStrap.navbar);
+
+	new Vue({
+		el: '#content'
+	});
 });
+

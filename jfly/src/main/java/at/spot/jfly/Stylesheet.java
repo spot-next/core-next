@@ -1,5 +1,6 @@
 package at.spot.jfly;
 
+import at.spot.jfly.ui.AbstractComponent;
 import j2html.tags.ContainerTag;
 
 public class Stylesheet extends AbstractComponent {

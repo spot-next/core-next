@@ -1,6 +1,6 @@
 package at.spot.jfly.ui;
 
-import at.spot.jfly.style.ComponentStyle;
+import at.spot.jfly.style.LabelStyle;
 
 /**
  * Implements a bootstrap label:<br>
@@ -10,6 +10,6 @@ import at.spot.jfly.style.ComponentStyle;
 public class Label extends AbstractTextComponent {
 	public Label(final String text) {
 		super(text);
-		addStyle(ComponentStyle.Label);
+		addStyleClasses(LabelStyle.Primary.toString());
 	}
 }

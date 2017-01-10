@@ -3,6 +3,7 @@ package at.spot.jfly;
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
 import at.spot.jfly.event.JsEvent;
+import at.spot.jfly.ui.AbstractComponent;
 import j2html.tags.ContainerTag;
 
 public interface Component {

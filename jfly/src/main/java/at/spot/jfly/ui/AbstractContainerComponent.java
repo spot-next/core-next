@@ -1,42 +1,44 @@
 package at.spot.jfly.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import at.spot.jfly.AbstractComponent;
 import at.spot.jfly.Component;
 import j2html.tags.ContainerTag;
 
 public class AbstractContainerComponent extends AbstractComponent {
-	List<AbstractComponent> children = new ArrayList<>();
+	List<Component> children = new ArrayList<>();
 
 	protected AbstractContainerComponent(final String tagName) {
 		super(tagName);
 	}
 
-	public List<AbstractComponent> children() {
-		return children;
+	public List<Component> children() {
+		return Collections.unmodifiableList(children);
 	}
 
-	public <C extends AbstractComponent> C children(final List<C> children) {
-		this.children = (List<AbstractComponent>) children;
+	public <C extends AbstractContainerComponent> C addChildren(final ContainerTag... tags) {
+		final Component[] comps = Arrays.stream(tags).map((t) -> new GenericComponent(t)).collect(Collectors.toList())
+				.toArray(new Component[0]);
+
+		addChildren(comps);
 		return (C) this;
 	}
 
-	public <C extends AbstractContainerComponent> C addChild(final ContainerTag tag) {
-		addChild(new GenericComponent(tag));
+	public <C extends AbstractContainerComponent> C addChildren(final Component... components) {
+		children.addAll(Arrays.asList(components));
+		// updateClient("jfly", "addChildComponent", this.uuid(),
+		// component.build().render());
 		return (C) this;
 	}
 
-	public <C extends AbstractContainerComponent> C addChild(final AbstractComponent component) {
-		children.add(component);
-		updateClient("jfly", "addChildComponent", this.uuid(), component.build().render());
-		return (C) this;
-	}
-
-	public <C extends AbstractContainerComponent> C removeChild(final AbstractComponent component) {
-		children.remove(component);
-		updateClient("jfly", "removeChildComponent", this.uuid(), component.uuid());
+	public <C extends AbstractContainerComponent> C removeChildren(final Component... components) {
+		children.removeAll(Arrays.asList(components));
+		// updateClient("jfly", "removeChildComponent", this.uuid(),
+		// component.uuid());
 		return (C) this;
 	}
 
@@ -49,7 +51,7 @@ public class AbstractContainerComponent extends AbstractComponent {
 		return raw;
 	}
 
-	protected void buildChildren(ContainerTag container) {
+	protected void buildChildren(final ContainerTag container) {
 		for (final Component c : children) {
 			container.with(c.build());
 		}

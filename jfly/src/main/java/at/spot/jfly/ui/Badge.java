@@ -1,6 +1,6 @@
 package at.spot.jfly.ui;
 
-import at.spot.jfly.style.ComponentStyle;
+import at.spot.jfly.style.BadgeStyle;
 
 /**
  * Implements a bootstrap badge:<br>
@@ -10,6 +10,6 @@ import at.spot.jfly.style.ComponentStyle;
 public class Badge extends AbstractTextComponent {
 	public Badge(final String text) {
 		super(text);
-		addStyle(ComponentStyle.Badge);
+		addStyleClasses(BadgeStyle.None.toString());
 	}
 }

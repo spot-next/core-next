@@ -26,24 +26,24 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final NavBar navBar = new NavBar().addStyle(NavbarStyle.Inverse);
+		final NavBar navBar = new NavBar().addStyleClasses(NavbarStyle.Inverse.toString());
 
 		navBar.header(new LinkAction("spOt"));
-		navBar.addChild(new LinkAction("Settings").location("#settings"));
-		navBar.addChild(new LinkAction("Logout").onEvent(JsEvent.click, (e) -> {
+		navBar.addChildren(new LinkAction("Settings").location("#settings"));
+		navBar.addChildren(new LinkAction("Logout").onEvent(JsEvent.click, (e) -> {
 			ComponentController.instance().invokeFunctionCall("jfly", "reloadApp");
 			ComponentController.instance().closeCurrentSession();
 		}));
 
-		final Body body = new Body().addChild(navBar);
-		final Button button = new Button("Say hello!").addStyle(ButtonStyle.Success);
+		final Body body = new Body().addChildren(navBar);
+		final Button button = new Button("Say hello!").addStyleClasses(ButtonStyle.Success.toString());
 
-		body.addChild(button);
-		body.addChild(new Label("test").addStyle(LabelStyle.Danger));
-		body.addChild(new Badge("42"));
+		body.addChildren(button);
+		body.addChildren(new Label("test").addStyleClasses(LabelStyle.Danger.toString()));
+		body.addChildren(new Badge("42"));
 
 		button.onEvent(JsEvent.click, e -> {
-			body.addChild(TagCreator.h1("hello world"));
+			body.addChildren(TagCreator.h1("hello world"));
 		});
 
 		button.onEvent(JsEvent.mouseover, e -> {
