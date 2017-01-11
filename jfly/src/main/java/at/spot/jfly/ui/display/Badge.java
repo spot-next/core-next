@@ -11,6 +11,6 @@ import at.spot.jfly.ui.base.AbstractTextComponent;
 public class Badge extends AbstractTextComponent {
 	public Badge(final String text) {
 		super(text);
-		addStyleClasses(BadgeStyle.None.toString());
+		addStyleClasses(BadgeStyle.None);
 	}
 }

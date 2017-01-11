@@ -4,7 +4,7 @@ package at.spot.jfly.style;
  * All general predefined styles.
  */
 public enum ComponentType implements Style {
-	Button("button"), Label("label"), Badge("badge"), NavBarDefault("default"), NavBarInverse("inverse");
+	Button("button"), Label("label"), Badge("badge"), NavBarDefault("navbar-default"), NavBarInverse("navbar-inverse");
 
 	private String styleClass;
 
@@ -13,7 +13,7 @@ public enum ComponentType implements Style {
 	}
 
 	@Override
-	public String toString() {
+	public String internalName() {
 		return this.styleClass;
 	}
 }

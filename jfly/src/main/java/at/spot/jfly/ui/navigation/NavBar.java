@@ -15,9 +15,8 @@ public class NavBar extends AbstractContainerComponent {
 	private AbstractTextComponent header = null;
 
 	public NavBar() {
-		super("navbar");
-		componentType(ComponentType.NavBarInverse);
-		addStyleClasses(NavbarStyle.Default.toString());
+		super("nav");
+		componentType(ComponentType.NavBarDefault);
 	}
 
 	public AbstractTextComponent header() {
@@ -26,6 +25,8 @@ public class NavBar extends AbstractContainerComponent {
 
 	public NavBar header(final AbstractTextComponent header) {
 		this.header = header;
+		this.header.addStyleClasses(NavbarStyle.NavBarHeaderBrand);
+		redrawClientComponent();
 		return this;
 	}
 
@@ -35,29 +36,35 @@ public class NavBar extends AbstractContainerComponent {
 
 	public NavBar placement(final Alignment placement) {
 		this.placement = placement;
+		redrawClientComponent();
 		return this;
 	}
 
 	@Override
 	public ContainerTag build() {
-		final ContainerTag raw = super.build().attr("placement", placement().toString());
-
+		final ContainerTag raw = super.build().withClass(componentType().internalName());
 		return raw;
 	}
 
 	@Override
 	protected void buildChildren(final ContainerTag raw) {
+		final ContainerTag container = TagCreator.div().withClass("container-fluid");
+		raw.with(container);
+
+		final ContainerTag navHeader = TagCreator.div().withClass("navbar-header");
+		final ContainerTag childContainer = TagCreator.div().withClass("collapse navbar-collapse");
+		final ContainerTag childContainerList = TagCreator.ul().withClass("nav navbar-nav");
+
+		container.with(navHeader);
+		container.with(childContainer);
+		childContainer.with(childContainerList);
 
 		if (header != null) {
-			raw.with(header.build().withClass(NavbarStyle.NavBarBrand.toString()).attr("slot", "brand"));
+			navHeader.with(header.build().withClass("navbar-brand"));
 		}
 
 		for (final Component c : children) {
-			if (c instanceof AbstractTextComponent) {
-				raw.with(TagCreator.li().with(c.build()));
-			} else {
-				raw.with(c.build());
-			}
+			childContainerList.with(TagCreator.li().with(c.build()));
 		}
 	}
 }

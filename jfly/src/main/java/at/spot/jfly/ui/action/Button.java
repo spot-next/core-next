@@ -13,6 +13,6 @@ public class Button extends AbstractActionComponent {
 	public Button(final String text) {
 		super("button", text);
 		componentType(ComponentType.Button);
-		addStyleClasses(ButtonStyle.Success.toString());
+		addStyleClasses(ButtonStyle.Success);
 	}
 }

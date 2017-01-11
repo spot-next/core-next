@@ -1,6 +1,8 @@
 package at.spot.jfly.layout;
 
-public enum Direction {
+import at.spot.jfly.style.Style;
+
+public enum Direction implements Style {
 	Up("up"), Down("down"), Right("right"), Left("left");
 
 	private String internal;
@@ -10,7 +12,7 @@ public enum Direction {
 	}
 
 	@Override
-	public String toString() {
+	public String internalName() {
 		return this.internal;
 	}
 }

@@ -29,15 +29,17 @@ public class AbstractContainerComponent extends AbstractComponent {
 
 	public <C extends AbstractContainerComponent> C addChildren(final Component... components) {
 		children.addAll(Arrays.asList(components));
-		// updateClient("jfly", "addChildComponent", this.uuid(),
-		// component.build().render());
+		for (final Component c : components) {
+			updateClient("jfly", "addChildComponent", this.uuid(), c.build().render());
+		}
 		return (C) this;
 	}
 
 	public <C extends AbstractContainerComponent> C removeChildren(final Component... components) {
 		children.removeAll(Arrays.asList(components));
-		// updateClient("jfly", "removeChildComponent", this.uuid(),
-		// component.uuid());
+		for (final Component c : components) {
+			updateClient("jfly", "removeChildComponent", this.uuid(), c.uuid());
+		}
 		return (C) this;
 	}
 

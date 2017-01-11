@@ -15,6 +15,8 @@ public class Body extends AbstractContainerComponent {
 		final ContainerTag content = TagCreator.div().withId("content");
 		container.with(content);
 
+		// container.with(TagCreator.script().withText(GsonUtil.toJson(controller().getRegisteredComponents())));
+
 		super.buildChildren(content);
 	}
 }

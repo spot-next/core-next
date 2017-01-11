@@ -19,7 +19,7 @@ public enum LabelStyle implements Style {
 	}
 
 	@Override
-	public String toString() {
+	public String internalName() {
 		return this.styleClass;
 	}
 }

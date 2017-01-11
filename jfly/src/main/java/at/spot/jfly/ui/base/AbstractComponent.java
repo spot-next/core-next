@@ -17,6 +17,8 @@ import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
 import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ComponentType;
+import at.spot.jfly.style.Style;
+import io.gsonfire.annotations.ExposeMethodResult;
 import j2html.tags.ContainerTag;
 
 public abstract class AbstractComponent implements Component, Comparable<AbstractComponent> {
@@ -25,9 +27,8 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 	private transient String tagName;
 	private transient ComponentType componentType;
+	private final transient Set<String> styleClasses = new HashSet<>();
 	private boolean visible = true;
-
-	private final Set<String> styleClasses = new HashSet<>();
 
 	/*
 	 * Event handlers
@@ -39,7 +40,10 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	 */
 
 	protected AbstractComponent() {
-		uuid = UUID.randomUUID().toString();
+		// this strange uid is necessary, as we are also using this for vue
+		// property binding
+		// there are no dashes allowed, and each uuid must start with a letter.
+		uuid = "comp" + Math.abs(UUID.randomUUID().toString().hashCode());
 		ComponentController.instance().registerComponent(this);
 	}
 
@@ -71,6 +75,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 
 	public <C extends AbstractComponent> C componentType(final ComponentType componentType) {
 		this.componentType = componentType;
+		updateClientComponent();
 		return (C) this;
 	}
 
@@ -78,15 +83,9 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return this.componentType;
 	}
 
-	public <C extends AbstractComponent> C visibility(final boolean visible) {
+	public <C extends AbstractComponent> C visibe(final boolean visible) {
 		this.visible = visible;
-
-		// if (visible) {
-		// updateClient("jfly", "showComponent", this.uuid());
-		// } else {
-		// updateClient("jfly", "hideComponent", this.uuid());
-		// }
-
+		redrawClientComponent();
 		return (C) this;
 	}
 
@@ -95,7 +94,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 				.collect(Collectors.toList());
 
 		this.styleClasses.addAll(styles);
-
+		redrawClientComponent();
 		return (C) this;
 	}
 
@@ -104,7 +103,24 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 				.collect(Collectors.toList());
 
 		this.styleClasses.removeAll(styles);
-		// updateClientComponent("removeClass", styleClass);
+		redrawClientComponent();
+		return (C) this;
+	}
+
+	public <C extends AbstractComponent> C addStyleClasses(final Style... styles) {
+		final List<String> stylesClasses = Arrays.stream(styles).filter((s) -> s != null).map(s -> s.internalName())
+				.collect(Collectors.toList());
+		this.styleClasses.addAll(stylesClasses);
+		redrawClientComponent();
+		return (C) this;
+	}
+
+	public <C extends AbstractComponent> C removeStyleClasses(final Style... styles) {
+		final List<String> stylesClasses = Arrays.stream(styles).filter((s) -> s != null).map(s -> s.internalName())
+				.collect(Collectors.toList());
+
+		this.styleClasses.removeAll(stylesClasses);
+		redrawClientComponent();
 		return (C) this;
 
 	}
@@ -124,11 +140,11 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 	public <C extends AbstractComponent> C onEvent(final JsEvent eventType, final EventHandler handler) {
 		if (handler != null) {
 			this.eventHandlers.put(eventType, handler);
-			// updateClient("jfly", "registerEvent", this.uuid(), eventType);
 		} else {
 			this.eventHandlers.remove(eventType);
-			// updateClient("jfly", "unregisterEvent", this.uuid(), eventType);
 		}
+
+		updateClientComponent();
 
 		return (C) this;
 	}
@@ -140,6 +156,12 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		handler.handle(event);
 	}
 
+	@Override
+	public <C extends AbstractComponent> C redraw() {
+		redrawClientComponent();
+		return (C) this;
+	}
+
 	/*
 	 * INTERNAL
 	 */
@@ -148,6 +170,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return ComponentController.instance();
 	}
 
+	@ExposeMethodResult("styleClasses")
 	protected String getCssStyleString() {
 		String classes = StringUtils.join(styleClasses, " ");
 
@@ -158,6 +181,11 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return classes;
 	}
 
+	@ExposeMethodResult("componentType")
+	protected String getComponentType() {
+		return componentType != null ? componentType.internalName() : null;
+	}
+
 	@Override
 	public ContainerTag build() {
 		final ContainerTag raw = new ContainerTag(tagName);
@@ -165,9 +193,7 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		raw.withClass(getCssStyleString());
 		raw.attr("uuid", uuid());
 
-		for (JsEvent event : registeredEvents()) {
-			raw.attr("v-on:" + event.toString(), "handleEvent");
-		}
+		raw.attr("registeredEvents", StringUtils.join(registeredEvents(), " "));
 
 		if (componentType != null) {
 			raw.attr("type", componentType.toString());
@@ -176,10 +202,10 @@ public abstract class AbstractComponent implements Component, Comparable<Abstrac
 		return raw;
 	}
 
-	@Override
-	public <C extends AbstractComponent> C redraw() {
-		updateClientComponent("replace", build().render());
-		return (C) this;
+	protected void redrawClientComponent() {
+		if (controller().isCalledInRequest()) {
+			controller().redrawComponentData(this);
+		}
 	}
 
 	protected void updateClientComponent() {

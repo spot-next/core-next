@@ -14,6 +14,7 @@ public class LinkAction extends AbstractActionComponent {
 
 	public LinkAction location(final String location) {
 		this.location = location;
+		updateClientComponent("href", location);
 		return this;
 	}
 

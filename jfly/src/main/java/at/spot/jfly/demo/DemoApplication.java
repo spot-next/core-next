@@ -4,8 +4,8 @@ import at.spot.jfly.ComponentController;
 import at.spot.jfly.JFlyApplication;
 import at.spot.jfly.event.JsEvent;
 import at.spot.jfly.style.ButtonStyle;
+import at.spot.jfly.style.ComponentType;
 import at.spot.jfly.style.LabelStyle;
-import at.spot.jfly.style.NavbarStyle;
 import at.spot.jfly.ui.action.Button;
 import at.spot.jfly.ui.action.LinkAction;
 import at.spot.jfly.ui.display.Badge;
@@ -26,7 +26,7 @@ public class DemoApplication extends JFlyApplication {
 
 	@Override
 	protected Body createBody() {
-		final NavBar navBar = new NavBar().addStyleClasses(NavbarStyle.Inverse.toString());
+		final NavBar navBar = new NavBar().componentType(ComponentType.NavBarInverse);
 
 		navBar.header(new LinkAction("spOt"));
 		navBar.addChildren(new LinkAction("Settings").location("#settings"));
@@ -36,14 +36,14 @@ public class DemoApplication extends JFlyApplication {
 		}));
 
 		final Body body = new Body().addChildren(navBar);
-		final Button button = new Button("Say hello!").addStyleClasses(ButtonStyle.Success.toString());
+		final Button button = new Button("Say hello!").addStyleClasses(ButtonStyle.Success);
 
 		body.addChildren(button);
-		body.addChildren(new Label("test").addStyleClasses(LabelStyle.Danger.toString()));
+		body.addChildren(new Label("test").addStyleClasses(LabelStyle.Danger));
 		body.addChildren(new Badge("42"));
 
 		button.onEvent(JsEvent.click, e -> {
-			button.text("over");
+			button.text("clicked");
 			body.addChildren(TagCreator.h1("hello world"));
 		});
 

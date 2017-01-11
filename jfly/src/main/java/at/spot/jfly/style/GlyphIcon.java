@@ -1,6 +1,6 @@
 package at.spot.jfly.style;
 
-public enum GlyphIcon {
+public enum GlyphIcon implements Style {
 	Ok("glyphicon-ok");
 
 	private String internal;
@@ -10,7 +10,7 @@ public enum GlyphIcon {
 	}
 
 	@Override
-	public String toString() {
+	public String internalName() {
 		return this.internal;
 	}
 }

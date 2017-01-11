@@ -16,9 +16,7 @@ public abstract class AbstractTextComponent extends AbstractComponent {
 
 	public <C extends AbstractTextComponent> C text(final String text) {
 		this.text = text;
-
-		updateClientComponent();
-
+		updateClientComponent("text", text);
 		return (C) this;
 	}
 
@@ -29,7 +27,7 @@ public abstract class AbstractTextComponent extends AbstractComponent {
 	@Override
 	public ContainerTag build() {
 		final ContainerTag raw = super.build();
-		raw.withText(text);
+		raw.withText(text());
 
 		return raw;
 	}

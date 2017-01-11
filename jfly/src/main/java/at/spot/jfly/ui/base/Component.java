@@ -1,10 +1,9 @@
 package at.spot.jfly.ui.base;
 
-import com.google.gson.Gson;
-
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.EventHandler;
 import at.spot.jfly.event.JsEvent;
+import at.spot.jfly.util.GsonUtil;
 import j2html.tags.ContainerTag;
 
 public interface Component {
@@ -48,6 +47,6 @@ public interface Component {
 	 * Serializes the component's state into a json string.
 	 */
 	default String toJson() {
-		return new Gson().toJson(this);
+		return GsonUtil.toJson(this);
 	}
 }

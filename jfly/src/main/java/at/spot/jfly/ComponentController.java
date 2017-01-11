@@ -14,23 +14,20 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import at.spot.jfly.event.Event;
 import at.spot.jfly.event.JsEvent;
+import at.spot.jfly.ui.base.AbstractComponent;
 import at.spot.jfly.ui.base.Component;
+import at.spot.jfly.util.GsonUtil;
 
 @WebSocket
 public class ComponentController {
 	private static final ComponentController instance = new ComponentController();
 
 	private final Map<String, Component> registeredComponents = new ConcurrentHashMap<>();
-
 	private final ThreadLocal<Session> context = new ThreadLocal<>();
-
-	// Store sessions if you want to, for example, broadcast a message to all
-	// users
 	private final Queue<Session> sessions = new ConcurrentLinkedQueue<>();
 
 	public static ComponentController instance() {
@@ -41,7 +38,6 @@ public class ComponentController {
 	public void connected(final Session session) {
 		addSession(session);
 		setCurrentSession(session);
-		sendInitialComponentStates(session);
 	}
 
 	@OnWebSocketClose
@@ -51,22 +47,29 @@ public class ComponentController {
 
 	@OnWebSocketMessage
 	public void message(final Session session, final String message) throws IOException {
-		setCurrentSession(session);
-
 		System.out.println("Got: " + message); // Print message
 
-		final Gson gson = new Gson();
+		setCurrentSession(session);
 
-		final JsonObject msg = gson.fromJson(message, JsonObject.class);
+		if (StringUtils.isNotBlank(message)) {
+			final JsonObject msg = GsonUtil.fromJson(message, JsonObject.class);
 
-		final String componentUuid = msg.get("uuid").getAsString();
+			// if this is an initial request, we return the current component
+			// states
+			if (msg.get("messageType") != null
+					&& StringUtils.equalsIgnoreCase(msg.get("messageType").getAsString(), "hello")) {
+				sendInitialComponentStates(session);
+			} else { // this is a regular message, most likely an event
+				final String componentUuid = msg.get("uuid").getAsString();
 
-		if (StringUtils.isNotBlank(componentUuid)) {
-			final Component component = registeredComponents.get(componentUuid);
-			final String event = msg.get("event").getAsString();
-			final Map<String, Object> payload = gson.fromJson(msg.get("payload"), Map.class);
+				if (StringUtils.isNotBlank(componentUuid)) {
+					final Component component = registeredComponents.get(componentUuid);
+					final String event = msg.get("event").getAsString();
+					final Map<String, Object> payload = GsonUtil.fromJson(msg.get("payload"), Map.class);
 
-			handleEvent(component, event, payload);
+					handleEvent(component, event, payload);
+				}
+			}
 		}
 	}
 
@@ -103,6 +106,10 @@ public class ComponentController {
 		return context.get();
 	}
 
+	public Map<String, Component> getRegisteredComponents() {
+		return registeredComponents;
+	}
+
 	public void registerComponent(final Component component) {
 		registeredComponents.put(component.uuid(), component);
 	}
@@ -112,13 +119,13 @@ public class ComponentController {
 		component.handleEvent(new Event(e, component, payload));
 	}
 
-	protected void sendInitialComponentStates(Session session) {
+	protected void sendInitialComponentStates(final Session session) throws IOException {
 		final Map<String, Object> message = new HashMap<>();
 
 		message.put("type", "componentInitialization");
 		message.put("componentStates", registeredComponents);
 
-		sendMessage(message);
+		sendMessage(message, session);
 	}
 
 	/**
@@ -159,10 +166,14 @@ public class ComponentController {
 		sendMessage(message);
 	}
 
+	public void sendMessage(final Map<String, Object> message, final Session session) throws IOException {
+		session.getRemote().sendString(GsonUtil.toJson(message));
+	}
+
 	public void sendMessage(final Map<String, Object> message) {
 		try {
 			if (getCurrentSession() != null) {
-				getCurrentSession().getRemote().sendString(new Gson().toJson(message));
+				sendMessage(message, getCurrentSession());
 			}
 		} catch (final IOException e) {
 			// throw new RemoteException("Cannot reach remote client", e);
@@ -170,8 +181,8 @@ public class ComponentController {
 		}
 	}
 
-	public void updateComponentData(Component component) {
-		// String data = component.toJson();
+	public void updateComponentData(final Component component) {
+		final String data = component.toJson();
 
 		final Map<String, Object> message = new HashMap<>();
 
@@ -180,6 +191,10 @@ public class ComponentController {
 		message.put("componentState", component);
 
 		sendMessage(message);
+	}
+
+	public void redrawComponentData(final AbstractComponent component) {
+		invokeFunctionCall("jfly", "replaceComponent", component.uuid(), component.build().render());
 	}
 
 }

@@ -5,10 +5,15 @@ package at.spot.jfly.style;
  */
 public enum NavbarStyle implements Style {
 	Default("default"),
-	Inverse("navbar inverse"),
+	Inverse("inverse"),
+	Primary("primary"),
+	Success("success"),
+	Info("info"),
+	Warning("warning"),
+	Danger("danger"),
 	NavBarHeader("navbar-header"),
 	NavBarContent("nav navbar-nav"),
-	NavBarBrand("navbar-brand");
+	NavBarHeaderBrand("navbar-brand");
 
 	private String styleClass;
 
@@ -17,7 +22,7 @@ public enum NavbarStyle implements Style {
 	}
 
 	@Override
-	public String toString() {
+	public String internalName() {
 		return this.styleClass;
 	}
 }

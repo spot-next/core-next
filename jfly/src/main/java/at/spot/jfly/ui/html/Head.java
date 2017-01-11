@@ -23,17 +23,16 @@ public class Head extends AbstractComponent {
 
 	private Head addDefaultStyles() {
 		stylesheet(new Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"));
-		stylesheet(new Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"));
+		// stylesheet(new
+		// Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"));
+
+		// stylesheet(new
+		// Stylesheet("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"));
 
 		return this;
 	}
 
 	protected Head addDefaultScripts() {
-		// vue.js draws the client components
-		script(new Script("/script/vue.js"));
-		// vue-strap provides bootstrap css compatible widgets
-		script(new Script("/script/vue-strap.min.js"));
-
 		// jquery alternative
 		script(new Script("http://zeptojs.com/zepto.min.js"));
 		// custom code

@@ -12,6 +12,7 @@ public class AbstractActionComponent extends AbstractTextComponent {
 
 	public <C extends AbstractActionComponent> C glyphIcon(final GlyphIcon icon) {
 		this.icon = icon;
+		updateClientComponent();
 		return (C) this;
 	}
 
