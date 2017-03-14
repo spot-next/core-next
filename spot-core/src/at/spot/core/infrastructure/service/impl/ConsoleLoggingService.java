@@ -13,8 +13,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
+import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.support.LogLevel;
 
 /**
@@ -30,45 +32,94 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
 	@Autowired
+	protected SerializationService serializationService;
+
+	@Autowired
 	protected ConfigurationService configurationService;
 
 	Map<Class<?>, Logger> loggers = new HashMap<>();
 
 	@Override
+	public void debug(final String message) {
+		log(LogLevel.DEBUG, message, null, null, getCallingClass());
+	}
+
+	@Override
 	public void debug(final String message, final Class<?> callingClass) {
-		log(LogLevel.DEBUG, message, callingClass);
+		log(LogLevel.DEBUG, message, null, null, callingClass);
+	}
+
+	@Override
+	public void info(final String message) {
+		log(LogLevel.INFO, message, null, null, getCallingClass());
 	}
 
 	@Override
 	public void info(final String message, final Class<?> callingClass) {
-		log(LogLevel.INFO, message, callingClass);
+		log(LogLevel.INFO, message, null, null, callingClass);
+	}
+
+	@Override
+	public void warn(final String message) {
+		log(LogLevel.WARN, message, null, null, getCallingClass());
 	}
 
 	@Override
 	public void warn(final String message, final Class<?> callingClass) {
-		log(LogLevel.WARN, message, callingClass);
+		log(LogLevel.WARN, message, null, null, callingClass);
+	}
+
+	@Override
+	public void error(final String message) {
+		log(LogLevel.ERROR, message, null, null, getCallingClass());
 	}
 
 	@Override
 	public void error(final String message, final Class<?> callingClass) {
-		log(LogLevel.ERROR, message, callingClass);
+		log(LogLevel.ERROR, message, null, null, callingClass);
+	}
+
+	@Override
+	public void exception(final String message, final Throwable exception) {
+		log(LogLevel.FATAL, message, exception, null, getCallingClass());
 	}
 
 	@Override
 	public void exception(final String message, final Throwable exception, final Class<?> callingClass) {
-		log(LogLevel.FATAL, message, callingClass);
+		log(LogLevel.FATAL, message, null, null, callingClass);
+	}
+
+	/*
+	 * LOG METHODS
+	 */
+
+	@Override
+	public void log(final LogLevel level, final String message, final Throwable exception, final Object object) {
+		log(level, message, exception, object, getCallingClass());
 	}
 
 	@Override
-	public void log(final LogLevel level, final String message, final Throwable exception,
+	public void log(final LogLevel level, final String message, final Throwable exception, final Object object,
 			final Class<?> callingClass) {
 
 		String msg = message;
 
 		if (exception != null) {
 			exception.printStackTrace();
-			msg += "\n" + ExceptionUtils.getStackTrace(exception);
+			msg += "\nException: " + ExceptionUtils.getStackTrace(exception);
 		}
+
+		String objectJson = "";
+
+		if (object != null) {
+			try {
+				objectJson = "\nObject: " + serializationService.toJson(object);
+			} catch (final SerializationException e) {
+				objectJson = "Could not convert info object to JSON";
+			}
+		}
+
+		msg += objectJson;
 
 		if (logToConsole()) {
 			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), msg));
@@ -77,48 +128,13 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
 	}
 
-	protected boolean logToConsole() {
-		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, true);
-	}
-
-	@Override
-	public void log(final LogLevel level, final String message, final Class<?> callingClass) {
-		log(level, message, null, callingClass);
-	}
-
-	@Override
-	public void debug(final String message) {
-		log(LogLevel.DEBUG, message, getCallingClass());
-	}
-
-	@Override
-	public void info(final String message) {
-		log(LogLevel.INFO, message, getCallingClass());
-	}
-
-	@Override
-	public void warn(final String message) {
-		log(LogLevel.WARN, message, getCallingClass());
-	}
-
-	@Override
-	public void error(final String message) {
-		log(LogLevel.ERROR, message, getCallingClass());
-	}
-
-	@Override
-	public void exception(final String message, final Throwable exception) {
-		log(LogLevel.FATAL, message, exception, getCallingClass());
-	}
-
-	@Override
-	public void log(final LogLevel level, final String message) {
-		log(level, message, getCallingClass());
-	}
-
 	/*
 	 * Helper functions
 	 */
+
+	protected boolean logToConsole() {
+		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, true);
+	}
 
 	protected String getTimeStamp() {
 		return sdf.format(new Date(System.currentTimeMillis()));
