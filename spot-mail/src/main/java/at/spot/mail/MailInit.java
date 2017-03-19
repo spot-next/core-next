@@ -14,7 +14,7 @@ import at.spot.core.infrastructure.support.init.ModuleConfig;
 @EnableScheduling
 @Order(value = 1)
 @ModuleConfig(moduleName = "mail", modelPackagePaths = {
-		"at.spot.mail.model" }, appConfigFile = "mail.properties", springConfigFile = "spring-mail.xml")
+		"at.spot.mail.model" }, appConfigFile = "mail.properties", springConfigFile = "mail-spring.xml")
 public class MailInit extends CoreInit {
 
 	@Log(message = "Starting mail module ...")

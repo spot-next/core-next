@@ -1,20 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	elementFormDefault="qualified">
 
 	<xs:element name="types">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="type" type="type" minOccurs="0" />
+				<xs:element name="type" type="type" minOccurs="0"
+					maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
+
 	</xs:element>
 
 	<xs:complexType name="type">
 		<xs:sequence>
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
-			<xs:element name="properties" minOccurs="0">
+			<xs:element name="properties" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
 						Defines the list of item attributes.
@@ -22,7 +25,8 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="property" type="property" />
+						<xs:element name="property" type="property" minOccurs="0"
+							maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -34,6 +38,13 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="package" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the java package of the item type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="extends" type="xs:string" default="Item">
 			<xs:annotation>
 				<xs:documentation>
@@ -41,14 +52,14 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="abstract" type="xs:boolean" default="false">
+		<xs:attribute name="abstract" type="xs:boolean">
 			<xs:annotation>
 				<xs:documentation>
 					Defines if the item type is abstract.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="typeCode" type="xs:string" use="required">
+		<xs:attribute name="typeCode" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>
 					The internal code of the item type, used for
@@ -56,7 +67,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-
 	</xs:complexType>
 
 	<xs:complexType name="property">
@@ -108,7 +118,8 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="isReference" type="xs:boolean" default="false">
+		<xs:attribute name="isReference" type="xs:boolean"
+			default="false">
 			<xs:annotation>
 				<xs:documentation>
 					Defines if the property is referenced from other
@@ -172,20 +183,25 @@
 		</xs:attribute>
 		<xs:attribute name="referencedType" type="xs:string" use="required">
 			<xs:annotation>
-				<xs:documentation>Defines the referenced type's class.</xs:documentation>
+				<xs:documentation>Defines the referenced type's class.
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="mappedTo" type="xs:string" use="required">
 			<xs:annotation>
-				<xs:documentation>Defines the referenced property name.</xs:documentation>
+				<xs:documentation>Defines the referenced property name.
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="casacadeOnDelete" type="xs:boolean" default="false">
+		<xs:attribute name="casacadeOnDelete" type="xs:boolean"
+			default="false">
 			<xs:annotation>
-				<xs:documentation>Defines if deletion is cascaded for all referenced items.</xs:documentation>
+				<xs:documentation>Defines if deletion is cascaded for all referenced
+					items.
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		
+
 	</xs:complexType>
 
 	<xs:simpleType name="relationType">

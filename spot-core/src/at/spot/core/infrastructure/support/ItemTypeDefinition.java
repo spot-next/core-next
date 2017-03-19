@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.support;
 
 /**
- * Represents an item type definition. 
+ * Represents an item type definition.
  */
 public class ItemTypeDefinition {
 

@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
 @Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
-	String accessor() default "";
-
 	boolean writable() default true;
 
 	boolean readable() default true;
@@ -26,5 +24,4 @@ public @interface Property {
 	boolean isReference() default false;
 
 	String itemValueProvider() default "";
-
 }

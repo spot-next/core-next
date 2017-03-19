@@ -63,6 +63,23 @@
 		</testResources>
 
 		<plugins>
+			<!-- item type generation -->
+			<plugin>
+				<groupId>at.spot</groupId>
+				<artifactId>spot-core-maven-plugins</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>itemTypeGeneration</goal>
+						</goals>
+						<configuration>
+							<title>spot-core</title>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- packaging -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

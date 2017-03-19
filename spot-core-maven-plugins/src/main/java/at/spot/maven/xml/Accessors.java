@@ -1,0 +1,158 @@
+//
+// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
+// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+// Generiert: 2017.03.18 um 06:08:34 PM CET 
+//
+
+
+package at.spot.maven.xml;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java-Klasse für accessors complex type.
+ * 
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * 
+ * <pre>
+ * &lt;complexType name="accessors">
+ *   &lt;complexContent>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;attribute name="valueProvider" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="getter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
+ *       &lt;attribute name="setter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
+ *       &lt;attribute name="field" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *     &lt;/restriction>
+ *   &lt;/complexContent>
+ * &lt;/complexType>
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "accessors")
+public class Accessors {
+
+    @XmlAttribute(name = "valueProvider", required = true)
+    protected String valueProvider;
+    @XmlAttribute(name = "getter")
+    protected Boolean getter;
+    @XmlAttribute(name = "setter")
+    protected Boolean setter;
+    @XmlAttribute(name = "field")
+    protected Boolean field;
+
+    /**
+     * Ruft den Wert der valueProvider-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValueProvider() {
+        return valueProvider;
+    }
+
+    /**
+     * Legt den Wert der valueProvider-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValueProvider(String value) {
+        this.valueProvider = value;
+    }
+
+    /**
+     * Ruft den Wert der getter-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isGetter() {
+        if (getter == null) {
+            return true;
+        } else {
+            return getter;
+        }
+    }
+
+    /**
+     * Legt den Wert der getter-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setGetter(Boolean value) {
+        this.getter = value;
+    }
+
+    /**
+     * Ruft den Wert der setter-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isSetter() {
+        if (setter == null) {
+            return true;
+        } else {
+            return setter;
+        }
+    }
+
+    /**
+     * Legt den Wert der setter-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setSetter(Boolean value) {
+        this.setter = value;
+    }
+
+    /**
+     * Ruft den Wert der field-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isField() {
+        if (field == null) {
+            return false;
+        } else {
+            return field;
+        }
+    }
+
+    /**
+     * Legt den Wert der field-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setField(Boolean value) {
+        this.field = value;
+    }
+
+}

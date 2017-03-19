@@ -36,7 +36,7 @@ import at.spot.core.persistence.service.QueryService;
 @Service
 // @Order(value = 1)
 @ModuleConfig(moduleName = "core", modelPackagePaths = {
-		"at.spot.core.model" }, appConfigFile = "core.properties", springConfigFile = "spring-core.xml")
+		"at.spot.core.model" }, appConfigFile = "core.properties", springConfigFile = "core-spring.xml")
 public class CoreInit extends ModuleInit {
 
 	@Autowired
