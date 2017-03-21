@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.18 um 06:08:34 PM CET 
+// Generiert: 2017.03.21 um 12:13:10 PM CET 
 //
 
 
@@ -15,15 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für accessors complex type.
+ * <p>Java-Klasse für Accessors complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="accessors">
+ * &lt;complexType name="Accessors">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="valueProvider" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="valueProvider" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="getter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *       &lt;attribute name="setter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *       &lt;attribute name="field" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
@@ -35,10 +35,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "accessors")
+@XmlType(name = "Accessors")
 public class Accessors {
 
-    @XmlAttribute(name = "valueProvider", required = true)
+    @XmlAttribute(name = "valueProvider")
     protected String valueProvider;
     @XmlAttribute(name = "getter")
     protected Boolean getter;

@@ -18,8 +18,6 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.support.init.ModuleConfig;
 import at.spot.core.infrastructure.support.init.ModuleInit;
-import at.spot.core.model.user.Address;
-import at.spot.core.model.user.AddressType;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -70,33 +68,35 @@ public class CoreInit extends ModuleInit {
 		// persistenceService.clearDataStorage();
 
 		try {
-			final User user1 = modelService.create(User.class);
-			user1.uid = "test1";
-
-			final UserGroup userGroup1 = modelService.create(UserGroup.class);
-			userGroup1.uid = "group1";
-			final UserGroup userGroup2 = modelService.create(UserGroup.class);
-			userGroup2.uid = "group2";
-
-			modelService.saveAll(user1, userGroup1, userGroup2);
-
-			final AddressType at = modelService.create(AddressType.class);
-			at.code = "private";
-
-			final Address address1 = modelService.create(Address.class);
-			address1.type = at;
-			address1.owner = user1;
-
-			modelService.save(address1);
-
-			modelService.refresh(user1);
-			System.out.println(user1.addresses);
-
-			user1.addresses.remove(address1);
-			modelService.save(user1);
-
-			System.out.println(user1.addresses);
-			System.out.println("");
+			// final User user1 = modelService.create(User.class);
+			// user1.uid = "test1";
+			//
+			// final UserGroup userGroup1 =
+			// modelService.create(UserGroup.class);
+			// userGroup1.uid = "group1";
+			// final UserGroup userGroup2 =
+			// modelService.create(UserGroup.class);
+			// userGroup2.uid = "group2";
+			//
+			// modelService.saveAll(user1, userGroup1, userGroup2);
+			//
+			// final AddressType at = modelService.create(AddressType.class);
+			// at.code = "private";
+			//
+			// final Address address1 = modelService.create(Address.class);
+			// address1.type = at;
+			// address1.owner = user1;
+			//
+			// modelService.save(address1);
+			//
+			// modelService.refresh(user1);
+			// System.out.println(user1.addresses);
+			//
+			// user1.addresses.remove(address1);
+			// modelService.save(user1);
+			//
+			// System.out.println(user1.addresses);
+			// System.out.println("");
 
 			// final List<User> users = new ArrayList<>();
 			//

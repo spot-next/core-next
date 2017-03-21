@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<itemtypes xsi:schemaLocation="itemtypes.xsd">
+	<itemtype name="User" extends="Principal" typeCode="User">
+		<description>test</description>
+		<attributes>
+			<attribute name="test">
+				<type javaType="java.util.Map" />
+				<description>test attribute</description>
+				<modifiers unique="true" initial="true" readable="true" writable="true" accessor="bean" isReference="false" itemValueProvider="bean" />
+				<relation type="OneToMany" referenceType="Group" mappedTo="owner" casacadeOnDelete="true" />
+				<accessors getter="true" setter="true" fieldAccess="true" />
+			</attribute>
+		</attributes>
+	</itemtype>
+	<itemtype name="User" extends="Principal" typeCode="User">
+		<description>test</description>
+		<attributes>
+			<attribute name="test">
+				<type javaType="java.util.Map">
+					<genericArgument javaType="String"/>
+				</type>
+				<description>test attribute</description>
+				<modifiers unique="true" initial="true" readable="true" writable="true" accessor="bean" isReference="false" itemValueProvider="bean" />
+				<relation type="OneToMany" referenceType="Group" mappedTo="owner" casacadeOnDelete="true" />
+				<accessors getter="true" setter="true" fieldAccess="true" />
+			</attribute>
+		</attributes>
+	</itemtype>
+	<itemtype name="User" extends="Principal" typeCode="User">
+		<description>test</description>
+		<attributes>
+			<attribute name="test">
+				<type javaType="java.util.Map">
+					<genericArgument javaType="String"/>
+					<genericArgument javaType="Group"/>
+				</type>
+				<description>test attribute</description>
+				<modifiers unique="true" initial="true" readable="true" writable="true" accessor="bean" isReference="false" itemValueProvider="bean" />
+				<relation type="OneToMany" referenceType="Group" mappedTo="owner" casacadeOnDelete="true" />
+				<accessors getter="true" setter="true" fieldAccess="true" />
+			</attribute>
+		</attributes>
+	</itemtype>
+</itemtypes>

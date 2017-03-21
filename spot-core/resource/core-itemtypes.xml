@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="itemtypes.xsd">
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="itemtypes.xsd">
 
 	<type name="Principal" abstract="true" package="at.spot.core.model.user">
 		<description>The base type all user related item types.</description>
 		<properties>
-			<property name="uid" class="java.lang.String">
+			<property name="uid">
+				<datatype class="java.lang.String" />
 				<description>The unique id of the principal object.</description>
 				<modifiers unique="true" />
+				<accessors field="true" />
+				<validators>
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="3" />
+					</validator>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
 			</property>
-			<property name="shortName" class="java.lang.String">
+			<property name="shortName">
+				<datatype class="java.lang.String" />
 				<description>The short name identifying the principal object.
 				</description>
 			</property>
@@ -18,24 +28,84 @@
 	<type name="User" typeCode="User" extends="Principal"
 		package="at.spot.core.model.user">
 		<properties>
-			<property name="password" class="java.lang.String">
-				<description>The login password, can be encrypted.</description>
+			<property name="groups">
+				<datatype class="java.util.List">
+					<genericArgument class="UserGroup" />
+				</datatype>
+				<description>The user groups assigned to the user.</description>
+				<modifiers isReference="true" />
+				<accessors getter="true" setter="true" field="false" />
+				<relation type="ManyToMany" referencedType="UserGroup"
+					mappedTo="users" />
+			</property>
+			<property name="addresses">
+				<datatype class="java.util.List">
+					<genericArgument class="Address" />
+				</datatype>
+				<description>The user's addresses.</description>
+				<accessors getter="true" setter="true" field="false" />
+				<relation type="OneToMany" referencedType="Address"
+					mappedTo="owner" />
+			</property>
+			<property name="emailAddress">
+				<datatype class="java.lang.String" />
+				<description>The main email address of the user.</description>
 				<accessors getter="true" setter="true" field="false" />
 			</property>
-			<property name="emailAddress" class="java.lang.String">
-				<description>The main email address of the user.</description>
+			<property name="password">
+				<datatype class="java.lang.String" />
+				<description>The login password, can be encrypted.</description>
+				<accessors getter="true" setter="true" field="false" />
 			</property>
 		</properties>
 	</type>
 
-	<type name="Product" typeCode="Product" package="at.spot.commerce.catalog">
-		<description>The base type Product is used for all purchasable items.
-		</description>
+	<type name="Address" package="at.spot.core.model.user">
 		<properties>
-			<property name="code" class="java.lang.String">
-				<description>The unique code of the product.</description>
+			<property name="owner">
+				<datatype class="Item" />
+				<description>The owner of this address.</description>
 				<modifiers unique="true" />
+				<accessors getter="true" setter="true" field="false" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="type">
+				<datatype class="AddressType" />
+				<description>The address type of this address.</description>
+				<modifiers unique="true" />
+				<accessors getter="true" setter="true" field="false" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
 			</property>
 		</properties>
 	</type>
+	
+	<type name="AddressType" package="at.spot.core.model.user">
+		<properties>
+			<property name="code">
+				<datatype class="java.lang.String" />
+				<description>The unique code of this address type.</description>
+				<modifiers unique="true" />
+				<accessors getter="true" setter="true" field="false" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
+	</type>
+
+	<!-- <type name="Product" typeCode="Product" package="at.spot.commerce.catalog"> -->
+	<!-- <description>The base type Product is used for all purchasable items. -->
+	<!-- </description> -->
+	<!-- <properties> -->
+	<!-- <property name="code" class="java.lang.String"> -->
+	<!-- <description>The unique code of the product.</description> -->
+	<!-- <modifiers unique="true" /> -->
+	<!-- <accessors getter="true" setter="true" field="false" /> -->
+	<!-- </property> -->
+	<!-- </properties> -->
+	<!-- </type> -->
 </types>

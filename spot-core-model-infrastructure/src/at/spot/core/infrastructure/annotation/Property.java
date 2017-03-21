@@ -13,15 +13,21 @@ import java.lang.annotation.Target;
 @Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
-	boolean writable() default true;
+	public static final boolean DEFAULT_WRITABLE = true;
+	public static final boolean DEFAULT_READABLE = true;
+	public static final boolean DEFAULT_UNIQUE = false;
+	public static final boolean DEFAULT_INITIAL = false;
+	public static final boolean DEFAULT_IS_REFERENCE = false;
 
-	boolean readable() default true;
+	boolean writable() default DEFAULT_WRITABLE;
 
-	boolean unique() default false;
+	boolean readable() default DEFAULT_READABLE;
 
-	boolean initial() default false;
+	boolean unique() default DEFAULT_UNIQUE;
 
-	boolean isReference() default false;
+	boolean initial() default DEFAULT_INITIAL;
+
+	boolean isReference() default DEFAULT_IS_REFERENCE;
 
 	String itemValueProvider() default "";
 }

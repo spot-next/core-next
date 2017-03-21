@@ -24,4 +24,36 @@ public class User extends Principal {
 	@Relation(type = RelationType.OneToMany, referencedType = Address.class, mappedTo = "owner")
 	@Property
 	public List<Address> addresses;
+
+	public List<UserGroup> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(final List<UserGroup> groups) {
+		this.groups = groups;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(final String password) {
+		this.password = password;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(final String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public List<Address> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(final List<Address> addresses) {
+		this.addresses = addresses;
+	}
 }

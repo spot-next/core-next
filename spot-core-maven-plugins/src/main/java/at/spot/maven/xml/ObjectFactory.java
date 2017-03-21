@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.18 um 06:08:34 PM CET 
+// Generiert: 2017.03.21 um 12:13:10 PM CET 
 //
 
 
@@ -53,11 +53,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Accessors }
+     * Create an instance of {@link GenericArgument }
      * 
      */
-    public Accessors createAccessors() {
-        return new Accessors();
+    public GenericArgument createGenericArgument() {
+        return new GenericArgument();
+    }
+
+    /**
+     * Create an instance of {@link Relation }
+     * 
+     */
+    public Relation createRelation() {
+        return new Relation();
+    }
+
+    /**
+     * Create an instance of {@link ValidatorArgument }
+     * 
+     */
+    public ValidatorArgument createValidatorArgument() {
+        return new ValidatorArgument();
+    }
+
+    /**
+     * Create an instance of {@link Validators }
+     * 
+     */
+    public Validators createValidators() {
+        return new Validators();
+    }
+
+    /**
+     * Create an instance of {@link DataType }
+     * 
+     */
+    public DataType createDataType() {
+        return new DataType();
     }
 
     /**
@@ -69,19 +101,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Accessors }
+     * 
+     */
+    public Accessors createAccessors() {
+        return new Accessors();
+    }
+
+    /**
+     * Create an instance of {@link Validator }
+     * 
+     */
+    public Validator createValidator() {
+        return new Validator();
+    }
+
+    /**
      * Create an instance of {@link Modifiers }
      * 
      */
     public Modifiers createModifiers() {
         return new Modifiers();
-    }
-
-    /**
-     * Create an instance of {@link Relation }
-     * 
-     */
-    public Relation createRelation() {
-        return new Relation();
     }
 
     /**

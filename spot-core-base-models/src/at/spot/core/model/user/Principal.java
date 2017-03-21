@@ -15,4 +15,21 @@ public abstract class Principal extends Item {
 
 	@Property
 	public String name;
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(final String uid) {
+		this.uid = uid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
 }

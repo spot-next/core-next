@@ -13,6 +13,8 @@ import at.spot.core.model.OneToManyRelation;
 @Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Relation {
+	public static final boolean DEFAULT_CASCADE_ON_DELETE = false;
+
 	RelationType type();
 
 	/**
@@ -36,5 +38,5 @@ public @interface Relation {
 	 * referenced user is kept, only the reference is removed on both sides of
 	 * the relation. <br />
 	 */
-	boolean casacadeOnDelete() default false;
+	boolean casacadeOnDelete() default DEFAULT_CASCADE_ON_DELETE;
 }

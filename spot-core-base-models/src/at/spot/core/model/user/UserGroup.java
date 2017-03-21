@@ -22,4 +22,29 @@ public class UserGroup extends Principal {
 	@Relation(type = RelationType.OneToMany, referencedType = UserGroup.class, mappedTo = "parent")
 	@Property
 	public List<UserGroup> subGroups;
+
+	public UserGroup getParent() {
+		return parent;
+	}
+
+	public void setParent(final UserGroup parent) {
+		this.parent = parent;
+	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(final List<User> users) {
+		this.users = users;
+	}
+
+	public List<UserGroup> getSubGroups() {
+		return subGroups;
+	}
+
+	public void setSubGroups(final List<UserGroup> subGroups) {
+		this.subGroups = subGroups;
+	}
+
 }

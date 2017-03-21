@@ -13,7 +13,6 @@ import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.security.service.AuthenticationService;
-import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.security.strategy.PasswordEncryptionStrategy;
 
 @Service
@@ -39,7 +38,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 		final User user = userService.getUser(name);
 
 		if (user != null) {
-			if (StringUtils.equals(user.password, encryptedPassword)) {
+			if (StringUtils.equals(user.getPassword(), encryptedPassword)) {
 				return user;
 			}
 		}
