@@ -12,6 +12,9 @@ public class Media extends Item {
 
 	private static final long serialVersionUID = 1L;
 
+	@Property(unique = true)
+	public String uid;
+
 	@Property
 	public MimeType mimeType;
 

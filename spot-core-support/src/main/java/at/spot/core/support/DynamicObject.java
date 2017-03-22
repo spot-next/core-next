@@ -12,8 +12,6 @@ import at.spot.core.support.exception.CannotInvokeException;
 /**
  * The dynamic object works similar like a javscript object. You can store any
  * object and retrieve it again - although without type-safety.
- *
- *
  */
 public class DynamicObject {
 	protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";

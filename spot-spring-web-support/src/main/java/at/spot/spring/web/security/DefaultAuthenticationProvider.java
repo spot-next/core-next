@@ -56,7 +56,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 					grantedAuths);
 
 			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.uid,
-					user.password, grantedAuths);
+					user.getPassword(), grantedAuths);
 			auth.setDetails(userDetails);
 
 			return auth;
