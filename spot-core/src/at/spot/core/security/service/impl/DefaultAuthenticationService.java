@@ -48,7 +48,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 
 	@Override
 	public void setPassword(final User user, final String plainPassword) throws ModelSaveException {
-		user.password = encryptPassword(plainPassword);
+		user.setPassword(encryptPassword(plainPassword));
 
 		try {
 			modelService.save(user);

@@ -66,7 +66,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Parameter(property = "resourceDir", defaultValue = "${project.build.resources[0].directory}")
 	protected File resourceDirectory;
 
-	@Parameter(property = "gensrcDir", defaultValue = "${project.build.directory}/generated-sources")
+	@Parameter(property = "gensrcDir", defaultValue = "${project.basedir}/gensrc")
 	protected File outputJavaDirectory;
 
 	@Parameter(property = "title")
@@ -77,15 +77,17 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		if (this.project != null) {
 			this.project.addCompileSourceRoot(this.outputJavaDirectory.getAbsolutePath());
 		}
+
 		if (!this.outputJavaDirectory.mkdirs()) {
-			getLog().error("Could not create source directory!");
-		} else {
-			try {
-				generateItemTypes();
-			} catch (final IOException e) {
-				throw new MojoExecutionException("Could not generate Java source code!", e);
-			}
+			getLog().warn("Source directory already exists - overwriting files.");
 		}
+
+		try {
+			generateItemTypes();
+		} catch (final IOException e) {
+			throw new MojoExecutionException("Could not generate Java source code!", e);
+		}
+		// }
 	}
 
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
@@ -380,7 +382,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
 
 			ann.addAnntationAttribute("type", vm.newFree(
-					Relation.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
+					RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
 			ann.addAnntationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
 			ann.addAnntationAttribute("referencedType",
 					vm.newClass(propertyDefinition.getRelation().getReferencedType()));
@@ -396,16 +398,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final Variable var = vm.newVar(propertyDefinition.getName());
 
 			if (propertyDefinition.getAccessors() != null) {
-				final ClassMethod getterMethod = cls.newMethod(fieldType,
-						"get" + capitalize(propertyDefinition.getName()));
-				getterMethod.setAccess(Access.PUBLIC);
-				getterMethod.newReturn().setExpression(thisVar);
-
-				final ClassMethod setterMethod = cls.newMethod(fieldType,
+				final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
 						"set" + capitalize(propertyDefinition.getName()));
 				setterMethod.setAccess(Access.PUBLIC);
 				setterMethod.addParameter(fieldType, propertyDefinition.getName());
 				setterMethod.newStmt(vm.newAssign(thisVar, var));
+
+				final ClassMethod getterMethod = cls.newMethod(fieldType,
+						"get" + capitalize(propertyDefinition.getName()));
+				getterMethod.setAccess(Access.PUBLIC);
+				getterMethod.newReturn().setExpression(thisVar);
 			}
 		}
 	}

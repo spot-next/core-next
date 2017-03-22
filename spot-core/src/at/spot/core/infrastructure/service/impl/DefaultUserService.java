@@ -64,7 +64,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public Set<G> getAllGroupsOfUser(final String uid) {
-		return new HashSet<G>((Collection<? extends G>) getUser(uid).groups);
+		return new HashSet<G>((Collection<? extends G>) getUser(uid).getGroups());
 	}
 
 	@Override

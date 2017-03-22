@@ -21,3 +21,4 @@ spot-core/log
 Servers
 test
 spot-management-console/gwt-unitCache
+spot-core/gensrc
