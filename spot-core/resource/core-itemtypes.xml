@@ -36,11 +36,11 @@
 	</type>
 
 	<type name="PrincipalGroup" abstract="true" package="at.spot.core.model.user">
-		<description>The base type all princial group-like structures.</description>
+		<description>The base type all principal group-like structures.</description>
 		<properties>
 			<property name="members">
 				<datatype class="java.util.List">
-					<genericArgument class="Principal" />
+					<genericArgument class="? extends Principal" />
 				</datatype>
 				<description>The member of the group.
 				</description>
@@ -50,6 +50,7 @@
 
 	<type name="User" typeCode="User" extends="Principal"
 		package="at.spot.core.model.user">
+		<description>Represents a user.</description>
 		<properties>
 			<property name="addresses">
 				<datatype class="java.util.List">
@@ -68,6 +69,10 @@
 				<description>The login password, can be encrypted.</description>
 			</property>
 		</properties>
+	</type>
+
+	<type name="UserGroup" extends="PrincipalGroup" package="at.spot.core.model.user">
+		<description>The base type all user group-like structures.</description>
 	</type>
 
 	<!-- addresses -->

@@ -3,6 +3,7 @@
 bin
 .recommenders
 RemoteSystemsTempFiles
+gensrc
 
 *.class
 

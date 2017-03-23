@@ -48,6 +48,24 @@
 
 	<build>
 		<plugins>
+			<!-- item type generation -->
+			<plugin>
+				<groupId>at.spot</groupId>
+				<artifactId>spot-core-maven-plugins</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>itemTypeGeneration</goal>
+						</goals>
+						<configuration>
+							<title>spot-core</title>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
@@ -56,6 +74,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 	</build>
 

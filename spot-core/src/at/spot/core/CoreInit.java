@@ -214,7 +214,7 @@ public class CoreInit extends ModuleInit {
 
 		if (admin == null) {
 			admin = modelService.create(User.class);
-			admin.uid = adminUserName;
+			admin.setId(adminUserName);
 			admin.setPassword(adminPassword);
 
 			try {

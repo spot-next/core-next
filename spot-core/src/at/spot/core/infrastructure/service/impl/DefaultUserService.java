@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.service.impl;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +15,7 @@ import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.model.ItemTypeConstants;
+import at.spot.core.model.user.PrincipalGroup;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -30,7 +30,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public U createUser(final Class<U> type, final String userId) throws DuplicateUserException {
 		final U user = modelService.create(type);
-		user.uid = userId;
+		user.setId(userId);
 
 		try {
 			modelService.save(user);
@@ -64,7 +64,15 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public Set<G> getAllGroupsOfUser(final String uid) {
-		return new HashSet<G>((Collection<? extends G>) getUser(uid).getGroups());
+		final Set<G> groups = new HashSet<>();
+
+		for (final PrincipalGroup g : getUser(uid).getGroups()) {
+			if (g instanceof UserGroup) {
+				groups.add((G) g);
+			}
+		}
+
+		return groups;
 	}
 
 	@Override

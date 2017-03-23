@@ -62,11 +62,11 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 			final Object... messageParams) throws NoSuchMessageException {
 
 		final QueryResult<LocalizationKey> locResult = queryService.query(LocalizationKey.class, (i) -> {
-			return i.key.equals(key) && i.locale.equals(locale);
+			return i.getId().equals(key) && i.getLocale().equals(locale);
 		}, null, 0, 0, false);
 
 		if (locResult.count() >= 1) {
-			return locResult.getResult().get(0).value;
+			return locResult.getResult().get(0).getValue();
 		} else {
 			throw new NoSuchMessageException(key);
 		}

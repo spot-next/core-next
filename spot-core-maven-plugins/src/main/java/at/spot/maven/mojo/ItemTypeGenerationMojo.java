@@ -2,6 +2,7 @@ package at.spot.maven.mojo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,7 +92,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
-		final List<File> definitionsFiles = findItemTypeDefinitions();
+		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
 		final Map<String, Type> itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
 		generateJavaCode(itemTypesDefinitions);
 	}
@@ -103,16 +104,25 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @return
 	 * @throws IOException
 	 */
-	protected List<File> findItemTypeDefinitions() throws IOException {
-		final List<File> definitions = new ArrayList<>();
+	protected List<InputStream> findItemTypeDefinitions() throws IOException {
+		final List<InputStream> definitions = new ArrayList<>();
 
 		// get all dependencies and iterate over the target/classes folder
 		final Set<Artifact> files = project.getDependencyArtifacts();
 
 		for (final Artifact a : files) {
 			for (final File f : FileUtils.getFiles(a.getFile().getAbsolutePath())) {
-				if (isItemTypeDefinitionFile(f)) {
-					definitions.add(f);
+				if (f.getName().endsWith(".jar")) {
+					final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
+					for (final String c : jarContent) {
+						if (isItemTypeDefinitionFile(c)) {
+							definitions.add(FileUtils.readFileFromJar(f.getAbsolutePath(), c));
+						}
+					}
+				} else {
+					if (isItemTypeDefinitionFile(f.getName())) {
+						definitions.add(FileUtils.readFile(f));
+					}
 				}
 			}
 		}
@@ -122,8 +132,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory());
 
 			for (final File f : projectFiles) {
-				if (isItemTypeDefinitionFile(f)) {
-					definitions.add(f);
+				if (isItemTypeDefinitionFile(f.getName())) {
+					definitions.add(FileUtils.readFile(f));
 				}
 			}
 		}
@@ -137,10 +147,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param definitions
 	 * @return
 	 */
-	protected Map<String, Type> aggregateTypeDefninitions(final List<File> definitions) {
+	protected Map<String, Type> aggregateTypeDefninitions(final List<InputStream> definitions) {
 		final Map<String, Type> defs = new HashMap<>();
 
-		for (final File defFile : definitions) {
+		for (final InputStream defFile : definitions) {
 			final List<Type> typesDefs = loadTypeDefinition(defFile);
 
 			for (final Type typeDef : typesDefs) {
@@ -188,7 +198,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param file
 	 * @return
 	 */
-	protected List<Type> loadTypeDefinition(final File file) {
+	protected List<Type> loadTypeDefinition(final InputStream file) {
 		Types typeDef = null;
 
 		try {
@@ -212,12 +222,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param file
 	 * @return
 	 */
-	protected boolean isItemTypeDefinitionFile(final File file) {
-		if (file != null) {
-			return file.getName().endsWith("-itemtypes.xml");
-		}
-
-		return false;
+	protected boolean isItemTypeDefinitionFile(final String fileName) {
+		return StringUtils.endsWith(fileName, "-itemtypes.xml");
 	}
 
 	protected void generateJavaCode(final Map<String, Type> definitions) throws IOException, MojoExecutionException {
@@ -278,45 +284,81 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			// populate the properties
-			for (final Property p : type.getProperties().getProperty()) {
-				if (p.getDatatype() != null) {
-					String propertyType = p.getDatatype().getClazz();
+			if (type.getProperties() != null) {
+				for (final Property p : type.getProperties().getProperty()) {
+					if (p.getDatatype() != null) {
+						String propertyType = p.getDatatype().getClazz();
 
-					if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
-						final List<String> args = p.getDatatype().getGenericArgument().stream().map((g) -> g.getClazz())
-								.collect(Collectors.toList());
+						if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
+							final List<String> args = p.getDatatype().getGenericArgument().stream()
+									.map((g) -> g.getClazz()).collect(Collectors.toList());
 
-						propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args, ", "));
+							propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args, ", "));
+						}
+
+						final ClassType fieldType = vm.newType(propertyType);
+
+						final ClassField property = createProperty(p, fieldType, cls, vm);
+
+						populatePropertyAnnotation(property, p, fieldType, cls, vm);
+						populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
+						populatePropertyValidators(property, p, cls, vm);
+					} else {
+						new MojoExecutionException(String.format("No datatype set for property %s on item type %s",
+								p.getName(), typeName));
 					}
-
-					final ClassType fieldType = vm.newType(propertyType);
-
-					final ClassField property = createProperty(p, fieldType, cls);
-
-					populatePropertyAnnotation(property, p, fieldType, cls, vm);
-					populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
-					populatePropertyValidators(property, p, cls, vm);
-				} else {
-					new MojoExecutionException(
-							String.format("No datatype set for property %s on item type %s", p.getName(), typeName));
 				}
 			}
 
 			// Write the java file
-			unit.encode();
+			try {
+				unit.encode();
+			} catch (final Exception e) {
+				getLog().error(String.format("Could not generate item type defintion %s", typeName));
+			}
 		}
 	}
 
-	protected ClassField createProperty(final Property p, final ClassType fieldType, final PackageClass cls) {
+	protected ClassField createProperty(final Property propertyDefinition, final ClassType fieldType,
+			final PackageClass cls, final VirtualMachine vm) {
 
-		final ClassField property = cls.newField(fieldType, p.getName());
+		final ClassField property = cls.newField(fieldType, propertyDefinition.getName());
 
-		if (StringUtils.isNotBlank(p.getDescription())) {
-			property.setComment(Comment.D, p.getDescription());
+		if (StringUtils.isNotBlank(propertyDefinition.getDescription())) {
+			property.setComment(Comment.D, propertyDefinition.getDescription());
 		}
 
-		if (p.getAccessors() != null && p.getAccessors().isField()) {
-			property.setAccess(AccessType.PUBLIC);
+		{ // create getter and setter methods
+			final Variable thisVar = vm.newVar("this." + propertyDefinition.getName());
+			final Variable var = vm.newVar(propertyDefinition.getName());
+
+			final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
+					"set" + capitalize(propertyDefinition.getName()));
+			setterMethod.addParameter(fieldType, propertyDefinition.getName());
+			setterMethod.newStmt(vm.newAssign(thisVar, var));
+
+			final ClassMethod getterMethod = cls.newMethod(fieldType, "get" + capitalize(propertyDefinition.getName()));
+			getterMethod.newReturn().setExpression(thisVar);
+
+			// default values
+			property.setAccess(AccessType.PROTECTED);
+			setterMethod.setAccess(Access.PUBLIC);
+			getterMethod.setAccess(Access.PUBLIC);
+
+			// override them
+			if (propertyDefinition.getAccessors() != null) {
+				if (propertyDefinition.getAccessors().isField()) {
+					property.setAccess(AccessType.PUBLIC);
+				}
+
+				if (!propertyDefinition.getAccessors().isSetter()) {
+					setterMethod.setAccess(Access.PROTECTED);
+				}
+
+				if (!propertyDefinition.getAccessors().isGetter()) {
+					getterMethod.setAccess(Access.PROTECTED);
+				}
+			}
 		}
 
 		return property;
@@ -390,24 +432,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
 				ann.addAnntationAttribute("casacadeOnDelete",
 						getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
-			}
-		}
-
-		{ // create getter and setter methods
-			final Variable thisVar = vm.newVar("this." + propertyDefinition.getName());
-			final Variable var = vm.newVar(propertyDefinition.getName());
-
-			if (propertyDefinition.getAccessors() != null) {
-				final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
-						"set" + capitalize(propertyDefinition.getName()));
-				setterMethod.setAccess(Access.PUBLIC);
-				setterMethod.addParameter(fieldType, propertyDefinition.getName());
-				setterMethod.newStmt(vm.newAssign(thisVar, var));
-
-				final ClassMethod getterMethod = cls.newMethod(fieldType,
-						"get" + capitalize(propertyDefinition.getName()));
-				getterMethod.setAccess(Access.PUBLIC);
-				getterMethod.newReturn().setExpression(thisVar);
 			}
 		}
 	}
