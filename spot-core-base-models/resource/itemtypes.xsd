@@ -69,6 +69,10 @@
 		</xs:attribute>
 	</xs:complexType>
 
+	<xs:complexType name="DefaultValue" mixed="true">
+        <xs:attribute name="value" use="optional" type="xs:string"/>
+	</xs:complexType>
+
 	<xs:complexType name="Property">
 		<xs:sequence>
 			<xs:element name="datatype" type="DataType" minOccurs="1"
@@ -83,6 +87,8 @@
 				maxOccurs="1" />
 			<xs:element name="validators" type="Validators" minOccurs="0"
 				maxOccurs="1" />
+			<xs:element name="defaultValue" type="DefaultValue"
+				minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required">
 			<xs:annotation>
@@ -95,8 +101,8 @@
 
 	<xs:complexType name="DataType">
 		<xs:sequence>
-			<xs:element name="genericArgument" type="GenericArgument" minOccurs="0"
-				maxOccurs="unbounded" />
+			<xs:element name="genericArgument" type="GenericArgument"
+				minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="class" type="xs:string" use="required">
 			<xs:annotation>
@@ -106,12 +112,19 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	
+
 	<xs:complexType name="GenericArgument">
 		<xs:attribute name="class" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>
 					Defines the java class of the generic argument.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="wildcard" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					If true the resulting generic type will be of &gt;? extends Type>
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -243,7 +256,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-
 	</xs:complexType>
 
 	<xs:simpleType name="RelationType">

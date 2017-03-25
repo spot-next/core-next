@@ -1,15 +1,19 @@
 package at.spot.maven.mojo;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -32,7 +36,9 @@ import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.FileUtils;
+import at.spot.maven.xml.GenericArgument;
 import at.spot.maven.xml.Property;
 import at.spot.maven.xml.Type;
 import at.spot.maven.xml.Types;
@@ -75,6 +81,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		getLog().info("Generting item types from XML.");
 		if (this.project != null) {
 			this.project.addCompileSourceRoot(this.outputJavaDirectory.getAbsolutePath());
 		}
@@ -106,6 +113,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 */
 	protected List<InputStream> findItemTypeDefinitions() throws IOException {
 		final List<InputStream> definitions = new ArrayList<>();
+		final List<String> definitionFiles = new ArrayList<>();
 
 		// get all dependencies and iterate over the target/classes folder
 		final Set<Artifact> files = project.getDependencyArtifacts();
@@ -117,11 +125,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					for (final String c : jarContent) {
 						if (isItemTypeDefinitionFile(c)) {
 							definitions.add(FileUtils.readFileFromJar(f.getAbsolutePath(), c));
+							definitionFiles.add(f.getName() + "/" + c);
 						}
 					}
 				} else {
 					if (isItemTypeDefinitionFile(f.getName())) {
 						definitions.add(FileUtils.readFile(f));
+						definitionFiles.add(f.getName());
 					}
 				}
 			}
@@ -134,9 +144,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			for (final File f : projectFiles) {
 				if (isItemTypeDefinitionFile(f.getName())) {
 					definitions.add(FileUtils.readFile(f));
+					definitionFiles.add(f.getName());
 				}
 			}
 		}
+
+		getLog().info(String.format("Found XML definitions: ", StringUtils.join(definitionFiles, ", ")));
 
 		return definitions;
 	}
@@ -149,6 +162,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 */
 	protected Map<String, Type> aggregateTypeDefninitions(final List<InputStream> definitions) {
 		final Map<String, Type> defs = new HashMap<>();
+
+		// add base item type, just to make it referencable
+		final Type itemType = new Type();
+		itemType.setName(Item.class.getSimpleName());
+		itemType.setPackage(Item.class.getPackage().getName());
+		itemType.setAbstract(true);
+
+		defs.put(itemType.getName(), itemType);
 
 		for (final InputStream defFile : definitions) {
 			final List<Type> typesDefs = loadTypeDefinition(defFile);
@@ -233,50 +254,59 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
 		for (final String typeName : definitions.keySet()) {
-			// Instantiate a new CompilationUnit. The argument to the
-			// compilation unit is the "codebase" or directory where the
-			// compilation unit should be written.
-			// Make a new compilation unit rooted to the given sourcepath.
-			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
+			// the Item type base class is hardcoded, so ignore it
+			if (StringUtils.equals(typeName, Item.class.getSimpleName())) {
+				continue;
+			}
 
 			final Type type = definitions.get(typeName);
 
-			// Set the package namespace.
+			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
 			unit.setNamespace(type.getPackage());
-
-			// Comment the package with a javadoc (DocumentationComment).
 			unit.setComment(Comment.D, "This file is auto-generated. All changes will be overwritten.");
 
-			// Make a new class.
 			final PackageClass cls = unit.newClass(typeName);
 			cls.setAccess(Access.PUBLIC);
-			cls.addImport(ItemType.class.getName());
+
+			if (type.isAbstract() != null) {
+				cls.isAbstract(type.isAbstract());
+			}
+
+			{// set private static final long serialVersionUID = 1L;
+				final ClassField serialId = cls.newField(vm.newType("long"), "serialVersionUID");
+				serialId.setAccess(AccessType.PRIVATE);
+				serialId.isStatic(true);
+				serialId.isFinal(true);
+				serialId.setExpression(vm.newLong(-1));
+			}
 
 			{ // add the item annotation
+				addImport(definitions, cls, ItemType.class);
+
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
 					ann.addAnntationAttribute("typeCode", vm.newString(type.getTypeCode()));
-				} else {
+				} else { // add the type name as typecode as default
 					ann.addAnntationAttribute("typeCode", vm.newString(type.getName()));
 				}
 			}
 
-			if (StringUtils.isBlank(type.getExtends())) {
-				cls.setExtends(Item.class.getName());
-			} else {
+			// set default
+			cls.setExtends(Item.class.getName());
+
+			if (StringUtils.isNotBlank(type.getExtends())) {
 				final Type superType = definitions.get(type.getExtends());
 
 				if (superType != null) {
-					unit.addImport(String.format("%s.%s", superType.getPackage(), superType.getName()));
 					cls.setExtends(superType.getName());
-				} else if (StringUtils.equals(type.getExtends(), Item.class.getSimpleName())) {
-					unit.addImport(Item.class.getName());
-					cls.setExtends(Item.class.getSimpleName());
+					addImport(definitions, cls, superType.getName());
 				} else {
 					throw new MojoExecutionException(String.format(
 							"Non-existing super type '%s' defined for item type %s", type.getExtends(), typeName));
 				}
+			} else {
+				addImport(definitions, cls, Item.class);
 			}
 
 			if (StringUtils.isNotBlank(type.getDescription())) {
@@ -286,18 +316,26 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			// populate the properties
 			if (type.getProperties() != null) {
 				for (final Property p : type.getProperties().getProperty()) {
-					if (p.getDatatype() != null) {
-						String propertyType = p.getDatatype().getClazz();
+					if (p.getDatatype() != null && StringUtils.isNotBlank(p.getDatatype().getClazz())) {
+						String propertyType = addImport(definitions, cls, p.getDatatype().getClazz());
 
 						if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
-							final List<String> args = p.getDatatype().getGenericArgument().stream()
-									.map((g) -> g.getClazz()).collect(Collectors.toList());
+							final List<String> args = new ArrayList<>();
+
+							for (final GenericArgument genericArg : p.getDatatype().getGenericArgument()) {
+								String arg = addImport(definitions, cls, genericArg.getClazz());
+
+								if (genericArg.isWildcard()) {
+									arg = "? extends " + arg;
+								}
+
+								args.add(arg);
+							}
 
 							propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args, ", "));
 						}
 
 						final ClassType fieldType = vm.newType(propertyType);
-
 						final ClassField property = createProperty(p, fieldType, cls, vm);
 
 						populatePropertyAnnotation(property, p, fieldType, cls, vm);
@@ -314,9 +352,52 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			try {
 				unit.encode();
 			} catch (final Exception e) {
-				getLog().error(String.format("Could not generate item type defintion %s", typeName));
+				getLog().error(
+						String.format("Could not generate item type defintion %s: \n %s", typeName, unit.toString()));
 			}
 		}
+	}
+
+	protected void writeFile(final String content, final String path, final String fileName) throws IOException {
+		Writer writer = null;
+
+		try {
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(Paths.get(path, fileName).toFile().getAbsolutePath() + ".java"), "utf-8"));
+			writer.write(content);
+		} finally {
+			MiscUtil.closeQuietly(writer);
+		}
+	}
+
+	protected void addImport(final Map<String, Type> definitions, final PackageClass cls, final Class<?> type) {
+		addImport(definitions, cls, type.getName());
+	}
+
+	/**
+	 * Returns the {@link Class#getSimpleName()}
+	 * 
+	 * @param definitions
+	 * @param cls
+	 * @param type
+	 * @return
+	 */
+	protected String addImport(final Map<String, Type> definitions, final PackageClass cls, final String type) {
+		final String importType = StringUtils.replace(type, "[]", "");
+
+		if (StringUtils.contains(importType, ".")) {
+			cls.addImport(type);
+		} else {
+			final Type def = definitions.get(importType);
+
+			if (def != null) {
+				cls.addImport(String.format("%s.%s", def.getPackage(), def.getName()));
+			} else {
+				getLog().debug(String.format("Can't add import %s to type %S", importType, cls.getName()));
+			}
+		}
+
+		return getSimpleClassName(type);
 	}
 
 	protected ClassField createProperty(final Property propertyDefinition, final ClassType fieldType,
@@ -326,6 +407,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		if (StringUtils.isNotBlank(propertyDefinition.getDescription())) {
 			property.setComment(Comment.D, propertyDefinition.getDescription());
+		}
+
+		if (propertyDefinition.getDefaultValue() != null) {
+			final String defaultValue = propertyDefinition.getDefaultValue().getContent();
+			property.setExpression(vm.newVar(defaultValue));
 		}
 
 		{ // create getter and setter methods
@@ -450,7 +536,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		if (propertyDefinition.getValidators() != null && propertyDefinition.getValidators().getValidator() != null) {
 			for (final Validator v : propertyDefinition.getValidators().getValidator()) {
 				cls.addImport(v.getJavaClass());
-				final Annotation ann = property.addAnnotation(v.getJavaClass());
+				final Annotation ann = property.addAnnotation(getSimpleClassName(v.getJavaClass()));
 
 				if (CollectionUtils.isNotEmpty(v.getArgument())) {
 					for (final ValidatorArgument a : v.getArgument()) {
@@ -467,6 +553,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 			}
 		}
+	}
+
+	protected String getSimpleClassName(final String className) {
+		final int start = StringUtils.lastIndexOf(className, ".") + 1;
+		final int end = StringUtils.length(className);
+		return StringUtils.substring(className, start, end);
 	}
 
 	protected String capitalize(final String s) {

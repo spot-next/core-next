@@ -40,7 +40,7 @@
 		<properties>
 			<property name="members">
 				<datatype class="java.util.List">
-					<genericArgument class="? extends Principal" />
+					<genericArgument class="Principal" wildcard="true" />
 				</datatype>
 				<description>The member of the group.
 				</description>
@@ -71,13 +71,13 @@
 		</properties>
 	</type>
 
-	<type name="UserGroup" extends="PrincipalGroup" package="at.spot.core.model.user">
+	<type name="UserGroup" typeCode="UserGroup" extends="PrincipalGroup" package="at.spot.core.model.user">
 		<description>The base type all user group-like structures.</description>
 	</type>
 
 	<!-- addresses -->
 
-	<type name="Address" package="at.spot.core.model.user">
+	<type name="Address" typeCode="Address" package="at.spot.core.model.user">
 		<properties>
 			<property name="owner">
 				<datatype class="Item" />
@@ -98,7 +98,7 @@
 		</properties>
 	</type>
 
-	<type name="AddressType" package="at.spot.core.model.user">
+	<type name="AddressType" typeCode="AddressType" package="at.spot.core.model.user">
 		<properties>
 			<property name="id">
 				<datatype class="java.lang.String" />
@@ -111,7 +111,7 @@
 		</properties>
 	</type>
 
-	<type name="ContactDetailsType" package="at.spot.core.model.user">
+	<type name="ContactDetailsType" typeCode="ContactDetailsType" package="at.spot.core.model.user">
 		<properties>
 			<property name="id">
 				<datatype class="java.lang.String" />
@@ -150,7 +150,7 @@
 	<type name="Media" extends="AbstractMedia" package="at.spot.core.model.media">
 		<properties>
 			<property name="content">
-				<datatype class="java.lang.byte[]" />
+				<datatype class="byte[]" />
 				<description>The content of the media object.</description>
 			</property>
 		</properties>
@@ -259,6 +259,24 @@
 			<property name="locale">
 				<datatype class="java.util.Locale" />
 				<description>The java locale associated with this language.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="Currency" package="at.spot.core.model.internationalization">
+		<description>Represents a currency.</description>
+		<properties>
+			<property name="isoCode">
+				<datatype class="java.lang.String" />
+				<description>The iso code of the currency.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="name">
+				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+				<description>The localized name of the currency.</description>
 			</property>
 		</properties>
 	</type>

@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.21 um 12:13:10 PM CET 
+// Generiert: 2017.03.23 um 10:17:34 PM CET 
 //
 
 
@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="accessors" type="{}Accessors" minOccurs="0"/>
  *         &lt;element name="relation" type="{}Relation" minOccurs="0"/>
  *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
+ *         &lt;element name="defaultValue" type="{}DefaultValue" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -47,7 +48,8 @@ import javax.xml.bind.annotation.XmlType;
     "modifiers",
     "accessors",
     "relation",
-    "validators"
+    "validators",
+    "defaultValue"
 })
 public class Property {
 
@@ -58,6 +60,7 @@ public class Property {
     protected Accessors accessors;
     protected Relation relation;
     protected Validators validators;
+    protected DefaultValue defaultValue;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -203,6 +206,30 @@ public class Property {
      */
     public void setValidators(Validators value) {
         this.validators = value;
+    }
+
+    /**
+     * Ruft den Wert der defaultValue-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DefaultValue }
+     *     
+     */
+    public DefaultValue getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
+     * Legt den Wert der defaultValue-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DefaultValue }
+     *     
+     */
+    public void setDefaultValue(DefaultValue value) {
+        this.defaultValue = value;
     }
 
     /**
