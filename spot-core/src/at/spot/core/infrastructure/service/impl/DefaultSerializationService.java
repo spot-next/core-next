@@ -14,11 +14,7 @@ public class DefaultSerializationService implements SerializationService {
 	@Autowired
 	SerializationStrategy jsonSerializationStrategy;
 
-	SerializationStrategy bsonSerializationStrategy;
-
 	SerializationStrategy xmlSerializationStrategy;
-
-	SerializationStrategy propertyListSerializationStrategy;
 
 	/**
 	 * Users @Gson to serialize any object to a json string.
@@ -30,20 +26,7 @@ public class DefaultSerializationService implements SerializationService {
 
 	@Override
 	public <T> String toXml(final T object) throws SerializationException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> String toBson(final T object) throws SerializationException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> String toPropertyList(final T object) throws SerializationException {
-		// TODO Auto-generated method stub
-		return null;
+		return xmlSerializationStrategy.serialize(object);
 	}
 
 	@Override
@@ -53,20 +36,7 @@ public class DefaultSerializationService implements SerializationService {
 
 	@Override
 	public <T> T fromXml(final String value, final Class<T> type) throws DeserializationException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T fromBson(final String value, final Class<T> type) throws DeserializationException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T fromPropertyList(final String value, final Class<T> type) throws DeserializationException {
-		// TODO Auto-generated method stub
-		return null;
+		return xmlSerializationStrategy.deserialize(value, type);
 	}
 
 }

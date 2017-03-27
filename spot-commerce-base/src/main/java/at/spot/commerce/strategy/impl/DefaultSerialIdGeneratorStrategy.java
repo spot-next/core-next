@@ -1,4 +1,4 @@
-package at.spot.commerce.exception.impl;
+package at.spot.commerce.strategy.impl;
 
 import at.spot.commerce.model.order.AbstractOrder;
 import at.spot.commerce.strategy.SerialIdGeneratorStrategy;

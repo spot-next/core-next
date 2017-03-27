@@ -4,9 +4,9 @@ import java.util.List;
 
 import at.spot.commerce.OrderStatus;
 import at.spot.commerce.exception.OrderCancellationException;
-import at.spot.commerce.exception.impl.OrderIdGeneratorStrategy;
 import at.spot.commerce.model.customer.Customer;
 import at.spot.commerce.model.order.Order;
+import at.spot.commerce.strategy.impl.OrderIdGeneratorStrategy;
 
 /**
  * This service provides functionality around the order object.

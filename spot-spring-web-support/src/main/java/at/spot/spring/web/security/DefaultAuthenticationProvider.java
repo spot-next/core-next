@@ -55,7 +55,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 			final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(name, password,
 					grantedAuths);
 
-			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.uid,
+			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getId(),
 					user.getPassword(), grantedAuths);
 			auth.setDetails(userDetails);
 
@@ -78,7 +78,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	protected boolean isAdminUser(final User user) {
 		final String adminUserName = configurationService.getString(ADMIN_USER_NAME_KEY, DEFAULT_ADMIN_USER_NAME);
 
-		return StringUtils.equals(user.uid, adminUserName);
+		return StringUtils.equals(user.getId(), adminUserName);
 	}
 
 	@Override
