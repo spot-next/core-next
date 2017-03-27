@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.type;
 
-import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -8,18 +7,17 @@ import java.util.Map;
 public class LocalizedString implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
-	Map<Locale, String> strings;
+	final Map<Locale, String> strings = new HashMap<>();;
 
-	public LocalizedString(String string) {
+	public LocalizedString() {
+	}
+
+	public LocalizedString(final String string) {
 		this(string, getDefaultLocale());
 	}
 
-	public LocalizedString(String string, Locale locale) {
-		strings = new HashMap<>();
-
-		for (Locale l : DateFormat.getAvailableLocales()) {
-			strings.put(l, null);
-		}
+	public LocalizedString(final String string, final Locale locale) {
+		strings.put(locale, string);
 	}
 
 	/**
@@ -32,8 +30,22 @@ public class LocalizedString implements java.io.Serializable {
 	/**
 	 * Returns the string for the given locale.
 	 */
-	public String get(Locale locale) {
+	public String get(final Locale locale) {
 		return strings.get(locale);
+	}
+
+	/**
+	 * Sets the string of the default locale.
+	 */
+	public String set(final String string) {
+		return strings.put(getDefaultLocale(), string);
+	}
+
+	/**
+	 * Sets the string for the given locale.
+	 */
+	public String get(final String string, final Locale locale) {
+		return strings.put(locale, string);
 	}
 
 	/**
@@ -42,19 +54,17 @@ public class LocalizedString implements java.io.Serializable {
 	 * @return
 	 */
 	protected static Locale getDefaultLocale() {
-		// TODO: read default locale from i18nservice
-		return Locale.ENGLISH;
+		return Locale.getDefault();
 	}
 
 	@Override
 	public String toString() {
 		String ret = "";
 
-		for (Locale l : strings.keySet()) {
+		for (final Locale l : strings.keySet()) {
 			ret += String.format("%s=%s\n", l, strings.get(l));
 		}
 
 		return ret;
 	}
-
 }

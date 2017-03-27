@@ -132,7 +132,7 @@
 	<type name="Price" typeCode="Price" package="at.spot.commerce.model.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
-			<property name="productId">
+			<property name="id">
 				<datatype class="java.lang.String" />
 				<description>The product id the price is used for.</description>
 				<modifiers unique="true" />
@@ -149,7 +149,7 @@
 				<description>The assigned user.</description>
 			</property>
 			<property name="price">
-				<datatype class="java.lang.Double" />
+				<datatype class="java.math.BigDecimal" />
 				<description>The price value.</description>
 			</property>
 			<property name="currency">
@@ -160,6 +160,28 @@
 				<datatype class="boolean" />
 				<description>Defines if the price is net or gross.</description>
 				<defaultValue>true</defaultValue>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="Tax" package="at.spot.commerce.model.store">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique id of the tax.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="value">
+				<datatype class="java.math.BigDecimal" />
+			</property>
+			<property name="description">
+				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			</property>
+			<property name="country">
+				<datatype class="Country" />
 			</property>
 		</properties>
 	</type>
@@ -175,7 +197,25 @@
 			</property>
 			<property name="value">
 				<datatype class="int" />
+				<description>The actual stock level.</description>
 				<defaultValue>0</defaultValue>
+			</property>
+			<property name="reserved">
+				<datatype class="int" />
+				<description>The reserved amount of stock.</description>
+				<defaultValue>0</defaultValue>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="FutureStock" extends="Stock" package="at.spot.commerce.model.store">
+		<properties>
+			<property name="availableAt">
+				<datatype class="java.lang.String" />
+				<description>Defines a future stock and when it will be available.</description>
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
 			</property>
 		</properties>
 	</type>
@@ -187,6 +227,13 @@
 		<properties>
 			<property name="id">
 				<datatype class="java.lang.String" />
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="customer">
+				<datatype class="Customer" />
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />

@@ -4,16 +4,20 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Set;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 public interface I18nService {
 
 	/**
 	 * Returns the default locale - configured in the application properties.
+	 * This locale is also set as java default locale:
+	 * {@link Locale#setDefault(Locale)}
 	 */
 	Locale getDefaultLocale();
 
 	/**
-	 * Returns the currently used locale, either defined by
-	 * {@link #getDefaultLocale()} or by the system.
+	 * Returns the locale set as default in the current thread. See
+	 * {@link LocaleContextHolder#getLocale()}.
 	 * 
 	 * @return
 	 */

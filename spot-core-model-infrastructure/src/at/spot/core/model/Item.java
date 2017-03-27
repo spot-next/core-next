@@ -52,6 +52,22 @@ public abstract class Item implements Serializable {
 		this.isProxy = isProxy;
 	}
 
+	public Long getPk() {
+		return pk;
+	}
+
+	public DateTime getLastModified() {
+		return lastModified;
+	}
+
+	public DateTime getCreated() {
+		return created;
+	}
+
+	public boolean isProxy() {
+		return isProxy;
+	}
+
 	/**
 	 * This property hold {@link ExtendedAttributes} objects. It's an easy way
 	 * to customize an {@link ItemType} object without subclassing it.<br />

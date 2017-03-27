@@ -1,8 +1,14 @@
 package at.spot.commerce.service;
 
 import at.spot.commerce.model.customer.Customer;
+import at.spot.core.infrastructure.service.UserService;
+import at.spot.core.model.user.UserGroup;
 
-public interface CustomerService {
+/**
+ * This service provides customer-oriented functionality, like password reset.
+ *
+ */
+public interface CustomerService extends UserService<Customer, UserGroup> {
 
 	/**
 	 * Creates a password reset token for the given user. The token is only
@@ -12,4 +18,5 @@ public interface CustomerService {
 	 * @return
 	 */
 	String createResetPasswordToken(Customer customer);
+
 }
