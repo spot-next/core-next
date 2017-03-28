@@ -2,6 +2,14 @@
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="itemtypes.xsd">
 
+	<!-- enums -->
+
+	<enum name="ApprovalStatus" package="at.spot.core">
+		<description>The approval status, eg of products or cms items.</description>
+		<value code="APPROVED"/>
+		<value code="UNAPPROVED"/>
+	</enum>
+
 	<!-- users and groups -->
 
 	<type name="Principal" abstract="true" package="at.spot.core.model.user">
@@ -124,6 +132,26 @@
 		</properties>
 	</type>
 
+	<!-- basic catalogs -->
+
+	<type name="Catalog" typeCode="Catalog" package="at.spot.core.model.catalog">
+		<description>This is the container for all categories and products.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique product code.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="name">
+				<datatype class="java.lang.String" />
+				<description>The name of the catalog.</description>
+			</property>
+		</properties>
+	</type>
+	
 	<!-- media objects -->
 
 	<type name="AbstractMedia" abstract="true" package="at.spot.core.model.media">

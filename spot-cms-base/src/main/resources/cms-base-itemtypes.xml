@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="itemtypes.xsd">
+
+	<!-- enums -->
+
+	<enum name="TemplateRenderEngine" package="at.spot.cms">
+		<description>The render engine used to render cms items.</description>
+		<value code="VELOCITY"/>
+		<value code="FREEMARKER"/>
+		<value code="JSP"/>
+	</enum>
+
+	<!-- cms item types -->
+
+	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique id.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="catalog">
+				<datatype class="Catalog" />
+				<description>The content catalog of the item.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="restrictions">
+				<datatype class="java.util.List">
+					<genericArgument class="CmsRestriction" />
+				</datatype>
+				<description>The restrictions evaluate if the current cms item should be rendered.</description>
+			</property>
+			<property name="onlyOneRestrictionMustApply">
+				<datatype class="boolean" />
+				<description>
+					f set to true, only one restriction must evaluate to "show cms item" 
+					for the item to be visible.
+				</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CmsRestriction" extends="AbstractCmsItem" package="at.spot.cms.model">
+		<properties>
+			<property name="evaluator">
+				<datatype class="java.lang.String" />
+				<description>The spring bean id of the corresponding evaluator implementation.</description>
+			</property>
+			<property name="evaluatorScript">
+				<datatype class="java.lang.String" />
+				<description>The beanshell script that evaluates the cms item visibility.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem"
+		package="at.spot.cms.model">
+		<properties>
+			<property name="renderContextProvider">
+				<datatype class="java.lang.String" />
+				<description>
+					The spring bean id of the context provider implementation.
+				</description>
+			</property>
+			<property name="renderContextPreparationScript">
+				<datatype class="java.lang.String" />
+				<description>
+					Beanshell code that is executed before the page rendering.
+					It can be used to prepare the render context variables.
+				</description>
+			</property>
+			<property name="content">
+				<datatype class="java.lang.String" />
+			</property>
+			<property name="renderEngine">
+				<datatype class="java.util.List">
+					<genericArgument class="at.spot.cms.TemplateRenderEngine" />
+				</datatype>
+			</property>
+		</properties>
+	</type>
+
+	<type name="AbstractCmsContainerComponent" abstract="true"
+		extends="AbstractCmsComponent" package="at.spot.cms.model">
+		<properties>
+			<property name="contentSlots">
+				<datatype class="java.util.List">
+					<genericArgument class="ContentSlot" />
+				</datatype>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CmsComponent" extends="AbstractCmsComponent" package="at.spot.cms.model">
+		<properties>
+		</properties>
+	</type>
+
+	<type name="ContentSlot" extends="AbstractCmsItem" package="at.spot.cms.model">
+		<properties>
+			<property name="cmsComponents">
+				<datatype class="java.util.Map">
+					<genericArgument class="java.lang.String" />
+					<genericArgument class="CmsComponent" />
+				</datatype>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
+		package="at.spot.cms.model">
+		<properties>
+			<property name="title">
+				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			</property>
+			<property name="favIconPath">
+				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			</property>
+			<property name="favIcon">
+				<datatype class="Media" />
+			</property>
+			<property name="metaTags">
+				<datatype class="java.util.Map">
+					<genericArgument class="java.lang.String"/>
+					<genericArgument class="at.spot.core.infrastructure.type.LocalizedString"/>
+				</datatype>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CmsPage" extends="CmsPageTemplate" package="at.spot.cms.model">
+		<properties>
+			<property name="template">
+				<datatype class="CmsPageTemplate" />
+			</property>
+		</properties>
+	</type>
+
+</types>

@@ -2,6 +2,18 @@
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="itemtypes.xsd">
 
+	<!-- enums -->
+
+	<enum name="OrderStatus" package="at.spot.commerce">
+		<description>The render engine used to render cms items.</description>
+		<value code="OPEN"/>
+		<value code="APPROVAL_PENDING"/>
+		<value code="APPROVED"/>
+		<value code="APPROVAL_REJECTED"/>
+		<value code="CANCELLED"/>
+		<value code="UNKNOWN"/>
+	</enum>
+
 	<!-- base configuration -->
 
 	<type name="BaseStore" typeCode="BaseStore" package="at.spot.commerce.model.store">
@@ -35,23 +47,6 @@
 	</type>
 
 	<!-- product related types -->
-	<type name="Catalog" typeCode="Catalog" package="at.spot.commerce.model.catalog">
-		<description>This is the container for all categories and products.</description>
-		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique product code.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
-			<property name="name">
-				<datatype class="java.lang.String" />
-				<description>The name of the catalog.</description>
-			</property>
-		</properties>
-	</type>
 
 	<type name="Product" typeCode="Product" package="at.spot.commerce.model.catalog">
 		<description>The base type Product is used for all purchasable items.</description>

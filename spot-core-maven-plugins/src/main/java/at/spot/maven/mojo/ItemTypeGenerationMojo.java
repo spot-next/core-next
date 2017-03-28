@@ -9,12 +9,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.lang.model.element.Modifier;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -32,15 +31,19 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import at.spot.core.infrastructure.annotation.ItemType;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
+
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.FileUtils;
+import at.spot.maven.xml.EnumType;
+import at.spot.maven.xml.EnumValue;
 import at.spot.maven.xml.GenericArgument;
+import at.spot.maven.xml.ItemType;
 import at.spot.maven.xml.Property;
-import at.spot.maven.xml.Type;
 import at.spot.maven.xml.Types;
 import at.spot.maven.xml.Validator;
 import at.spot.maven.xml.ValidatorArgument;
@@ -87,7 +90,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 
 		if (!this.outputJavaDirectory.mkdirs()) {
-			getLog().warn("Source directory already exists - overwriting files.");
+			// getLog().warn("Source directory already exists - overwriting
+			// files.");
+			this.outputJavaDirectory.delete();
 		}
 
 		try {
@@ -100,7 +105,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
 		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
-		final Map<String, Type> itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
+		final TypeDefinitions itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
 		generateJavaCode(itemTypesDefinitions);
 	}
 
@@ -160,11 +165,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param definitions
 	 * @return
 	 */
-	protected Map<String, Type> aggregateTypeDefninitions(final List<InputStream> definitions) {
-		final Map<String, Type> defs = new HashMap<>();
+	protected TypeDefinitions aggregateTypeDefninitions(final List<InputStream> definitions) {
+		final TypeDefinitions typeDefinitions = new TypeDefinitions();
+
+		final Map<String, at.spot.maven.xml.ItemType> defs = typeDefinitions.getItemTypes();
+		final Map<String, EnumType> enumsDefs = typeDefinitions.getEnumTypes();
 
 		// add base item type, just to make it referencable
-		final Type itemType = new Type();
+		final ItemType itemType = new ItemType();
 		itemType.setName(Item.class.getSimpleName());
 		itemType.setPackage(Item.class.getPackage().getName());
 		itemType.setAbstract(true);
@@ -172,10 +180,31 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		defs.put(itemType.getName(), itemType);
 
 		for (final InputStream defFile : definitions) {
-			final List<Type> typesDefs = loadTypeDefinition(defFile);
+			final Types typesDefs = loadTypeDefinition(defFile);
 
-			for (final Type typeDef : typesDefs) {
-				Type existingType = defs.get(typeDef.getName());
+			// handle enums
+			for (final EnumType enumDef : typesDefs.getEnum()) {
+				final EnumType existingEnum = enumsDefs.get(enumDef.getName());
+
+				if (existingEnum != null && enumDef.getValue() != null) {
+					for (final EnumValue v : enumDef.getValue()) {
+						if (existingEnum.getValue() != null) {
+							final boolean exists = existingEnum.getValue().stream()
+									.filter((i) -> !StringUtils.equals(i.getCode(), v.getCode())).findAny().isPresent();
+
+							if (!exists) {
+								existingEnum.getValue().add(v);
+							}
+						}
+					}
+				} else {
+					enumsDefs.put(enumDef.getName(), enumDef);
+				}
+			}
+
+			// handle types
+			for (final ItemType typeDef : typesDefs.getType()) {
+				ItemType existingType = defs.get(typeDef.getName());
 
 				if (existingType == null) {
 					existingType = typeDef;
@@ -209,7 +238,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 		}
 
-		return defs;
+		return typeDefinitions;
+
 	}
 
 	/**
@@ -219,7 +249,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param file
 	 * @return
 	 */
-	protected List<Type> loadTypeDefinition(final InputStream file) {
+	protected Types loadTypeDefinition(final InputStream file) {
 		Types typeDef = null;
 
 		try {
@@ -233,7 +263,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			getLog().error(e);
 		}
 
-		return typeDef != null ? typeDef.getType() : Collections.emptyList();
+		return typeDef;
 	}
 
 	/**
@@ -247,26 +277,54 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return StringUtils.endsWith(fileName, "-itemtypes.xml");
 	}
 
-	protected void generateJavaCode(final Map<String, Type> definitions) throws IOException, MojoExecutionException {
+	// protected void formatSources(File file) {
+	// Jalopy jalopy = new Jalopy();
+	// jalopy.setFileFormat(FileFormat.DEFAULT);
+	// jalopy.setInput(tempFile);
+	// jalopy.setOutput(b);
+	// jalopy.format();
+	// }
+
+	protected void generateJavaCode(final TypeDefinitions definitions) throws IOException, MojoExecutionException {
 		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 
 		// Get the VirtualMachine implementation.
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
-		for (final String typeName : definitions.keySet()) {
+		for (final String enumName : definitions.getEnumTypes().keySet()) {
+			final EnumType enumType = definitions.getEnumTypes().get(enumName);
+
+			final TypeSpec.Builder enumBuilder = TypeSpec.enumBuilder(enumName).addModifiers(Modifier.PUBLIC);
+
+			if (StringUtils.isNotBlank(enumType.getDescription())) {
+				enumBuilder.addJavadoc(enumType.getDescription());
+			}
+
+			if (enumType.getValue() != null) {
+				for (final EnumValue enumVal : enumType.getValue()) {
+					enumBuilder.addEnumConstant(enumVal.getCode());
+				}
+			}
+
+			final TypeSpec enumObj = enumBuilder.build();
+
+			final JavaFile javaFile = JavaFile.builder(enumType.getPackage(), enumObj).build();
+			javaFile.writeTo(outputJavaDirectory);
+		}
+
+		for (final String typeName : definitions.getItemTypes().keySet()) {
 			// the Item type base class is hardcoded, so ignore it
 			if (StringUtils.equals(typeName, Item.class.getSimpleName())) {
 				continue;
 			}
 
-			final Type type = definitions.get(typeName);
+			final ItemType type = definitions.getItemTypes().get(typeName);
 
 			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
 			unit.setNamespace(type.getPackage());
 			unit.setComment(Comment.D, "This file is auto-generated. All changes will be overwritten.");
 
-			final PackageClass cls = unit.newClass(typeName);
-			cls.setAccess(Access.PUBLIC);
+			final PackageClass cls = unit.newPublicClass(typeName);
 
 			if (type.isAbstract() != null) {
 				cls.isAbstract(type.isAbstract());
@@ -281,7 +339,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			{ // add the item annotation
-				addImport(definitions, cls, ItemType.class);
+				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
 
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
@@ -296,7 +354,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			cls.setExtends(Item.class.getName());
 
 			if (StringUtils.isNotBlank(type.getExtends())) {
-				final Type superType = definitions.get(type.getExtends());
+				final ItemType superType = definitions.getItemTypes().get(type.getExtends());
 
 				if (superType != null) {
 					cls.setExtends(superType.getName());
@@ -370,7 +428,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void addImport(final Map<String, Type> definitions, final PackageClass cls, final Class<?> type) {
+	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {
 		addImport(definitions, cls, type.getName());
 	}
 
@@ -382,16 +440,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param type
 	 * @return
 	 */
-	protected String addImport(final Map<String, Type> definitions, final PackageClass cls, final String type) {
+	protected String addImport(final TypeDefinitions definitions, final PackageClass cls, final String type) {
 		final String importType = StringUtils.replace(type, "[]", "");
 
 		if (StringUtils.contains(importType, ".")) {
 			cls.addImport(type);
 		} else {
-			final Type def = definitions.get(importType);
+			final ItemType itemDef = definitions.getItemTypes().get(importType);
+			final EnumType enumDef = definitions.getEnumTypes().get(importType);
 
-			if (def != null) {
-				cls.addImport(String.format("%s.%s", def.getPackage(), def.getName()));
+			if (itemDef != null) {
+				cls.addImport(String.format("%s.%s", itemDef.getPackage(), itemDef.getName()));
+			} else if (enumDef != null) {
+				cls.addImport(String.format("%s.%s", enumDef.getPackage(), enumDef.getName()));
 			} else {
 				getLog().debug(String.format("Can't add import %s to type %S", importType, cls.getName()));
 			}

@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.23 um 10:17:34 PM CET 
+// Generiert: 2017.03.28 um 02:38:38 PM CEST 
 //
 
 
@@ -17,12 +17,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Type complex type.
+ * <p>Java-Klasse für ItemType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Type">
+ * &lt;complexType name="ItemType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -52,14 +52,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Type", propOrder = {
+@XmlType(name = "ItemType", propOrder = {
     "description",
     "properties"
 })
-public class Type {
+public class ItemType {
 
     protected String description;
-    protected Type.Properties properties;
+    protected ItemType.Properties properties;
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "package", required = true)
@@ -100,10 +100,10 @@ public class Type {
      * 
      * @return
      *     possible object is
-     *     {@link Type.Properties }
+     *     {@link ItemType.Properties }
      *     
      */
-    public Type.Properties getProperties() {
+    public ItemType.Properties getProperties() {
         return properties;
     }
 
@@ -112,10 +112,10 @@ public class Type {
      * 
      * @param value
      *     allowed object is
-     *     {@link Type.Properties }
+     *     {@link ItemType.Properties }
      *     
      */
-    public void setProperties(Type.Properties value) {
+    public void setProperties(ItemType.Properties value) {
         this.properties = value;
     }
 

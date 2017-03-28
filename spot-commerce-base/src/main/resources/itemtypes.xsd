@@ -6,14 +6,30 @@
 	<xs:element name="types">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="type" type="Type" minOccurs="0"
+				<xs:element name="enum" type="EnumType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="type" type="ItemType" minOccurs="0"
 					maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 
 	</xs:element>
 
-	<xs:complexType name="Type">
+	<xs:complexType name="EnumType" >
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="value" type="EnumValue" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="package" type="xs:string" use="required" />
+	</xs:complexType>
+	
+	<xs:complexType name="EnumValue">
+		<xs:attribute name="code" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="ItemType">
 		<xs:sequence>
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
@@ -70,7 +86,7 @@
 	</xs:complexType>
 
 	<xs:complexType name="DefaultValue" mixed="true">
-        <xs:attribute name="value" use="optional" type="xs:string"/>
+		<xs:attribute name="value" use="optional" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="Property">
@@ -121,10 +137,12 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="wildcard" type="xs:boolean" use="optional" default="false">
+		<xs:attribute name="wildcard" type="xs:boolean" use="optional"
+			default="false">
 			<xs:annotation>
 				<xs:documentation>
-					If true the resulting generic type will be of &gt;? extends Type>
+					If true the resulting generic type will be of
+					&gt;? extends Type>
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

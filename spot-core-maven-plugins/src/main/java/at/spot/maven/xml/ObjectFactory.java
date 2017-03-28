@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.23 um 10:17:34 PM CET 
+// Generiert: 2017.03.28 um 02:38:38 PM CEST 
 //
 
 
@@ -37,11 +37,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Type }
+     * Create an instance of {@link ItemType }
      * 
      */
-    public Type createType() {
-        return new Type();
+    public ItemType createItemType() {
+        return new ItemType();
     }
 
     /**
@@ -50,6 +50,38 @@ public class ObjectFactory {
      */
     public Types createTypes() {
         return new Types();
+    }
+
+    /**
+     * Create an instance of {@link EnumType }
+     * 
+     */
+    public EnumType createEnumType() {
+        return new EnumType();
+    }
+
+    /**
+     * Create an instance of {@link EnumValue }
+     * 
+     */
+    public EnumValue createEnumValue() {
+        return new EnumValue();
+    }
+
+    /**
+     * Create an instance of {@link ValidatorArgument }
+     * 
+     */
+    public ValidatorArgument createValidatorArgument() {
+        return new ValidatorArgument();
+    }
+
+    /**
+     * Create an instance of {@link Accessors }
+     * 
+     */
+    public Accessors createAccessors() {
+        return new Accessors();
     }
 
     /**
@@ -77,14 +109,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ValidatorArgument }
-     * 
-     */
-    public ValidatorArgument createValidatorArgument() {
-        return new ValidatorArgument();
-    }
-
-    /**
      * Create an instance of {@link Validators }
      * 
      */
@@ -109,14 +133,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Accessors }
-     * 
-     */
-    public Accessors createAccessors() {
-        return new Accessors();
-    }
-
-    /**
      * Create an instance of {@link Validator }
      * 
      */
@@ -133,11 +149,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Type.Properties }
+     * Create an instance of {@link ItemType.Properties }
      * 
      */
-    public Type.Properties createTypeProperties() {
-        return new Type.Properties();
+    public ItemType.Properties createItemTypeProperties() {
+        return new ItemType.Properties();
     }
 
 }
