@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="itemtypes.xsd">
+
+	<!-- enums -->
+
+	<enum name="ApprovalStatus" package="at.spot.core">
+		<description>The approval status, eg of products or cms items.</description>
+		<value code="APPROVED"/>
+		<value code="UNAPPROVED"/>
+	</enum>
+
+	<!-- users and groups -->
+
+	<type name="Principal" abstract="true" package="at.spot.core.model.user">
+		<description>The base type all user related item types.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique id of the principal object.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="3" />
+					</validator>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="shortName">
+				<datatype class="java.lang.String" />
+				<description>The short name identifying the principal object.
+				</description>
+			</property>
+			<property name="groups">
+				<datatype class="java.util.List">
+					<genericArgument class="PrincipalGroup" />
+				</datatype>
+				<description>The principal groups assigned to the user.</description>
+				<modifiers isReference="true" />
+				<relation type="ManyToMany" referencedType="PrincipalGroup"
+					mappedTo="members" />
+			</property>
+		</properties>
+	</type>
+
+	<type name="PrincipalGroup" abstract="true" package="at.spot.core.model.user">
+		<description>The base type all principal group-like structures.</description>
+		<properties>
+			<property name="members">
+				<datatype class="java.util.List">
+					<genericArgument class="Principal" wildcard="true" />
+				</datatype>
+				<description>The member of the group.
+				</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="User" typeCode="User" extends="Principal"
+		package="at.spot.core.model.user">
+		<description>Represents a user.</description>
+		<properties>
+			<property name="addresses">
+				<datatype class="java.util.List">
+					<genericArgument class="Address" />
+				</datatype>
+				<description>The user's addresses.</description>
+				<relation type="OneToMany" referencedType="Address"
+					mappedTo="owner" />
+			</property>
+			<property name="emailAddress">
+				<datatype class="java.lang.String" />
+				<description>The main email address of the user.</description>
+			</property>
+			<property name="password">
+				<datatype class="java.lang.String" />
+				<description>The login password, can be encrypted.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="UserGroup" typeCode="UserGroup" extends="PrincipalGroup" package="at.spot.core.model.user">
+		<description>The base type all user group-like structures.</description>
+	</type>
+
+	<!-- addresses -->
+
+	<type name="Address" typeCode="Address" package="at.spot.core.model.user">
+		<properties>
+			<property name="owner">
+				<datatype class="Item" />
+				<description>The owner of this address.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="type">
+				<datatype class="AddressType" />
+				<description>The address type of this address.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
+	</type>
+
+	<type name="AddressType" typeCode="AddressType" package="at.spot.core.model.user">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique code of this address type.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
+	</type>
+
+	<type name="ContactDetailsType" typeCode="ContactDetailsType" package="at.spot.core.model.user">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique code of this contact details type.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
+	</type>
+
+	<!-- basic catalogs -->
+
+	<type name="Catalog" typeCode="Catalog" package="at.spot.core.model.catalog">
+		<description>This is the container for all categories and products.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique product code.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="name">
+				<datatype class="java.lang.String" />
+				<description>The name of the catalog.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<!-- media objects -->
+
+	<type name="AbstractMedia" abstract="true" package="at.spot.core.model.media">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique id of this media object.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="mimeType">
+				<datatype class="java.lang.String" />
+				<description>The mime type of the content.</description>
+			</property>
+			<property name="encoding">
+				<datatype class="java.lang.String" />
+				<description>The encoding of the content, eg. "UTF-8" or "base64".</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="Media" extends="AbstractMedia" package="at.spot.core.model.media">
+		<properties>
+			<property name="content">
+				<datatype class="byte[]" />
+				<description>The content of the media object.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="FileMedia" extends="AbstractMedia" package="at.spot.core.model.media">
+		<properties>
+			<property name="content">
+				<datatype class="java.io.InputStream" />
+				<description>The input stream of the file from "contentPath".</description>
+				<accessors valueProvider="fileMediaContentValueProvider" />
+			</property>
+			<property name="contentPath">
+				<datatype class="java.lang.String" />
+				<description>The path to the actual file of the media object.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="MediaContainer" package="at.spot.core.model.media">
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>The unique id of this media container.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="medias">
+				<datatype class="java.util.List" />
+				<description>A list of all related media objects..</description>
+			</property>
+		</properties>
+	</type>
+
+	<!-- internationalization -->
+
+	<type name="Country" package="at.spot.core.model.internationalization">
+		<properties>
+			<property name="iso3Code">
+				<datatype class="java.lang.String" />
+				<description>
+					The ISO-3 code of the country.
+					@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="3" />
+						<argument name="max" numberValue="3" />
+					</validator>
+				</validators>
+			</property>
+			<property name="iso2Code">
+				<datatype class="java.lang.String" />
+				<description>
+					The ISO-2 code of the country.
+					@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="2" />
+						<argument name="max" numberValue="2" />
+					</validator>
+				</validators>
+			</property>
+			<property name="shortName">
+				<datatype class="java.lang.String" />
+				<description>The short name of the country, eg. "Austria"".</description>
+			</property>
+			<property name="longName">
+				<datatype class="java.lang.String" />
+				<description>The long name of the country, eg. "Republic of Austria".</description>
+			</property>
+			<property name="languages">
+				<datatype class="java.util.List">
+					<genericArgument class="Language" />
+				</datatype>
+				<description>The languages available for that country.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="Language" package="at.spot.core.model.internationalization">
+		<description>This represents a language object and it's locale.</description>
+		<properties>
+			<property name="iso3Code">
+				<datatype class="java.lang.String" />
+				<description>
+					The ISO-3 code of the language.
+					@see https://en.wikipedia.org/wiki/ISO_639-3.
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="3" />
+						<argument name="max" numberValue="3" />
+					</validator>
+				</validators>
+			</property>
+			<property name="locale">
+				<datatype class="java.util.Locale" />
+				<description>The java locale associated with this language.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="Currency" package="at.spot.core.model.internationalization">
+		<description>Represents a currency.</description>
+		<properties>
+			<property name="isoCode">
+				<datatype class="java.lang.String" />
+				<description>The iso code of the currency.</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="name">
+				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+				<description>The localized name of the currency.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="LocalizationKey" package="at.spot.core.model.internationalization">
+		<description>This type can be used to store localized values different languages/locales.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>
+					The unique id of the translation key
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="locale">
+				<datatype class="java.util.Locale" />
+				<description>
+					The locale of the translation key.
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="value">
+				<datatype class="java.lang.String" />
+				<description>The localized value of the key.</description>
+			</property>
+		</properties>
+	</type>
+
+	<!-- configuration -->
+	
+	<type name="Configuration" package="at.spot.core.model.configuration">
+		<description>This type can be used to store a set of configuration entries.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>
+					The unique id of the configuration
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="entries">
+				<datatype class="java.util.List">
+					<genericArgument class="ConfigEntry"/>
+				</datatype>
+				<description>
+					The config entries referenced by this configuration. 
+				</description>
+			</property>
+			<property name="description">
+				<datatype class="java.lang.String" />
+				<description>The short description of the configuration's purpose.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="ConfigEntry" package="at.spot.core.model.configuration">
+		<description>This type can be used to store a configuration entry.</description>
+		<properties>
+			<property name="id">
+				<datatype class="java.lang.String" />
+				<description>
+					The unique id of the configuration
+				</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="stringValue">
+				<datatype class="java.lang.String" />
+			</property>
+			<property name="intValue">
+				<datatype class="java.lang.Integer" />
+			</property>
+			<property name="longValue">
+				<datatype class="java.lang.Long" />
+			</property>
+			<property name="doubleValue">
+				<datatype class="java.lang.Double" />
+			</property>
+			<property name="floatValue">
+				<datatype class="java.lang.Float" />
+			</property>
+			<property name="description">
+				<datatype class="java.lang.String" />
+				<description>The short description of the configuration entry#s purpose.</description>
+			</property>
+		</properties>
+	</type>
+	
+	
+</types>

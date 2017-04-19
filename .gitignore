@@ -1,3 +1,10 @@
+*.db
+.metadata
+bin
+.recommenders
+RemoteSystemsTempFiles
+gensrc
+
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -10,3 +17,9 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+spot-core/log
+Servers
+test
+spot-management-console/gwt-unitCache
+spot-core/gensrc

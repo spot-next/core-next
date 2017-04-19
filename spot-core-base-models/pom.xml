@@ -1,0 +1,82 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>at.spot</groupId>
+	<artifactId>spot-core-base-models</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>spOt core base models</name>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring.version>4.3.3.RELEASE</spring.version>
+		<log4j.version>1.2.17</log4j.version>
+		<junit.version>4.10</junit.version>
+
+		<!-- nexus repositry -->
+		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
+		</repository>
+		<snapshotRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>interval:300</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>testsrc</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>resource</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>resource</directory>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-core-model-infrastructure</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+
+</project>

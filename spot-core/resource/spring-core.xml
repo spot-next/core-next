@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:lang="http://www.springframework.org/schema/lang" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<context:spring-configured />
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+
+	<context:component-scan base-package="at.spot.core" />
+
+	<!-- This mapping of property value providers is used to fetch Item models 
+		from collection-like properties -->
+	<util:map id="itemPropertyValueProviders" key-type="java.lang.String"
+		value-type="at.spot.core.persistence.valueprovider.ItemPropertyValueProvider">
+		<!-- <entry key="Collection"> -->
+		<!-- <ref bean="collectionValueProvider" /> -->
+		<!-- </entry> -->
+		<!-- <entry key="Map"> -->
+		<!-- <ref bean="mapValueProvider" /> -->
+		<!-- </entry> -->
+		<!-- <entry key="Relation"> -->
+		<!-- <ref bean="relationValueProvider" /> -->
+		<!-- </entry> -->
+		<!-- <entry key="Item"> -->
+		<!-- <ref bean="referenceValueProvider" /> -->
+		<!-- </entry> -->
+	</util:map>
+
+
+	<!-- spring beans -->
+	<!-- define properties based parent messagesource -->
+	<bean id="reloadableMessageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames"
+			value="classpath:locale/validation,classpath:locale/messages" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<alias name="defaultMessageInterpolator" alias="messageInterpolator" />
+	<alias name="defaultMessageSource" alias="messageSource" />
+
+	<alias name="l10nService" alias="defaultMessageInterpolator" />
+	<alias name="l10nService" alias="defaultMessageSource" />
+	<bean id="defaultL10nService"
+		class="at.spot.core.infrastructure.service.impl.DefaultL10nService">
+		<property name="parentMessageSource" ref="reloadableMessageSource" />
+	</bean>
+
+	<!-- JSR-303 validator for spring -->
+
+	<alias name="javaxValidator" alias="validator" />
+	<bean id="javaxValidator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+
+		<!-- set the l10n service as message sources -->
+		<property name="validationMessageSource" ref="l10nService" />
+		<property name="messageInterpolator" ref="l10nService" />
+	</bean>
+
+	<!-- ALIASES -->
+
+	<!-- services -->
+	<alias name="defaultTypeService" alias="typeService" />
+	<alias name="mapDBService" alias="persistenceService" />
+	<alias name="defaultModelService" alias="modelService" />
+	<alias name="defaultQueryService" alias="queryService" />
+	<alias name="consoleLoggingService" alias="loggingService" />
+	<alias name="defaultL10nService" alias="l10nService" />
+	<alias name="defaultI18nService" alias="i18nService" />
+	<alias name="defaultConfigurationService" alias="configurationService" />
+	<alias name="defaultValidationService" alias="validationService" />
+	<alias name="defaultUserService" alias="userService" />
+	<alias name="defaultAuthenticationService" alias="authenticationService" />
+	<alias name="defaultSessionService" alias="sessionService" />
+	<alias name="dummyAccessControlService" alias="accessControlService" />
+
+	<!-- strategies -->
+	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
+	<alias name="defaultJsonSerializationStrategy" alias="jsonSerializationStrategy" />
+	<alias name="xmlSerializationStrategy" alias="xmlSerializationStrategy" />
+	
+
+	<!-- converters -->
+	<!-- <bean name="abstractPopulatingConverter" -->
+	<!-- class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
+	<!-- abstract="true" /> -->
+
+	<bean id="itemTypeConverter" parent="genericPopulatingConverter">
+		<property name="targetClass"
+			value="at.spot.core.management.support.data.GenericItemDefinitionData" />
+		<property name="populators">
+			<list>
+				<ref bean="itemTypePopulator" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="abstractService"
+		class="at.spot.core.infrastructure.service.impl.AbstractService"
+		abstract="true" />
+</beans>
