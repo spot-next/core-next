@@ -11,6 +11,21 @@
 		<value code="JSP"/>
 	</enum>
 
+	<!-- image media -->
+	<type name="ImageMedia" extends="FileMedia" package="at.spot.core.model.media">
+		<properties>
+			<property name="content">
+				<datatype class="java.io.InputStream" />
+				<description>The input stream of the file from "contentPath".</description>
+				<accessors valueProvider="fileMediaContentValueProvider" />
+			</property>
+			<property name="contentPath">
+				<datatype class="java.lang.String" />
+				<description>The path to the actual file of the media object.</description>
+			</property>
+		</properties>
+	</type>
+
 	<!-- cms item types -->
 
 	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model">
@@ -83,6 +98,9 @@
 				<datatype class="java.util.List">
 					<genericArgument class="at.spot.cms.TemplateRenderEngine" />
 				</datatype>
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
 			</property>
 		</properties>
 	</type>
@@ -124,7 +142,7 @@
 				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
 			</property>
 			<property name="favIcon">
-				<datatype class="Media" />
+				<datatype class="ImageMedia" />
 			</property>
 			<property name="metaTags">
 				<datatype class="java.util.Map">
@@ -137,6 +155,12 @@
 
 	<type name="CmsPage" extends="CmsPageTemplate" package="at.spot.cms.model">
 		<properties>
+			<property name="urlMatches">
+				<datatype class="java.util.List">
+					<genericArgument class="java.lang.String"/>
+				</datatype>
+				<description>Holds the regex string to determine which URL should be handler by this page</description>
+			</property>
 			<property name="template">
 				<datatype class="CmsPageTemplate" />
 			</property>
