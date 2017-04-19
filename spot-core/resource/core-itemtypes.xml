@@ -184,7 +184,7 @@
 		</properties>
 	</type>
 
-	<type name="FileMedia" package="at.spot.core.model.media">
+	<type name="FileMedia" extends="AbstractMedia" package="at.spot.core.model.media">
 		<properties>
 			<property name="content">
 				<datatype class="java.io.InputStream" />
