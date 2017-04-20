@@ -2,7 +2,7 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.model.catalog.Catalog;
+import at.spot.core.model.catalog.Catalog;
 
 /**
  * This service provides functionality around the {@link Catalog} type.

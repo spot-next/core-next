@@ -60,7 +60,7 @@
 							<goal>itemTypeGeneration</goal>
 						</goals>
 						<configuration>
-							<title>spot-core</title>
+							<title>spot-cms-base</title>
 						</configuration>
 					</execution>
 				</executions>

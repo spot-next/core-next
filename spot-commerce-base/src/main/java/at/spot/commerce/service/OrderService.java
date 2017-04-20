@@ -2,7 +2,7 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.OrderStatus;
+import at.spot.commerce.enumeration.OrderStatus;
 import at.spot.commerce.exception.OrderCancellationException;
 import at.spot.commerce.model.customer.Customer;
 import at.spot.commerce.model.order.Order;

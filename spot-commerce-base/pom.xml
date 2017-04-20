@@ -60,7 +60,7 @@
 							<goal>itemTypeGeneration</goal>
 						</goals>
 						<configuration>
-							<title>spot-core</title>
+							<title>spot-commerce-base</title>
 						</configuration>
 					</execution>
 				</executions>

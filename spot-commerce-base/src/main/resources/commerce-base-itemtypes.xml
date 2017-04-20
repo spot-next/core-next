@@ -4,7 +4,7 @@
 
 	<!-- enums -->
 
-	<enum name="OrderStatus" package="at.spot.commerce">
+	<enum name="OrderStatus" package="at.spot.commerce.enumeration">
 		<description>The render engine used to render cms items.</description>
 		<value code="OPEN"/>
 		<value code="APPROVAL_PENDING"/>
@@ -16,17 +16,9 @@
 
 	<!-- base configuration -->
 
-	<type name="BaseStore" typeCode="BaseStore" package="at.spot.commerce.model.store">
+	<type name="BaseStore" typeCode="BaseStore" package="at.spot.commerce.model.store" extends="UniqueIdItem">
 		<description>This holds the base configuration for a store.</description>
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique base store id.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="name">
 				<datatype class="java.lang.String" />
 				<description>The name of the base store.</description>
@@ -48,17 +40,9 @@
 
 	<!-- product related types -->
 
-	<type name="Product" typeCode="Product" package="at.spot.commerce.model.catalog">
+	<type name="Product" typeCode="Product" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique product code.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="name">
 				<datatype class="java.lang.String" />
 				<description>The name of the product.</description>
@@ -82,17 +66,9 @@
 		</properties>
 	</type>
 
-	<type name="Category" typeCode="Category" package="at.spot.commerce.model.catalog">
+	<type name="Category" typeCode="Category" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
 		<description>Categories are used to group products.</description>
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique product code.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="name">
 				<datatype class="java.lang.String" />
 			</property>
@@ -110,24 +86,16 @@
 		</properties>
 	</type>
 
-	<type name="PriceGroup" typeCode="PriceGroup" package="at.spot.commerce.model.catalog">
+	<type name="PriceGroup" typeCode="PriceGroup" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
 		<description>This is the container for all categories and products.</description>
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique id of the price group.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 		</properties>
 	</type>
 
 	<type name="Price" typeCode="Price" package="at.spot.commerce.model.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
-			<property name="id">
+			<property name="productId">
 				<datatype class="java.lang.String" />
 				<description>The product id the price is used for.</description>
 				<modifiers unique="true" />
@@ -159,16 +127,8 @@
 		</properties>
 	</type>
 	
-	<type name="Tax" package="at.spot.commerce.model.store">
+	<type name="Tax" package="at.spot.commerce.model.store" extends="UniqueIdItem">
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique id of the tax.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="value">
 				<datatype class="java.math.BigDecimal" />
 			</property>
@@ -217,16 +177,9 @@
 
 	<!-- cart and orders -->
 
-	<type name="AbstractOrder" abstract="true" package="at.spot.commerce.model.order">
+	<type name="AbstractOrder" abstract="true" package="at.spot.commerce.model.order" extends="UniqueIdItem">
 		<description>The abstract base type for orders and carts.</description>
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="customer">
 				<datatype class="Customer" />
 				<modifiers unique="true" />

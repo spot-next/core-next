@@ -28,16 +28,8 @@
 
 	<!-- cms item types -->
 
-	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model">
+	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model" extends="UniqueIdItem">
 		<properties>
-			<property name="id">
-				<datatype class="java.lang.String" />
-				<description>The unique id.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 			<property name="catalog">
 				<datatype class="Catalog" />
 				<description>The content catalog of the item.</description>
