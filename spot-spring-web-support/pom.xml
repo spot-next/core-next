@@ -17,6 +17,9 @@
 		<log4j.version>2.7</log4j.version>
 		<junit.version>4.10</junit.version>
 
+		<jetty.version>9.0.6.v20130930</jetty.version>
+		<tomcat.version>8.5.2</tomcat.version>
+
 		<!-- nexus repositry -->
 		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
 		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
@@ -95,6 +98,32 @@
 			<version>4.3.3.RELEASE</version>
 		</dependency>
 
+		<!-- jetty -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-annotations</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>9.2.2.v20140723</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
