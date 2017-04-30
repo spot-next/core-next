@@ -17,7 +17,7 @@
 		<log4j.version>2.7</log4j.version>
 		<junit.version>4.10</junit.version>
 
-		<jetty.version>9.0.6.v20130930</jetty.version>
+		<jetty.version>9.4.4.v20170414</jetty.version>
 		<tomcat.version>8.5.2</tomcat.version>
 
 		<!-- nexus repositry -->
@@ -37,6 +37,16 @@
 	</distributionManagement>
 
 	<repositories>
+		<repository>
+			<id>mvnrepository.com</id>
+			<name>MVN repository</name>
+			<url>http://mvnrepository.com/artifact</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
 		<repository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
@@ -111,7 +121,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp</artifactId>
+			<artifactId>apache-jsp</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
@@ -121,21 +131,39 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<version>9.2.2.v20140723</version>
+			<artifactId>jetty-http</artifactId>
+			<version>${jetty.version}</version>
 		</dependency>
-
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>javax.servlet.jsp-api</artifactId>
-			<version>2.3.0</version>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>${jetty.version}</version>
 		</dependency>
 
+		<!-- JSTL implementations-->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.servlet.jsp.jstl</artifactId>
+			<version>3.1.1</version>
+		</dependency>
+		<!-- JSTl to fix errors in eclipse -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
 
 		<!-- <dependency> -->
-		<!-- <groupId>javax.servlet</groupId> -->
-		<!-- <artifactId>javax.servlet-api</artifactId> -->
-		<!-- <version>3.1.0.redhat-1</version> -->
+		<!-- <groupId>javax.servlet.jsp</groupId> -->
+		<!-- <artifactId>javax.servlet.jsp-api</artifactId> -->
+		<!-- <version>2.3.0</version> -->
 		<!-- </dependency> -->
+
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
 </project>

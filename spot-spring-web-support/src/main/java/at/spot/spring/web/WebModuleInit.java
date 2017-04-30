@@ -1,14 +1,20 @@
 package at.spot.spring.web;
 
+import java.util.Set;
+
+import javax.servlet.FilterRegistration;
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import at.spot.core.infrastructure.support.init.Bootstrap;
 import at.spot.core.infrastructure.support.init.BootstrapOptions;
@@ -20,35 +26,57 @@ import at.spot.spring.web.session.WebSessionListener;
  * This interface extends the {@link ModuleInit} with some more functionality
  * with web container support.
  */
-public interface WebModuleInit extends WebApplicationInitializer, ServletContextListener {
+public interface WebModuleInit extends ServletContextListener, WebApplicationInitializer, ServletContainerInitializer {
+
+	/*
+	 * *************************************************************************
+	 * Embedded jetty initialization
+	 * *************************************************************************
+	 */
+
+	/**
+	 * Initializes spot core and then loads the web module spring configuration.
+	 */
 	@Override
-	default void onStartup(final ServletContext servletContext) throws ServletException {
-		bootSpotCore(getModuleInitClass(), getApplicationConfigProperties(), null);
-		loadWebModule(servletContext);
+	default void contextInitialized(final ServletContextEvent event) {
+		startup(event.getServletContext());
 	}
 
-	default void loadWebModule(final ServletContext servletContext) {
-		final WebApplicationContext context = getApplicationContext(servletContext);
+	@Override
+	default void contextDestroyed(final ServletContextEvent event) {
+	}
 
-		setupServlets(servletContext, context);
-		setupFilters(servletContext, context);
-		setupListeners(servletContext);
+	/*
+	 * *************************************************************************
+	 * Tomcat initialization
+	 **************************************************************************/
+
+	/**
+	 * This is the entry point when using an embedded jetty.
+	 */
+	@Override
+	default void onStartup(Set<Class<?>> params, ServletContext servletContext) throws ServletException {
+		onStartup(servletContext);
 	}
 
 	/**
-	 * Registers {@link ServletContextListener}s. By default the
-	 * {@link WebModuleInit} class is registered as listener too. Althrought the
-	 * {@link WebModuleInit#contextInitialized(ServletContextEvent)} and
-	 * {@link WebModuleInit#contextDestroyed(ServletContextEvent)} by default
-	 * don't do anything.
+	 * This is the spring entry point when using an servlet container like
+	 * tomcat.
+	 */
+	@Override
+	default void onStartup(final ServletContext servletContext) throws ServletException {
+		startup(servletContext);
+	}
+
+	/**
+	 * The spot core initialization process starts here. After if is finished,
+	 * the web module is initialized.
 	 * 
 	 * @param servletContext
 	 */
-	default void setupListeners(final ServletContext servletContext) {
-		servletContext.addListener(this);
-		// register a session listener that connects the web session to the spot
-		// session service
-		servletContext.addListener(WebSessionListener.class);
+	default void startup(final ServletContext servletContext) {
+		bootSpotCore(getModuleInitClass(), getApplicationConfigProperties(), null);
+		loadWebModule(servletContext);
 	}
 
 	/**
@@ -79,21 +107,59 @@ public interface WebModuleInit extends WebApplicationInitializer, ServletContext
 	}
 
 	/**
-	 * Returns the web spring context.
+	 * This sets up the listeners, filters and main servlet.
 	 * 
 	 * @param servletContext
-	 * @return
 	 */
-	WebApplicationContext getApplicationContext(final ServletContext servletContext);
+	default void loadWebModule(final ServletContext servletContext) {
+		final WebApplicationContext context = getApplicationContext(servletContext);
 
-	String getApplicationConfigProperties();
+		setupServlets(servletContext, context);
+		setupFilters(servletContext, context);
+		setupListeners(servletContext);
+	}
 
 	/**
-	 * Returns the the {@link ModuleInit} class for this application.
+	 * Setup the servlets - most likely just spring's DispatcherServlet
 	 * 
-	 * @return
+	 * @param servletContext
+	 * @param context
 	 */
-	<T extends ModuleInit> Class<T> getModuleInitClass();
+	default void setupServlets(final ServletContext servletContext, final WebApplicationContext context) {
+		final ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcherServlet",
+				new DispatcherServlet(context));
+		dispatcher.setLoadOnStartup(1);
+		dispatcher.addMapping("/");
+	}
+
+	/**
+	 * Set spring security filter mapping.
+	 * 
+	 * @param servletContext
+	 * @param context
+	 */
+	default void setupFilters(final ServletContext servletContext, final ApplicationContext context) {
+		final FilterRegistration.Dynamic filter = servletContext.addFilter("springSecurityFilterChain",
+				org.springframework.web.filter.DelegatingFilterProxy.class);
+
+		filter.addMappingForUrlPatterns(null, false, "/*");
+	}
+
+	/**
+	 * Registers {@link ServletContextListener}s. By default the
+	 * {@link WebModuleInit} class is registered as listener too. Although the
+	 * {@link WebModuleInit#contextInitialized(ServletContextEvent)} and
+	 * {@link WebModuleInit#contextDestroyed(ServletContextEvent)} by default
+	 * don't do anything.
+	 * 
+	 * @param servletContext
+	 */
+	default void setupListeners(final ServletContext servletContext) {
+		servletContext.addListener(this);
+		// register a session listener that connects the web session to the spot
+		// session service
+		servletContext.addListener(WebSessionListener.class);
+	}
 
 	/**
 	 * Returns the spot base spring context, registered in
@@ -106,25 +172,25 @@ public interface WebModuleInit extends WebApplicationInitializer, ServletContext
 	}
 
 	/**
-	 * Setup the servlets - most likely just spring's DispatcherServlet
+	 * Returns the the {@link ModuleInit} class for this application.
 	 * 
-	 * @param servletContext
-	 * @param context
+	 * @return
 	 */
-	void setupServlets(final ServletContext servletContext, final WebApplicationContext context);
+	<T extends ModuleInit> Class<T> getModuleInitClass();
 
 	/**
+	 * Returns the web spring context.
 	 * 
 	 * @param servletContext
-	 * @param context
+	 * @return
 	 */
-	void setupFilters(final ServletContext servletContext, final ApplicationContext context);
+	WebApplicationContext getApplicationContext(final ServletContext servletContext);
 
-	@Override
-	default void contextInitialized(final ServletContextEvent event) {
-	}
+	/**
+	 * Returns the main properties file.
+	 * 
+	 * @return
+	 */
+	String getApplicationConfigProperties();
 
-	@Override
-	default void contextDestroyed(final ServletContextEvent event) {
-	}
 }

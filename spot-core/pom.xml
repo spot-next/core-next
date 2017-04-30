@@ -35,6 +35,16 @@
 
 	<repositories>
 		<repository>
+			<id>mvnrepository.com</id>
+			<name>MVN repository</name>
+			<url>http://mvnrepository.com/artifact</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
 			<releases>
@@ -304,7 +314,7 @@
 		<dependency>
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
-			<version>2.5</version>
+			<version>2.5.5</version>
 		</dependency>
 	</dependencies>
 </project>

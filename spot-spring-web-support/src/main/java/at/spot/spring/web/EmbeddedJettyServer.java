@@ -2,18 +2,19 @@ package at.spot.spring.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.EventListener;
 
 import org.apache.jasper.servlet.JspServlet;
-import org.eclipse.jetty.annotations.AnnotationConfiguration;
-import org.eclipse.jetty.annotations.ClassInheritanceHandler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.springframework.web.WebApplicationInitializer;
 
 import at.spot.core.infrastructure.support.init.ModuleInit;
 
@@ -21,41 +22,73 @@ import at.spot.core.infrastructure.support.init.ModuleInit;
  * This mixin serves as a start point for an embedded jetty server to boot a
  * {@link ModuleInit} class.
  */
-public interface EmbeddedJettyServer {
-	default ServletContextHandler getServletContextHandler(String contextPath, Class<? extends WebModuleInit> initClass)
-			throws IOException, InstantiationException, IllegalAccessException {
-		final String webappDirLocation = new File("WebContent").getAbsolutePath();
-		System.out.println("configuring app with basedir: " + webappDirLocation);
+public class EmbeddedJettyServer<I extends WebModuleInit> {
 
-		final WebAppContext contex = new WebAppContext();
-		contex.setErrorHandler(null);
-		contex.setResourceBase(webappDirLocation);
-		contex.setContextPath(contextPath);
-		contex.addEventListener((EventListener) this);
-		contex.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/target/classes/");
+	protected int port;
+	protected String contextPath;
+	private I init;
 
-		contex.setConfigurations(new Configuration[] { new WebXmlConfiguration(), new AnnotationConfiguration() {
-			@Override
-			public void preConfigure(WebAppContext context) throws Exception {
-				MultiMap<String> map = new MultiMap<String>();
-				map.add(WebApplicationInitializer.class.getName(), initClass.getName());
-				context.setAttribute(CLASS_INHERITANCE_MAP, map);
-				_classInheritanceHandler = new ClassInheritanceHandler(map);
-			}
-		} });
-
-		// required for JSP servlet
-		contex.setClassLoader(Thread.currentThread().getContextClassLoader());
-		contex.addServlet(JspServlet.class, "*.jsp");
-
-		return contex;
+	public EmbeddedJettyServer(I init, String contextPath, int port) {
+		this.contextPath = contextPath;
+		this.port = port;
+		this.init = init;
 	}
 
-	default void start(String contextPath, int port, Class<? extends WebModuleInit> initClass) throws Exception {
-		final Server server = new Server(port);
-		server.setHandler(getServletContextHandler(contextPath, initClass));
+	public void start() throws Exception {
+		final Server server = new Server(this.port);
+		server.setHandler(getServletContextHandler(this.contextPath, init));
 
 		server.start();
 		server.join();
+	}
+
+	/**
+	 * Set JSP to use Standard JavaC always.
+	 * 
+	 * @throws IOException
+	 */
+	protected void setupJspCompiler(WebAppContext context) throws IOException {
+		System.setProperty("org.apache.jasper.compiler.disablejsr199", "false");
+		context.setAttribute("javax.servlet.context.tempdir",
+				Files.createTempDirectory("jetty").toAbsolutePath().toString());
+
+		setupClassLoader(context);
+
+		// context.addServlet(JspServlet.class, "*.jsp");
+
+		ServletHolder holderJsp = new ServletHolder("jsp", JspServlet.class);
+		holderJsp.setInitOrder(0);
+		context.addServlet(holderJsp, "*.jsp");
+
+		ServletHolder holderDefault = new ServletHolder("default", DefaultServlet.class);
+		holderDefault.setInitParameter("resourceBase", URI.create(context.getResourceBase()).toASCIIString());
+		holderDefault.setInitParameter("dirAllowed", "true");
+		context.addServlet(holderDefault, "/");
+	}
+
+	protected void setupClassLoader(ContextHandler context) {
+		ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
+		context.setClassLoader(jspClassLoader);
+		// context.setClassLoader(Thread.currentThread().getContextClassLoader());
+	}
+
+	protected ServletContextHandler getServletContextHandler(String contextPath, I init)
+			throws IOException, InstantiationException, IllegalAccessException {
+
+		final String webappDirLocation = new File("WebContent").getAbsolutePath();
+		System.out.println("Configuring app with basedir: " + webappDirLocation);
+
+		final WebAppContext webAppContext = new WebAppContext();
+		webAppContext.setErrorHandler(null);
+		webAppContext.setResourceBase(webappDirLocation);
+		webAppContext.setContextPath(contextPath);
+		webAppContext.addEventListener((EventListener) init);
+		webAppContext.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/target/classes/");
+		webAppContext.getServletContext().setExtendedListenerTypes(true);
+
+		// required for JSP servlet
+		setupJspCompiler(webAppContext);
+
+		return webAppContext;
 	}
 }
