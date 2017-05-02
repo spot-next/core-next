@@ -13,7 +13,9 @@ import javax.servlet.ServletRegistration;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import at.spot.core.infrastructure.support.init.Bootstrap;
@@ -28,18 +30,8 @@ import at.spot.spring.web.session.WebSessionListener;
  */
 public interface WebModuleInit extends ServletContextListener, WebApplicationInitializer, ServletContainerInitializer {
 
-	/*
-	 * *************************************************************************
-	 * Embedded jetty initialization
-	 * *************************************************************************
-	 */
-
-	/**
-	 * Initializes spot core and then loads the web module spring configuration.
-	 */
 	@Override
 	default void contextInitialized(final ServletContextEvent event) {
-		startup(event.getServletContext());
 	}
 
 	@Override
@@ -48,8 +40,15 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 
 	/*
 	 * *************************************************************************
+	 * Embedded jetty initialization
+	 * *************************************************************************
+	 */
+
+	/*
+	 * *************************************************************************
 	 * Tomcat initialization
-	 **************************************************************************/
+	 * *************************************************************************
+	 */
 
 	/**
 	 * This is the entry point when using an embedded jetty.
@@ -114,9 +113,9 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	default void loadWebModule(final ServletContext servletContext) {
 		final WebApplicationContext context = getApplicationContext(servletContext);
 
-		setupServlets(servletContext, context);
+		setupListeners(servletContext, context);
 		setupFilters(servletContext, context);
-		setupListeners(servletContext);
+		setupServlets(servletContext, context);
 	}
 
 	/**
@@ -140,7 +139,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 */
 	default void setupFilters(final ServletContext servletContext, final ApplicationContext context) {
 		final FilterRegistration.Dynamic filter = servletContext.addFilter("springSecurityFilterChain",
-				org.springframework.web.filter.DelegatingFilterProxy.class);
+				DelegatingFilterProxy.class);
 
 		filter.addMappingForUrlPatterns(null, false, "/*");
 	}
@@ -154,8 +153,10 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * 
 	 * @param servletContext
 	 */
-	default void setupListeners(final ServletContext servletContext) {
+	default void setupListeners(final ServletContext servletContext, final WebApplicationContext context) {
 		servletContext.addListener(this);
+
+		servletContext.addListener(new ContextLoaderListener(context));
 		// register a session listener that connects the web session to the spot
 		// session service
 		servletContext.addListener(WebSessionListener.class);
