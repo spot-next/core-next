@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -298,7 +299,7 @@ public class MapDBService implements PersistenceService {
 		Stream<T> foundItems = new ArrayList<T>().stream();
 
 		try {
-			foundItems = threadPool.submit(() -> {
+			ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
 				Stream<Long> stream = null;
 				Set<Long> pks = null;
 
@@ -337,7 +338,11 @@ public class MapDBService implements PersistenceService {
 				}
 
 				return retStream;
-			}).get();
+			});
+
+			if (ret != null) {
+				foundItems = ret.get();
+			}
 		} catch (InterruptedException | ExecutionException e) {
 			loggingService.exception("Can't load items", e);
 		}

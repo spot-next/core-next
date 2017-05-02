@@ -76,8 +76,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Parameter(property = "resourceDir", defaultValue = "${project.build.resources[0].directory}")
 	protected File resourceDirectory;
 
-	@Parameter(property = "gensrcDir", defaultValue = "${project.basedir}/gensrc")
-	protected File outputJavaDirectory;
+	@Parameter(property = "basedir", defaultValue = "${project.basedir}", readonly = true, required = true)
+	protected String projectBaseDir;
+
+	@Parameter(property = "sourceDirectory", defaultValue = "gensrc")
+	protected String sourceDirectory;
+
+	protected File outputJavaDirectory = null;
 
 	@Parameter(property = "title")
 	protected String title;
@@ -85,14 +90,17 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
+
+		outputJavaDirectory = new File(projectBaseDir + "/" + sourceDirectory);
+
 		if (this.project != null) {
-			this.project.addCompileSourceRoot(this.outputJavaDirectory.getAbsolutePath());
+			this.project.addCompileSourceRoot(outputJavaDirectory.getAbsolutePath());
 		}
 
-		if (!this.outputJavaDirectory.mkdirs()) {
+		if (!outputJavaDirectory.mkdirs()) {
 			// getLog().warn("Source directory already exists - overwriting
 			// files.");
-			this.outputJavaDirectory.delete();
+			outputJavaDirectory.delete();
 		}
 
 		try {
