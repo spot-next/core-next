@@ -21,7 +21,7 @@ public class NestedReloadingMessageSource extends ReloadableResourceBundleMessag
 		}
 
 		if (ignoreMissingMessageCode && StringUtils.isBlank(message)) {
-			message = String.format("<%s>", code);
+			message = String.format("#%s", code);
 		}
 
 		return message;

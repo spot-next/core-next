@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,7 +307,8 @@ public class MapDBService implements PersistenceService {
 				if (searchParameters != null && !searchParameters.isEmpty()) {
 					pks = getDataStorageForType(typeService.getTypeCode(type)).get(searchParameters);
 				} else {
-					pks = getDataStorageForType(typeService.getTypeCode(type)).getAll();
+					DataStorage storage = getDataStorageForType(typeService.getTypeCode(type));
+					pks = storage != null ? storage.getAll() : Collections.emptySet();
 				}
 
 				if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {

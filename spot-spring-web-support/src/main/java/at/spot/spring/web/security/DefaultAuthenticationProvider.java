@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
+import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.model.user.User;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.spring.web.security.exception.AuthenticationException;
@@ -32,6 +33,9 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	@Autowired
 	protected ConfigurationService configurationService;
 
+	@Autowired
+	protected SessionService sessionService;
+
 	/**
 	 * Authenticates the given user and the credentials using the
 	 * {@link AuthenticationService}.
@@ -44,6 +48,9 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 		final User user = authenticationService.getAuthenticatedUser(name, password, false);
 
 		if (user != null) {
+			// set the authenticated user to the current session
+			sessionService.getCurrentSession().user(user);
+
 			final List<GrantedAuthority> grantedAuths = new ArrayList<>();
 
 			if (isAdminUser(user)) {
