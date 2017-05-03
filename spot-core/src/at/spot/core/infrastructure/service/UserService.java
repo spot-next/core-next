@@ -36,6 +36,7 @@ public interface UserService<U extends User, G extends UserGroup> {
 	List<G> getAllUserGroups();
 
 	/**
+	 * Get user group with the given id.
 	 * 
 	 * @param uid
 	 * @return the {@link UserGroup}
@@ -46,4 +47,17 @@ public interface UserService<U extends User, G extends UserGroup> {
 
 	boolean isUserInGroup(String userUid, String groupUid);
 
+	/**
+	 * Returns the current user in the session.
+	 * 
+	 * @return
+	 */
+	U getCurrentUser();
+
+	/**
+	 * Sets the given user as the current session user.
+	 * 
+	 * @param user
+	 */
+	void setCurrentUser(U user);
 }

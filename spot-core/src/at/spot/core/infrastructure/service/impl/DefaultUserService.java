@@ -13,7 +13,9 @@ import at.spot.core.infrastructure.exception.DuplicateUserException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
+import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
+import at.spot.core.infrastructure.support.Session;
 import at.spot.core.model.ItemTypeConstants;
 import at.spot.core.model.user.PrincipalGroup;
 import at.spot.core.model.user.User;
@@ -26,6 +28,9 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Autowired
 	protected ModelService modelService;
+
+	@Autowired
+	protected SessionService sessionService;
 
 	@Override
 	public U createUser(final Class<U> type, final String userId) throws DuplicateUserException {
@@ -95,5 +100,37 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 				.getClass();
 
 		return userGroupType;
+	}
+
+	@Override
+	public void setCurrentUser(U user) {
+		Session session = sessionService.getCurrentSession();
+
+		if (user != null) {
+			// session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER,
+			// user);
+			session.user(user);
+		} else {
+			loggingService.warn("Cannot set a null user as current session user.");
+		}
+	}
+
+	@Override
+	public U getCurrentUser() {
+		Session session = sessionService.getCurrentSession();
+
+		if (session != null) {
+			// Object currentUserAttr =
+			// session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+
+			// if (currentUserAttr != null && currentUserAttr instanceof User) {
+			// return (U) currentUserAttr;
+			// }
+			return (U) session.user();
+		} else {
+			loggingService.warn("No session is set up.");
+		}
+
+		return null;
 	}
 }

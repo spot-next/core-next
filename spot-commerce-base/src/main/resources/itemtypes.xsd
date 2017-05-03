@@ -27,6 +27,7 @@
 	
 	<xs:complexType name="EnumValue">
 		<xs:attribute name="code" type="xs:string" use="required" />
+		<xs:attribute name="value" type="xs:string" use="optional" />
 	</xs:complexType>
 
 	<xs:complexType name="ItemType">

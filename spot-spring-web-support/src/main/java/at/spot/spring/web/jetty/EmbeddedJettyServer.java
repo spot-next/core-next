@@ -5,21 +5,26 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.EventListener;
 import java.util.logging.Logger;
 
-import org.apache.tomcat.InstanceManager;
-import org.apache.tomcat.SimpleInstanceManager;
-import org.eclipse.jetty.jsp.JettyJspServlet;
+import org.apache.jasper.servlet.JspServlet;
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
+import org.eclipse.jetty.webapp.MetaInfConfiguration;
+import org.eclipse.jetty.webapp.WebAppClassLoader;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
 import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.spring.web.WebModuleInit;
@@ -69,10 +74,13 @@ public class EmbeddedJettyServer<I extends WebModuleInit> {
 		final WebAppContext webAppContext = new WebAppContext();
 		webAppContext.setContextPath(contextPath);
 		webAppContext.setErrorHandler(null);
-		webAppContext.setResourceBase(".");
-		webAppContext.setAttribute(InstanceManager.class.getName(), new SimpleInstanceManager());
+		webAppContext.setResourceBase(webappRootDir);
 		webAppContext.addEventListener((EventListener) init);
-		webAppContext.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/target/classes/");
+		webAppContext.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
+				".*/target/classes/|.*/.*jsp-api-[^/]*\\.jar$|.*/.*jsp-[^/]*\\.jar$|.*/.*taglibs[^/]*\\.jar|.*/[^/]*servlet-api-[^/]*\\.jar$|.*/javax.servlet.jsp.jstl-.*\\.jar$|.*/org.apache.taglibs.taglibs-standard-impl-.*\\.jar$");
+		webAppContext.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern",
+				".*/.*jsp-api-[^/]*\\.jar$|.*/.*jsp-[^/]*\\.jar$|.*/.*taglibs[^/]*\\.jar|.*/[^/]*servlet-api-[^/]*\\.jar|.*/javax.servlet.jsp.jstl-.*\\.jar|.*/org.apache.taglibs.taglibs-standard-impl-.*\\.jar$");
+
 		webAppContext.getServletContext().setExtendedListenerTypes(true);
 
 		// JSP support
@@ -80,17 +88,23 @@ public class EmbeddedJettyServer<I extends WebModuleInit> {
 				Files.createTempDirectory("jetty").toAbsolutePath().toString());
 
 		webAppContext.addBean(new JspStarter(webAppContext));
-		webAppContext.setClassLoader(getUrlClassLoader(webAppContext));
+		webAppContext.setClassLoader(getClassLoader(webAppContext));
 
 		webAppContext.addServlet(getJspServletHolder(), "*.jsp");
 		// default servlet is necessary for JSP support
 		webAppContext.addServlet(getDefaultServletHolder(webAppResourceBaseDir), "/");
 
+		webAppContext.setConfigurations(new Configuration[] { new AnnotationConfiguration(), new WebInfConfiguration(),
+				new WebXmlConfiguration(), new MetaInfConfiguration(), new FragmentConfiguration(),
+				new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration() });
+
 		return webAppContext;
 	}
 
-	protected ClassLoader getUrlClassLoader(ContextHandler context) {
-		ClassLoader jspClassLoader = new URLClassLoader(new URL[0], this.getClass().getClassLoader());
+	protected ClassLoader getClassLoader(WebAppContext context) throws IOException {
+		// ClassLoader jspClassLoader = new URLClassLoader(new URL[0],
+		// this.getClass().getClassLoader());
+		ClassLoader jspClassLoader = new WebAppClassLoader(init.getClass().getClassLoader(), context);
 		return jspClassLoader;
 	}
 
@@ -98,7 +112,7 @@ public class EmbeddedJettyServer<I extends WebModuleInit> {
 	 * Create JSP Servlet (must be named "jsp")
 	 */
 	private ServletHolder getJspServletHolder() {
-		ServletHolder holderJsp = new ServletHolder("jsp", JettyJspServlet.class);
+		ServletHolder holderJsp = new ServletHolder("jsp", JspServlet.class);
 		holderJsp.setInitOrder(0);
 		holderJsp.setInitParameter("logVerbosityLevel", "DEBUG");
 		holderJsp.setInitParameter("fork", "false");

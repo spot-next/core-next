@@ -22,6 +22,7 @@ import at.spot.core.infrastructure.support.init.Bootstrap;
 import at.spot.core.infrastructure.support.init.BootstrapOptions;
 import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.infrastructure.support.spring.Registry;
+import at.spot.spring.web.session.WebSessionFilter;
 import at.spot.spring.web.session.WebSessionListener;
 
 /**
@@ -140,8 +141,11 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	default void setupFilters(final ServletContext servletContext, final ApplicationContext context) {
 		final FilterRegistration.Dynamic filter = servletContext.addFilter("springSecurityFilterChain",
 				DelegatingFilterProxy.class);
-
 		filter.addMappingForUrlPatterns(null, false, "/*");
+
+		FilterRegistration.Dynamic webSessionFilter = servletContext.addFilter("webSessionFilter",
+				WebSessionFilter.class);
+		webSessionFilter.addMappingForUrlPatterns(null, false, "/*");
 	}
 
 	/**

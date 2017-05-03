@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
@@ -218,27 +219,27 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					existingType = typeDef;
 					defs.put(existingType.getName(), existingType);
 				} else {
-					if (existingType.isAbstract() == null) {
-						existingType.setAbstract(typeDef.isAbstract());
-					}
+					// if (existingType.isAbstract() == null) {
+					// existingType.setAbstract(typeDef.isAbstract());
+					// }
 
-					if (StringUtils.isBlank(existingType.getPackage())) {
-						existingType.setPackage(typeDef.getPackage());
-					}
+					// if (StringUtils.isBlank(existingType.getPackage())) {
+					// existingType.setPackage(typeDef.getPackage());
+					// }
 
-					if (StringUtils.isBlank(existingType.getTypeCode())) {
-						existingType.setPackage(typeDef.getTypeCode());
-					}
-
-					if (StringUtils.isBlank(existingType.getExtends())) {
-						existingType.setExtends(typeDef.getExtends());
-					}
+					// if (StringUtils.isBlank(existingType.getTypeCode())) {
+					// existingType.setPackage(typeDef.getTypeCode());
+					// }
+					//
+					// if (StringUtils.isBlank(existingType.getExtends())) {
+					// existingType.setExtends(typeDef.getExtends());
+					// }
 
 					for (final Property p : typeDef.getProperties().getProperty()) {
-						final Property existingProp = existingType.getProperties().getProperty().stream()
-								.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst().get();
+						final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
+								.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
 
-						if (existingProp == null) {
+						if (!existingProp.isPresent()) {
 							existingType.getProperties().getProperty().add(p);
 						}
 					}

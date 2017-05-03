@@ -4,11 +4,27 @@
 
 	<!-- enums -->
 
+	<enum name="HtmlLinkTarget" package="at.spot.cms">
+		<description>Represents an HTML link target used.</description>
+		<value code="BLANK" />
+		<value code="SELF" />
+		<value code="PARENT" />
+		<value code="TOP" />
+	</enum>
+	
+	<enum name="Orientation" package="at.spot.cms">
+		<description>Defines the orientation, eg. for layouts.</description>
+		<value code="TOP" />
+		<value code="BOTTOM" />
+		<value code="LEFT" />
+		<value code="RIGHT" />
+	</enum>
+
 	<enum name="TemplateRenderEngine" package="at.spot.cms">
 		<description>The render engine used to render cms items.</description>
-		<value code="VELOCITY"/>
-		<value code="FREEMARKER"/>
-		<value code="JSP"/>
+		<value code="VELOCITY" />
+		<value code="FREEMARKER" />
+		<value code="JSP" />
 	</enum>
 
 	<!-- image media -->
@@ -28,7 +44,8 @@
 
 	<!-- cms item types -->
 
-	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model" extends="UniqueIdItem">
+	<type name="AbstractCmsItem" abstract="true" package="at.spot.cms.model"
+		extends="UniqueIdItem">
 		<properties>
 			<property name="catalog">
 				<datatype class="Catalog" />
@@ -138,8 +155,8 @@
 			</property>
 			<property name="metaTags">
 				<datatype class="java.util.Map">
-					<genericArgument class="java.lang.String"/>
-					<genericArgument class="at.spot.core.infrastructure.type.LocalizedString"/>
+					<genericArgument class="java.lang.String" />
+					<genericArgument class="at.spot.core.infrastructure.type.LocalizedString" />
 				</datatype>
 			</property>
 		</properties>
@@ -149,14 +166,57 @@
 		<properties>
 			<property name="urlMatches">
 				<datatype class="java.util.List">
-					<genericArgument class="java.lang.String"/>
+					<genericArgument class="java.lang.String" />
 				</datatype>
-				<description>Holds the regex string to determine which URL should be handler by this page</description>
+				<description>Holds the regex string to determine which URL should be handler by this page.</description>
 			</property>
 			<property name="template">
 				<datatype class="CmsPageTemplate" />
 			</property>
 		</properties>
 	</type>
+
+	<!-- special cms components -->
+
+	<type name="AbstractNavigationEntry" abstract="true" extends="CmsComponent"
+		package="at.spot.cms.model">
+		<properties>
+			<property name="name">
+				<datatype class="java.lang.String" />
+				<description>The navigation entry name.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry"
+		package="at.spot.cms.model">
+		<properties>
+			<property name="href">
+				<datatype class="java.lang.String" />
+				<description>The href of the link.</description>
+			</property>
+			<property name="target">
+				<datatype class="HtmlLinkTarget" />
+				<description>The HTML link target.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="AbstractNavigationContainer" abstract="true"
+		package="at.spot.cms.model">
+		<properties>
+			<property name="entries">
+				<datatype class="java.util.List">
+					<genericArgument class="NavigationLinkEntry" />
+				</datatype>
+				<description>A list of all navigation link.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="NavigationBar" extends="AbstractNavigationContainer"
+		package="at.spot.cms.model" />
+		
+	<type name="Footer" extends="AbstractNavigationContainer" package="at.spot.cms.model" />
 
 </types>
