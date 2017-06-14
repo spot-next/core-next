@@ -38,12 +38,12 @@ public class WebSessionListener
 		// if yes then we fetch the backend session
 		if (StringUtils.isNotBlank(spotSessionId)) {
 			spotSession = getSessionService().getSession(spotSessionId);
-			getLoggingService().info(String.format("Creating new session %s", spotSession.getId()));
 		}
 
 		// if it is null we create a new one
 		if (spotSession == null) {
 			spotSession = getSessionService().createSession(true);
+			getLoggingService().info(String.format("Created new session %s", spotSession.getId()));
 			spotSessionId = spotSession.getId();
 
 			// and store the session id in the web session

@@ -8,14 +8,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.support.Session;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.spring.web.constants.SpringWebSupportConstants;
 
 /**
  * Sets the current session calling
@@ -24,23 +22,30 @@ import at.spot.spring.web.constants.SpringWebSupportConstants;
 public class WebSessionFilter extends GenericFilterBean {
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain)
 			throws IOException, ServletException {
 
 		if (request instanceof HttpServletRequest) {
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			String spotSessionId = (String) httpRequest.getSession()
-					.getAttribute(SpringWebSupportConstants.SPOT_SESSION_ID);
-
-			if (StringUtils.isNotBlank(spotSessionId)) {
-				Session session = getSessionService().getSession(spotSessionId);
-
-				if (session != null) {
-					getSessionService().setCurrentSession(session);
-				} else {
-					getLoggingService().warn(String.format("No session found for session id %s", spotSessionId));
-				}
-			}
+			// final HttpServletRequest httpRequest = (HttpServletRequest)
+			// request;
+			// final String spotSessionId = (String) httpRequest.getSession()
+			// .getAttribute(SpringWebSupportConstants.SPOT_SESSION_ID);
+			//
+			// if (StringUtils.isNotBlank(spotSessionId)) {
+			// Session session = getSessionService().getSession(spotSessionId);
+			//
+			// if (session != null) {
+			// getSessionService().setCurrentSession(session);
+			// } else {
+			// getLoggingService().warn(String.format("No session found for
+			// session id %s", spotSessionId));
+			//
+			// session = getSessionService().createSession(true);
+			//
+			// httpRequest.getSession().setAttribute(SpringWebSupportConstants.SPOT_SESSION_ID,
+			// session.getId());
+			// }
+			// }
 		}
 
 		filterChain.doFilter(request, response);
