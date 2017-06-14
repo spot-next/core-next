@@ -55,7 +55,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * This is the entry point when using an embedded jetty.
 	 */
 	@Override
-	default void onStartup(Set<Class<?>> params, ServletContext servletContext) throws ServletException {
+	default void onStartup(final Set<Class<?>> params, final ServletContext servletContext) throws ServletException {
 		onStartup(servletContext);
 	}
 
@@ -143,7 +143,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 				DelegatingFilterProxy.class);
 		filter.addMappingForUrlPatterns(null, false, "/*");
 
-		FilterRegistration.Dynamic webSessionFilter = servletContext.addFilter("webSessionFilter",
+		final FilterRegistration.Dynamic webSessionFilter = servletContext.addFilter("webSessionFilter",
 				WebSessionFilter.class);
 		webSessionFilter.addMappingForUrlPatterns(null, false, "/*");
 	}
