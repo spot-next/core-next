@@ -21,6 +21,7 @@ import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 
@@ -189,7 +190,12 @@ public class CoreInit extends ModuleInit {
 	@Log(message = "Starting spOt core ... ")
 	@Override
 	public void initialize() throws ModuleInitializationException {
-		setupTypeInfrastrucutre();
+		try {
+			setupTypeInfrastrucutre();
+		} catch (final PersistenceStorageException e) {
+			throw new ModuleInitializationException(e);
+		}
+
 		importInitialData();
 		runMigrateScripts();
 
@@ -198,7 +204,7 @@ public class CoreInit extends ModuleInit {
 	}
 
 	@Log(message = "Setting up type registry ...")
-	protected void setupTypeInfrastrucutre() {
+	protected void setupTypeInfrastrucutre() throws PersistenceStorageException {
 		typeService.registerTypes();
 		persistenceService.initDataStorage();
 	}

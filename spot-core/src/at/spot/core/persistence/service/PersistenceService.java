@@ -10,7 +10,9 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.exception.PersistenceStorageException;
 
 @Service
 public interface PersistenceService {
@@ -95,15 +97,13 @@ public interface PersistenceService {
 	 * @param loadAsProxy
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @param
-	 * @param returnProxies
-	 *            return proxy items instead of fully loaded items
 	 * @return minCountForParallelStream if the amount of items to be processed
 	 *         is greater than this value, a parallel stream is used instead of
 	 *         a regular one.
 	 */
 	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
-			boolean returnProxies);
+			final boolean returnProxies);
 
 	/**
 	 * Fills the given proxy item with it's property values.
@@ -119,7 +119,7 @@ public interface PersistenceService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T createProxyModel(T item);
+	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
 	 * Removes the given items.
@@ -138,8 +138,10 @@ public interface PersistenceService {
 
 	/**
 	 * Initiates the datastorage based on the registeredTypes.
+	 * 
+	 * @throws PersistenceStorageException
 	 */
-	void initDataStorage();
+	void initDataStorage() throws PersistenceStorageException;
 
 	/**
 	 * Saves the database to disk. This has to be done before the application

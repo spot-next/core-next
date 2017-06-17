@@ -41,7 +41,7 @@
 	<bean id="reloadableMessageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames"
-			value="classpath:locale/validation,classpath:locale/messages" />
+			value="classpath:messages/validation,classpath:messages/messages" />
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 

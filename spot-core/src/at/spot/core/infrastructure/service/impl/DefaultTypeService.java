@@ -188,7 +188,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		final Map<String, ItemTypePropertyDefinition> propertyMembers = new HashMap<>();
 
 		// add all the fields
-		for (final Field m : itemType.getFields()) {
+		for (final Field m : ClassUtil.getFieldsWithAnnotation(itemType, Property.class)) {
 			final Property propertyAnn = ClassUtil.getAnnotation(m, Property.class);
 
 			if (propertyAnn != null) {

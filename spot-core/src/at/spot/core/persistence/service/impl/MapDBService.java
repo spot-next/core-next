@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mapdb.DB;
+import org.mapdb.DBException;
 import org.mapdb.DBMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
@@ -39,6 +41,7 @@ import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
@@ -79,7 +82,7 @@ public class MapDBService implements PersistenceService {
 
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
-	public void initDataStorage() {
+	public void initDataStorage() throws PersistenceStorageException {
 		try {
 			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
@@ -99,8 +102,10 @@ public class MapDBService implements PersistenceService {
 				dataStorage.put(t.typeCode,
 						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
 			}
-		} catch (final Exception e) {
+		} catch (final DBException e) {
 			// org.mapdb.DBException$DataCorruption
+			throw new PersistenceStorageException("Datastore is corrupt", e);
+		} catch (final UnknownTypeException e) {
 			loggingService.error(e.getMessage());
 		}
 
@@ -300,14 +305,22 @@ public class MapDBService implements PersistenceService {
 		Stream<T> foundItems = new ArrayList<T>().stream();
 
 		try {
-			ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
+			final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
 				Stream<Long> stream = null;
 				Set<Long> pks = null;
 
 				if (searchParameters != null && !searchParameters.isEmpty()) {
-					pks = getDataStorageForType(typeService.getTypeCode(type)).get(searchParameters);
+					final DataStorage data = getDataStorageForType(typeService.getTypeCode(type));
+					if (data != null) {
+						pks = data.get(searchParameters);
+					} else {
+						throw new PersistenceStorageException(
+								String.format("Could not get datastorage for type %s", type));
+						// loggingService.warn(String.format("Could not get
+						// datastorage for type %s", type));
+					}
 				} else {
-					DataStorage storage = getDataStorageForType(typeService.getTypeCode(type));
+					final DataStorage storage = getDataStorageForType(typeService.getTypeCode(type));
 					pks = storage != null ? storage.getAll() : Collections.emptySet();
 				}
 
@@ -347,6 +360,8 @@ public class MapDBService implements PersistenceService {
 			}
 		} catch (InterruptedException | ExecutionException e) {
 			loggingService.exception("Can't load items", e);
+			// throw new PersistenceStorageException("Can't load items from
+			// storage.");
 		}
 
 		return foundItems;

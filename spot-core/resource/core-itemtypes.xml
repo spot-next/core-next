@@ -200,22 +200,7 @@
 
 	<type name="Country" package="at.spot.core.model.internationalization">
 		<properties>
-			<property name="iso3Code">
-				<datatype class="java.lang.String" />
-				<description>
-					The ISO-3 code of the country.
-					@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
-				</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-					<validator javaClass="org.hibernate.validator.constraints.Length">
-						<argument name="min" numberValue="3" />
-						<argument name="max" numberValue="3" />
-					</validator>
-				</validators>
-			</property>
-			<property name="iso2Code">
+			<property name="isoCode">
 				<datatype class="java.lang.String" />
 				<description>
 					The ISO-2 code of the country.
@@ -227,6 +212,20 @@
 					<validator javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="2" />
 						<argument name="max" numberValue="2" />
+					</validator>
+				</validators>
+			</property>
+			<property name="iso3Code">
+				<datatype class="java.lang.String" />
+				<description>
+					The ISO-3 code of the country.
+					@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
+				</description>
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="min" numberValue="3" />
+						<argument name="max" numberValue="3" />
 					</validator>
 				</validators>
 			</property>

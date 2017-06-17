@@ -10,7 +10,7 @@
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.3.3.RELEASE</spring.version>
+		<spring.version>4.3.8.RELEASE</spring.version>
 		<log4j.version>2.7</log4j.version>
 		<junit.version>4.10</junit.version>
 
@@ -32,13 +32,39 @@
 
 	<repositories>
 		<repository>
+			<id>alfresco-public</id>
+			<name>Alfresco Public</name>
+			<url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
+		</repository>
+		<repository>
+			<id>mvnrepository.com</id>
+			<name>MVN repository</name>
+			<url>http://mvnrepository.com/artifact</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>interval:300</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 				<updatePolicy>interval:300</updatePolicy>
 			</snapshots>
 		</repository>
@@ -99,8 +125,8 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
+			    <groupId>org.springframework</groupId>
+    <artifactId>spring-aspects</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>

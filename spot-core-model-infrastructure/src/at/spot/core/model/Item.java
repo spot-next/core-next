@@ -9,9 +9,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.infrastructure.type.ExtendedAttributes;
 import at.spot.core.support.util.ClassUtil;
 
 public abstract class Item implements Serializable {
@@ -21,9 +19,6 @@ public abstract class Item implements Serializable {
 	protected transient boolean forceDirty = false;
 	protected transient List<String> dirtyAttributes = new ArrayList<>();
 
-	@Property
-	protected Map<String, Object> dynamicProperties = new HashMap<>();
-
 	public Long pk;
 	protected String typeCode;
 
@@ -32,9 +27,6 @@ public abstract class Item implements Serializable {
 
 	@Property
 	public DateTime created;
-
-	@Property
-	protected Map<Class<ExtendedAttributes>, ExtendedAttributes> extendedAttributes = new HashMap<>();
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this
@@ -66,53 +58,6 @@ public abstract class Item implements Serializable {
 
 	public boolean isProxy() {
 		return isProxy;
-	}
-
-	/**
-	 * This property hold {@link ExtendedAttributes} objects. It's an easy way
-	 * to customize an {@link ItemType} object without subclassing it.<br />
-	 * 
-	 * @param attributeType
-	 * @return
-	 * @throws InstantiationException
-	 */
-	public <E extends ExtendedAttributes> E getExtendedAttribute(final Class<E> attributeType)
-			throws InstantiationException {
-
-		E ea = (E) extendedAttributes.get(attributeType);
-
-		if (ea == null) {
-			try { // create new object in case there is none
-				ea = attributeType.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new InstantiationException("Could not instantiate extended attribute type");
-			}
-
-			extendedAttributes.put((Class<ExtendedAttributes>) attributeType, ea);
-		}
-
-		return ea;
-	}
-
-	/**
-	 * Returns the given dynamic property or null if not found.
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	public Object getDynamicProperty(final String propertyName) {
-		return dynamicProperties.get(propertyName);
-	}
-
-	/**
-	 * Sets (and possibly overwrites) the given dynamic property with the given
-	 * value.
-	 * 
-	 * @param propertyName
-	 * @param value
-	 */
-	public void setProperty(final String propertyName, final Object value) {
-		dynamicProperties.put(propertyName, value);
 	}
 
 	/**
@@ -153,7 +98,7 @@ public abstract class Item implements Serializable {
 	public Map<String, Object> getUniqueProperties() {
 		final Map<String, Object> uniqueProps = new HashMap<>();
 
-		for (final Field uniqueField : ClassUtil.getFieldsWithAnnotation(this, Property.class)) {
+		for (final Field uniqueField : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
 			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
 
 			if (prop.unique()) {

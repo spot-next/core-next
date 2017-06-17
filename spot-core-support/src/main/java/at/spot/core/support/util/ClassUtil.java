@@ -50,7 +50,7 @@ public class ClassUtil {
 
 		for (final Class<?> c : getAllSuperClasses(type, Object.class, true, true)) {
 			try {
-				field = c.getField(fieldName);
+				field = c.getDeclaredField(fieldName);
 				break;
 			} catch (NoSuchFieldException | SecurityException e) {
 				LOG.log(Level.INFO, String.format("Field not found: %s", fieldName));
@@ -140,7 +140,7 @@ public class ClassUtil {
 
 		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
 			try {
-				final Field field = c.getField(fieldName);
+				final Field field = c.getDeclaredField(fieldName);
 
 				if (includeInAccessableFields) {
 					field.setAccessible(true);
@@ -181,7 +181,7 @@ public class ClassUtil {
 		Method method = null;
 
 		// iterate over all superclasses and look for given method
-		for (final Class<?> c : getAllAssignableClasses(object)) {
+		for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
 			try {
 				method = c.getDeclaredMethod(methodName, paramArgs);
 
@@ -212,11 +212,11 @@ public class ClassUtil {
 		return retVal;
 	}
 
-	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Object object,
+	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
 			final Class<A> annotation) {
 		final Set<Field> annotatedFields = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(object)) {
+		for (final Class<?> c : getAllAssignableClasses(type)) {
 			for (final Field field : c.getDeclaredFields()) {
 				if (field.isAnnotationPresent(annotation)) {
 					annotatedFields.add(field);
@@ -225,13 +225,12 @@ public class ClassUtil {
 		}
 
 		return annotatedFields;
-
 	}
 
-	public static List<Class<?>> getAllAssignableClasses(final Object object) {
+	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
-		classes.add(object.getClass());
-		classes.addAll(ClassUtils.getAllSuperclasses(object.getClass()));
+		classes.add(type);
+		classes.addAll(ClassUtils.getAllSuperclasses(type));
 
 		return classes;
 	}
@@ -337,8 +336,8 @@ public class ClassUtil {
 			final Class<A> annotation) {
 
 		try {
-			return getAnnotation(type.getField(fieldName), annotation);
-		} catch (NoSuchFieldException | SecurityException e) {
+			return getAnnotation(getFieldDefinition(type, fieldName, true), annotation);
+		} catch (final SecurityException e) {
 			// silently ignore
 			if (annotation != null) {
 				LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));

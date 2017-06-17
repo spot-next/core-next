@@ -49,7 +49,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public U getUser(final String uid) {
 		final Map<String, Comparable<?>> params = new HashMap<>();
-		params.put("uid", uid);
+		params.put("id", uid);
 
 		return modelService.get(getUserType(), params);
 	}
@@ -57,7 +57,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public G getUserGroup(final String uid) {
 		final Map<String, Comparable<?>> params = new HashMap<>();
-		params.put("uid", uid);
+		params.put("id", uid);
 
 		return modelService.get(getUserGroupType(), params);
 	}
@@ -103,8 +103,8 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	}
 
 	@Override
-	public void setCurrentUser(U user) {
-		Session session = sessionService.getCurrentSession();
+	public void setCurrentUser(final U user) {
+		final Session session = sessionService.getCurrentSession();
 
 		if (user != null) {
 			// session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER,
@@ -117,7 +117,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public U getCurrentUser() {
-		Session session = sessionService.getCurrentSession();
+		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
 			// Object currentUserAttr =
@@ -126,6 +126,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 			// if (currentUserAttr != null && currentUserAttr instanceof User) {
 			// return (U) currentUserAttr;
 			// }
+
 			return (U) session.user();
 		} else {
 			loggingService.warn("No session is set up.");

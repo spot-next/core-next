@@ -43,7 +43,7 @@ public class WebSessionListener
 		// if it is null we create a new one
 		if (spotSession == null) {
 			spotSession = getSessionService().createSession(true);
-			getLoggingService().info(String.format("Created new session %s", spotSession.getId()));
+			getLoggingService().debug(String.format("Created new session %s", spotSession.getId()));
 			spotSessionId = spotSession.getId();
 
 			// and store the session id in the web session
