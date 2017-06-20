@@ -23,10 +23,10 @@ public abstract class Item implements Serializable {
 	protected String typeCode;
 
 	@Property
-	public DateTime lastModified;
+	public DateTime lastModifiedAt;
 
 	@Property
-	public DateTime created;
+	public DateTime createdAt;
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this
@@ -36,7 +36,7 @@ public abstract class Item implements Serializable {
 	public final boolean isProxy;
 
 	public Item() {
-		this.created = new DateTime();
+		this.createdAt = new DateTime();
 		this.isProxy = false;
 	}
 
@@ -48,12 +48,12 @@ public abstract class Item implements Serializable {
 		return pk;
 	}
 
-	public DateTime getLastModified() {
-		return lastModified;
+	public DateTime getLastModifiedAt() {
+		return lastModifiedAt;
 	}
 
-	public DateTime getCreated() {
-		return created;
+	public DateTime getCreatedAt() {
+		return createdAt;
 	}
 
 	public boolean isProxy() {
@@ -75,7 +75,7 @@ public abstract class Item implements Serializable {
 
 	public void markAsDirty(final String propertyName) {
 		this.dirtyAttributes.add(propertyName);
-		this.lastModified = new DateTime();
+		this.lastModifiedAt = new DateTime();
 	}
 
 	/**

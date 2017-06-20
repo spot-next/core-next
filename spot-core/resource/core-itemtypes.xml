@@ -40,7 +40,7 @@
 			</property>
 			<property name="groups">
 				<datatype class="java.util.List">
-					<genericArgument class="PrincipalGroup" />
+					<genericArgument class="PrincipalGroup"/>
 				</datatype>
 				<description>The principal groups assigned to the user.</description>
 				<modifiers isReference="true" />
@@ -50,14 +50,14 @@
 		</properties>
 	</type>
 
-	<type name="PrincipalGroup" abstract="true" package="at.spot.core.model.user">
+	<type name="PrincipalGroup" abstract="true" package="at.spot.core.model.user" extends="Principal">
 		<description>The base type all principal group-like structures.</description>
 		<properties>
 			<property name="members">
 				<datatype class="java.util.List">
-					<genericArgument class="Principal" wildcard="true" />
+					<genericArgument class="Principal" />
 				</datatype>
-				<description>The member of the group.
+				<description>The members of the group.
 				</description>
 			</property>
 		</properties>

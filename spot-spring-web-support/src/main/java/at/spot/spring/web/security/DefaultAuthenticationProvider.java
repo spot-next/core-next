@@ -53,11 +53,13 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
 			final List<GrantedAuthority> grantedAuths = new ArrayList<>();
 
+			// add admin role
 			if (isAdminUser(user)) {
 				grantedAuths.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-			} else {
-				grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
 			}
+
+			// always add user role (also for admins)
+			grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
 
 			final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(name, password,
 					grantedAuths);

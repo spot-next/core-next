@@ -485,7 +485,9 @@ public class MapDBService implements PersistenceService {
 
 	@PreDestroy
 	private void shutdown() {
-		database.commit();
-		database.close();
+		if (database != null) {
+			database.commit();
+			database.close();
+		}
 	}
 }
