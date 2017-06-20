@@ -1,5 +1,6 @@
 package at.spot.spring.web.controller;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,10 +11,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.spring.web.dto.Response;
 import at.spot.spring.web.dto.Status;
 
+@RequestMapping(consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE })
 public abstract class AbstractBaseRestController extends AbstractBaseController {
+
+	@Resource
+	protected LoggingService loggingService;
 
 	/**
 	 * Handles all thrown exceptions and returns error details as JSON.
@@ -27,6 +33,10 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	@RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public Response<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
 			final Exception exception) {
+
+		loggingService.error(String.format("Unhandler %s occured: %s", exception.getClass().getSimpleName(),
+				exception.getMessage()));
+
 		final Response<Void> ret = new Response<>();
 
 		if (exception instanceof HttpMediaTypeNotSupportedException) {
