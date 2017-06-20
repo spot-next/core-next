@@ -1,6 +1,6 @@
 package at.spot.spring.web.dto;
 
-public class AuthenticationResponse {
+public class UserStatus {
 	private boolean isAuthenticated = false;
 	private String username;
 	private String sessionId;

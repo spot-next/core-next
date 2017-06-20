@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.context.WebApplicationContext;
 
 import at.spot.core.infrastructure.service.LoggingService;
+import at.spot.core.infrastructure.support.spring.Registry;
 
 public abstract class AbstractBaseController implements ApplicationContextAware {
 
@@ -22,5 +23,13 @@ public abstract class AbstractBaseController implements ApplicationContextAware 
 
 	public WebApplicationContext getWebApplicationContext() {
 		return this.webContext;
+	}
+
+	protected <T> T getBean(final Class<T> beanType) {
+		return Registry.getApplicationContext().getBean(beanType);
+	}
+
+	protected <T> T getBean(final Class<T> beanType, final String beanName) {
+		return Registry.getApplicationContext().getBean(beanName, beanType);
 	}
 }
