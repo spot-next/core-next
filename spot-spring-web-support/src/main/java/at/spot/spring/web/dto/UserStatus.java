@@ -1,6 +1,9 @@
 package at.spot.spring.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class UserStatus {
+	@JsonProperty("isAuthenticated")
 	private boolean isAuthenticated = false;
 	private String username;
 	private String sessionId;

@@ -5,17 +5,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.spring.web.dto.Response;
 import at.spot.spring.web.dto.Status;
 
-@RequestMapping(consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE })
 public abstract class AbstractBaseRestController extends AbstractBaseController {
 
 	@Resource
@@ -30,7 +27,6 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	 */
 	@ResponseBody
 	@ExceptionHandler(Exception.class)
-	@RequestMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public Response<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
 			final Exception exception) {
 

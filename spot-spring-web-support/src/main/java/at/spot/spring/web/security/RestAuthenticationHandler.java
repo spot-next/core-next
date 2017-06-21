@@ -133,7 +133,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 			final UserStatus payload, final AuthenticationException exception) throws IOException {
 
 		response.setStatus(httpStatusCode.value());
-		response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 		final Response<UserStatus> ret = new Response<>();
 		ret.setPayload(payload);

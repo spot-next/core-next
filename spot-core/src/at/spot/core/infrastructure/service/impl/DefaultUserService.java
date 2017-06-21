@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.exception.DuplicateUserException;
+import at.spot.core.infrastructure.exception.CannotCreateUserException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
@@ -21,6 +22,7 @@ import at.spot.core.model.user.PrincipalGroup;
 import at.spot.core.model.user.User;
 import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.security.service.AuthenticationService;
 
 @Service
 public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
@@ -32,15 +34,27 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Autowired
 	protected SessionService sessionService;
 
+	@Autowired
+	protected AuthenticationService authenticationService;
+
 	@Override
-	public U createUser(final Class<U> type, final String userId) throws DuplicateUserException {
+	public U createUser(final Class<U> type, final String userId) throws CannotCreateUserException {
+		return createUser(type, userId, null);
+	}
+
+	@Override
+	public U createUser(final Class<U> type, final String userId, final String password) throws CannotCreateUserException {
 		final U user = modelService.create(type);
 		user.setId(userId);
 
 		try {
+			if (StringUtils.isNotBlank(password)) {
+				authenticationService.setPassword(user, password);
+			}
+
 			modelService.save(user);
 		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-			throw new DuplicateUserException();
+			throw new CannotCreateUserException();
 		}
 
 		return user;

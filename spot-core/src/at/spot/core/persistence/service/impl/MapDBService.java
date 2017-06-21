@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +34,7 @@ import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.LogLevel;
@@ -49,7 +51,7 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
 
 @Service
-public class MapDBService implements PersistenceService {
+public class MapDBService extends AbstractService implements PersistenceService {
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
 
@@ -302,69 +304,73 @@ public class MapDBService implements PersistenceService {
 			final boolean returnProxies) {
 
 		// prevent NPES
-		Stream<T> foundItems = new ArrayList<T>().stream();
+		final List<T> foundItems = new ArrayList<T>();
 
-		try {
-			final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
-				Stream<Long> stream = null;
-				Set<Long> pks = null;
+		for (final T subtypeBean : getApplicationContext().getBeansOfType(type).values()) {
+			final Class<T> subtype = (Class<T>) subtypeBean.getClass();
 
-				if (searchParameters != null && !searchParameters.isEmpty()) {
-					final DataStorage data = getDataStorageForType(typeService.getTypeCode(type));
-					if (data != null) {
-						pks = data.get(searchParameters);
-					} else {
-						throw new PersistenceStorageException(
-								String.format("Could not get datastorage for type %s", type));
-						// loggingService.warn(String.format("Could not get
-						// datastorage for type %s", type));
-					}
-				} else {
-					final DataStorage storage = getDataStorageForType(typeService.getTypeCode(type));
-					pks = storage != null ? storage.getAll() : Collections.emptySet();
-				}
+			try {
+				final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
+					Stream<Long> stream = null;
+					Set<Long> pks = null;
 
-				if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {
-					stream = pks.parallelStream();
-				} else {
-					stream = pks.stream();
-				}
-
-				if (pageSize > 0) {
-					stream = stream.skip((page - 1) * pageSize).limit(pageSize);
-				}
-
-				Stream<T> retStream = stream.map((pk) -> {
-					try {
-						if (returnProxies) {
-							return createProxyModel(type, pk);
+					if (searchParameters != null && !searchParameters.isEmpty()) {
+						final DataStorage data = getDataStorageForType(typeService.getTypeCode(subtype));
+						if (data != null) {
+							pks = data.get(searchParameters);
 						} else {
-							return load(type, pk);
+							throw new PersistenceStorageException(
+									String.format("Could not get datastorage for type %s", subtype));
+							// loggingService.warn(String.format("Could not get
+							// datastorage for type %s", type));
 						}
-					} catch (final ModelNotFoundException e1) {
-						// ignore it for now
+					} else {
+						final DataStorage storage = getDataStorageForType(typeService.getTypeCode(subtype));
+						pks = storage != null ? storage.getAll() : Collections.emptySet();
 					}
 
-					return null;
+					if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {
+						stream = pks.parallelStream();
+					} else {
+						stream = pks.stream();
+					}
+
+					if (pageSize > 0) {
+						stream = stream.skip((page - 1) * pageSize).limit(pageSize);
+					}
+
+					Stream<T> retStream = stream.map((pk) -> {
+						try {
+							if (returnProxies) {
+								return createProxyModel(subtype, pk);
+							} else {
+								return load(subtype, pk);
+							}
+						} catch (final ModelNotFoundException e1) {
+							// ignore it for now
+						}
+
+						return null;
+					});
+
+					if (minCountForParallelStream != null && (pageSize >= minCountForParallelStream)) {
+						retStream = retStream.parallel();
+					}
+
+					return retStream;
 				});
 
-				if (minCountForParallelStream != null && (pageSize >= minCountForParallelStream)) {
-					retStream = retStream.parallel();
+				if (ret != null) {
+					foundItems.addAll(ret.get().collect(Collectors.toList()));
 				}
-
-				return retStream;
-			});
-
-			if (ret != null) {
-				foundItems = ret.get();
+			} catch (InterruptedException | ExecutionException e) {
+				loggingService.exception("Can't load items", e);
+				// throw new PersistenceStorageException("Can't load items from
+				// storage.");
 			}
-		} catch (InterruptedException | ExecutionException e) {
-			loggingService.exception("Can't load items", e);
-			// throw new PersistenceStorageException("Can't load items from
-			// storage.");
 		}
 
-		return foundItems;
+		return foundItems.stream();
 	}
 
 	@Override
