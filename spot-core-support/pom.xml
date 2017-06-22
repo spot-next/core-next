@@ -11,8 +11,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.3.8.RELEASE</spring.version>
-		<log4j.version>2.7</log4j.version>
-		<junit.version>4.10</junit.version>
+		<log4j.version>2.8.2</log4j.version>
+		<junit.version>4.12</junit.version>
 
 		<!-- nexus repositry -->
 		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
@@ -30,7 +30,18 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</repository>
 		<repository>
 			<id>alfresco-public</id>
 			<name>Alfresco Public</name>
@@ -90,11 +101,11 @@
 			<version>3.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.2</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>joda-time</groupId> -->
+		<!-- <artifactId>joda-time</artifactId> -->
+		<!-- <version>2.2</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>com.fatboyindustrial.gson-jodatime-serialisers</groupId>
@@ -109,11 +120,11 @@
 		</dependency>
 
 		<!-- spring core -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.springframework</groupId> -->
+<!-- 			<artifactId>spring-core</artifactId> -->
+<!-- 			<version>${spring.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -121,31 +132,37 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			    <groupId>org.springframework</groupId>
-    <artifactId>spring-aspects</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springmodules</groupId>
-			<artifactId>spring-modules-validation</artifactId>
-			<version>0.8</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>spring-beans</artifactId>
+			<version>5.0.0.M5</version>
 		</dependency>
 
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-tx</artifactId> -->
+		<!-- <version>${spring.version}</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
+			<artifactId>spring-aspects</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.springmodules</groupId> -->
+		<!-- <artifactId>spring-modules-validation</artifactId> -->
+		<!-- <version>0.8</version> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring</artifactId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-expression</artifactId> -->
+		<!-- <version>${spring.version}</version> -->
+		<!-- </dependency> -->
 
 		<!-- logging -->
 		<dependency>
@@ -158,28 +175,28 @@
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.logging.log4j</groupId> -->
+		<!-- <artifactId>log4j-slf4j-impl</artifactId> -->
+		<!-- <version>${log4j.version}</version> -->
+		<!-- </dependency> -->
 
 		<!-- validation -->
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>5.3.2.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.web</groupId>
-			<artifactId>javax.el</artifactId>
-			<version>2.2.4</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>javax.validation</groupId> -->
+		<!-- <artifactId>validation-api</artifactId> -->
+		<!-- <version>1.1.0.Final</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.hibernate</groupId> -->
+		<!-- <artifactId>hibernate-validator</artifactId> -->
+		<!-- <version>5.3.2.Final</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.glassfish.web</groupId> -->
+		<!-- <artifactId>javax.el</artifactId> -->
+		<!-- <version>2.2.4</version> -->
+		<!-- </dependency> -->
 
 		<!-- junit -->
 		<dependency>

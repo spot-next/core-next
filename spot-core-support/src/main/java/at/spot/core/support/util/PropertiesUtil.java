@@ -8,11 +8,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.jboss.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PropertiesUtil {
 
-	private static Logger LOG = Logger.getLogger(PropertiesUtil.class);
+	private static Logger LOG = LogManager.getLogger(PropertiesUtil.class);
 
 	/**
 	 * Loads a {@link Properties} from a file.

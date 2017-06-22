@@ -15,7 +15,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.access.BootstrapException;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -23,6 +22,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import at.spot.core.CoreInit;
+import at.spot.core.infrastructure.exception.BootstrapException;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
@@ -182,9 +182,10 @@ public class Bootstrap {
 	 * @param args
 	 * @return
 	 * @throws ParseException
+	 * @throws BootstrapException
 	 */
 	@SuppressWarnings("unchecked")
-	protected static BootstrapOptions parseCommandLine(final String... args) throws ParseException {
+	protected static BootstrapOptions parseCommandLine(final String... args) throws ParseException, BootstrapException {
 		final BootstrapOptions ret = new BootstrapOptions();
 
 		final Options options = new Options();
