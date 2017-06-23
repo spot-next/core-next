@@ -1,209 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.spot</groupId>
-	<artifactId>spot-core-support</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<name>spOt core support</name>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>at.spot</groupId>
+    <artifactId>spot-core-support</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>spOt core support</name>
 
-	<properties>
-		<java.version>1.8</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.3.8.RELEASE</spring.version>
-		<log4j.version>2.8.2</log4j.version>
-		<junit.version>4.12</junit.version>
+    <parent>
+        <groupId>at.spot</groupId>
+        <artifactId>spot-framework</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-		<!-- nexus repositry -->
-		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
-		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
-	</properties>
+    <properties>
+        <spring.version>4.3.8.RELEASE</spring.version>
+    </properties>
 
-	<distributionManagement>
-		<repository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-		</repository>
-		<snapshotRepository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.fatboyindustrial.gson-jodatime-serialisers</groupId>
+            <artifactId>gson-jodatime-serialisers</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.0.0.M5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</pluginRepository>
-	</pluginRepositories>
-
-	<repositories>
-		<repository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</repository>
-		<repository>
-			<id>alfresco-public</id>
-			<name>Alfresco Public</name>
-			<url>https://artifacts.alfresco.com/nexus/content/repositories/public/</url>
-		</repository>
-		<repository>
-			<id>mvnrepository.com</id>
-			<name>MVN repository</name>
-			<url>http://mvnrepository.com/artifact</url>
-		</repository>
-		<repository>
-			<id>central</id>
-			<name>Central Repository</name>
-			<url>http://repo.maven.apache.org/maven2</url>
-		</repository>
-		<repository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>interval:300</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-				<updatePolicy>interval:300</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>joda-time</groupId> -->
-		<!-- <artifactId>joda-time</artifactId> -->
-		<!-- <version>2.2</version> -->
-		<!-- </dependency> -->
-
-		<dependency>
-			<groupId>com.fatboyindustrial.gson-jodatime-serialisers</groupId>
-			<artifactId>gson-jodatime-serialisers</artifactId>
-			<version>1.4.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
-
-		<!-- spring core -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-core</artifactId> -->
-<!-- 			<version>${spring.version}</version> -->
-<!-- 		</dependency> -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>5.0.0.M5</version>
-		</dependency>
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework</groupId> -->
-		<!-- <artifactId>spring-tx</artifactId> -->
-		<!-- <version>${spring.version}</version> -->
-		<!-- </dependency> -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.springmodules</groupId> -->
-		<!-- <artifactId>spring-modules-validation</artifactId> -->
-		<!-- <version>0.8</version> -->
-		<!-- <exclusions> -->
-		<!-- <exclusion> -->
-		<!-- <groupId>org.springframework</groupId> -->
-		<!-- <artifactId>spring</artifactId> -->
-		<!-- </exclusion> -->
-		<!-- </exclusions> -->
-		<!-- </dependency> -->
-
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework</groupId> -->
-		<!-- <artifactId>spring-expression</artifactId> -->
-		<!-- <version>${spring.version}</version> -->
-		<!-- </dependency> -->
-
-		<!-- logging -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.logging.log4j</groupId> -->
-		<!-- <artifactId>log4j-slf4j-impl</artifactId> -->
-		<!-- <version>${log4j.version}</version> -->
-		<!-- </dependency> -->
-
-		<!-- validation -->
-		<!-- <dependency> -->
-		<!-- <groupId>javax.validation</groupId> -->
-		<!-- <artifactId>validation-api</artifactId> -->
-		<!-- <version>1.1.0.Final</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.hibernate</groupId> -->
-		<!-- <artifactId>hibernate-validator</artifactId> -->
-		<!-- <version>5.3.2.Final</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.glassfish.web</groupId> -->
-		<!-- <artifactId>javax.el</artifactId> -->
-		<!-- <version>2.2.4</version> -->
-		<!-- </dependency> -->
-
-		<!-- junit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
-
-	</dependencies>
+    </dependencies>
 </project>
