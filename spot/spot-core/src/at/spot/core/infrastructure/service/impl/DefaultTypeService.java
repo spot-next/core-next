@@ -141,7 +141,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		final List<String> typeCodes = Arrays.asList(beanIds).stream().map((i) -> {
 			final String[] aliases = getApplicationContext().getAliases(i);
 
-			return (aliases != null && aliases.length > 0) ? aliases[0] : null;
+			return aliases != null && aliases.length > 0 ? aliases[0] : null;
 		}).filter((i) -> {
 			return StringUtils.isNotBlank(i);
 		}).collect(Collectors.toList());

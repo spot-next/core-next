@@ -48,8 +48,8 @@ import spark.route.HttpMethod;
 /**
  * This HTTP service base class scans the implementing class for annotated
  * method and register it as Spark request endpoints.
- *
  */
+@SuppressWarnings("PMD.TooManyStaticImports")
 public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
 
 	@Autowired

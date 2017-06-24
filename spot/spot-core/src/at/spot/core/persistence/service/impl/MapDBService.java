@@ -353,7 +353,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 						return null;
 					});
 
-					if (minCountForParallelStream != null && (pageSize >= minCountForParallelStream)) {
+					if (minCountForParallelStream != null && pageSize >= minCountForParallelStream) {
 						retStream = retStream.parallel();
 					}
 

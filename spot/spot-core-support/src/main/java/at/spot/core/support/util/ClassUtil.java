@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -28,334 +30,329 @@ import org.springframework.core.annotation.AnnotationUtils;
  */
 public class ClassUtil {
 
-	private static final Logger LOG = LogManager.getLogger(ClassUtil.class);
+    private static final Logger LOG = LogManager.getLogger(ClassUtil.class);
 
-	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If
-	 * the field does not exist, null is returned.
-	 * 
-	 * @param type
-	 * @param fieldName
-	 * @param includeSuperTypes
-	 *            if this is true all super classes till and including
-	 *            {@link Object} will be invoked.
-	 * @return
-	 */
-	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
-			final boolean includeSuperTypes) {
+    /**
+     * Returns a {@link Field} instance from the given {@link Class} object. If the field does not exist, null is
+     * returned.
+     *
+     * @param type
+     * @param fieldName
+     * @param includeSuperTypes if this is true all super classes till and including {@link Object} will be invoked.
+     * @return
+     */
+    public static Field getFieldDefinition(final Class<?> type, final String fieldName,
+            final boolean includeSuperTypes) {
 
-		assert StringUtils.isNotBlank(fieldName);
+        assert StringUtils.isNotBlank(fieldName);
 
-		Field field = null;
+        Field field = null;
 
-		for (final Class<?> c : getAllSuperClasses(type, Object.class, true, true)) {
-			try {
-				field = c.getDeclaredField(fieldName);
-				break;
-			} catch (NoSuchFieldException | SecurityException e) {
-				LOG.log(Level.INFO, String.format("Field not found: %s", fieldName));
-			}
-		}
+        for (final Class<?> c : getAllSuperClasses(type, Object.class, true, true)) {
+            try {
+                field = c.getDeclaredField(fieldName);
+                break;
+            } catch (NoSuchFieldException | SecurityException e) {
+                LOG.log(Level.INFO, String.format("Field not found: %s", fieldName));
+            }
+        }
 
-		return field;
-	}
+        return field;
+    }
 
-	/**
-	 * Returns all super classes of the given {@link Class} in the order <most
-	 * concrete class> to {@link Object}.
-	 * 
-	 * @param type
-	 * @param stopClass
-	 *            {@link Object} if null
-	 * @param includeStopClass
-	 *            if this is true, the stop class will be included. defaults to
-	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the
-	 *            result
-	 * @return a sorted list of all super classes of the given class.
-	 */
-	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
-			final boolean includeStopClass, final boolean includeStartClass) {
+    /**
+     * Returns all super classes of the given {@link Class} in the order <most
+     * concrete class> to {@link Object}.
+     *
+     * @param type
+     * @param stopClass {@link Object} if null
+     * @param includeStopClass if this is true, the stop class will be included. defaults to
+     * @param includeStartClass if this is true, the given {@link Class} is included in the result
+     * @return a sorted list of all super classes of the given class.
+     */
+    public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
+            final boolean includeStopClass, final boolean includeStartClass) {
 
-		if (stopClass == null) {
-			stopClass = Object.class;
-		}
+        if (stopClass == null) {
+            stopClass = Object.class;
+        }
 
-		final List<Class<?>> types = new LinkedList<>();
+        final List<Class<?>> types = new LinkedList<>();
 
-		if (includeStartClass) {
-			types.add(type);
-		}
+        if (includeStartClass) {
+            types.add(type);
+        }
 
-		Class<?> currentType = type;
+        Class<?> currentType = type;
 
-		while (!currentType.getSuperclass().equals(stopClass)) {
-			final Class<?> superClass = currentType.getSuperclass();
+        while (!currentType.getSuperclass().equals(stopClass)) {
+            final Class<?> superClass = currentType.getSuperclass();
 
-			types.add(superClass);
-			currentType = superClass;
-		}
+            types.add(superClass);
+            currentType = superClass;
+        }
 
-		if (includeStopClass) {
-			types.add(currentType.getSuperclass());
-		}
+        if (includeStopClass) {
+            types.add(currentType.getSuperclass());
+        }
 
-		return types;
-	}
+        return types;
+    }
 
-	/**
-	 * Set the field value for the given object. This silently fails if
-	 * something goes wrong. something goes wrong.
-	 * 
-	 * @param object
-	 * @param fieldName
-	 * @param value
-	 */
-	public static void setField(final Object object, final String fieldName, final Object value) {
-		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
-			try {
-				final Field field = c.getDeclaredField(fieldName);
-				field.setAccessible(true);
-				field.set(object, value);
-				break;
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				// silently fail
-				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
-			}
-		}
-	}
+    /**
+     * Set the field value for the given object. This silently fails if something goes wrong. something goes wrong.
+     *
+     * @param object
+     * @param fieldName
+     * @param value
+     */
+    public static void setField(final Object object, final String fieldName, final Object value) {
+        for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+            try {
+                final Field field = c.getDeclaredField(fieldName);
+                setAccessable(field);
+                field.set(object, value);
+                break;
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                // silently fail
+                LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
+            }
+        }
+    }
 
-	/**
-	 * Returns the field value for the given object. This silently fails if
-	 * something goes wrong. something goes wrong.
-	 * 
-	 * @param object
-	 * @param fieldName
-	 * @param value
-	 */
-	public static Object getField(final Object object, final String fieldName,
-			final boolean includeInAccessableFields) {
+    /**
+     * Returns the field value for the given object. This silently fails if something goes wrong. something goes wrong.
+     *
+     * @param object
+     * @param fieldName
+     * @param value
+     */
+    public static Object getField(final Object object, final String fieldName,
+            final boolean includeInAccessableFields) {
 
-		Object retVal = null;
+        Object retVal = null;
 
-		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
-			try {
-				final Field field = c.getDeclaredField(fieldName);
+        for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+            try {
+                final Field field = c.getDeclaredField(fieldName);
 
-				if (includeInAccessableFields) {
-					field.setAccessible(true);
-				}
+                if (includeInAccessableFields) {
+                    setAccessable(field);
+                }
 
-				retVal = field.get(object);
-				break;
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				// silently fail
-				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
-			}
-		}
+                retVal = field.get(object);
+                break;
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                // silently fail
+                LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
+            }
+        }
 
-		return retVal;
-	}
+        return retVal;
+    }
 
-	/**
-	 * Invokes a method on a given object. This silently fails if something goes
-	 * wrong.
-	 * 
-	 * @param object
-	 * @param methodName
-	 * @param args
-	 * @return
-	 */
-	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
-		Object retVal = null;
+    protected static void setAccessable(final AccessibleObject object) {
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            @Override
+            public Void run() {
+                object.setAccessible(true);
+                return null;
+            }
+        });
+    }
 
-		final Class<?>[] paramArgs = new Class<?>[args.length];
+    /**
+     * Invokes a method on a given object. This silently fails if something goes wrong.
+     *
+     * @param object
+     * @param methodName
+     * @param args
+     * @return
+     */
+    public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
+        Object retVal = null;
 
-		int i = 0;
+        final Class<?>[] paramArgs = new Class<?>[args.length];
 
-		for (final Object arg : args) {
-			paramArgs[i] = arg.getClass();
-			i++;
-		}
+        int i = 0;
 
-		Method method = null;
+        for (final Object arg : args) {
+            paramArgs[i] = arg.getClass();
+            i++;
+        }
 
-		// iterate over all superclasses and look for given method
-		for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
-			try {
-				method = c.getDeclaredMethod(methodName, paramArgs);
+        Method method = null;
 
-				if (method != null) {
-					break;
-				}
-			} catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
-				// silently fail
-				if (method != null) {
-					LOG.log(Level.INFO, String.format("Can't find method %s", method.getName()));
-				}
-			}
-		}
+        // iterate over all superclasses and look for given method
+        for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
+            try {
+                method = c.getDeclaredMethod(methodName, paramArgs);
 
-		if (method != null) {
-			method.setAccessible(true);
+            } catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
+                // silently fail
+                LOG.log(Level.INFO, String.format("Can't find method %s", methodName));
+            }
 
-			try {
-				retVal = method.invoke(object, args);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				// silently fail
-				if (method != null) {
-					LOG.log(Level.INFO, String.format("Can't invoke method %s", method.getName()));
-				}
-			}
-		}
+            if (method != null) {
+                break;
+            }
+        }
 
-		return retVal;
-	}
+        if (method != null) {
+            setAccessable(method);
 
-	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
-			final Class<A> annotation) {
-		final Set<Field> annotatedFields = new HashSet<>();
+            try {
+                retVal = method.invoke(object, args);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                // silently fail
+                LOG.log(Level.INFO, String.format("Can't invoke method %s", methodName));
+            }
+        }
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
-			for (final Field field : c.getDeclaredFields()) {
-				if (field.isAnnotationPresent(annotation)) {
-					annotatedFields.add(field);
-				}
-			}
-		}
+        return retVal;
+    }
 
-		return annotatedFields;
-	}
+    public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
+            final Class<A> annotation) {
+        final Set<Field> annotatedFields = new HashSet<>();
 
-	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
-		final List<Class<?>> classes = new ArrayList<>();
-		classes.add(type);
-		classes.addAll(ClassUtils.getAllSuperclasses(type));
+        for (final Class<?> c : getAllAssignableClasses(type)) {
+            for (final Field field : c.getDeclaredFields()) {
+                if (field.isAnnotationPresent(annotation)) {
+                    annotatedFields.add(field);
+                }
+            }
+        }
 
-		return classes;
-	}
+        return annotatedFields;
+    }
 
-	/**
-	 * Checks for the presence of the given annotation on the given joinPoint.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> boolean hasAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
-		return getAnnotation(joinPoint, annotation) != null;
-	}
+    public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
+        final List<Class<?>> classes = new ArrayList<>();
+        classes.add(type);
+        classes.addAll(ClassUtils.getAllSuperclasses(type));
 
-	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
-		A ret = null;
+        return classes;
+    }
 
-		final Signature sig = joinPoint.getSignature();
+    /**
+     * Checks for the presence of the given annotation on the given joinPoint.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> boolean hasAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
+        return getAnnotation(joinPoint, annotation) != null;
+    }
 
-		if (sig instanceof MethodSignature) {
-			final MethodSignature methodSignature = (MethodSignature) sig;
-			Method method = methodSignature.getMethod();
+    /**
+     * Returns the given annotation object, if present. If the annotation is not found, null is returned.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
+        A ret = null;
 
-			if (method.getDeclaringClass().isInterface()) {
-				try {
-					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
-				} catch (NoSuchMethodException | SecurityException e) {
-					// silently fail
-					if (annotation != null) {
-						LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
-					}
-				}
-			}
+        final Signature sig = joinPoint.getSignature();
 
-			ret = AnnotationUtils.findAnnotation(method, annotation);
-		} else {
-			final FieldSignature fieldSignature = (FieldSignature) sig;
+        if (sig instanceof MethodSignature) {
+            final MethodSignature methodSignature = (MethodSignature) sig;
+            Method method = methodSignature.getMethod();
 
-			ret = fieldSignature.getField().getDeclaredAnnotation(annotation);
-		}
+            if (method.getDeclaringClass().isInterface()) {
+                try {
+                    method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
+                } catch (NoSuchMethodException | SecurityException e) {
+                    // silently fail
+                    if (annotation != null) {
+                        LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+                    }
+                }
+            }
 
-		return ret;
+            ret = AnnotationUtils.findAnnotation(method, annotation);
+        } else {
+            final FieldSignature fieldSignature = (FieldSignature) sig;
 
-	}
+            ret = fieldSignature.getField().getDeclaredAnnotation(annotation);
+        }
 
-	/**
-	 * Checks for the presence of the given annotation on the given class.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> boolean hasAnnotation(final Class<?> type, final Class<A> annotation) {
-		return getAnnotation(type, annotation) != null;
-	}
+        return ret;
 
-	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> A getAnnotation(final Class<?> type, final Class<A> annotation) {
-		return type.getAnnotation(annotation);
-	}
+    }
 
-	/**
-	 * Checks for the presence of the given annotation on the given member.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
-			final Class<A> annotation) {
-		return getAnnotation(member, annotation) != null;
-	}
+    /**
+     * Checks for the presence of the given annotation on the given class.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> boolean hasAnnotation(final Class<?> type, final Class<A> annotation) {
+        return getAnnotation(type, annotation) != null;
+    }
 
-	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
-	 * 
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
-	 */
-	public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
-		return member.getAnnotation(annotation);
-	}
+    /**
+     * Returns the given annotation object, if present. If the annotation is not found, null is returned.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> A getAnnotation(final Class<?> type, final Class<A> annotation) {
+        return type.getAnnotation(annotation);
+    }
 
-	public static <A extends Annotation> A getAnnotation(final Class<?> type, final String fieldName,
-			final Class<A> annotation) {
+    /**
+     * Checks for the presence of the given annotation on the given member.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
+            final Class<A> annotation) {
+        return getAnnotation(member, annotation) != null;
+    }
 
-		try {
-			return getAnnotation(getFieldDefinition(type, fieldName, true), annotation);
-		} catch (final SecurityException e) {
-			// silently ignore
-			if (annotation != null) {
-				LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
-			}
-		}
+    /**
+     * Returns the given annotation object, if present. If the annotation is not found, null is returned.
+     *
+     * @param joinPoint
+     * @param annotation
+     * @return
+     */
+    public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
+        return member.getAnnotation(annotation);
+    }
 
-		return null;
-	}
+    public static <A extends Annotation> A getAnnotation(final Class<?> type, final String fieldName,
+            final Class<A> annotation) {
 
-	public static Class<?> getGenericCollectionType(final FieldSignature field) {
-		return getGenericCollectionType(field.getField());
-	}
+        try {
+            return getAnnotation(getFieldDefinition(type, fieldName, true), annotation);
+        } catch (final SecurityException e) {
+            // silently ignore
+            if (annotation != null) {
+                LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+            }
+        }
 
-	public static Class<?> getGenericCollectionType(final Field field) {
-		final ParameterizedType paramType = (ParameterizedType) field.getGenericType();
+        return null;
+    }
 
-		final Class<?> collectionType = (Class<?>) paramType.getActualTypeArguments()[0];
+    public static Class<?> getGenericCollectionType(final FieldSignature field) {
+        return getGenericCollectionType(field.getField());
+    }
 
-		return collectionType;
-	}
+    public static Class<?> getGenericCollectionType(final Field field) {
+        final ParameterizedType paramType = (ParameterizedType) field.getGenericType();
+
+        final Class<?> collectionType = (Class<?>) paramType.getActualTypeArguments()[0];
+
+        return collectionType;
+    }
 }

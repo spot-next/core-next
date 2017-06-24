@@ -13,7 +13,7 @@ import at.spot.core.model.OneToManyRelation;
 @Target({ FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Relation {
-	public static final boolean DEFAULT_CASCADE_ON_DELETE = false;
+	boolean DEFAULT_CASCADE_ON_DELETE = false;
 
 	RelationType type();
 

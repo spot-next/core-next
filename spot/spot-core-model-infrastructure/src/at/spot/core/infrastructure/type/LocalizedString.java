@@ -59,12 +59,12 @@ public class LocalizedString implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		String ret = "";
+		final StringBuilder ret = new StringBuilder();
 
-		for (final Locale l : strings.keySet()) {
-			ret += String.format("%s=%s\n", l, strings.get(l));
+		for (final Map.Entry<Locale, String> entry : strings.entrySet()) {
+			ret.append(String.format("%s=%s", entry.getKey(), strings.get(entry.getKey())) + "\n");
 		}
 
-		return ret;
+		return ret.toString();
 	}
 }

@@ -37,6 +37,6 @@ public class DateHasTimeValidator implements Validator, ConstraintValidator<Date
 	}
 
 	protected boolean isValid(Date date) {
-		return (date != null && !DateUtils.truncate(date, Calendar.DAY_OF_MONTH).equals(date));
+		return date != null && !DateUtils.truncate(date, Calendar.DAY_OF_MONTH).equals(date);
 	}
 }

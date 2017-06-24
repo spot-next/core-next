@@ -12,7 +12,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 
 public class SpringUtil {
 
-	public static enum BeanScope {
+	public enum BeanScope {
 		prototype, singleton,
 	}
 
