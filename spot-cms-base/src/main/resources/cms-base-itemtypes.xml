@@ -95,9 +95,7 @@
 				<datatype class="java.lang.String" />
 			</property>
 			<property name="renderEngine">
-				<datatype class="java.util.List">
-					<genericArgument class="at.spot.cms.TemplateRenderEngine" />
-				</datatype>
+				<datatype class="at.spot.cms.TemplateRenderEngine" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>

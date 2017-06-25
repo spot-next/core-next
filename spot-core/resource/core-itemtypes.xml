@@ -180,7 +180,7 @@
             </property>
             <property name="data">
                 <datatype class="byte[]" />
-                <description>The content of the data object.</description>
+                <description>The content of the data object (read from the filesystem).</description>
                 <accessors valueProvider="mediaDataValueProvider" />
             </property>
         </properties>
