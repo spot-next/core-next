@@ -1,18 +1,17 @@
 package at.spot.commerce.strategy.impl;
 
-import at.spot.commerce.model.order.AbstractOrder;
+import java.util.UUID;
+
 import at.spot.commerce.strategy.SerialIdGeneratorStrategy;
+import at.spot.core.model.Item;
 
-public class DefaultSerialIdGeneratorStrategy implements SerialIdGeneratorStrategy<AbstractOrder> {
+/**
+ * Generates a random UID using {@link UUID#randomUUID()}.
+ */
+public class DefaultSerialIdGeneratorStrategy implements SerialIdGeneratorStrategy<Item> {
 
-	protected String prefix;
-	protected String suffix;
-
-	@Override
-	public String generateId(final AbstractOrder order) {
-		final String id = prefix + order.getPk() + suffix;
-
-		return id;
-	}
-
+    @Override
+    public String generateId(Item item) {
+        return UUID.randomUUID().toString();
+    }
 }
