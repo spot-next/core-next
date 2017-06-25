@@ -2,5 +2,6 @@
     <wb-module deploy-name="spot-core">
         <wb-resource deploy-path="/" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/gensrc"/>
+        <wb-resource deploy-path="/" source-path="/target/generated-sources/spot-core"/>
     </wb-module>
 </project-modules>

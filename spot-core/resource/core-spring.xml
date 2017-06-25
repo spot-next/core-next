@@ -86,7 +86,7 @@
 	<!-- strategies -->
 	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
 	<alias name="defaultJsonSerializationStrategy" alias="jsonSerializationStrategy" />
-	<alias name="xmlSerializationStrategy" alias="xmlSerializationStrategy" />
+        <alias name="defaultXmlSerializationStrategy" alias="xmlSerializationStrategy" />
 	
 
 	<!-- converters -->

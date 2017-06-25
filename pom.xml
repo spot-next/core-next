@@ -56,7 +56,7 @@
 
     <repositories>
         <!-- external repos -->
-         <repository>
+        <repository>
             <id>mvnrepository.com</id>
             <name>MVN repository</name>
             <url>http://mvnrepository.com/artifact</url>
@@ -108,7 +108,7 @@
                         If you run out of memory, changes the value of the effort element
                         to 'low'.
                     -->
-                    <effort>Max</effort>
+                    <effort>medium</effort>
                     <!-- Reports all bugs (other values are medium and max) -->
                     <threshold>Low</threshold>
                     <!-- Produces XML report -->
@@ -184,23 +184,24 @@
 
     <reporting>
         <plugins>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>3.0.4</version>
                 <configuration>
                     
-                        Enables analysis which takes more memory but finds more bugs.
-                        If you run out of memory, changes the value of the effort element
-                        to 'low'.
+                    Enables analysis which takes more memory but finds more bugs.
+                    If you run out of memory, changes the value of the effort element
+                    to 'low'.
                     
                     <effort>Max</effort>
-                     Reports all bugs (other values are medium and max) 
+                    Reports all bugs (other values are medium and max) 
                     <threshold>Low</threshold>
-                     Produces XML report 
+                    <failOnError>true</failOnError>
                     <xmlOutput>true</xmlOutput>
+                    <findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
                 </configuration>
-            </plugin>-->
+            </plugin>
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -217,6 +218,14 @@
                     </rulesets>
                     <printFailingErrors>true</printFailingErrors>
                     <verbose>true</verbose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <configLocation>config/sun_checks.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>
@@ -247,7 +256,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <scope>test</scope>
+            <!--             <scope>test</scope> -->
         </dependency>
         
         <!-- logging -->
