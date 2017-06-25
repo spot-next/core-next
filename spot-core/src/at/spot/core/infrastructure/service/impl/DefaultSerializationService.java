@@ -14,6 +14,7 @@ public class DefaultSerializationService implements SerializationService {
 	@Autowired
 	SerializationStrategy jsonSerializationStrategy;
 
+	@Autowired
 	SerializationStrategy xmlSerializationStrategy;
 
 	/**

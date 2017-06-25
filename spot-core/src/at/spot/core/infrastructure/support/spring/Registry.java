@@ -10,12 +10,14 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.init.Configuration;
 import at.spot.core.persistence.service.PersistenceService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is a static provider for the current spring context. It also provides
  * some getters for commonly used Services.
  *
  */
+@SuppressFBWarnings("LI_LAZY_INIT_STATIC")
 public class Registry {
 
 	private static ApplicationContext context;

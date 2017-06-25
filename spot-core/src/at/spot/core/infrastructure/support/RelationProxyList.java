@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ModelService;
@@ -18,8 +21,6 @@ import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.infrastructure.type.ListModification;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 
 public class RelationProxyList<E extends Item> implements List<E> {
@@ -225,7 +226,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 		internalList.clear();
 		internalList.addAll(itemsToRetain);
 
-		return itemsToRemove != null && itemsToRemove.size() > 0;
+		return itemsToRemove.size() > 0;
 	}
 
 	@Override

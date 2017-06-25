@@ -30,8 +30,6 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
-import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -49,6 +47,7 @@ import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Service
 public class MapDBService extends AbstractService implements PersistenceService {
@@ -60,20 +59,14 @@ public class MapDBService extends AbstractService implements PersistenceService 
 
 	public static final String PK_PROPERTY_NAME = "pk";
 
-	static DB database;
-	private final Map<String, DataStorage> dataStorage = new HashMap<>();
+	protected DB database;
+	protected final Map<String, DataStorage> dataStorage = new HashMap<>();
 
 	@Autowired
 	protected ModelService modelService;
 
 	@Autowired
 	protected TypeService typeService;
-
-	@Autowired
-	protected LoggingService loggingService;
-
-	@Autowired
-	protected ConfigurationService configurationService;
 
 	protected ForkJoinPool threadPool;
 
@@ -82,13 +75,16 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		this.threadPool = new ForkJoinPool(10);
 	}
 
+	public MapDBService() {
+		database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
+				.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
+				.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
+	}
+
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
 	public void initDataStorage() throws PersistenceStorageException {
 		try {
-			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
-					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
-					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 			// database =
 			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
 			// DEFAULT_DB_FILEPATH))
@@ -119,8 +115,8 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is
-	 * one stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is one
+	 * stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -147,7 +143,6 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	@Override
 	public <T extends Item> void save(final List<T> models) throws ModelSaveException, ModelNotUniqueException {
 		final long start = System.currentTimeMillis();
-		long duration = start;
 
 		try {
 			long i = 0;
@@ -159,7 +154,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				if (i > 0 && i % saveAfter == 0) {
 					// database.commit();
 
-					duration = System.currentTimeMillis() - start;
+					long duration = System.currentTimeMillis() - start;
 					if (duration >= 1000) {
 						loggingService.debug("Created " + i + " users (" + i / (duration / 1000) + " items/s )");
 					}
@@ -174,6 +169,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		}
 	}
 
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
 	protected void saveInternal(final Item item, final boolean commit)
 			throws IntrospectionException, ModelNotUniqueException, ModelSaveException {
@@ -197,8 +193,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			final Map<String, ItemTypePropertyDefinition> itemMembers = typeService
 					.getItemTypeProperties(item.getClass());
 
-			final Entity entity = new Entity(item.getPk(), item.getClass().getName(),
-					item.uniquenessHash());
+			final Entity entity = new Entity(item.getPk(), item.getClass().getName(), item.uniquenessHash());
 
 			for (final ItemTypePropertyDefinition member : itemMembers.values()) {
 				// ignore pk property and relation properties
@@ -234,19 +229,16 @@ public class MapDBService extends AbstractService implements PersistenceService 
 							// items.keySet(), commit);
 							// value = saveInternalCollection((Collection)
 							// items.values(), commit);
+							loggingService.warn("Maps can't yet be persisted.");
 						}
 					}
 
-					if (unsavedChanges) {
-						entity.setProperty(member.name, value);
-					}
+					entity.setProperty(member.name, value);
 				}
 			}
 
-			if (unsavedChanges) {
-				item.setPk(storeEntity(entity, item.getPk(), item.getClass()));
-				resetModelState(item);
-			}
+			item.setPk(storeEntity(entity, item.getPk(), item.getClass()));
+			resetModelState(item);
 		} catch (final Exception e) {
 			database.rollback();
 			throw new ModelSaveException("Could not save model", e);
@@ -274,7 +266,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			final Collection<Item> savedItems = new ArrayList<>();
 
 			for (final Item v : items) {
-				if (v != null && v instanceof Item) {
+				if (v != null) {
 					saveInternal(v, commit);
 					savedItems.add(createProxyModel(v));
 				}
@@ -360,7 +352,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 					return retStream;
 				});
 
-				if (ret != null) {
+				if (ret.isDone()) {
 					foundItems.addAll(ret.get().collect(Collectors.toList()));
 				}
 			} catch (InterruptedException | ExecutionException e) {
@@ -423,8 +415,8 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
 
 				final List<Item> proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(),
-						referencingItem.getPk(), typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name,
-						() -> {
+						referencingItem.getPk(), typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()),
+						p.name, () -> {
 							referencingItem.markAsDirty(p.name);
 						});
 

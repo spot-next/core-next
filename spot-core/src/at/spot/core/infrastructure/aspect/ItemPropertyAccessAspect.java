@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.aspect;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	protected QueryService queryService;
 
 	// @Autowired
-	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders;
+	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders = new HashMap<>();
 
 	/*
 	 * PointCuts
@@ -40,16 +41,16 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && get(* *.*)")
 	final protected void getAccess() {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && set(* *.*)")
 	final protected void setAccess() {
@@ -71,6 +72,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		final Relation rel = getAnnotation(joinPoint, Relation.class);
 
 		if (rel != null) {
+			loggingService.warn("Handling relations not implemented here.");
 			// handleRelationProperty(joinPoint, rel);
 		}
 
@@ -100,7 +102,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 		// if there's a value provider configured, use it
 		if (StringUtils.isNotBlank(ann.itemValueProvider())) {
-			final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider().toString());
+			final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider());
 			return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
 		} else { // get currently stored object
 			final Object retVal = getPropertyValueInternal(joinPoint);

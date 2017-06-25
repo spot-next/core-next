@@ -15,14 +15,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
-import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
@@ -40,9 +38,6 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
  */
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
-
-	@Autowired
-	protected LoggingService loggingService;
 
 	/*
 	 * *************************************************************************
@@ -63,8 +58,6 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	protected void registerType(final Class<?> type, final String scope) {
-		final ItemType ann = type.getAnnotation(ItemType.class);
-
 		final String alias = getTypeCode((Class<? extends Item>) type);
 		SpringUtil.registerBean(getBeanFactory(), type, type.getSimpleName(), alias, BeanScope.prototype, null, false);
 
@@ -109,7 +102,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Class<? extends Item> type = null;
 
 		try {
-			type = getApplicationContext().getBean(typeCode.toLowerCase(), Item.class).getClass();
+			type = getApplicationContext().getBean(StringUtils.lowerCase(typeCode), Item.class).getClass();
 		} catch (final Exception e) {
 			throw new UnknownTypeException(e);
 		}
@@ -131,7 +124,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			typeCode = itemType.getSimpleName();
 		}
 
-		return typeCode.toLowerCase();
+		return StringUtils.lowerCase(typeCode);
 	}
 
 	@Override
@@ -247,10 +240,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		final Map<String, ItemTypePropertyDefinition> uniqueProps = new HashMap<>();
 
-		for (final String k : props.keySet()) {
-			final ItemTypePropertyDefinition v = props.get(k);
-			if (v.isUnique) {
-				uniqueProps.put(k, v);
+		for (final Map.Entry<String, ItemTypePropertyDefinition> entry : props.entrySet()) {
+			if (entry.getValue().isUnique) {
+				uniqueProps.put(entry.getKey(), entry.getValue());
 			}
 		}
 

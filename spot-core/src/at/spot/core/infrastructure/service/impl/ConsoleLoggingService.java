@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.SerializationException;
-import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.support.LogLevel;
@@ -28,14 +27,10 @@ import at.spot.core.infrastructure.support.LogLevel;
 public class ConsoleLoggingService extends AbstractService implements LoggingService {
 
 	private static final String CONFIG_KEY_LOG_TO_CONSOLE = "service.logging.sys.console";
-	private static final String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
-	private static final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
 
 	@Autowired
 	protected SerializationService serializationService;
-
-	@Autowired
-	protected ConfigurationService configurationService;
 
 	Map<Class<?>, Logger> loggers = new HashMap<>();
 
@@ -137,7 +132,7 @@ public class ConsoleLoggingService extends AbstractService implements LoggingSer
 	}
 
 	protected String getTimeStamp() {
-		return sdf.format(new Date(System.currentTimeMillis()));
+		return LocalDateTime.now().format(DATE_FORMAT);
 	}
 
 	/**

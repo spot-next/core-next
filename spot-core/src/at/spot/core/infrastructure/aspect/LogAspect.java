@@ -6,16 +6,11 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.service.LoggingService;
 
 @Aspect
 public class LogAspect extends AbstractBaseAspect {
-
-	@Autowired
-	protected LoggingService loggingService;
 
 	/**
 	 * Define the pointcut for all methods that are annotated with {@link Log}.
@@ -58,9 +53,9 @@ public class LogAspect extends AbstractBaseAspect {
 
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
 
-		final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
-
 		if (ann != null && ann.after()) {
+			final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
+
 			loggingService.log(ann.logLevel(),
 					createLogMessage(joinPoint, "After", null, ann.messageArguments(), runDuration), null, null,
 					joinPoint.getTarget().getClass());

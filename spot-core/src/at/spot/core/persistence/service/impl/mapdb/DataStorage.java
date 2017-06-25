@@ -84,13 +84,13 @@ public class DataStorage {
 	public synchronized Set<Long> get(final Map<String, Comparable<?>> criteria) {
 		final Map<String, List<Long>> pksForProperty = new TreeMap<>();
 
-		for (final String k : criteria.keySet()) {
-			final Comparable<?> v = criteria.get(k);
+		for (final Map.Entry<String, Comparable<?>> entry : criteria.entrySet()) {
+			final Comparable<?> v = entry.getValue();
 
-			final List<Long> pk = getIndex(k).getPk(v);
+			final List<Long> pk = getIndex(entry.getKey()).getPk(v);
 
 			if (pk != null) {
-				pksForProperty.put(k, getIndex(k).getPk(v));
+				pksForProperty.put(entry.getKey(), getIndex(entry.getKey()).getPk(v));
 			}
 		}
 
@@ -212,7 +212,7 @@ public class DataStorage {
 
 	protected synchronized Long getNextPk() {
 		if (latestPkForType == null) {
-			latestPkForType = new Long(getEntityCount());
+			latestPkForType = Long.valueOf(getEntityCount());
 		}
 
 		// increase by one

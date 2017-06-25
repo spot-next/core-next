@@ -9,7 +9,6 @@ import org.mapdb.Serializer;
 
 public class Index {
 	protected Map<Object, List<Long>> index;
-	protected DB database;
 
 	public Index(DB database, String name) {
 		index = database.hashMap(name).keySerializer(Serializer.JAVA).valueSerializer(Serializer.JAVA).createOrOpen();
@@ -28,12 +27,12 @@ public class Index {
 	}
 
 	public synchronized void removeIndex(Long pk) {
-		for (Object k : index.keySet()) {
-			List<Long> val = index.get(k);
+		for (Map.Entry<Object, List<Long>> entry : index.entrySet()) {
+			List<Long> val = entry.getValue();
 
 			if (val != null) {
 				val.remove(pk);
-				index.put(k, val);
+				index.put(entry.getKey(), val);
 			}
 		}
 	}

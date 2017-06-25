@@ -31,6 +31,7 @@ import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.mail.model.Mail;
 import at.spot.mail.service.SmtpServiceEndpoint;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Implements a simple SMTP service endpoint. Received mails are stored as
@@ -69,6 +70,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		}
 	}
 
+	@SuppressFBWarnings("IL_INFINITE_LOOP")
 	protected void runMessageQueueLoop() {
 		Mail mail = null;
 
@@ -131,7 +133,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		}
 	}
 
-	final class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {
+	final static class SMTPAuthHandlerFactory implements AuthenticationHandlerFactory {
 		private static final String LOGIN_MECHANISM = "LOGIN";
 
 		@Override
@@ -147,7 +149,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		}
 	}
 
-	final class SMTPAuthHandler implements AuthenticationHandler {
+	final static class SMTPAuthHandler implements AuthenticationHandler {
 		private static final String USER_IDENTITY = "User";
 		private static final String PROMPT_USERNAME = "334 VXNlcm5hbWU6";
 		private static final String PROMPT_PASSWORD = "334 UGFzc3dvcmQ6";

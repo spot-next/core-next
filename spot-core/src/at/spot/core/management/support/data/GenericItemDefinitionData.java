@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is a generic item type DTO implementation.
  */
+@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class GenericItemDefinitionData {
 
 	public String typeCode;

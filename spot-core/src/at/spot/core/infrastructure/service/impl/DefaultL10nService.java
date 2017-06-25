@@ -4,25 +4,25 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.el.ExpressionFactory;
 import javax.validation.MessageInterpolator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.L10nService;
 import at.spot.core.model.internationalization.LocalizationKey;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 
 public class DefaultL10nService extends AbstractService implements L10nService {
 
 	protected MessageSource parentMessageSource;
-	protected ExpressionFactory expressionFactory;
 
 	@Autowired
 	protected I18nService i18nService;
@@ -46,7 +46,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		try {
 			message = getMessageFromStorage(key, defaultMessage, locale, messageParams);
 		} catch (final NoSuchMessageException e) {
-			message = parentMessageSource.getMessage(key, messageParams, defaultMessage, locale);
+			message = getParentMessageSource().getMessage(key, messageParams, defaultMessage, locale);
 		}
 
 		// if no message has been found we return the key again
@@ -131,8 +131,13 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return message;
 	}
 
+	@Required
 	public void setParentMessageSource(final MessageSource messageSource) {
 		this.parentMessageSource = messageSource;
+	}
+
+	public MessageSource getParentMessageSource() {
+		return parentMessageSource;
 	}
 
 	@Override

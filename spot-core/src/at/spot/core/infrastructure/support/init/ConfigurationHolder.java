@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Properties;
 
 import at.spot.core.support.util.PropertiesUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings("MS_MUTABLE_COLLECTION_PKGPROTECT")
 public class ConfigurationHolder implements Configuration {
-	protected static List<Properties> configProperties = new LinkedList<>();
+	protected static final List<Properties> configProperties = new LinkedList<>();
 
 	public void addConfigruation(final String configurationFile) {
 		addConfigruation(PropertiesUtil.loadPropertiesFromFile(new File(configurationFile)));

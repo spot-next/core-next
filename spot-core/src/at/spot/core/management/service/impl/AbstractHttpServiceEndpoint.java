@@ -10,10 +10,10 @@ import static spark.Spark.post;
 import static spark.Spark.put;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,7 +25,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.I18nService;
-import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -38,6 +37,7 @@ import at.spot.core.management.support.HttpAuthorizationType;
 import at.spot.core.model.user.User;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -56,9 +56,6 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	protected SerializationService serializationService;
 
 	@Autowired
-	protected LoggingService loggingService;
-
-	@Autowired
 	protected I18nService i18nService;
 
 	@Autowired
@@ -67,16 +64,13 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Autowired
 	protected SessionService sessionService;
 
-	protected Locale defaultLocale;
-
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
-		defaultLocale = i18nService.getDefaultLocale();
-
 		try {
 			Spark.port(getPort());
-		} catch (final Exception e) {
+		} catch (final IllegalStateException e) {
 			loggingService.warn(e.getMessage());
 		}
 
@@ -198,8 +192,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	}
 
 	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a
-	 * basic authentication request header fields.
+	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
+	 * authentication request header fields.
 	 * 
 	 * @param request
 	 * @param response
@@ -212,15 +206,15 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		User authenticatedUser = null;
 
 		if (StringUtils.isNotBlank(encodedHeader)) {
-			final String decodedHeader = new String(Base64.getDecoder().decode(encodedHeader));
+			final String decodedHeader = new String(Base64.getDecoder().decode(encodedHeader), StandardCharsets.UTF_8);
 
 			final String[] credentials = StringUtils.split(decodedHeader, ":", 2);
 
 			if (credentials != null && credentials.length == 2) {
 				/*
-				 * the http authentication password is encoded in MD5, by
-				 * default we are also using the MD5 password strategy, so we
-				 * simply set {@link AuthenticationService#isEncrypted} to true
+				 * the http authentication password is encoded in MD5, by default we are also
+				 * using the MD5 password strategy, so we simply set {@link
+				 * AuthenticationService#isEncrypted} to true
 				 */
 				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
 			}
@@ -246,7 +240,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	 * Helper class that implements a Spark {@link Route} to serve HTTP calls.
 	 *
 	 */
-	protected class HttpRoute implements Route {
+	protected static class HttpRoute implements Route {
 		private final AbstractHttpServiceEndpoint serviceImpl;
 		private final Method httpMethodImpl;
 		private final String contentType;

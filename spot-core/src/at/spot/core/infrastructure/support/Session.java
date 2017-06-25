@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.support;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
@@ -14,10 +15,9 @@ public class Session {
 
 	protected String id;
 	protected User user;
-	protected Object rawSession;
-	protected Map<String, Object> attributes;
 	protected DateTime creationTime = new DateTime();
 	protected DateTime lastAccessedTime = new DateTime();
+	protected final Map<String, Object> attributes = new HashMap<>();
 
 	protected int maxInactiveInterval;
 

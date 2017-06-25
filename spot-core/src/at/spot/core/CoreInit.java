@@ -24,6 +24,7 @@ import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the main entry point for the application. After the application has
@@ -62,6 +63,7 @@ public class CoreInit extends ModuleInit {
 	@Autowired
 	protected QueryService queryService;
 
+	@SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
 	public void run() {
 		final long start = System.currentTimeMillis();
 

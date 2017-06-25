@@ -5,11 +5,9 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.management.exception.RemoteServiceInitException;
@@ -19,9 +17,6 @@ import at.spot.mail.service.ImapServiceEndpoint;
 public class DefaultImapServiceEndpoint extends AbstractService implements ImapServiceEndpoint {
 
 	private static final String CONFIG_PORT_KEY = "spot.service.imapservice.port";
-
-	@Autowired
-	protected ConfigurationService configurationService;
 
 	@Log(logLevel = LogLevel.INFO, message = "Initiating IMAP service ...")
 	@PostConstruct

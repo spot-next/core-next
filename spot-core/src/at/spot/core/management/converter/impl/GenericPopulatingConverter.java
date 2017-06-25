@@ -17,7 +17,7 @@ public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
 	public T convert(S source) {
 		T target = createFromClass();
 
-		for (Populator<S, T> p : populators) {
+		for (Populator<S, T> p : getPopulators()) {
 			p.populate(source, target);
 		}
 
@@ -26,7 +26,7 @@ public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
 
 	protected T createFromClass() {
 		try {
-			return targetClass.newInstance();
+			return getTargetClass().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
@@ -38,5 +38,13 @@ public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
 
 	public void setPopulators(List<Populator<S, T>> populators) {
 		this.populators = populators;
+	}
+
+	public List<Populator<S, T>> getPopulators() {
+		return populators;
+	}
+
+	public Class<T> getTargetClass() {
+		return targetClass;
 	}
 }
