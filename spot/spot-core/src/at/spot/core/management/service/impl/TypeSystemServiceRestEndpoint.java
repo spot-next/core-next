@@ -308,9 +308,9 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
 		}
 
-		if (item.pk != null) {
+		if (item.getPk() != null) {
 			status.warn("PK was reset, itmay not be set for new items.");
-			item.pk = null;
+			item.setPk(null);
 		}
 
 		try {
@@ -389,7 +389,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
 		}
 
-		if (item.pk == null) {
+		if (item.getPk() == null) {
 			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You cannot update a new item (PK was null)");
 		} else {
 			try {

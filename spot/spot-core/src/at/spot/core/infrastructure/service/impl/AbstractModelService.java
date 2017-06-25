@@ -13,40 +13,39 @@ import at.spot.core.support.util.ClassUtil;
 @Service
 public abstract class AbstractModelService extends AbstractService implements ModelService {
 
-	@Autowired
-	protected TypeService typeService;
+    @Autowired
+    protected TypeService typeService;
 
-	@Autowired
-	protected LoggingService loggingService;
+    @Autowired
+    protected LoggingService loggingService;
 
-	@Override
-	public <T extends Item> T create(final Class<T> type) {
-		final String typeCode = typeService.getTypeCode(type);
+    @Override
+    public <T extends Item> T create(final Class<T> type) {
+        final String typeCode = typeService.getTypeCode(type);
 
-		final T item = getApplicationContext().getBean(typeCode, type);
-		setTypeCode(item);
-		return item;
-	}
+        final T item = getApplicationContext().getBean(typeCode, type);
+        setTypeCode(item);
+        return item;
+    }
 
-	protected <T extends Item> void setTypeCode(final T item) {
-		ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
-	}
+    protected <T extends Item> void setTypeCode(final T item) {
+        ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
+    }
 
-	@Override
-	public <T extends Item> T createProxyModel(final Class<T> itemType, final long pk) {
+    @Override
+    public <T extends Item> T createProxyModel(final Class<T> itemType, final long pk) {
+        T proxyItem = null;
 
-		T proxyItem = null;
+        proxyItem = create(itemType);
+        ClassUtil.setField(proxyItem, "isProxy", true);
 
-		proxyItem = create(itemType);
-		ClassUtil.setField(proxyItem, "isProxy", true);
+        proxyItem.setPk(pk);
 
-		proxyItem.pk = pk;
+        return proxyItem;
+    }
 
-		return proxyItem;
-	}
-
-	@Override
-	public <T extends Item> T createProxyModel(final T item) {
-		return createProxyModel((Class<T>) item.getClass(), item.pk);
-	}
+    @Override
+    public <T extends Item> T createProxyModel(final T item) {
+        return createProxyModel((Class<T>) item.getClass(), item.getPk());
+    }
 }

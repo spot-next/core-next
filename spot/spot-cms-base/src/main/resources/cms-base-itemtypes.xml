@@ -30,15 +30,6 @@
 	<!-- image media -->
 	<type name="ImageMedia" extends="FileMedia" package="at.spot.core.model.media">
 		<properties>
-			<property name="content">
-				<datatype class="java.io.InputStream" />
-				<description>The input stream of the file from "contentPath".</description>
-				<accessors valueProvider="fileMediaContentValueProvider" />
-			</property>
-			<property name="contentPath">
-				<datatype class="java.lang.String" />
-				<description>The path to the actual file of the media object.</description>
-			</property>
 		</properties>
 	</type>
 

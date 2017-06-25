@@ -24,8 +24,8 @@ import at.spot.spring.web.security.exception.AuthenticationException;
  */
 public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
-	public static String ADMIN_USER_NAME_KEY = "security.authentication.admin.username";
-	public static String DEFAULT_ADMIN_USER_NAME = "admin";
+	public static final String ADMIN_USER_NAME_KEY = "security.authentication.admin.username";
+	public static final String DEFAULT_ADMIN_USER_NAME = "admin";
 
 	@Autowired
 	protected AuthenticationService authenticationService;

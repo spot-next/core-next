@@ -63,7 +63,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 					// ignore item as it might have already been deleted
 				}
 
-				return referencedItem != null && referencedItem.pk.equals(referencingItemPk);
+				return referencedItem != null && referencedItem.getPk().equals(referencingItemPk);
 			};
 		}
 
@@ -74,7 +74,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 
 				if (referencedItems != null) {
 					return referencedItems.stream().filter((e) -> {
-						return e.pk.equals(referencingItemPk);
+						return e.getPk().equals(referencingItemPk);
 					}).findAny().isPresent();
 				} else {
 					return false;
@@ -344,7 +344,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 							relationDefinition.mappedTo(), List.class);
 
 					final List<Item> toRemoveFromRelation = relationList.stream().filter((i) -> {
-						return i.pk.equals(referencingItemPk);
+						return i.getPk().equals(referencingItemPk);
 					}).collect(Collectors.toList());
 
 					relationList.removeAll(toRemoveFromRelation);
@@ -379,7 +379,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 						List.class);
 
 				final List<Item> toAddToRelation = relationList.stream().filter((i) -> {
-					return i.pk.equals(referencingItemPk);
+					return i.getPk().equals(referencingItemPk);
 				}).collect(Collectors.toList());
 
 				relationList.addAll(toAddToRelation);

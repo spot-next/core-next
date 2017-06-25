@@ -132,7 +132,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 
 		final Entity itemWithSameUniqueness = storage.get(model.uniquenessHash());
 
-		if (itemWithSameUniqueness != null && !(itemWithSameUniqueness.getPK().equals(model.pk))) {
+		if (itemWithSameUniqueness != null && !(itemWithSameUniqueness.getPK().equals(model.getPk()))) {
 			isUnique = false;
 		}
 
@@ -197,7 +197,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			final Map<String, ItemTypePropertyDefinition> itemMembers = typeService
 					.getItemTypeProperties(item.getClass());
 
-			final Entity entity = new Entity(item.pk != null ? item.pk : null, item.getClass().getName(),
+			final Entity entity = new Entity(item.getPk(), item.getClass().getName(),
 					item.uniquenessHash());
 
 			for (final ItemTypePropertyDefinition member : itemMembers.values()) {
@@ -244,7 +244,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			}
 
 			if (unsavedChanges) {
-				item.pk = storeEntity(entity, item.pk, item.getClass());
+				item.setPk(storeEntity(entity, item.getPk(), item.getClass()));
 				resetModelState(item);
 			}
 		} catch (final Exception e) {
@@ -377,7 +377,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
 		final T item = modelService.create(type);
 
-		item.pk = pk;
+		item.setPk(pk);
 		refresh(item);
 
 		return item;
@@ -387,10 +387,10 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		resetModelState(item);
 
-		final Entity itemEntity = getDataStorageForType(typeService.getTypeCode(item.getClass())).get(item.pk);
+		final Entity itemEntity = getDataStorageForType(typeService.getTypeCode(item.getClass())).get(item.getPk());
 
 		if (itemEntity == null) {
-			throw new ModelNotFoundException(String.format("Model with pk=%s not found", item.pk));
+			throw new ModelNotFoundException(String.format("Model with pk=%s not found", item.getPk()));
 		}
 
 		if (itemEntity.getProperties() != null) {
@@ -423,7 +423,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
 
 				final List<Item> proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(),
-						referencingItem.pk, typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name,
+						referencingItem.getPk(), typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name,
 						() -> {
 							referencingItem.markAsDirty(p.name);
 						});
@@ -447,7 +447,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		if (items.length > 0) {
 
 			getDataStorageForType(typeService.getTypeCode(items[0].getClass()))
-					.remove(Arrays.stream(items).mapToLong((i) -> i.pk.longValue()).toArray());
+					.remove(Arrays.stream(items).mapToLong((i) -> i.getPk().longValue()).toArray());
 		}
 
 		saveDataStorage();
