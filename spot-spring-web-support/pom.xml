@@ -14,8 +14,6 @@
         <spring.version>4.3.9.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
-        <spring.shell.version>1.2.0.RELEASE</spring.shell.version>
-
         <jetty.version>9.4.4.v20170414</jetty.version>
         <tomcat.version>8.5.2</tomcat.version>
     </properties>
