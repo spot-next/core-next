@@ -58,53 +58,53 @@
         </dependency>
 
         <!-- jetty -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>apache-jsp</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-annotations</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>jetty-server</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>jetty-servlet</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>apache-jsp</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>jetty-annotations</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>jetty-http</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.eclipse.jetty</groupId> -->
+<!--             <artifactId>jetty-util</artifactId> -->
+<!--             <version>${jetty.version}</version> -->
+<!--         </dependency> -->
 
         <!-- JSTL implementations-->
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet.jsp.jstl</artifactId>
-            <version>3.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>org.glassfish</groupId> -->
+<!--             <artifactId>javax.servlet.jsp.jstl</artifactId> -->
+<!--             <version>3.1.1</version> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>javax.servlet</groupId> -->
+<!--             <artifactId>javax.servlet-api</artifactId> -->
+<!--             <version>3.1.0</version> -->
+<!--         </dependency> -->
         <!-- JSTl to fix errors in eclipse -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>javax.servlet</groupId> -->
+<!--             <artifactId>jstl</artifactId> -->
+<!--             <version>1.2</version> -->
+<!--         </dependency> -->
     </dependencies>
 </project>

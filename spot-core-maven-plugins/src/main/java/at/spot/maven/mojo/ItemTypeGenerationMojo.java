@@ -232,12 +232,15 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					// if (StringUtils.isBlank(existingType.getExtends())) {
 					// existingType.setExtends(typeDef.getExtends());
 					// }
-					for (final Property p : typeDef.getProperties().getProperty()) {
-						final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
-								.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
+					if (typeDef.getProperties() != null
+							&& CollectionUtils.isNotEmpty(typeDef.getProperties().getProperty())) {
+						for (final Property p : typeDef.getProperties().getProperty()) {
+							final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
+									.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
 
-						if (!existingProp.isPresent()) {
-							existingType.getProperties().getProperty().add(p);
+							if (!existingProp.isPresent()) {
+								existingType.getProperties().getProperty().add(p);
+							}
 						}
 					}
 				}
@@ -453,10 +456,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected String addImport(final TypeDefinitions definitions, final PackageClass cls, final String type) {
 		final String importType = StringUtils.replace(type, "[]", "");
 
-		String clsPkg = cls.getUnit().getNamespace().getName();
+		final String clsPkg = cls.getUnit().getNamespace().getName();
 
 		if (StringUtils.contains(importType, ".")) {
-			String typePkg = StringUtils.substring(type, 0, StringUtils.lastIndexOf(type, "."));
+			final String typePkg = StringUtils.substring(type, 0, StringUtils.lastIndexOf(type, "."));
 
 			if (!type.startsWith("java.lang") && !StringUtils.equalsIgnoreCase(clsPkg, typePkg)) {
 				cls.addImport(type);
