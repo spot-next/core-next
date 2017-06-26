@@ -49,6 +49,7 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 @Service
 public class MapDBService extends AbstractService implements PersistenceService {
 
@@ -75,16 +76,14 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		this.threadPool = new ForkJoinPool(10);
 	}
 
-	public MapDBService() {
-		database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
-				.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
-				.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
-	}
-
 	@Log(message = "Initializing MapDB storage ...")
 	@Override
 	public void initDataStorage() throws PersistenceStorageException {
 		try {
+			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
+					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
+					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
+
 			// database =
 			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
 			// DEFAULT_DB_FILEPATH))
@@ -154,7 +153,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				if (i > 0 && i % saveAfter == 0) {
 					// database.commit();
 
-					long duration = System.currentTimeMillis() - start;
+					final long duration = System.currentTimeMillis() - start;
 					if (duration >= 1000) {
 						loggingService.debug("Created " + i + " users (" + i / (duration / 1000) + " items/s )");
 					}
@@ -352,7 +351,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 					return retStream;
 				});
 
-				if (ret.isDone()) {
+				if (ret.isCompletedNormally()) {
 					foundItems.addAll(ret.get().collect(Collectors.toList()));
 				}
 			} catch (InterruptedException | ExecutionException e) {

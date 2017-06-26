@@ -90,7 +90,7 @@ public class DataStorage {
 			final List<Long> pk = getIndex(entry.getKey()).getPk(v);
 
 			if (pk != null) {
-				pksForProperty.put(entry.getKey(), getIndex(entry.getKey()).getPk(v));
+				pksForProperty.put(entry.getKey(), pk);
 			}
 		}
 
