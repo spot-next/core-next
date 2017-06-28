@@ -351,9 +351,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 					return retStream;
 				});
 
-				if (ret.isCompletedNormally()) {
-					foundItems.addAll(ret.get().collect(Collectors.toList()));
-				}
+				foundItems.addAll(ret.get().collect(Collectors.toList()));
 			} catch (InterruptedException | ExecutionException e) {
 				loggingService.exception("Can't load items", e);
 				// throw new PersistenceStorageException("Can't load items from

@@ -1,13 +1,9 @@
 
 package at.spot.core.infrastructure.service.impl;
 
-import java.util.Properties;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.support.spring.Registry;
 
 @Service
 public class DefaultConfigurationService extends AbstractService implements ConfigurationService {
@@ -83,15 +79,16 @@ public class DefaultConfigurationService extends AbstractService implements Conf
 	 * @return
 	 */
 	protected String getProperty(final String key) {
-		String value = null;
+		final String value = getApplicationContext().getEnvironment().getProperty(key);
 
-		for (final Properties prop : Registry.getAppConfiguration().getConfiguration()) {
-			value = prop.getProperty(key);
-
-			if (StringUtils.isNotBlank(value)) {
-				break;
-			}
-		}
+		// for (final Properties prop :
+		// Registry.getAppConfiguration().getConfiguration()) {
+		// value = prop.getProperty(key);
+		//
+		// if (StringUtils.isNotBlank(value)) {
+		// break;
+		// }
+		// }
 
 		return value;
 	}

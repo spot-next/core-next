@@ -3,7 +3,10 @@ package at.spot.core.infrastructure.support.spring;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
@@ -17,8 +20,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * some getters for commonly used Services.
  *
  */
-@SuppressFBWarnings("LI_LAZY_INIT_STATIC")
-public class Registry {
+@Service
+@Order(value = 0)
+@SuppressFBWarnings({ "LI_LAZY_INIT_STATIC", "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" })
+public class Registry implements ApplicationContextAware {
 
 	private static ApplicationContext context;
 
@@ -28,7 +33,8 @@ public class Registry {
 	private static PersistenceService persistenceService;
 	private static Configuration configuration;
 
-	public static void setApplicationContext(final ApplicationContext ctx) throws BeansException {
+	@Override
+	public void setApplicationContext(final ApplicationContext ctx) throws BeansException {
 		context = ctx;
 	}
 

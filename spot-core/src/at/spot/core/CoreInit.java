@@ -1,9 +1,12 @@
 package at.spot.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Service;
 
 import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -31,12 +34,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * been initialized, it will call {@link CoreInit#run()}. Then the shell is
  * being loaded.
  */
+@Configuration
+@ImportResource("classpath:/core-spring.xml")
+@PropertySource("classpath:/core.properties")
+@ComponentScan
 @EnableAsync
 @EnableScheduling
-@Service
-// @Order(value = 1)
-@ModuleConfig(moduleName = "core", modelPackagePaths = {
-		"at.spot.core.model" }, appConfigFile = "core.properties", springConfigFile = "core-spring.xml")
+@ModuleConfig(moduleName = "core", appConfigFile = "core.properties", springConfigFile = "core-spring.xml", modelPackagePaths = {
+		"at.spot.core.model" })
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -182,33 +187,33 @@ public class CoreInit extends ModuleInit {
 		// }
 
 		persistenceService.saveDataStorage();
-
 	}
 
 	/*
 	 * STARTUP FUNCTIONALITY
 	 */
 
-	@Log(message = "Starting spOt core ... ")
 	@Override
-	public void initialize() throws ModuleInitializationException {
-		try {
-			setupTypeInfrastrucutre();
-		} catch (final PersistenceStorageException e) {
-			throw new ModuleInitializationException(e);
-		}
+	@Log(message = "core boot finished")
+	protected void initialize() throws ModuleInitializationException {
+		setupTypeInfrastructure();
 
-		importInitialData();
 		runMigrateScripts();
+		importInitialData();
 
 		// this is just for testing
 		// run();
 	}
 
 	@Log(message = "Setting up type registry ...")
-	protected void setupTypeInfrastrucutre() throws PersistenceStorageException {
+	protected void setupTypeInfrastructure() throws ModuleInitializationException {
 		typeService.registerTypes();
-		persistenceService.initDataStorage();
+
+		try {
+			persistenceService.initDataStorage();
+		} catch (final PersistenceStorageException e) {
+			throw new ModuleInitializationException(e);
+		}
 	}
 
 	@Log(message = "Importing initial data ...")
@@ -237,5 +242,4 @@ public class CoreInit extends ModuleInit {
 	protected void runMigrateScripts() {
 		// not yet implemented
 	}
-
 }

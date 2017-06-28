@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -35,11 +36,20 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
  * each spot module) which it then tries to load. The init classes take care of
  * all necessary initialization for their module.
  */
-public class Bootstrap {
+public class Bootstrap extends SpringApplicationBuilder {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
+	public static void init(final Class<? extends ModuleInit> child) {
+		new Bootstrap().sources(CoreInit.class).web(false).child(child).run();
+	}
+
+	public static void init() {
+		new Bootstrap().sources(CoreInit.class).web(false).run();
+	}
+
 	public static void main(final String[] args) throws Exception {
-		bootstrap(parseCommandLine(args));
+		// bootstrap(parseCommandLine(args));
+		init();
 	}
 
 	/**
@@ -55,7 +65,7 @@ public class Bootstrap {
 		final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 
 		// inject spring context into Registry
-		Registry.setApplicationContext(ctx);
+		// Registry.setApplicationContext(ctx);
 
 		try {
 			final List<ModuleConfig> moduleConfigs = loadModuleConfig(options);
@@ -103,10 +113,10 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Load the configuration properties. First the {@link ModuleInit}'s
-	 * properties file (set in the {@link ModuleConfig} annotation) will be
-	 * loaded. Then the properties file passed via command line will be loaded,
-	 * possibly overriding module config properties.
+	 * Load the configuration properties. First the {@link ModuleInit}'s properties
+	 * file (set in the {@link ModuleConfig} annotation) will be loaded. Then the
+	 * properties file passed via command line will be loaded, possibly overriding
+	 * module config properties.
 	 * 
 	 * @param moduleConfig2
 	 * 
@@ -144,8 +154,8 @@ public class Bootstrap {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with
-	 * the parent context.
+	 * necessary, so that the spring context of this module can be merged with the
+	 * parent context.
 	 * 
 	 * @param parentContext
 	 */
@@ -225,8 +235,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths.
-	 * This causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths. This
+	 * causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.ItemType;
@@ -25,8 +25,8 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyRelationDefinition;
-import at.spot.core.infrastructure.support.init.ModuleDefinition;
-import at.spot.core.infrastructure.support.spring.Registry;
+import at.spot.core.infrastructure.support.init.ModuleConfig;
+import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.SpringUtil;
@@ -39,6 +39,9 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
+	@Autowired
+	List<ModuleInit> moduleInits;
+
 	/*
 	 * *************************************************************************
 	 * **************************** TYPE SYSTEM INIT ***************************
@@ -47,10 +50,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public void registerTypes() {
-		final Map<String, ModuleDefinition> moduleDefinitions = Registry.getApplicationContext()
-				.getBeansOfType(ModuleDefinition.class);
+		// final Map<String, ModuleDefinition> moduleDefinitions =
+		// Registry.getApplicationContext()
+		// .getBeansOfType(ModuleDefinition.class);
 
-		for (final Class<?> clazz : getItemConcreteTypes(moduleDefinitions.values())) {
+		for (final Class<?> clazz : getItemConcreteTypes(moduleInits)) {
 			if (clazz.isAnnotationPresent(ItemType.class)) {
 				registerType(clazz, "prototype");
 			}
@@ -71,11 +75,13 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	 */
 
 	@Override
-	public List<Class<? extends Item>> getItemConcreteTypes(final Collection<ModuleDefinition> moduleDefinitions) {
+	public List<Class<? extends Item>> getItemConcreteTypes(final List<ModuleInit> moduleInits) {
 		final List<Class<? extends Item>> itemTypes = new ArrayList<>();
 
-		for (final ModuleDefinition m : moduleDefinitions) {
-			final Reflections reflections = new Reflections(m.getModelPackagePaths());
+		for (final ModuleInit m : moduleInits) {
+			final ModuleConfig moduleConf = ClassUtil.getAnnotation(m.getClass(), ModuleConfig.class);
+
+			final Reflections reflections = new Reflections(moduleConf.modelPackagePaths());
 			final Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
 
 			for (final Class<?> clazz : annotated) {

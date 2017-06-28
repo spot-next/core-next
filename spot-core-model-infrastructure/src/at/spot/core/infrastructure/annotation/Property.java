@@ -2,6 +2,7 @@ package at.spot.core.infrastructure.annotation;
 
 import static java.lang.annotation.ElementType.FIELD;
 
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -11,6 +12,7 @@ import java.lang.annotation.Target;
  * in the database.
  */
 @Target({ FIELD })
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Property {
 	boolean DEFAULT_WRITABLE = true;

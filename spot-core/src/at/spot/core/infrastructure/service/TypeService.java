@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +7,7 @@ import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
-import at.spot.core.infrastructure.support.init.ModuleDefinition;
+import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.model.Item;
 
 public interface TypeService {
@@ -19,11 +18,11 @@ public interface TypeService {
 	 * 
 	 * @param packages
 	 */
-	List<Class<? extends Item>> getItemConcreteTypes(Collection<ModuleDefinition> moduleDefinitions);
+	List<Class<? extends Item>> getItemConcreteTypes(List<ModuleInit> moduleDefinitions);
 
 	/**
-	 * Return a map of all concrete registered types. Abstract types are not
-	 * listed here.
+	 * Return a map of all concrete registered types. Abstract types are not listed
+	 * here.
 	 * 
 	 * @return
 	 */
@@ -43,9 +42,9 @@ public interface TypeService {
 	Class<? extends Item> getType(String typeCode) throws UnknownTypeException;
 
 	/**
-	 * Returns the typeCode (from {@link ItemType#typeCode()} of the given
-	 * class. If this property is not set, the {@link Class#getSimpleName()} is
-	 * returned instead.
+	 * Returns the typeCode (from {@link ItemType#typeCode()} of the given class. If
+	 * this property is not set, the {@link Class#getSimpleName()} is returned
+	 * instead.
 	 * 
 	 * @param itemType
 	 * @return
@@ -54,22 +53,18 @@ public interface TypeService {
 	String getTypeCode(Class<? extends Item> itemType);
 
 	/**
-	 * Returns a map of all the @Property annotated properties of the given
-	 * item.
+	 * Returns a map of all the @Property annotated properties of the given item.
 	 * 
 	 * @param item
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
-	 *         key
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) throws UnknownTypeException;
 
 	/**
-	 * Returns a map of all the @Property annotated properties of the given
-	 * item.
+	 * Returns a map of all the @Property annotated properties of the given item.
 	 * 
 	 * @param item
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
-	 *         key
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(Class<? extends Item> itemType);
 
@@ -78,8 +73,7 @@ public interface TypeService {
 	 * that have also the @Unique annotation.
 	 * 
 	 * @param item
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
-	 *         key
+	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as key
 	 */
 	Map<String, ItemTypePropertyDefinition> getUniqueItemTypeProperties(Class<? extends Item> itemType);
 

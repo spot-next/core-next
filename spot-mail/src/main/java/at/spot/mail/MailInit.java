@@ -18,7 +18,6 @@ import at.spot.core.infrastructure.support.init.ModuleConfig;
 public class MailInit extends CoreInit {
 
 	@Log(message = "Starting mail module ...")
-	@Override
 	public void initialize() {
 		//
 	}

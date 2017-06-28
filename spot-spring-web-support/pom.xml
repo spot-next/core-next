@@ -15,7 +15,7 @@
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
         <jetty.version>9.4.4.v20170414</jetty.version>
-        <tomcat.version>8.5.2</tomcat.version>
+        <tomcat.version>8.5.4</tomcat.version>
     </properties>
 
     <dependencies>
