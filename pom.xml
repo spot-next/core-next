@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -21,7 +20,7 @@
 		<module>spot-commerce-spring-base</module>
 		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
-		<module>spot-mail</module>
+<!-- 		<module>spot-mail</module> -->
 	</modules>
 
 	<properties>
@@ -115,11 +114,8 @@
 				<version>3.0.4</version>
 				<configuration>
 					<effort>Max</effort>
-                    <!--
-                        Enables analysis which takes more memory but finds more bugs.
-                        If you run out of memory, changes the value of the effort element
-                        to 'low'.
-                    -->
+					<!-- Enables analysis which takes more memory but finds more bugs. If 
+						you run out of memory, changes the value of the effort element to 'low'. -->
 					<effort>medium</effort>
 					<!-- Reports all bugs (other values are medium and max) -->
 					<threshold>Low</threshold>
@@ -128,9 +124,7 @@
 					<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
 				</configuration>
 				<executions>
-                    <!-- 
-                        Ensures that FindBugs inspects source code when project is compiled. 
-                    -->
+					<!-- Ensures that FindBugs inspects source code when project is compiled. -->
 					<execution>
 						<id>analyze-compile</id>
 						<phase>compile</phase>
@@ -143,7 +137,7 @@
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.6.1</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -269,16 +263,16 @@
 			<!-- <scope>test</scope> -->
 		</dependency>
 
-		<!-- logging -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<!-- logging -->
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

@@ -422,7 +422,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			// Write the java file
 			try {
 				unit.encode();
-			} catch (final IOException e) {
+			} catch (final Exception e) {
 				getLog().error(
 						String.format("Could not generate item type defintion %s: %n %s", typeName, unit.toString()));
 			}
@@ -597,7 +597,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
 			ann.addAnntationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
 			ann.addAnntationAttribute("referencedType",
-					vm.newClass(propertyDefinition.getRelation().getReferencedType()));
+					vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
 
 			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
 				ann.addAnntationAttribute("casacadeOnDelete",

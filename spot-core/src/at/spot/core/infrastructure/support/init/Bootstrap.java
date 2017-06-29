@@ -39,12 +39,16 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
 public class Bootstrap extends SpringApplicationBuilder {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
+	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
+		return new Bootstrap().sources(CoreInit.class).registerShutdownHook(true).web(false);
+	}
+
 	public static void init(final Class<? extends ModuleInit> child) {
-		new Bootstrap().sources(CoreInit.class).web(false).child(child).run();
+		build(CoreInit.class).child(child).run();
 	}
 
 	public static void init() {
-		new Bootstrap().sources(CoreInit.class).web(false).run();
+		build(CoreInit.class).run();
 	}
 
 	public static void main(final String[] args) throws Exception {
