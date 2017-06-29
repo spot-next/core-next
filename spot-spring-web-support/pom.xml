@@ -1,110 +1,114 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>spot-spring-web-support</artifactId>
-    <name>spring web support module</name>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>spot-spring-web-support</artifactId>
+	<name>spring web support module</name>
 
-    <parent>
-        <groupId>at.spot</groupId>
-        <artifactId>spot-framework</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>at.spot</groupId>
+		<artifactId>spot-framework</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <properties>
-        <spring.version>4.3.9.RELEASE</spring.version>
-        <spring.security.version>4.2.3.RELEASE</spring.security.version>
-        <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
-        <jetty.version>9.4.4.v20170414</jetty.version>
-        <tomcat.version>8.5.4</tomcat.version>
-    </properties>
+	<properties>
+		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
+		<jetty.version>9.4.4.v20170414</jetty.version>
+		<tomcat.version>8.5.4</tomcat.version>
+	</properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>at.spot</groupId>
-            <artifactId>spot-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
 
-        <!-- spring security -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session</artifactId>
-            <version>1.3.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+			<version>2.0.0.BUILD-SNAPSHOT</version>
+		</dependency>
 
-        <!-- jetty -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>jetty-server</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>jetty-servlet</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>apache-jsp</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>jetty-annotations</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>jetty-http</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>org.eclipse.jetty</groupId> -->
-<!--             <artifactId>jetty-util</artifactId> -->
-<!--             <version>${jetty.version}</version> -->
-<!--         </dependency> -->
+		<!-- spring security -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-web</artifactId> -->
+		<!-- <version>${spring.security.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-config</artifactId> -->
+		<!-- <version>${spring.security.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.security</groupId> -->
+		<!-- <artifactId>spring-security-taglibs</artifactId> -->
+		<!-- <version>${spring.security.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.session</groupId> -->
+		<!-- <artifactId>spring-session</artifactId> -->
+		<!-- <version>1.3.0.RELEASE</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-webmvc</artifactId> -->
+		<!-- <version>${spring.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework</groupId> -->
+		<!-- <artifactId>spring-web</artifactId> -->
+		<!-- <version>${spring.version}</version> -->
+		<!-- </dependency> -->
 
-        <!-- JSTL implementations-->
-<!--         <dependency> -->
-<!--             <groupId>org.glassfish</groupId> -->
-<!--             <artifactId>javax.servlet.jsp.jstl</artifactId> -->
-<!--             <version>3.1.1</version> -->
-<!--         </dependency> -->
-<!--         <dependency> -->
-<!--             <groupId>javax.servlet</groupId> -->
-<!--             <artifactId>javax.servlet-api</artifactId> -->
-<!--             <version>3.1.0</version> -->
-<!--         </dependency> -->
-        <!-- JSTl to fix errors in eclipse -->
-<!--         <dependency> -->
-<!--             <groupId>javax.servlet</groupId> -->
-<!--             <artifactId>jstl</artifactId> -->
-<!--             <version>1.2</version> -->
-<!--         </dependency> -->
-    </dependencies>
+		<!-- jetty -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>jetty-server</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>jetty-servlet</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>apache-jsp</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>jetty-annotations</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>jetty-http</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.eclipse.jetty</groupId> -->
+		<!-- <artifactId>jetty-util</artifactId> -->
+		<!-- <version>${jetty.version}</version> -->
+		<!-- </dependency> -->
+
+		<!-- JSTL implementations -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.glassfish</groupId> -->
+		<!-- <artifactId>javax.servlet.jsp.jstl</artifactId> -->
+		<!-- <version>3.1.1</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>javax.servlet</groupId> -->
+		<!-- <artifactId>javax.servlet-api</artifactId> -->
+		<!-- <version>3.1.0</version> -->
+		<!-- </dependency> -->
+		<!-- JSTl to fix errors in eclipse -->
+		<!-- <dependency> -->
+		<!-- <groupId>javax.servlet</groupId> -->
+		<!-- <artifactId>jstl</artifactId> -->
+		<!-- <version>1.2</version> -->
+		<!-- </dependency> -->
+	</dependencies>
 </project>

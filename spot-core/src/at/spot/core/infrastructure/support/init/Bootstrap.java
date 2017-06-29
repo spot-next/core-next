@@ -39,6 +39,10 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
 public class Bootstrap extends SpringApplicationBuilder {
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
+	private Bootstrap() {
+
+	}
+
 	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
 		return new Bootstrap().sources(CoreInit.class).registerShutdownHook(true).web(false);
 	}

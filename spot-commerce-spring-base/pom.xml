@@ -10,7 +10,6 @@
     </parent>
 
     <properties>
-        <spring.version>4.3.3.RELEASE</spring.version>
     </properties>
 
     <build>
