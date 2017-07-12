@@ -7,9 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -124,7 +123,19 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), msg));
 		}
 
-		getLoggerForClass(callingClass).log(Level.toLevel(level.toString()), message);
+		final Logger logger = getLoggerForClass(callingClass);
+
+		if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && logger.isErrorEnabled()) {
+			logger.error(message);
+		} else if (level == LogLevel.TRACE && logger.isTraceEnabled()) {
+			logger.trace(message);
+		} else if (level == LogLevel.WARN && logger.isWarnEnabled()) {
+			logger.warn(message);
+		} else if (level == LogLevel.INFO && logger.isInfoEnabled()) {
+			logger.info(message);
+		} else if (level == LogLevel.DEBUG && logger.isDebugEnabled()) {
+			logger.debug(message);
+		}
 	}
 
 	/*
@@ -150,7 +161,7 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 		Logger logger = loggers.get(type);
 
 		if (logger == null) {
-			logger = LogManager.getLogger(type);
+			logger = LoggerFactory.getLogger(type);
 			loggers.put(type, logger);
 		}
 

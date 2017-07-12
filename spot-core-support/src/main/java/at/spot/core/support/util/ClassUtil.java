@@ -16,13 +16,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
@@ -30,11 +29,11 @@ import org.springframework.core.annotation.AnnotationUtils;
  */
 public class ClassUtil {
 
-	private static final Logger LOG = LogManager.getLogger(ClassUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If the
-	 * field does not exist, null is returned.
+	 * Returns a {@link Field} instance from the given {@link Class} object. If
+	 * the field does not exist, null is returned.
 	 *
 	 * @param type
 	 * @param fieldName
@@ -55,7 +54,7 @@ public class ClassUtil {
 				field = c.getDeclaredField(fieldName);
 				break;
 			} catch (NoSuchFieldException | SecurityException e) {
-				LOG.log(Level.INFO, String.format("Field not found: %s", fieldName));
+				LOG.info(String.format("Field not found: %s", fieldName));
 			}
 		}
 
@@ -72,7 +71,8 @@ public class ClassUtil {
 	 * @param includeStopClass
 	 *            if this is true, the stop class will be included. defaults to
 	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the result
+	 *            if this is true, the given {@link Class} is included in the
+	 *            result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -105,8 +105,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if something
-	 * goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if
+	 * something goes wrong. something goes wrong.
 	 *
 	 * @param object
 	 * @param fieldName
@@ -121,7 +121,7 @@ public class ClassUtil {
 				break;
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// silently fail
-				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
+				LOG.info(String.format("Can't set field %s", fieldName));
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class ClassUtil {
 				break;
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// silently fail
-				LOG.log(Level.INFO, String.format("Can't set field %s", fieldName));
+				LOG.info(String.format("Can't set field %s", fieldName));
 			}
 		}
 
@@ -198,7 +198,7 @@ public class ClassUtil {
 
 			} catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 				// silently fail
-				LOG.log(Level.INFO, String.format("Can't find method %s", methodName));
+				LOG.info(String.format("Can't find method %s", methodName));
 			}
 
 			if (method != null) {
@@ -213,7 +213,7 @@ public class ClassUtil {
 				retVal = method.invoke(object, args);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				// silently fail
-				LOG.log(Level.INFO, String.format("Can't invoke method %s", methodName));
+				LOG.info(String.format("Can't invoke method %s", methodName));
 			}
 		}
 
@@ -277,7 +277,7 @@ public class ClassUtil {
 				} catch (NoSuchMethodException | SecurityException e) {
 					// silently fail
 					if (annotation != null) {
-						LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+						LOG.info(String.format("Can't get annotation %s", annotation.getSimpleName()));
 					}
 				}
 			}
@@ -348,7 +348,7 @@ public class ClassUtil {
 		} catch (final SecurityException e) {
 			// silently ignore
 			if (annotation != null) {
-				LOG.log(Level.INFO, String.format("Can't get annotation %s", annotation.getSimpleName()));
+				LOG.info(String.format("Can't get annotation %s", annotation.getSimpleName()));
 			}
 		}
 

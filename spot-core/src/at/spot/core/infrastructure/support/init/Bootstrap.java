@@ -14,7 +14,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -41,7 +42,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class Bootstrap extends SpringApplicationBuilder {
-	private static final Logger LOG = Logger.getLogger(Bootstrap.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
 
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
