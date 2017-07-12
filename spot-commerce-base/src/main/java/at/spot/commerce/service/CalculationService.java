@@ -2,8 +2,8 @@ package at.spot.commerce.service;
 
 import java.math.BigDecimal;
 
-import at.spot.commerce.model.catalog.Price;
-import at.spot.commerce.model.order.AbstractOrder;
+import at.spot.itemtype.commerce.catalog.Price;
+import at.spot.itemtype.commerce.order.AbstractOrder;
 
 /**
  * The {@link CalculationService} provides functionality to calculate carts,

@@ -3,8 +3,8 @@ package at.spot.spring.web.facade;
 import javax.annotation.Resource;
 
 import at.spot.core.infrastructure.service.UserService;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 
 public abstract class AbstractBaseFacade {
 	@Resource

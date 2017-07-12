@@ -1,12 +1,17 @@
 
 package at.spot.core.infrastructure.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
+import at.spot.core.infrastructure.service.LoggingService;
 
 @Service
-public class DefaultConfigurationService extends AbstractService implements ConfigurationService {
+public class DefaultConfigurationService extends BeanAware implements ConfigurationService {
+
+	@Autowired
+	protected LoggingService loggingService;
 
 	@Override
 	public String getString(final String key) {

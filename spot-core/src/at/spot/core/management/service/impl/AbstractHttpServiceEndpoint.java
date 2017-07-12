@@ -34,9 +34,9 @@ import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.service.RemoteInterfaceServiceEndpoint;
 import at.spot.core.management.support.HttpAuthorizationType;
-import at.spot.core.model.user.User;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.itemtype.core.user.User;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
@@ -192,14 +192,14 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	}
 
 	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
-	 * authentication request header fields.
+	 * Uses the {@link AuthenticationService} to authenticate a user using a
+	 * basic authentication request header fields.
 	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
-	protected User authenticate(final Request request, Response response) {
+	protected User authenticate(final Request request, final Response response) {
 		final String encodedHeader = StringUtils.trim(
 				StringUtils.substringAfter(request.headers("Authorization"), HttpAuthorizationType.BASIC.toString()));
 
@@ -212,9 +212,9 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 			if (credentials != null && credentials.length == 2) {
 				/*
-				 * the http authentication password is encoded in MD5, by default we are also
-				 * using the MD5 password strategy, so we simply set {@link
-				 * AuthenticationService#isEncrypted} to true
+				 * the http authentication password is encoded in MD5, by
+				 * default we are also using the MD5 password strategy, so we
+				 * simply set {@link AuthenticationService#isEncrypted} to true
 				 */
 				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
 			}

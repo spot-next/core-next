@@ -1,8 +1,8 @@
 package at.spot.commerce.service;
 
-import at.spot.commerce.model.catalog.Product;
-import at.spot.commerce.model.order.Cart;
-import at.spot.commerce.model.order.CartEntry;
+import at.spot.itemtype.commerce.catalog.Product;
+import at.spot.itemtype.commerce.order.Cart;
+import at.spot.itemtype.commerce.order.CartEntry;
 
 /**
  * The cart service provides basic functionality for handling user carts.

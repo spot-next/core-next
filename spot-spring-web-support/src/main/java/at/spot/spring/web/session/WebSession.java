@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 import at.spot.core.infrastructure.support.Session;
-import at.spot.core.model.user.User;
+import at.spot.itemtype.core.user.User;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")

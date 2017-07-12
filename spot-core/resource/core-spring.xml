@@ -15,7 +15,21 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
 
-	<context:component-scan base-package="at.spot.core" />
+	<context:component-scan base-package="at.spot.core.infrastructure.service" />
+	<context:component-scan base-package="at.spot.core.infrastructure.strategy" />
+	<context:component-scan base-package="at.spot.core.management.service" />
+	<context:component-scan base-package="at.spot.core.management.converter" />
+	<context:component-scan base-package="at.spot.core.management.populator" />
+	<context:component-scan base-package="at.spot.core.persistence.service" />
+	<context:component-scan base-package="at.spot.core.persistence.valueprovider" />
+	<context:component-scan base-package="at.spot.core.security.service" />
+	<context:component-scan base-package="at.spot.core.security.strategy" />
+	<context:component-scan base-package="at.spot.core.infrastructure.spring" />
+	
+	<context:component-scan base-package="at.spot.itemtype" />
+
+
+	<bean id="itemTypeAnnotationProcessor" class="at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
 
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
@@ -86,15 +100,13 @@
 	<!-- strategies -->
 	<alias name="md5PasswordEncryptionStrategy" alias="passwordEncryptionStrategy" />
 	<alias name="defaultJsonSerializationStrategy" alias="jsonSerializationStrategy" />
-        <alias name="defaultXmlSerializationStrategy" alias="xmlSerializationStrategy" />
-	
+	<alias name="defaultXmlSerializationStrategy" alias="xmlSerializationStrategy" />
+
 
 	<!-- converters -->
-	<!-- <bean name="abstractPopulatingConverter" -->
-	<!-- class="at.spot.core.management.converter.AbstractPopulatingConverter" -->
-	<!-- abstract="true" /> -->
-
-	<bean id="itemTypeConverter" parent="genericPopulatingConverter">
+	<bean id="abstractPopulatingConverter" class="at.spot.core.management.converter.impl.AbstractPopulatingConverter" abstract="true"/>
+	
+	<bean id="itemTypeConverter" parent="abstractPopulatingConverter">
 		<property name="targetClass"
 			value="at.spot.core.management.support.data.GenericItemDefinitionData" />
 		<property name="populators">

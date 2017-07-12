@@ -1,7 +1,6 @@
 package at.spot.core.infrastructure.support.init;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,20 +14,24 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.exception.BootstrapException;
-import at.spot.core.infrastructure.support.spring.Registry;
+import at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
-import at.spot.core.support.util.SpringUtil;
-import at.spot.core.support.util.SpringUtil.BeanScope;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -36,28 +39,40 @@ import at.spot.core.support.util.SpringUtil.BeanScope;
  * each spot module) which it then tries to load. The init classes take care of
  * all necessary initialization for their module.
  */
+@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class Bootstrap extends SpringApplicationBuilder {
+	private static final Logger LOG = Logger.getLogger(Bootstrap.class);
+
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	private Bootstrap() {
-
 	}
 
 	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
-		return new Bootstrap().sources(CoreInit.class).registerShutdownHook(true).web(false);
+		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.OFF);
 	}
 
-	public static void init(final Class<? extends ModuleInit> child) {
-		build(CoreInit.class).child(child).run();
-	}
+	public static void bootstrap(final Class<? extends ModuleInit> configuration, final String[] modelScanPaths) {
+		final SpringApplicationBuilder builder = build(CoreInit.class);
 
-	public static void init() {
-		build(CoreInit.class).run();
-	}
+		builder.initializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+			@Override
+			public void initialize(final ConfigurableApplicationContext applicationContext) {
+				applicationContext.getBeanFactory()
+						.addBeanPostProcessor(new ItemTypeAnnotationProcessor(applicationContext.getBeanFactory()));
 
-	public static void main(final String[] args) throws Exception {
-		// bootstrap(parseCommandLine(args));
-		init();
+				if (applicationContext instanceof AnnotationConfigApplicationContext) {
+					for (final String path : modelScanPaths) {
+						((AnnotationConfigApplicationContext) applicationContext).scan(path);
+					}
+				} else {
+					LOG.warn("Could not inject model scan paths");
+				}
+			};
+		});
+
+		builder.child(configuration).web(WebApplicationType.SERVLET).registerShutdownHook(true).bannerMode(Mode.OFF)
+				.run();
 	}
 
 	/**
@@ -69,35 +84,17 @@ public class Bootstrap extends SpringApplicationBuilder {
 		setDefaultLocale();
 		setLogSettings();
 
-		// create a generic spring context
-		final AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		final SpringApplicationBuilder builder = build(options.getInitClass()).web(WebApplicationType.NONE);
 
-		// inject spring context into Registry
-		// Registry.setApplicationContext(ctx);
+		// load external properties into builder
+		loadConfiguration(builder, options);
 
-		try {
-			final List<ModuleConfig> moduleConfigs = loadModuleConfig(options);
+		// load external spring configs into builder
+		loadSpringConfiguration(builder, options);
 
-			// load the config properties
-			loadConfiguration(moduleConfigs, options);
+		LOG.info("Bootstrapping done.");
 
-			// load spring configs
-			loadSpringConfiguration(ctx, moduleConfigs, options);
-
-			// start initialization and load init config into config holder
-			// setupInitClass(ctx, options.getInitClass(), configHolder);
-
-			ctx.registerShutdownHook();
-			ctx.refresh();
-
-			ctx.start();
-		} catch (final Exception e) {
-			e.printStackTrace();
-		} finally {
-			// MiscUtil.closeQuietly(ctx);
-		}
-
-		System.out.println("");
+		builder.run();
 	}
 
 	protected static List<ModuleConfig> loadModuleConfig(final BootstrapOptions options) {
@@ -121,77 +118,48 @@ public class Bootstrap extends SpringApplicationBuilder {
 	}
 
 	/**
-	 * Load the configuration properties. First the {@link ModuleInit}'s properties
-	 * file (set in the {@link ModuleConfig} annotation) will be loaded. Then the
-	 * properties file passed via command line will be loaded, possibly overriding
-	 * module config properties.
+	 * Load the configuration properties passed via command line into the spring
+	 * application builder.
 	 * 
-	 * @param moduleConfig2
-	 * 
+	 * @param builder
 	 * @param options
 	 * @return
 	 * @throws IOException
 	 */
-	protected static void loadConfiguration(final List<ModuleConfig> moduleConfigs, final BootstrapOptions options)
-			throws IOException {
-
-		final ConfigurationHolder configHolder = new ConfigurationHolder();
-
-		// load module's config properties
-		for (final ModuleConfig c : moduleConfigs) {
-			if (StringUtils.isNotBlank(c.appConfigFile())) {
-				final Properties prop = PropertiesUtil.loadPropertiesFromClasspath(c.appConfigFile());
-
-				if (prop != null) {
-					configHolder.addConfigruation(prop);
-				}
-			}
-		}
-
+	protected static void loadConfiguration(final SpringApplicationBuilder builder, final BootstrapOptions options) {
 		// load application config, possibly override module configs
 		if (StringUtils.isNotBlank(options.getAppConfigFile())) {
 			final Properties prop = PropertiesUtil.loadPropertiesFromFile(options.getAppConfigFile());
 
-			if (prop != null) {
-				configHolder.addConfigruation(prop);
-			}
+			builder.properties(prop);
 		}
-
-		Registry.setAppConfiguration(configHolder);
 	}
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with the
-	 * parent context.
+	 * necessary, so that the spring context of this module can be merged with
+	 * the parent context.
 	 * 
 	 * @param parentContext
 	 */
-	protected static void loadSpringConfiguration(final BeanDefinitionRegistry context,
-			final List<ModuleConfig> moduleConfigs, final BootstrapOptions options) {
+	protected static void loadSpringConfiguration(final SpringApplicationBuilder builder,
+			final BootstrapOptions options) {
 
-		final BeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
+		builder.initializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+			@Override
+			public void initialize(final ConfigurableApplicationContext context) {
+				if (context instanceof BeanDefinitionRegistry) {
+					final BeanDefinitionReader reader = new XmlBeanDefinitionReader((BeanDefinitionRegistry) context);
 
-		// load module's spring config
-		for (final ModuleConfig c : moduleConfigs) {
-			if (StringUtils.isNotBlank(c.springConfigFile())) {
-				reader.loadBeanDefinitions(c.springConfigFile());
+					// get application spring config
+					if (StringUtils.isNotBlank(options.getSpringConfigFile())) {
+						reader.loadBeanDefinitions(options.getSpringConfigFile());
+					}
+				} else {
+					LOG.warn("Can't inject spring configuration that has been passed by command line.");
+				}
 			}
-
-			SpringUtil.registerBean(context, ModuleDefinition.class, c.moduleName(), null, BeanScope.singleton,
-					Arrays.asList(c.moduleName(), c.modelPackagePaths()), false);
-		}
-
-		// get application spring config
-		if (StringUtils.isNotBlank(options.getSpringConfigFile())) {
-			reader.loadBeanDefinitions(options.getSpringConfigFile());
-		}
-
-		// if another module init class is registered, we override coreInit.
-		if (options.getInitClass() != null) {
-			SpringUtil.registerBean(context, options.getInitClass(), null, "coreInit", BeanScope.singleton, null,
-					false);
-		}
+		});
 	}
 
 	/**
@@ -235,6 +203,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 			} catch (ClassNotFoundException | ClassCastException e) {
 				throw new BootstrapException(String.format("Could not load init class %s", initClassName));
 			}
+		} else {
+			ret.setInitClass(CoreInit.class);
 		}
 
 		ret.setInitClass(initClass);
@@ -243,8 +213,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths. This
-	 * causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths.
+	 * This causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
@@ -255,5 +225,13 @@ public class Bootstrap extends SpringApplicationBuilder {
 	 */
 	protected static void setDefaultLocale() {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
+	}
+
+	/********************************************************************************************
+	 * MAIN ENTRY POINT
+	 *******************************************************************************************/
+
+	public static void main(final String[] args) throws Exception {
+		bootstrap(parseCommandLine(args));
 	}
 }

@@ -72,13 +72,9 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	protected ForkJoinPool threadPool;
 
 	@PostConstruct
-	protected void init() {
+	protected void init() throws PersistenceStorageException {
 		this.threadPool = new ForkJoinPool(10);
-	}
 
-	@Log(message = "Initializing MapDB storage ...")
-	@Override
-	public void initDataStorage() throws PersistenceStorageException {
 		try {
 			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
@@ -105,6 +101,11 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		} catch (final UnknownTypeException e) {
 			loggingService.error(e.getMessage());
 		}
+	}
+
+	@Log(message = "Initializing MapDB storage ...")
+	@Override
+	public void initDataStorage() throws PersistenceStorageException {
 
 		loggingService.debug("MapDB service initialized");
 	}
@@ -114,8 +115,8 @@ public class MapDBService extends AbstractService implements PersistenceService 
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is one
-	 * stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is
+	 * one stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -297,26 +298,26 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		// prevent NPES
 		final List<T> foundItems = new ArrayList<T>();
 
-		for (final T subtypeBean : getApplicationContext().getBeansOfType(type).values()) {
-			final Class<T> subtype = (Class<T>) subtypeBean.getClass();
+		final String superTypeCode = typeService.getTypeCode(type);
 
-			try {
+		try {
+			for (final String typeCode : typeService.getAllSubTypesCodes(superTypeCode, true)) {
 				final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
 					Stream<Long> stream = null;
 					Set<Long> pks = null;
 
 					if (searchParameters != null && !searchParameters.isEmpty()) {
-						final DataStorage data = getDataStorageForType(typeService.getTypeCode(subtype));
+						final DataStorage data = getDataStorageForType(typeCode);
 						if (data != null) {
 							pks = data.get(searchParameters);
 						} else {
 							throw new PersistenceStorageException(
-									String.format("Could not get datastorage for type %s", subtype));
+									String.format("Could not get datastorage for type %s", typeCode));
 							// loggingService.warn(String.format("Could not get
 							// datastorage for type %s", type));
 						}
 					} else {
-						final DataStorage storage = getDataStorageForType(typeService.getTypeCode(subtype));
+						final DataStorage storage = getDataStorageForType(typeCode);
 						pks = storage != null ? storage.getAll() : Collections.emptySet();
 					}
 
@@ -330,12 +331,15 @@ public class MapDBService extends AbstractService implements PersistenceService 
 						stream = stream.skip((page - 1) * pageSize).limit(pageSize);
 					}
 
+					final Class<T> subType = (Class<T>) typeService.getType(typeCode);
+
 					Stream<T> retStream = stream.map((pk) -> {
 						try {
+
 							if (returnProxies) {
-								return createProxyModel(subtype, pk);
+								return createProxyModel(subType, pk);
 							} else {
-								return load(subtype, pk);
+								return load(subType, pk);
 							}
 						} catch (final ModelNotFoundException e1) {
 							// ignore it for now
@@ -352,11 +356,11 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				});
 
 				foundItems.addAll(ret.get().collect(Collectors.toList()));
-			} catch (InterruptedException | ExecutionException e) {
-				loggingService.exception("Can't load items", e);
-				// throw new PersistenceStorageException("Can't load items from
-				// storage.");
 			}
+		} catch (InterruptedException | ExecutionException | UnknownTypeException e) {
+			loggingService.exception("Can't load items", e);
+			// throw new PersistenceStorageException("Can't load items from
+			// storage.");
 		}
 
 		return foundItems.stream();

@@ -1,6 +1,6 @@
 package at.spot.commerce.service;
 
-import at.spot.commerce.model.store.BaseStore;
+import at.spot.itemtype.commerce.store.BaseStore;
 
 /**
  * Provides functionality around the base store.

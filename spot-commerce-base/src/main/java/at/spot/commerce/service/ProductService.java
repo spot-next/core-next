@@ -2,9 +2,9 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.model.catalog.Category;
-import at.spot.commerce.model.catalog.Product;
-import at.spot.core.model.catalog.Catalog;
+import at.spot.itemtype.commerce.catalog.Category;
+import at.spot.itemtype.commerce.catalog.Product;
+import at.spot.itemtype.core.catalog.Catalog;
 
 public interface ProductService {
 

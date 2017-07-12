@@ -14,8 +14,8 @@ import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.support.Session;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 import at.spot.spring.web.constants.SpringWebSupportConstants;
 
 /**

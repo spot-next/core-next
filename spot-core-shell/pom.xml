@@ -1,14 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spot-spring-web-support</artifactId>
-	<name>spring web support module</name>
-
+	<artifactId>spot-core-shell</artifactId>
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
+
+	<properties>
+		<spring.shell.version>1.2.1.BUILD-SNAPSHOT</spring.shell.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -16,25 +18,17 @@
 			<artifactId>spot-core</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-
-		<!-- spring -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<version>${spring.boot.version}</version>
-			<optional>true</optional>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-core-model-infrastructure</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 
+		<!-- spring shell -->
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-taglibs</artifactId>
-			<version>4.2.3.RELEASE</version>
+			<groupId>org.springframework.shell</groupId>
+			<artifactId>spring-shell</artifactId>
+			<version>${spring.shell.version}</version>
 		</dependency>
-
 	</dependencies>
 </project>

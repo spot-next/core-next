@@ -328,7 +328,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
 			unit.setNamespace(type.getPackage());
-			unit.setComment(Comment.D, "This file is auto-generated. All changes will be overwritten.");
+			unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All changes will be overwritten.");
 
 			final PackageClass cls = unit.newPublicClass(typeName);
 
@@ -350,9 +350,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
-					ann.addAnntationAttribute("typeCode", vm.newString(type.getTypeCode()));
+					ann.addAnnotationAttribute("typeCode", vm.newString(StringUtils.lowerCase(type.getTypeCode())));
 				} else { // add the type name as typecode as default
-					ann.addAnntationAttribute("typeCode", vm.newString(type.getName()));
+					ann.addAnnotationAttribute("typeCode", vm.newString(StringUtils.lowerCase(type.getName())));
 				}
 
 				addImport(definitions, cls, SuppressFBWarnings.class);
@@ -381,7 +381,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			if (StringUtils.isNotBlank(type.getDescription())) {
-				cls.setComment(Comment.D, type.getDescription());
+				cls.setComment(Comment.DOCUMENTATION, type.getDescription());
 			}
 
 			// populate the properties
@@ -490,7 +490,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final ClassField property = cls.newField(fieldType, propertyDefinition.getName());
 
 		if (StringUtils.isNotBlank(propertyDefinition.getDescription())) {
-			property.setComment(Comment.D, propertyDefinition.getDescription());
+			property.setComment(Comment.DOCUMENTATION, propertyDefinition.getDescription());
 		}
 
 		if (propertyDefinition.getDefaultValue() != null) {
@@ -545,36 +545,36 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		if (propertyDefinition.getModifiers() != null) {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
-				ann.addAnntationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
+				ann.addAnnotationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
 					.isInitial()) {
-				ann.addAnntationAttribute("initial",
+				ann.addAnnotationAttribute("initial",
 						getBooleanValue(propertyDefinition.getModifiers().isInitial(), vm));
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE != propertyDefinition.getModifiers()
 					.isReadable()) {
-				ann.addAnntationAttribute("readable",
+				ann.addAnnotationAttribute("readable",
 						getBooleanValue(propertyDefinition.getModifiers().isReadable(), vm));
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE != propertyDefinition.getModifiers()
 					.isWritable()) {
-				ann.addAnntationAttribute("writable",
+				ann.addAnnotationAttribute("writable",
 						getBooleanValue(propertyDefinition.getModifiers().isWritable(), vm));
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_IS_REFERENCE != propertyDefinition
 					.getModifiers().isIsReference()) {
-				ann.addAnntationAttribute("isReference",
+				ann.addAnnotationAttribute("isReference",
 						getBooleanValue(propertyDefinition.getModifiers().isIsReference(), vm));
 			}
 
 			if (propertyDefinition.getAccessors() != null
 					&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
-				ann.addAnntationAttribute("itemValueProvider",
+				ann.addAnnotationAttribute("itemValueProvider",
 						vm.newString(propertyDefinition.getAccessors().getValueProvider()));
 			}
 		}
@@ -593,14 +593,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
 
-			ann.addAnntationAttribute("type", vm.newFree(
+			ann.addAnnotationAttribute("type", vm.newFree(
 					RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
-			ann.addAnntationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
-			ann.addAnntationAttribute("referencedType",
+			ann.addAnnotationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
+			ann.addAnnotationAttribute("referencedType",
 					vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
 
 			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
-				ann.addAnntationAttribute("casacadeOnDelete",
+				ann.addAnnotationAttribute("casacadeOnDelete",
 						getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
 			}
 		}
@@ -625,9 +625,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				if (CollectionUtils.isNotEmpty(v.getArgument())) {
 					for (final ValidatorArgument a : v.getArgument()) {
 						if (a.getNumberValue() != null) {
-							ann.addAnntationAttribute(a.getName(), vm.newFree(a.getNumberValue()));
+							ann.addAnnotationAttribute(a.getName(), vm.newFree(a.getNumberValue()));
 						} else if (a.getStringValue() != null) {
-							ann.addAnntationAttribute(a.getName(), vm.newString(a.getStringValue()));
+							ann.addAnnotationAttribute(a.getName(), vm.newString(a.getStringValue()));
 						} else {
 							getLog().warn(String.format(
 									"Validator for property %s misconfigured, all attribute values are empty",

@@ -2,8 +2,8 @@ package at.spot.commerce.strategy.impl;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import at.spot.commerce.model.order.AbstractOrder;
 import at.spot.commerce.strategy.SerialIdGeneratorStrategy;
+import at.spot.itemtype.commerce.order.AbstractOrder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

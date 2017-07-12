@@ -7,7 +7,7 @@ import java.util.Map;
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
 import org.joda.time.DateTime;
 
-import at.spot.core.model.user.User;
+import at.spot.itemtype.core.user.User;
 
 public class Session {
 

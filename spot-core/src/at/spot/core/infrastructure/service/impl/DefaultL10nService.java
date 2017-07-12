@@ -13,13 +13,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.L10nService;
-import at.spot.core.model.internationalization.LocalizationKey;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.itemtype.core.internationalization.LocalizationKey;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings(value = { "NP_NONNULL_RETURN_VIOLATION", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" })
 public class DefaultL10nService extends AbstractService implements L10nService {
 
 	protected MessageSource parentMessageSource;
@@ -94,10 +95,13 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 		String message = null;
 
-		final Optional<String> firstCode = Arrays.asList(resolvable.getCodes()).stream().findFirst();
+		if (resolvable != null && resolvable.getCodes() != null) {
+			final Optional<String> firstCode = Arrays.asList(resolvable.getCodes()).stream().findFirst();
 
-		if (firstCode.isPresent()) {
-			message = getMessage(firstCode.get(), resolvable.getDefaultMessage(), locale, resolvable.getArguments());
+			if (firstCode.isPresent()) {
+				message = getMessage(firstCode.get(), resolvable.getDefaultMessage(), locale,
+						resolvable.getArguments());
+			}
 		}
 
 		return message;

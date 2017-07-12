@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.service;
 
 import at.spot.core.model.Item;
-import at.spot.core.model.user.User;
+import at.spot.itemtype.core.user.User;
 
 /**
  * This service uses the {@link User} registered assigned to the current session

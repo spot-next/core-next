@@ -3,7 +3,7 @@ package at.spot.commerce.service;
 import java.util.List;
 import java.util.Map;
 
-import at.spot.commerce.model.catalog.Product;
+import at.spot.itemtype.commerce.catalog.Product;
 
 /**
  * Provides functionality

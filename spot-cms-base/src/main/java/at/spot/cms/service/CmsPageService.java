@@ -3,8 +3,8 @@ package at.spot.cms.service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import at.spot.cms.model.CmsPage;
-import at.spot.cms.model.CmsPageTemplate;
+import at.spot.itemtype.cms.model.CmsPage;
+import at.spot.itemtype.cms.model.CmsPageTemplate;
 
 public interface CmsPageService {
 

@@ -4,16 +4,14 @@ import java.beans.Introspector;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,73 +23,23 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyRelationDefinition;
-import at.spot.core.infrastructure.support.init.ModuleConfig;
-import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
-import at.spot.core.support.util.SpringUtil;
-import at.spot.core.support.util.SpringUtil.BeanScope;
 
 /**
  * Provides functionality to manage the typesystem.
- *
  */
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Autowired
-	List<ModuleInit> moduleInits;
+	protected List<? extends Item> itemTypes;
 
-	/*
-	 * *************************************************************************
-	 * **************************** TYPE SYSTEM INIT ***************************
-	 * *************************************************************************
-	 */
-
-	@Override
-	public void registerTypes() {
-		// final Map<String, ModuleDefinition> moduleDefinitions =
-		// Registry.getApplicationContext()
-		// .getBeansOfType(ModuleDefinition.class);
-
-		for (final Class<?> clazz : getItemConcreteTypes(moduleInits)) {
-			if (clazz.isAnnotationPresent(ItemType.class)) {
-				registerType(clazz, "prototype");
-			}
-		}
-	}
-
-	protected void registerType(final Class<?> type, final String scope) {
-		final String alias = getTypeCode((Class<? extends Item>) type);
-		SpringUtil.registerBean(getBeanFactory(), type, type.getSimpleName(), alias, BeanScope.prototype, null, false);
-
-		loggingService.debug(String.format("Registering type: %s", alias));
-	}
-
-	/*
-	 * *************************************************************************
-	 * ANNOTATIONS
-	 * *************************************************************************
-	 */
-
-	@Override
-	public List<Class<? extends Item>> getItemConcreteTypes(final List<ModuleInit> moduleInits) {
-		final List<Class<? extends Item>> itemTypes = new ArrayList<>();
-
-		for (final ModuleInit m : moduleInits) {
-			final ModuleConfig moduleConf = ClassUtil.getAnnotation(m.getClass(), ModuleConfig.class);
-
-			final Reflections reflections = new Reflections(moduleConf.modelPackagePaths());
-			final Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(ItemType.class);
-
-			for (final Class<?> clazz : annotated) {
-				if (clazz.isAnnotationPresent(ItemType.class) && Item.class.isAssignableFrom(clazz)) {
-					itemTypes.add((Class<? extends Item>) clazz);
-				}
-			}
-		}
-
-		return itemTypes;
+	@PostConstruct
+	protected void init() {
+		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCode(i.getClass()))
+				.collect(Collectors.toList());
+		loggingService.debug(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
 	}
 
 	/*
@@ -108,6 +56,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Class<? extends Item> type = null;
 
 		try {
+			// type codes are always lowercase
 			type = getApplicationContext().getBean(StringUtils.lowerCase(typeCode), Item.class).getClass();
 		} catch (final Exception e) {
 			throw new UnknownTypeException(e);
@@ -121,29 +70,45 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	@Override
-	public String getTypeCode(final Class<? extends Item> itemType) {
-		final ItemType ann = ClassUtil.getAnnotation(itemType, ItemType.class);
+	public <I extends Item> String getTypeCode(final Class<I> itemType) {
+		final String[] beanNames = getApplicationContext().getBeanNamesForType(itemType);
+		final String[] aliases = getApplicationContext().getAliases(itemType.getSimpleName());
 
-		String typeCode = ann.typeCode();
+		return aliases.length > 0 ? aliases[0] : beanNames[0];
+	}
 
-		if (StringUtils.isBlank(typeCode)) {
-			typeCode = itemType.getSimpleName();
+	@Override
+	public List<String> getAllSubTypesCodes(final String typeCode, final boolean includeSuperType)
+			throws UnknownTypeException {
+
+		final Class<? extends Item> superType = getType(typeCode);
+
+		final Map<String, ? extends Item> allTypes = getApplicationContext().getBeansOfType(superType);
+
+		final List<String> typeCodes = allTypes.entrySet().stream().map((e) -> getTypeCode(e.getValue().getClass()))
+				.collect(Collectors.toList());
+
+		if (!includeSuperType) {
+			// typeCodes = typeCodes.stream().filter((t) ->
+			// !StringUtils.equals(t, typeCodes)).collect(Collectors.toList());
+			typeCodes.remove(typeCode);
 		}
 
-		return StringUtils.lowerCase(typeCode);
+		return typeCodes;
 	}
 
 	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() throws UnknownTypeException {
-		final String[] beanIds = getApplicationContext().getBeanNamesForType(Item.class);
+		final String[] typeCodes = getApplicationContext().getBeanNamesForType(Item.class);
 
-		final List<String> typeCodes = Arrays.asList(beanIds).stream().map((i) -> {
-			final String[] aliases = getApplicationContext().getAliases(i);
-
-			return aliases != null && aliases.length > 0 ? aliases[0] : null;
-		}).filter((i) -> {
-			return StringUtils.isNotBlank(i);
-		}).collect(Collectors.toList());
+		// final List<String> typeCodes =
+		// Arrays.asList(beanIds).stream().map((i) -> {
+		// final String[] aliases = getApplicationContext().getAliases(i);
+		//
+		// return aliases != null && aliases.length > 0 ? aliases[0] : null;
+		// }).filter((i) -> {
+		// return StringUtils.isNotBlank(i);
+		// }).collect(Collectors.toList());
 
 		final Map<String, ItemTypeDefinition> alltypes = new HashMap<>();
 

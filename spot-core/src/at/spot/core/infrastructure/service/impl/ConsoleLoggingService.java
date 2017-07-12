@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.SerializationException;
+import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.support.LogLevel;
@@ -24,10 +25,13 @@ import at.spot.core.infrastructure.support.LogLevel;
  * default log4j logger.
  */
 @Service
-public class ConsoleLoggingService extends AbstractService implements LoggingService {
+public class ConsoleLoggingService extends BeanAware implements LoggingService {
 
 	private static final String CONFIG_KEY_LOG_TO_CONSOLE = "service.logging.sys.console";
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
+
+	@Autowired
+	protected ConfigurationService configurationService;
 
 	@Autowired
 	protected SerializationService serializationService;

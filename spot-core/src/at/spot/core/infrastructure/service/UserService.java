@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Set;
 
 import at.spot.core.infrastructure.exception.CannotCreateUserException;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
 import at.spot.core.security.service.AuthenticationService;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 
 public interface UserService<U extends User, G extends UserGroup> {
 

@@ -19,14 +19,12 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.UserService;
-import at.spot.core.infrastructure.support.init.ModuleConfig;
 import at.spot.core.infrastructure.support.init.ModuleInit;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -40,8 +38,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @ComponentScan
 @EnableAsync
 @EnableScheduling
-@ModuleConfig(moduleName = "core", appConfigFile = "core.properties", springConfigFile = "core-spring.xml", modelPackagePaths = {
-		"at.spot.core.model" })
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -194,7 +190,7 @@ public class CoreInit extends ModuleInit {
 	 */
 
 	@Override
-	@Log(message = "core boot finished")
+	@Log(message = "Initializing system ...")
 	protected void initialize() throws ModuleInitializationException {
 		setupTypeInfrastructure();
 
@@ -207,13 +203,13 @@ public class CoreInit extends ModuleInit {
 
 	@Log(message = "Setting up type registry ...")
 	protected void setupTypeInfrastructure() throws ModuleInitializationException {
-		typeService.registerTypes();
+		// typeService.registerTypes();
 
-		try {
-			persistenceService.initDataStorage();
-		} catch (final PersistenceStorageException e) {
-			throw new ModuleInitializationException(e);
-		}
+		// try {
+		// persistenceService.initDataStorage();
+		// } catch (final PersistenceStorageException e) {
+		// throw new ModuleInitializationException(e);
+		// }
 	}
 
 	@Log(message = "Importing initial data ...")

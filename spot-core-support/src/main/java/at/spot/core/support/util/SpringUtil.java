@@ -34,7 +34,7 @@ public class SpringUtil {
 		beanDefinition.setBeanClass(type);
 		beanDefinition.setLazyInit(lazyInit);
 		beanDefinition.setAbstract(Modifier.isAbstract(type.getModifiers()));
-		beanDefinition.setAutowireCandidate(false);
+		beanDefinition.setAutowireCandidate(true);
 
 		if (CollectionUtils.isNotEmpty(constructorArguments)) {
 			final ConstructorArgumentValues constructorArgs = new ConstructorArgumentValues();

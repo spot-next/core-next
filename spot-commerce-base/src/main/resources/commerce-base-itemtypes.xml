@@ -4,7 +4,7 @@
 
 	<!-- enums -->
 
-	<enum name="OrderStatus" package="at.spot.commerce.enumeration">
+	<enum name="OrderStatus" package="at.spot.itemtype.commerce.enumeration">
 		<description>The render engine used to render cms items.</description>
 		<value code="OPEN"/>
 		<value code="APPROVAL_PENDING"/>
@@ -16,7 +16,7 @@
 
 	<!-- base configuration -->
 
-	<type name="BaseStore" typeCode="BaseStore" package="at.spot.commerce.model.store" extends="UniqueIdItem">
+	<type name="BaseStore" typeCode="BaseStore" package="at.spot.itemtype.commerce.store" extends="UniqueIdItem">
 		<description>This holds the base configuration for a store.</description>
 		<properties>
 			<property name="name">
@@ -40,7 +40,7 @@
 
 	<!-- product related types -->
 
-	<type name="Product" typeCode="Product" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
+	<type name="Product" typeCode="Product" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
 			<property name="name">
@@ -66,7 +66,7 @@
 		</properties>
 	</type>
 
-	<type name="Category" typeCode="Category" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
+	<type name="Category" typeCode="Category" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>Categories are used to group products.</description>
 		<properties>
 			<property name="name">
@@ -86,13 +86,13 @@
 		</properties>
 	</type>
 
-	<type name="PriceGroup" typeCode="PriceGroup" package="at.spot.commerce.model.catalog" extends="UniqueIdItem">
+	<type name="PriceGroup" typeCode="PriceGroup" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 		</properties>
 	</type>
 
-	<type name="Price" typeCode="Price" package="at.spot.commerce.model.catalog">
+	<type name="Price" typeCode="Price" package="at.spot.itemtype.commerce.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 			<property name="productId">
@@ -127,7 +127,7 @@
 		</properties>
 	</type>
 	
-	<type name="Tax" package="at.spot.commerce.model.store" extends="UniqueIdItem">
+	<type name="Tax" package="at.spot.itemtype.commerce.store" extends="UniqueIdItem">
 		<properties>
 			<property name="value">
 				<datatype class="java.math.BigDecimal" />
@@ -141,7 +141,7 @@
 		</properties>
 	</type>
 
-	<type name="Stock" package="at.spot.commerce.model.store">
+	<type name="Stock" package="at.spot.itemtype.commerce.store">
 		<properties>
 			<property name="productId">
 				<datatype class="java.lang.String" />
@@ -163,7 +163,7 @@
 		</properties>
 	</type>
 	
-	<type name="FutureStock" extends="Stock" package="at.spot.commerce.model.store">
+	<type name="FutureStock" extends="Stock" package="at.spot.itemtype.commerce.store">
 		<properties>
 			<property name="availableAt">
 				<datatype class="java.lang.String" />
@@ -177,7 +177,7 @@
 
 	<!-- cart and orders -->
 
-	<type name="AbstractOrder" abstract="true" package="at.spot.commerce.model.order" extends="UniqueIdItem">
+	<type name="AbstractOrder" abstract="true" package="at.spot.itemtype.commerce.order" extends="UniqueIdItem">
 		<description>The abstract base type for orders and carts.</description>
 		<properties>
 			<property name="customer">
@@ -196,7 +196,7 @@
 	</type>
 
 	<type name="AbstractOrderEntry" abstract="true"
-		package="at.spot.commerce.model.order">
+		package="at.spot.itemtype.commerce.order">
 		<properties>
 			<property name="order">
 				<datatype class="AbstractOrder" />
@@ -215,23 +215,23 @@
 		</properties>
 	</type>
 
-	<type name="OrderEntry" extends="AbstractOrderEntry" package="at.spot.commerce.model.order">
+	<type name="OrderEntry" extends="AbstractOrderEntry" package="at.spot.itemtype.commerce.order">
 
 	</type>
 
-	<type name="CartEntry" extends="AbstractOrderEntry" package="at.spot.commerce.model.order">
+	<type name="CartEntry" extends="AbstractOrderEntry" package="at.spot.itemtype.commerce.order">
 
 	</type>
 
-	<type name="Order" extends="AbstractOrder" package="at.spot.commerce.model.order">
+	<type name="Order" extends="AbstractOrder" package="at.spot.itemtype.commerce.order">
 	</type>
 
-	<type name="Cart" extends="AbstractOrder" package="at.spot.commerce.model.order">
+	<type name="Cart" extends="AbstractOrder" package="at.spot.itemtype.commerce.order">
 	</type>
 
 	<!-- customers -->
 
-	<type name="Customer" extends="User" package="at.spot.commerce.model.customer">
+	<type name="Customer" extends="User" package="at.spot.itemtype.commerce.customer">
 		<properties>
 			<property name="birthDay">
 				<datatype class="java.util.Date" />

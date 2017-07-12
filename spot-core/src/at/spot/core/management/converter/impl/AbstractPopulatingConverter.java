@@ -2,22 +2,19 @@ package at.spot.core.management.converter.impl;
 
 import java.util.List;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Component;
-
+import at.spot.core.management.converter.Converter;
 import at.spot.core.management.populator.Populator;
 
-@Component
-public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
+public class AbstractPopulatingConverter<S, T> implements Converter<S, T> {
 
 	protected List<Populator<S, T>> populators;
 	protected Class<T> targetClass;
 
 	@Override
-	public T convert(S source) {
-		T target = createFromClass();
+	public T convert(final S source) {
+		final T target = createFromClass();
 
-		for (Populator<S, T> p : getPopulators()) {
+		for (final Populator<S, T> p : getPopulators()) {
 			p.populate(source, target);
 		}
 
@@ -32,11 +29,11 @@ public class GenericPopulatingConverter<S, T> implements Converter<S, T> {
 		}
 	}
 
-	public void setTargetClass(Class<T> targetClass) {
+	public void setTargetClass(final Class<T> targetClass) {
 		this.targetClass = targetClass;
 	}
 
-	public void setPopulators(List<Populator<S, T>> populators) {
+	public void setPopulators(final List<Populator<S, T>> populators) {
 		this.populators = populators;
 	}
 

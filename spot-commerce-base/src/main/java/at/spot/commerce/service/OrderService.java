@@ -2,11 +2,11 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.enumeration.OrderStatus;
 import at.spot.commerce.exception.OrderCancellationException;
-import at.spot.commerce.model.customer.Customer;
-import at.spot.commerce.model.order.Order;
 import at.spot.commerce.strategy.impl.OrderIdGeneratorStrategy;
+import at.spot.itemtype.commerce.customer.Customer;
+import at.spot.itemtype.commerce.enumeration.OrderStatus;
+import at.spot.itemtype.commerce.order.Order;
 
 /**
  * This service provides functionality around the order object.

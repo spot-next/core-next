@@ -18,11 +18,11 @@ import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.support.Session;
 import at.spot.core.model.ItemTypeConstants;
-import at.spot.core.model.user.PrincipalGroup;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.security.service.AuthenticationService;
+import at.spot.itemtype.core.user.PrincipalGroup;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 
 @Service
 public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
@@ -43,7 +43,8 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	}
 
 	@Override
-	public U createUser(final Class<U> type, final String userId, final String password) throws CannotCreateUserException {
+	public U createUser(final Class<U> type, final String userId, final String password)
+			throws CannotCreateUserException {
 		final U user = modelService.create(type);
 		user.setId(userId);
 

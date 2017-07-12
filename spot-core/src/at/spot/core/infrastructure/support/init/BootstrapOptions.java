@@ -31,5 +31,4 @@ public class BootstrapOptions {
 		this.springConfigFile = springConfigFile;
 		return this;
 	}
-
 }

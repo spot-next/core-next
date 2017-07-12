@@ -22,7 +22,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 @Service
 @Order(value = 0)
-@SuppressFBWarnings({ "LI_LAZY_INIT_STATIC", "ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" })
+@SuppressFBWarnings({ "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", "LI_LAZY_INIT_STATIC",
+		"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" })
 public class Registry implements ApplicationContextAware {
 
 	private static ApplicationContext context;

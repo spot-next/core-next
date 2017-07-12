@@ -1,8 +1,8 @@
 package at.spot.commerce.service;
 
-import at.spot.commerce.model.customer.Customer;
 import at.spot.core.infrastructure.service.UserService;
-import at.spot.core.model.user.UserGroup;
+import at.spot.itemtype.commerce.customer.Customer;
+import at.spot.itemtype.core.user.UserGroup;
 
 /**
  * This service provides customer-oriented functionality, like password reset.

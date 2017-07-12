@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import at.spot.cms.TemplateRenderEngine;
 import at.spot.cms.exception.PageNotFoundException;
-import at.spot.cms.model.CmsPage;
-import at.spot.cms.model.CmsPageTemplate;
 import at.spot.cms.rendering.view.View;
 import at.spot.cms.rendering.view.ViewContext;
 import at.spot.cms.restriction.RestrictionEvaluationResult;
@@ -21,6 +18,9 @@ import at.spot.cms.service.CmsRenderService;
 import at.spot.cms.service.CmsRestrictionService;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.itemtype.cms.enumeration.TemplateRenderEngine;
+import at.spot.itemtype.cms.model.CmsPage;
+import at.spot.itemtype.cms.model.CmsPageTemplate;
 
 public class DefaultCmsPageService implements CmsPageService {
 

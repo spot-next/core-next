@@ -4,25 +4,24 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.context.WebApplicationContext;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.support.spring.Registry;
 
 public abstract class AbstractBaseController implements ApplicationContextAware {
 
-	private WebApplicationContext webContext;
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	protected LoggingService loggingService;
 
 	@Override
 	public void setApplicationContext(final ApplicationContext context) throws BeansException {
-		this.webContext = (WebApplicationContext) context;
+		this.applicationContext = context;
 	}
 
-	public WebApplicationContext getWebApplicationContext() {
-		return this.webContext;
+	public ApplicationContext getWebApplicationContext() {
+		return this.applicationContext;
 	}
 
 	protected <T> T getBean(final Class<T> beanType) {

@@ -14,8 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.SessionService;
-import at.spot.core.model.user.User;
 import at.spot.core.security.service.AuthenticationService;
+import at.spot.itemtype.core.user.User;
 import at.spot.spring.web.security.exception.AuthenticationException;
 
 /**

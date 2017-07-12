@@ -2,10 +2,10 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.model.catalog.Product;
-import at.spot.commerce.model.store.BaseStore;
-import at.spot.commerce.model.store.FutureStock;
-import at.spot.commerce.model.store.Stock;
+import at.spot.itemtype.commerce.catalog.Product;
+import at.spot.itemtype.commerce.store.BaseStore;
+import at.spot.itemtype.commerce.store.FutureStock;
+import at.spot.itemtype.commerce.store.Stock;
 
 public interface StockService {
 

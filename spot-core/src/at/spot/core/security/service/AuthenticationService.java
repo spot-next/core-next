@@ -1,8 +1,8 @@
 package at.spot.core.security.service;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.model.user.User;
 import at.spot.core.security.strategy.PasswordEncryptionStrategy;
+import at.spot.itemtype.core.user.User;
 
 public interface AuthenticationService {
 

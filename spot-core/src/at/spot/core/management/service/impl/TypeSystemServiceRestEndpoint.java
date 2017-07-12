@@ -14,14 +14,10 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 
 import at.spot.core.infrastructure.exception.DeserializationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
@@ -34,6 +30,7 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.MimeType;
 import at.spot.core.management.annotation.Handler;
+import at.spot.core.management.converter.Converter;
 import at.spot.core.management.exception.RemoteServiceInitException;
 import at.spot.core.management.support.data.GenericItemDefinitionData;
 import at.spot.core.management.support.data.PageableData;
@@ -41,6 +38,8 @@ import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import spark.Request;
@@ -165,13 +164,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JEXL expression. <br/>
+	 * Gets an item based on the search query. The query is a JEXL expression.
+	 * <br/>
 	 * 
 	 * <br/>
 	 * Example: .../User/query/uid='test-user' & name.contains('Vader') <br/>
 	 * <br/>
-	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)} is
-	 * called.
+	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)}
+	 * is called.
 	 * 
 	 * @param request
 	 * @param response
@@ -360,10 +360,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an item with the given values. The PK must be provided. If the new
-	 * item is not unique, an error is returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just want
-	 * to update a few fields, use the PATCH Method.
+	 * Updates an item with the given values. The PK must be provided. If the
+	 * new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just
+	 * want to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response

@@ -2,10 +2,10 @@ package at.spot.commerce.service;
 
 import java.util.List;
 
-import at.spot.commerce.model.catalog.Price;
-import at.spot.commerce.model.catalog.Product;
-import at.spot.core.model.user.User;
-import at.spot.core.model.user.UserGroup;
+import at.spot.itemtype.commerce.catalog.Price;
+import at.spot.itemtype.commerce.catalog.Product;
+import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 
 public interface PriceService {
 
