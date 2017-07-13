@@ -20,6 +20,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.SerializationService;
@@ -33,6 +35,9 @@ import at.spot.spring.web.dto.UserStatus;
  */
 public class RestAuthenticationHandler implements AuthenticationEntryPoint, AuthenticationSuccessHandler,
 		AuthenticationFailureHandler, LogoutSuccessHandler, AccessDeniedHandler {
+
+	@Resource
+	protected CsrfTokenRepository csrfTokenRepository;
 
 	@Resource
 	protected SerializationService serializationService;
@@ -65,7 +70,9 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 		ret.setSessionId(request.getSession().getId());
 		ret.setUsername(getUsername(authentication));
 
-		sendResponse(response, HttpStatus.OK, ret, null);
+		final CsrfToken token = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+		sendResponse(response, HttpStatus.OK, ret, token, null);
 	}
 
 	/**
@@ -76,8 +83,11 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 			final AuthenticationException exception) throws IOException, ServletException {
 
 		final UserStatus ret = new UserStatus();
+		ret.setSessionId(request.getSession().getId());
 
-		sendResponse(response, HttpStatus.UNAUTHORIZED, ret, exception);
+		final CsrfToken token = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+		sendResponse(response, HttpStatus.UNAUTHORIZED, ret, token, exception);
 	}
 
 	/**
@@ -88,7 +98,9 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 			final AccessDeniedException exception) throws IOException, ServletException {
 
 		onAuthenticationFailure(request, response,
-				new InsufficientAuthenticationException("Not authenticated", exception));
+				new InsufficientAuthenticationException(
+						StringUtils.isNotBlank(exception.getMessage()) ? exception.getMessage() : "Not authenticated",
+						exception));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -103,10 +115,12 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 			final Authentication authentication) throws IOException, ServletException {
 
 		final UserStatus ret = new UserStatus();
-		ret.setUsername(getUsername(authentication));
 		ret.setRedirectUrl("/");
+		ret.setSessionId(request.getSession().getId());
 
-		sendResponse(response, HttpStatus.OK, ret, null);
+		final CsrfToken token = csrfTokenRepository.generateToken(request);
+
+		sendResponse(response, HttpStatus.OK, ret, token, null);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +144,11 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	}
 
 	protected void sendResponse(final HttpServletResponse response, final HttpStatus httpStatusCode,
-			final UserStatus payload, final AuthenticationException exception) throws IOException {
+			final UserStatus payload, final CsrfToken token, final AuthenticationException exception)
+			throws IOException {
+
+		// set csrf token to header
+		response.setHeader(token.getHeaderName(), token.getToken());
 
 		response.setStatus(httpStatusCode.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -151,4 +169,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 		response.getWriter().flush();
 	}
 
+	protected String getCsrfToken(final HttpServletRequest request) {
+		return csrfTokenRepository.loadToken(request).getToken();
+	}
 }
