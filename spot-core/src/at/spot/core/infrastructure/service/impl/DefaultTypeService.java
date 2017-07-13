@@ -71,10 +71,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public <I extends Item> String getTypeCode(final Class<I> itemType) {
-		final String[] beanNames = getApplicationContext().getBeanNamesForType(itemType);
-		final String[] aliases = getApplicationContext().getAliases(itemType.getSimpleName());
+		final ItemType annotation = ClassUtil.getAnnotation(itemType, ItemType.class);
 
-		return aliases.length > 0 ? aliases[0] : beanNames[0];
+		return annotation.typeCode();
 	}
 
 	@Override
