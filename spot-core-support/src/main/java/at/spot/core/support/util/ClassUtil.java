@@ -54,7 +54,9 @@ public class ClassUtil {
 				field = c.getDeclaredField(fieldName);
 				break;
 			} catch (NoSuchFieldException | SecurityException e) {
-				LOG.info(String.format("Field not found: %s", fieldName));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Can't get field %s from class %s", fieldName, type.getSimpleName()));
+				}
 			}
 		}
 
@@ -121,7 +123,9 @@ public class ClassUtil {
 				break;
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// silently fail
-				LOG.info(String.format("Can't set field %s", fieldName));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Can't set field %s from class %s", fieldName, c.getSimpleName()));
+				}
 			}
 		}
 	}
@@ -151,7 +155,9 @@ public class ClassUtil {
 				break;
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// silently fail
-				LOG.info(String.format("Can't set field %s", fieldName));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Can't set field %s from class %s", fieldName, c.getSimpleName()));
+				}
 			}
 		}
 
@@ -198,7 +204,9 @@ public class ClassUtil {
 
 			} catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
 				// silently fail
-				LOG.info(String.format("Can't find method %s", methodName));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Can't find method %s from class %s", methodName, c.getSimpleName()));
+				}
 			}
 
 			if (method != null) {
@@ -213,7 +221,10 @@ public class ClassUtil {
 				retVal = method.invoke(object, args);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				// silently fail
-				LOG.info(String.format("Can't invoke method %s", methodName));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Can't invoke method %s from class %s", methodName,
+							method.getDeclaringClass().getSimpleName()));
+				}
 			}
 		}
 
@@ -276,8 +287,9 @@ public class ClassUtil {
 					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
 				} catch (NoSuchMethodException | SecurityException e) {
 					// silently fail
-					if (annotation != null) {
-						LOG.info(String.format("Can't get annotation %s", annotation.getSimpleName()));
+					if (annotation != null && LOG.isDebugEnabled()) {
+						LOG.debug(String.format("Can't get annotation %s from joinpoint %s", annotation.getSimpleName(),
+								joinPoint.getSignature()));
 					}
 				}
 			}
@@ -347,8 +359,9 @@ public class ClassUtil {
 			return getAnnotation(getFieldDefinition(type, fieldName, true), annotation);
 		} catch (final SecurityException e) {
 			// silently ignore
-			if (annotation != null) {
-				LOG.info(String.format("Can't get annotation %s", annotation.getSimpleName()));
+			if (annotation != null && LOG.isDebugEnabled()) {
+				LOG.debug(String.format("Can't get annotation %s for field %s from class %s",
+						annotation.getSimpleName(), fieldName, type.getSimpleName()));
 			}
 		}
 

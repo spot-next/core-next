@@ -25,8 +25,8 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	public Response<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
 			final Exception exception) {
 
-		loggingService.error(String.format("Unhandler %s occured: %s", exception.getClass().getSimpleName(),
-				exception.getMessage()));
+		loggingService.exception(String.format("Unhandled exception %s occured: %s",
+				exception.getClass().getSimpleName(), exception.getMessage()), exception);
 
 		final Response<Void> ret = new Response<>();
 
