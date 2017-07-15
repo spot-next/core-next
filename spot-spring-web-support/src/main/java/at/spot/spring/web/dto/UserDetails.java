@@ -8,6 +8,7 @@ public class UserDetails {
 	private String firstName;
 	private String lastName;
 	private String password;
+	private String oldPassword;
 
 	public String getPassword() {
 		return password;
@@ -39,5 +40,13 @@ public class UserDetails {
 
 	public void setLastName(final String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getOldPassword() {
+		return oldPassword;
+	}
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
 }
