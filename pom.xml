@@ -54,6 +54,45 @@
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</pluginRepository>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<!-- spot -->
+		<pluginRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>interval:300</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spot-nexus-release</id>
+			<url>${nexus.release.host}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>interval:300</updatePolicy>
+			</snapshots>
+		</pluginRepository>
 	</pluginRepositories>
 
 	<repositories>
