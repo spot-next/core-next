@@ -98,7 +98,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() throws UnknownTypeException {
-		final String[] typeCodes = getApplicationContext().getBeanNamesForType(Item.class);
+		final String[] beanNames = getApplicationContext().getBeanNamesForType(Item.class);
 
 		// final List<String> typeCodes =
 		// Arrays.asList(beanIds).stream().map((i) -> {
@@ -111,12 +111,18 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		final Map<String, ItemTypeDefinition> alltypes = new HashMap<>();
 
-		for (final String typeCode : typeCodes) {
-			final ItemTypeDefinition def = getItemTypeDefinition(typeCode);
+		for (final String typeBeanName : beanNames) {
+			final String[] aliases = getApplicationContext().getAliases(typeBeanName);
 
-			if (def != null) {
-				alltypes.put(def.typeCode, def);
+			ItemTypeDefinition def = null;
+
+			if (aliases.length > 0) {
+				def = getItemTypeDefinition(aliases[0]);
+			} else {
+				def = getItemTypeDefinition(typeBeanName);
 			}
+
+			alltypes.put(def.typeCode, def);
 		}
 
 		return alltypes;
@@ -125,14 +131,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Override
 	public ItemTypeDefinition getItemTypeDefinition(final String typeCode) throws UnknownTypeException {
 		final Class<? extends Item> itemType = getType(typeCode);
-		final ItemType typeAnnotation = ClassUtil.getAnnotation(itemType, ItemType.class);
 
 		ItemTypeDefinition def = null;
 
-		if (typeAnnotation != null) {
-			def = new ItemTypeDefinition(typeCode, itemType.getName(), itemType.getSimpleName(),
-					itemType.getPackage().getName());
-		}
+		def = new ItemTypeDefinition(typeCode, itemType.getName(), itemType.getSimpleName(),
+				itemType.getPackage().getName());
 
 		return def;
 	}

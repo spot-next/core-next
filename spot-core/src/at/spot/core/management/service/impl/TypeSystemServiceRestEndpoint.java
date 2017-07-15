@@ -100,9 +100,13 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String typeCode = request.params(":typecode");
 
 		if (StringUtils.isNotBlank(typeCode)) {
-			final ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(typeCode);
+			final ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(StringUtils.lowerCase(typeCode));
 
-			ret = itemTypeConverter.convert(def);
+			if (def != null) {
+				ret = itemTypeConverter.convert(def);
+			} else {
+				throw new UnknownTypeException(String.format("Type %s unknown.", typeCode));
+			}
 		}
 
 		return ret;

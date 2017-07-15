@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
+import at.spot.core.infrastructure.serialization.ClassSerializer;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
 
 /**
@@ -27,7 +28,9 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 			builder.serializeNulls();
 		}
 
-		// regisrer helper builders for datetimes etc.
+		builder.registerTypeAdapter(Class.class, new ClassSerializer());
+
+		// register helper builders for datetimes etc.
 		gson = Converters.registerAll(builder).create();
 	}
 
