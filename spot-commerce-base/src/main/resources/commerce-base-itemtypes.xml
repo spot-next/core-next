@@ -233,6 +233,12 @@
 
 	<type name="Customer" extends="User" package="at.spot.itemtype.commerce.customer">
 		<properties>
+			<property name="firstName">
+				<datatype class="java.lang.String" />
+			</property>
+			<property name="lastName">
+				<datatype class="java.lang.String" />
+			</property>
 			<property name="birthDay">
 				<datatype class="java.util.Date" />
 			</property>
