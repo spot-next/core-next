@@ -236,12 +236,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="field" type="xs:boolean" default="false">
-			<xs:annotation>
-				<xs:documentation>Defines if the property field is public.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="Relation">
