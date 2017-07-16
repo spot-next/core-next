@@ -6,7 +6,7 @@
 //
 
 
-package at.spot.maven.xml;
+package at.spot.core.infrastructure.maven.xml;
 
 import java.util.ArrayList;
 import java.util.List;

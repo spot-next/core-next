@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,18 +37,20 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
 import at.spot.core.infrastructure.annotation.Relation;
+import at.spot.core.infrastructure.constants.InfrastructureConstants;
+import at.spot.core.infrastructure.maven.xml.EnumType;
+import at.spot.core.infrastructure.maven.xml.EnumValue;
+import at.spot.core.infrastructure.maven.xml.GenericArgument;
+import at.spot.core.infrastructure.maven.xml.ItemType;
+import at.spot.core.infrastructure.maven.xml.Property;
+import at.spot.core.infrastructure.maven.xml.TypeDefinitions;
+import at.spot.core.infrastructure.maven.xml.Types;
+import at.spot.core.infrastructure.maven.xml.Validator;
+import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.FileUtils;
-import at.spot.maven.xml.EnumType;
-import at.spot.maven.xml.EnumValue;
-import at.spot.maven.xml.GenericArgument;
-import at.spot.maven.xml.ItemType;
-import at.spot.maven.xml.Property;
-import at.spot.maven.xml.Types;
-import at.spot.maven.xml.Validator;
-import at.spot.maven.xml.ValidatorArgument;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
@@ -70,7 +73,7 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
-	private ArtifactRepository localRepository;
+	protected ArtifactRepository localRepository;
 
 	@Parameter(property = "project", defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
@@ -81,8 +84,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Parameter(property = "basedir", defaultValue = "${project.basedir}", readonly = true, required = true)
 	protected String projectBaseDir;
 
-	@Parameter(property = "sourceDirectory", defaultValue = "gensrc")
+	@Parameter(property = "sourceDirectory", defaultValue = "gensrc", readonly = true)
 	protected String sourceDirectory;
+
+	@Parameter(property = "targetDirectory", defaultValue = "${project.build.directory}/classes/", readonly = true)
+	protected File targetDirectory;
 
 	protected File outputJavaDirectory = null;
 
@@ -116,6 +122,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
 		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
 		final TypeDefinitions itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
+
+		saveTypeDefinitions(itemTypesDefinitions);
 		generateJavaCode(itemTypesDefinitions);
 	}
 
@@ -286,13 +294,44 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return StringUtils.endsWith(fileName, "-itemtypes.xml");
 	}
 
-	// protected void formatSources(File file) {
-	// Jalopy jalopy = new Jalopy();
-	// jalopy.setFileFormat(FileFormat.DEFAULT);
-	// jalopy.setInput(tempFile);
-	// jalopy.setOutput(b);
-	// jalopy.format();
-	// }
+	/**
+	 * Store merged item type definitions in the build folder.
+	 * 
+	 * @param itemTypesDefinitions
+	 */
+	protected void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions) {
+		if (!targetDirectory.exists() && !targetDirectory.mkdir()) {
+			getLog().error("Could not create target output directory for merged item types file.");
+		}
+
+		// map-like indexed merged output file
+		try {
+			final JAXBContext context = JAXBContext.newInstance(TypeDefinitions.class);
+			final Marshaller jaxb = context.createMarshaller();
+			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+			jaxb.marshal(itemTypesDefinitions,
+					new File(targetDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME));
+		} catch (final JAXBException e) {
+			getLog().error(e);
+		}
+
+		// merged original output file
+		final Types outputTypes = new Types();
+		outputTypes.getEnum().addAll(itemTypesDefinitions.getEnumTypes().values());
+		outputTypes.getType().addAll(itemTypesDefinitions.getItemTypes().values());
+
+		try {
+			final JAXBContext context = JAXBContext.newInstance(Types.class);
+			final Marshaller jaxb = context.createMarshaller();
+			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+			jaxb.marshal(outputTypes, new File(targetDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
+		} catch (final JAXBException e) {
+			getLog().error(e);
+		}
+	}
+
 	protected void generateJavaCode(final TypeDefinitions definitions) throws IOException, MojoExecutionException {
 		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 

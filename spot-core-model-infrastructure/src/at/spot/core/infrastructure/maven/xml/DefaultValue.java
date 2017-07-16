@@ -6,25 +6,25 @@
 //
 
 
-package at.spot.maven.xml;
+package at.spot.core.infrastructure.maven.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für GenericArgument complex type.
+ * <p>Java-Klasse für DefaultValue complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="GenericArgument">
+ * &lt;complexType name="DefaultValue">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="class" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="wildcard" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,64 +33,62 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GenericArgument")
-public class GenericArgument {
+@XmlType(name = "DefaultValue", propOrder = {
+    "content"
+})
+public class DefaultValue {
 
-    @XmlAttribute(name = "class", required = true)
-    protected String clazz;
-    @XmlAttribute(name = "wildcard")
-    protected Boolean wildcard;
+    @XmlValue
+    protected String content;
+    @XmlAttribute(name = "value")
+    protected String value;
 
     /**
-     * Ruft den Wert der clazz-Eigenschaft ab.
+     * Ruft den Wert der content-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getClazz() {
-        return clazz;
+    public String getContent() {
+        return content;
     }
 
     /**
-     * Legt den Wert der clazz-Eigenschaft fest.
+     * Legt den Wert der content-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setClazz(String value) {
-        this.clazz = value;
+    public void setContent(String value) {
+        this.content = value;
     }
 
     /**
-     * Ruft den Wert der wildcard-Eigenschaft ab.
+     * Ruft den Wert der value-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public boolean isWildcard() {
-        if (wildcard == null) {
-            return false;
-        } else {
-            return wildcard;
-        }
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Legt den Wert der wildcard-Eigenschaft fest.
+     * Legt den Wert der value-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public void setWildcard(Boolean value) {
-        this.wildcard = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

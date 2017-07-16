@@ -6,7 +6,7 @@
 //
 
 
-package at.spot.maven.xml;
+package at.spot.core.infrastructure.maven.xml;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
