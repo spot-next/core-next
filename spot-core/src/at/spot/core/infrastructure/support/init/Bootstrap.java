@@ -30,6 +30,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.exception.BootstrapException;
 import at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor;
+import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -44,12 +45,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class Bootstrap extends SpringApplicationBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
 
-	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
+	// public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	private Bootstrap() {
+		Registry.setMainThread(Thread.currentThread());
 	}
 
 	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
+		Registry.setMainClass(initClass);
 		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.OFF);
 	}
 
@@ -72,6 +75,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 			};
 		});
 
+		// override default mainClass
+		Registry.setMainClass(configuration);
 		builder.child(configuration).web(WebApplicationType.SERVLET).registerShutdownHook(true).bannerMode(Mode.OFF)
 				.run();
 	}

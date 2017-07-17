@@ -36,7 +36,9 @@ import org.apache.maven.project.MavenProject;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
+import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
+import at.spot.core.infrastructure.annotation.SetProperty;
 import at.spot.core.infrastructure.constants.InfrastructureConstants;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
@@ -49,8 +51,8 @@ import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
-import at.spot.maven.util.FileUtils;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
@@ -61,6 +63,7 @@ import net.sourceforge.jenesis4java.ClassMethod;
 import net.sourceforge.jenesis4java.ClassType;
 import net.sourceforge.jenesis4java.Comment;
 import net.sourceforge.jenesis4java.CompilationUnit;
+import net.sourceforge.jenesis4java.Invoke;
 import net.sourceforge.jenesis4java.PackageClass;
 import net.sourceforge.jenesis4java.Variable;
 import net.sourceforge.jenesis4java.VirtualMachine;
@@ -147,7 +150,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 					for (final String c : jarContent) {
 						if (isItemTypeDefinitionFile(c)) {
-							definitions.add(FileUtils.readFileFromJar(f.getAbsolutePath(), c));
+							definitions.add(FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
 							definitionFiles.add(f.getName() + "/" + c);
 						}
 					}
@@ -194,6 +197,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		itemType.setName(Item.class.getSimpleName());
 		itemType.setPackage(Item.class.getPackage().getName());
 		itemType.setAbstract(true);
+		itemType.setTypeCode(StringUtils.lowerCase(itemType.getName()));
 
 		defs.put(itemType.getName(), itemType);
 
@@ -254,6 +258,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 			}
 		}
+
+		// sanitize type codes so there are no nulls -> just use the lowercase
+		// type name as fallback
+		typeDefinitions.getItemTypes().values().stream().forEach(i -> {
+			if (StringUtils.isBlank(i.getTypeCode())) {
+				i.setTypeCode(StringUtils.lowerCase(i.getName()));
+			} else {
+				i.setTypeCode(StringUtils.lowerCase(i.getTypeCode()));
+			}
+		});
 
 		return typeDefinitions;
 
@@ -357,19 +371,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			javaFile.writeTo(outputJavaDirectory);
 		}
 
-		for (final String typeName : definitions.getItemTypes().keySet()) {
+		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
+			final ItemType type = typeEntry.getValue();
+
 			// the Item type base class is hardcoded, so ignore it
-			if (StringUtils.equals(typeName, Item.class.getSimpleName())) {
+			if (StringUtils.equals(type.getName(), Item.class.getSimpleName())) {
 				continue;
 			}
-
-			final ItemType type = definitions.getItemTypes().get(typeName);
 
 			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
 			unit.setNamespace(type.getPackage());
 			unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All changes will be overwritten.");
 
-			final PackageClass cls = unit.newPublicClass(typeName);
+			final PackageClass cls = unit.newPublicClass(type.getName());
 
 			if (type.isAbstract() != null) {
 				cls.isAbstract(type.isAbstract());
@@ -389,9 +403,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
-					ann.addAnnotationAttribute("typeCode", vm.newString(StringUtils.lowerCase(type.getTypeCode())));
+					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
 				} else { // add the type name as typecode as default
-					ann.addAnnotationAttribute("typeCode", vm.newString(StringUtils.lowerCase(type.getName())));
+					throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
 				}
 
 				addImport(definitions, cls, SuppressFBWarnings.class);
@@ -412,8 +426,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					cls.setExtends(superType.getName());
 					addImport(definitions, cls, superType.getName());
 				} else {
-					throw new MojoExecutionException(String.format(
-							"Non-existing super type '%s' defined for item type %s", type.getExtends(), typeName));
+					throw new MojoExecutionException(
+							String.format("Non-existing super type '%s' defined for item type %s", type.getExtends(),
+									type.getName()));
 				}
 			} else {
 				addImport(definitions, cls, Item.class);
@@ -452,8 +467,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
 						populatePropertyValidators(property, p, cls, vm);
 					} else {
-						throw new MojoExecutionException(String
-								.format("No datatype set for property %s on item type %s", p.getName(), typeName));
+						throw new MojoExecutionException(String.format(
+								"No datatype set for property %s on item type %s", p.getName(), type.getName()));
 					}
 				}
 			}
@@ -462,8 +477,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			try {
 				unit.encode();
 			} catch (final Exception e) {
-				getLog().error(
-						String.format("Could not generate item type defintion %s: %n %s", typeName, unit.toString()));
+				getLog().error(String.format("Could not generate item type defintion %s: %n %s", type.getName(),
+						unit.toString()));
 			}
 		}
 	}
@@ -543,11 +558,23 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
 					"set" + capitalize(propertyDefinition.getName()));
+
 			setterMethod.addParameter(fieldType, propertyDefinition.getName());
 			setterMethod.newStmt(vm.newAssign(thisVar, var));
 
+			{ // mark the updated field as dirty
+				final Invoke markDirtyCall = vm.newInvoke("markAsDirty");
+				markDirtyCall.addArg(propertyDefinition.getName());
+				setterMethod.newStmt(markDirtyCall);
+			}
+
+			setterMethod.addAnnotation(SetProperty.class.getSimpleName());
+			addImport(null, cls, SetProperty.class);
+
 			final ClassMethod getterMethod = cls.newMethod(fieldType, "get" + capitalize(propertyDefinition.getName()));
 			getterMethod.newReturn().setExpression(thisVar);
+			getterMethod.addAnnotation(GetProperty.class.getSimpleName());
+			addImport(null, cls, GetProperty.class);
 
 			// default values
 			property.setAccess(AccessType.PROTECTED);

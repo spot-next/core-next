@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.CannotCreateUserException;
+import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ModelService;
@@ -141,6 +142,15 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 			// if (currentUserAttr != null && currentUserAttr instanceof User) {
 			// return (U) currentUserAttr;
 			// }
+
+			if (session.user() != null) {
+				try {
+					modelService.refresh(session.user());
+				} catch (final ModelNotFoundException e) {
+					loggingService.warn("Current session user was invalid - removed it.");
+					sessionService.closeSession(session.getId());
+				}
+			}
 
 			return (U) session.user();
 		} else {

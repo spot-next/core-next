@@ -1,8 +1,6 @@
 package at.spot.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -32,10 +30,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * been initialized, it will call {@link CoreInit#run()}. Then the shell is
  * being loaded.
  */
-@Configuration
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource("classpath:/core.properties")
-@ComponentScan
 @EnableAsync
 @EnableScheduling
 public class CoreInit extends ModuleInit {

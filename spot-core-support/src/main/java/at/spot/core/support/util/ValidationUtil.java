@@ -1,4 +1,4 @@
-package at.spot.spring.web.validation;
+package at.spot.core.support.util;
 
 import org.apache.commons.lang3.StringUtils;
 

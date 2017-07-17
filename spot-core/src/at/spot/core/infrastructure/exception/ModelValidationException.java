@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.exception;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -18,6 +19,10 @@ public class ModelValidationException extends Exception {
 
 		super(message);
 		this.constraintViolations = constraintViolations;
+	}
+
+	public ModelValidationException(final String message) {
+		this(message, new HashSet<>());
 	}
 
 	public Set<? extends ConstraintViolation<?>> getConstraintViolations() {

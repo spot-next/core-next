@@ -1,4 +1,4 @@
-package at.spot.maven.util;
+package at.spot.core.support.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,6 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings({ "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "OS_OPEN_STREAM" })
@@ -71,40 +70,47 @@ public class FileUtils {
 		return readFile(file.getAbsolutePath());
 	}
 
+	public static InputStream readFileFromZipFile(final ZipFile zipFile, final String relativeFilePath)
+			throws FileNotFoundException {
+
+		final Enumeration<? extends ZipEntry> e = zipFile.entries();
+
+		while (e.hasMoreElements()) {
+			final ZipEntry entry = e.nextElement();
+			// if the entry is not directory and matches relative file then
+			// extract it
+			if (!entry.isDirectory() && entry.getName().equals(relativeFilePath)) {
+				try {
+					return zipFile.getInputStream(entry);
+				} catch (final IOException e1) {
+					throw new FileNotFoundException(String.format("Cannot read file '%s' from zip file '%s'.",
+							relativeFilePath, zipFile.getName()));
+				}
+			}
+		}
+
+		throw new FileNotFoundException(
+				String.format("File '%s' not found in zip file '%s'.", relativeFilePath, zipFile.getName()));
+	}
+
 	/**
-	 * Reads a file from a zip file and returns an {@link InputStream} object. If
-	 * the file is not found, an exception is thrown.
+	 * Reads a file from a zip file and returns an {@link InputStream} object.
+	 * If the file is not found, an exception is thrown.
 	 *
 	 * @param zipFilePath
 	 * @param relativeFilePath
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public static InputStream readFileFromJar(final String zipFilePath, final String relativeFilePath)
+	public static InputStream readFileFromZipFile(final String zipFilePath, final String relativeFilePath)
 			throws FileNotFoundException {
 
-		ZipFile zipFile = null;
-
 		try {
-			zipFile = new ZipFile(zipFilePath);
-
-			final Enumeration<? extends ZipEntry> e = zipFile.entries();
-
-			while (e.hasMoreElements()) {
-				final ZipEntry entry = e.nextElement();
-				// if the entry is not directory and matches relative file then
-				// extract it
-				if (!entry.isDirectory() && entry.getName().equals(relativeFilePath)) {
-					return zipFile.getInputStream(entry);
-				}
-			}
+			return readFileFromZipFile(new ZipFile(zipFilePath), relativeFilePath);
 		} catch (final IOException e) {
 			throw new FileNotFoundException(
 					String.format("Cannot read file '%s' from zip file '%s'.", relativeFilePath, zipFilePath));
 		}
-
-		throw new FileNotFoundException(
-				String.format("File '%s' not found in zip file '%s'.", relativeFilePath, zipFilePath));
 	}
 
 	/**

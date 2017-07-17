@@ -95,11 +95,19 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void loadProxyModel(final T proxyItem) throws ModelNotFoundException {
+		if (proxyItem == null) {
+			throw new ModelNotFoundException("Given item is null");
+		}
+
 		persistenceService.loadProxyModel(proxyItem);
 	}
 
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
+		if (item == null) {
+			throw new ModelNotFoundException("Given item is null");
+		}
+
 		persistenceService.refresh(item);
 	}
 
@@ -121,6 +129,10 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	protected <T extends Item> void validateModel(final T model) throws ModelValidationException {
+		if (model == null) {
+			throw new ModelValidationException("Given item is null");
+		}
+
 		final Set<ConstraintViolation<T>> errors = validationService.validate(model);
 
 		if (!errors.isEmpty()) {

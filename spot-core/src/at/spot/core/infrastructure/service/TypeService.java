@@ -39,13 +39,25 @@ public interface TypeService {
 	<I extends Item> String getTypeCode(final Class<I> itemType);
 
 	/**
+	 * Returns all sub types of the given type.
+	 * 
+	 * @param type
+	 * @param includeSuperType
+	 * @return
+	 * @throws UnknownTypeException
+	 */
+	List<Class<? extends Item>> getAllSubTypes(Class<? extends Item> type, boolean includeSuperType)
+			throws UnknownTypeException;
+
+	/**
 	 * Returns all sub type's typeCodes.
 	 * 
 	 * @param typeCode
 	 * @return
 	 * @throws UnknownTypeException
 	 */
-	List<String> getAllSubTypesCodes(String typeCode, boolean includeSuperType) throws UnknownTypeException;
+	// List<String> getAllSubTypesCodes(String typeCode, boolean
+	// includeSuperType) throws UnknownTypeException;
 
 	/**
 	 * Returns a map of all the @Property annotated properties of the given

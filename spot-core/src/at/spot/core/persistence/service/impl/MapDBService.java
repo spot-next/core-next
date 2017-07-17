@@ -71,6 +71,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 
 	protected ForkJoinPool threadPool;
 
+	@Log(message = "Initializing MapDB storage ...")
 	@PostConstruct
 	protected void init() throws PersistenceStorageException {
 		this.threadPool = new ForkJoinPool(10);
@@ -101,13 +102,6 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		} catch (final UnknownTypeException e) {
 			loggingService.error(e.getMessage());
 		}
-	}
-
-	@Log(message = "Initializing MapDB storage ...")
-	@Override
-	public void initDataStorage() throws PersistenceStorageException {
-
-		loggingService.debug("MapDB service initialized");
 	}
 
 	protected DataStorage getDataStorageForType(final String typeCode) {
@@ -298,10 +292,10 @@ public class MapDBService extends AbstractService implements PersistenceService 
 		// prevent NPES
 		final List<T> foundItems = new ArrayList<T>();
 
-		final String superTypeCode = typeService.getTypeCode(type);
-
 		try {
-			for (final String typeCode : typeService.getAllSubTypesCodes(superTypeCode, true)) {
+			for (final Class<? extends Item> subType : typeService.getAllSubTypes(type, true)) {
+				final String typeCode = typeService.getTypeCode(subType);
+
 				final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
 					Stream<Long> stream = null;
 					Set<Long> pks = null;
@@ -331,15 +325,13 @@ public class MapDBService extends AbstractService implements PersistenceService 
 						stream = stream.skip((page - 1) * pageSize).limit(pageSize);
 					}
 
-					final Class<T> subType = (Class<T>) typeService.getType(typeCode);
-
 					Stream<T> retStream = stream.map((pk) -> {
 						try {
 
 							if (returnProxies) {
-								return createProxyModel(subType, pk);
+								return (T) createProxyModel(subType, pk);
 							} else {
-								return load(subType, pk);
+								return (T) load(subType, pk);
 							}
 						} catch (final ModelNotFoundException e1) {
 							// ignore it for now

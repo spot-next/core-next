@@ -12,7 +12,7 @@
 
 	<properties>
 		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
-		<aspectj.version>1.8.10</aspectj.version>
+<!-- 		<aspectj.version>1.8.10</aspectj.version> -->
 	</properties>
 
 	<build>
@@ -82,47 +82,42 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.9</version>
-				<configuration>
-					<showWeaveInfo>true</showWeaveInfo>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<Xlint>ignore</Xlint>
-					<XnoInline>true</XnoInline>
-					<complianceLevel>${java.version}</complianceLevel>
-					<encoding>UTF-8</encoding>
-					<verbose>false</verbose>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-					<!-- <dependency> -->
-					<!-- <groupId>org.aspectj</groupId> -->
-					<!-- <artifactId>aspectjtools</artifactId> -->
-					<!-- <version>${aspectj.version}</version> -->
-					<!-- </dependency> -->
-				</dependencies>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.codehaus.mojo</groupId> -->
+<!-- 				<artifactId>aspectj-maven-plugin</artifactId> -->
+<!-- 				<version>1.9</version> -->
+<!-- 				<configuration> -->
+<!-- 					<showWeaveInfo>true</showWeaveInfo> -->
+<!-- 					<source>${java.version}</source> -->
+<!-- 					<target>${java.version}</target> -->
+<!-- 					<Xlint>ignore</Xlint> -->
+<!-- 					<XnoInline>true</XnoInline> -->
+<!-- 					<complianceLevel>${java.version}</complianceLevel> -->
+<!-- 					<encoding>UTF-8</encoding> -->
+<!-- 					<verbose>false</verbose> -->
+<!-- 					<aspectLibraries> -->
+<!-- 						<aspectLibrary> -->
+<!-- 							<groupId>org.springframework</groupId> -->
+<!-- 							<artifactId>spring-aspects</artifactId> -->
+<!-- 						</aspectLibrary> -->
+<!-- 					</aspectLibraries> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>compile</goal> -->
+<!-- 							<goal>test-compile</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 				<dependencies> -->
+<!-- 					<dependency> -->
+<!-- 						<groupId>org.aspectj</groupId> -->
+<!-- 						<artifactId>aspectjrt</artifactId> -->
+<!-- 						<version>${aspectj.version}</version> -->
+<!-- 					</dependency> -->
+<!-- 				</dependencies> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</build>
 

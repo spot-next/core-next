@@ -12,7 +12,6 @@ import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.core.persistence.exception.PersistenceStorageException;
 
 @Service
 public interface PersistenceService {
@@ -135,13 +134,6 @@ public interface PersistenceService {
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends Item> void remove(T... items);
-
-	/**
-	 * Initiates the datastorage based on the registeredTypes.
-	 * 
-	 * @throws PersistenceStorageException
-	 */
-	void initDataStorage() throws PersistenceStorageException;
 
 	/**
 	 * Saves the database to disk. This has to be done before the application

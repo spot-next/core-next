@@ -15,11 +15,14 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
 
+	<context:component-scan base-package="at.spot.core.infrastructure.support.spring" />
 	<context:component-scan base-package="at.spot.core.infrastructure.service" />
 	<context:component-scan base-package="at.spot.core.infrastructure.strategy" />
+	<context:component-scan base-package="at.spot.core.infrastructure.aspect" />
 	<context:component-scan base-package="at.spot.core.management.service" />
 	<context:component-scan base-package="at.spot.core.management.converter" />
 	<context:component-scan base-package="at.spot.core.management.populator" />
+	<context:component-scan base-package="at.spot.core.management.transformer" />
 	<context:component-scan base-package="at.spot.core.persistence.service" />
 	<context:component-scan base-package="at.spot.core.persistence.valueprovider" />
 	<context:component-scan base-package="at.spot.core.security.service" />

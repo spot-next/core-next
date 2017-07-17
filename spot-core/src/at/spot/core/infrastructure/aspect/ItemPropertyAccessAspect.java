@@ -41,26 +41,43 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object
+	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && get(* *.*)")
-	final protected void getAccess() {
+	final protected void getField() {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all getter that are accessing a field in an
+	 * object of type @Item that are annotated with @Property.
+	 */
+	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty) && within(@at.spot.core.infrastructure.annotation.ItemType *)")
+	final protected void getMethod() {
+	};
+
+	/**
+	 * Define the pointcut for all fields that are accessed (set) on an object
+	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && set(* *.*)")
-	final protected void setAccess() {
+	final protected void setField() {
+	};
+
+	/**
+	 * Define the pointcut for all fields that are accessed (set) on an object
+	 * of type @Item that are annotated with @Property.
+	 */
+	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty) && "
+			+ "within(@at.spot.core.infrastructure.annotation.ItemType *) && execution(* set*(..))")
+	final protected void setMethod() {
 	};
 
 	/*
 	 * JoinPoints
 	 */
 
-	@After("setAccess() && notFromPersistencePackage()")
+	@After("(setField() || setMethod()) && notFromPersistencePackage()")
 	public void setPropertyValue(final JoinPoint joinPoint) {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 
@@ -82,7 +99,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		}
 	}
 
-	@Around("getAccess() && notFromPersistencePackage()")
+	@Around("(getField() || getMethod()) && notFromPersistencePackage()")
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 

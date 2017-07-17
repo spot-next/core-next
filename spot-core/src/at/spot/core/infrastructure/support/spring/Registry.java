@@ -12,6 +12,7 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.init.Configuration;
+import at.spot.core.infrastructure.support.init.ModuleInit;
 import at.spot.core.persistence.service.PersistenceService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -27,12 +28,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class Registry implements ApplicationContextAware {
 
 	private static ApplicationContext context;
+	private static Thread mainThread;
+	private static Class<? extends ModuleInit> mainClass;
 
 	private static ModelService modelService;
 	private static TypeService typeService;
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
 	private static Configuration configuration;
+
+	public static Class<? extends ModuleInit> getMainClass() {
+		return mainClass;
+	}
+
+	public static void setMainClass(final Class<? extends ModuleInit> mainClass) {
+		Registry.mainClass = mainClass;
+	}
 
 	@Override
 	public void setApplicationContext(final ApplicationContext ctx) throws BeansException {
@@ -45,6 +56,14 @@ public class Registry implements ApplicationContextAware {
 
 	public static BeanDefinitionRegistry getBeanFactory() {
 		return (BeanDefinitionRegistry) ((ConfigurableApplicationContext) context).getBeanFactory();
+	}
+
+	public static Thread getMainThread() {
+		return mainThread;
+	}
+
+	public static void setMainThread(final Thread mainThread) {
+		Registry.mainThread = mainThread;
 	}
 
 	/*
