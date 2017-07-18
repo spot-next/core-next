@@ -71,7 +71,6 @@ public class MapDBService extends AbstractService implements PersistenceService 
 
 	protected ForkJoinPool threadPool;
 
-	@Log(message = "Initializing MapDB storage ...")
 	@PostConstruct
 	protected void init() throws PersistenceStorageException {
 		this.threadPool = new ForkJoinPool(10);

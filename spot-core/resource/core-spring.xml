@@ -13,12 +13,12 @@
 
 	<context:spring-configured />
 	<context:annotation-config />
-	<aop:aspectj-autoproxy />
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<context:spring-configured /> 
 
 	<context:component-scan base-package="at.spot.core.infrastructure.support.spring" />
 	<context:component-scan base-package="at.spot.core.infrastructure.service" />
 	<context:component-scan base-package="at.spot.core.infrastructure.strategy" />
-	<context:component-scan base-package="at.spot.core.infrastructure.aspect" />
 	<context:component-scan base-package="at.spot.core.management.service" />
 	<context:component-scan base-package="at.spot.core.management.converter" />
 	<context:component-scan base-package="at.spot.core.management.populator" />

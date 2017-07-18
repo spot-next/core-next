@@ -1,44 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>at.spot</groupId>
-    <artifactId>spot-core-base-models</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>spOt core base models</name>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>at.spot</groupId>
+	<artifactId>spot-core-base-models</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>spOt core base models</name>
 
-    <parent>
-        <groupId>at.spot</groupId>
-        <artifactId>spot-framework</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>at.spot</groupId>
+		<artifactId>spot-framework</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
 
-    <properties>
-        <spring.version>4.3.3.RELEASE</spring.version>
-    </properties>
+	<properties>
+	</properties>
 
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>testsrc</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>resource</directory>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>resource</directory>
-            </testResource>
-        </testResources>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>testsrc</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>resource</directory>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>resource</directory>
+			</testResource>
+		</testResources>
 
-    </build>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>at.spot</groupId>
-            <artifactId>spot-core-model-infrastructure</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-core-model-infrastructure</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 
 </project>

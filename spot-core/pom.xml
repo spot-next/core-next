@@ -12,7 +12,6 @@
 
 	<properties>
 		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
-<!-- 		<aspectj.version>1.8.10</aspectj.version> -->
 	</properties>
 
 	<build>
@@ -47,6 +46,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			
 			<!-- packaging -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -82,42 +82,6 @@
 					</execution>
 				</executions>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.codehaus.mojo</groupId> -->
-<!-- 				<artifactId>aspectj-maven-plugin</artifactId> -->
-<!-- 				<version>1.9</version> -->
-<!-- 				<configuration> -->
-<!-- 					<showWeaveInfo>true</showWeaveInfo> -->
-<!-- 					<source>${java.version}</source> -->
-<!-- 					<target>${java.version}</target> -->
-<!-- 					<Xlint>ignore</Xlint> -->
-<!-- 					<XnoInline>true</XnoInline> -->
-<!-- 					<complianceLevel>${java.version}</complianceLevel> -->
-<!-- 					<encoding>UTF-8</encoding> -->
-<!-- 					<verbose>false</verbose> -->
-<!-- 					<aspectLibraries> -->
-<!-- 						<aspectLibrary> -->
-<!-- 							<groupId>org.springframework</groupId> -->
-<!-- 							<artifactId>spring-aspects</artifactId> -->
-<!-- 						</aspectLibrary> -->
-<!-- 					</aspectLibraries> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<goals> -->
-<!-- 							<goal>compile</goal> -->
-<!-- 							<goal>test-compile</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 				<dependencies> -->
-<!-- 					<dependency> -->
-<!-- 						<groupId>org.aspectj</groupId> -->
-<!-- 						<artifactId>aspectjrt</artifactId> -->
-<!-- 						<version>${aspectj.version}</version> -->
-<!-- 					</dependency> -->
-<!-- 				</dependencies> -->
-<!-- 			</plugin> -->
 		</plugins>
 	</build>
 
@@ -138,23 +102,7 @@
 			<artifactId>spot-core-support</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		
-		<!-- aspectj -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.aspectj</groupId> -->
-		<!-- <artifactId>aspectjrt</artifactId> -->
-		<!-- <version>${aspectj.version}</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.aspectj</groupId> -->
-		<!-- <artifactId>aspectjtools</artifactId> -->
-		<!-- <version>${aspectj.version}</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.aspectj</groupId> -->
-		<!-- <artifactId>aspectjweaver</artifactId> -->
-		<!-- <version>${aspectj.version}</version> -->
-		<!-- </dependency> -->
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -228,11 +176,11 @@
 			<version>2.7</version>
 		</dependency>
 		<!-- spring -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.boot</groupId> -->
-<!-- 			<artifactId>spring-boot</artifactId> -->
-<!-- 			<version>1.5.4.RELEASE</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.boot</groupId> -->
+		<!-- <artifactId>spring-boot</artifactId> -->
+		<!-- <version>1.5.4.RELEASE</version> -->
+		<!-- </dependency> -->
 
 
 		<dependency>
@@ -257,12 +205,12 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.3.5.Final</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.glassfish.web</groupId> -->
-<!-- 			<artifactId>javax.el</artifactId> -->
-<!-- 			<version>2.2.4</version> -->
-<!-- 		</dependency> -->
-		
+		<!-- <dependency> -->
+		<!-- <groupId>org.glassfish.web</groupId> -->
+		<!-- <artifactId>javax.el</artifactId> -->
+		<!-- <version>2.2.4</version> -->
+		<!-- </dependency> -->
+
 		<!-- spark rest framework -->
 		<dependency>
 			<groupId>com.sparkjava</groupId>

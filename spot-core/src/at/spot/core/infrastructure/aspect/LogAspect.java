@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.aspect;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,32 +14,18 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 @Aspect
 public class LogAspect extends AbstractBaseAspect {
 
+	@Override
+	@PostConstruct
+	public void init() {
+		loggingService.debug("Initialized logging aspect.");
+	}
+
 	/**
 	 * Define the pointcut for all methods that are annotated with {@link Log}.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.logging.Log) && execution(* *.*(..))")
 	final protected void logAnnotation() {
 	};
-
-	// @Before("logAnnotation()")
-	// public void logBefore(JoinPoint joinPoint) {
-	// Log ann = getAnnotation(joinPoint, Log.class);
-	//
-	// if (ann != null && ann.before()) {
-	// loggingService.log(ann.logLevel(), createLogMessage(joinPoint, true),
-	// joinPoint.getTarget().getClass());
-	// }
-	// }
-	//
-	// @After("logAnnotation()")
-	// public void logAfter(JoinPoint joinPoint) throws AspectException {
-	// Log ann = getAnnotation(joinPoint, Log.class);
-	//
-	// if (ann != null && ann.after()) {
-	// loggingService.log(ann.logLevel(), createLogMessage(joinPoint, false),
-	// joinPoint.getTarget().getClass());
-	// }
-	// }
 
 	@Around("logAnnotation()")
 	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {

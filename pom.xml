@@ -21,7 +21,7 @@
 		<module>spot-commerce-spring-base</module>
 		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
-<!-- 		<module>spot-mail</module> -->
+		<!-- <module>spot-mail</module> -->
 	</modules>
 
 	<properties>
@@ -32,6 +32,7 @@
 		<junit.version>4.12</junit.version>
 		<spring.boot.version>2.0.0.M2</spring.boot.version>
 		<spring.version>5.0.0.RC2</spring.version>
+		<aspectj.version>1.9.0.BETA-5</aspectj.version>
 
 		<!-- nexus repositry -->
 		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
@@ -151,6 +152,57 @@
 		<plugins>
 
 			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.10</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>org.springframework</groupId>
+							<artifactId>spring-aspects</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+					<showWeaveInfo>true</showWeaveInfo>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<Xlint>ignore</Xlint>
+					<XnoInline>true</XnoInline>
+					<complianceLevel>${java.version}</complianceLevel>
+					<encoding>UTF-8</encoding>
+					<verbose>false</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
 				<version>3.0.4</version>
@@ -177,14 +229,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -278,6 +322,18 @@
 	</reporting>
 
 	<dependencies>
+		<!-- aspectj -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+
 		<!-- findbugs -->
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
