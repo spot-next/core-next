@@ -25,10 +25,6 @@
 						<goals>
 							<goal>itemTypeGeneration</goal>
 						</goals>
-						<configuration>
-							<title>spot-commerce-base</title>
-							<sourceDirectory>target/generated-sources/spot-commerce-base</sourceDirectory>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

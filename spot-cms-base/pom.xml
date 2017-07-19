@@ -22,10 +22,6 @@
                         <goals>
                             <goal>itemTypeGeneration</goal>
                         </goals>
-                        <configuration>
-                            <title>spot-cms-base</title>
-                            <sourceDirectory>target/generated-sources/spot-cms-base</sourceDirectory>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

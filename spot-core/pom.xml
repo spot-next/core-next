@@ -15,18 +15,6 @@
 	</properties>
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>testsrc</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>resource</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>resource</directory>
-			</testResource>
-		</testResources>
 		<plugins>
 			<!-- item type generation -->
 			<plugin>
@@ -39,10 +27,6 @@
 						<goals>
 							<goal>itemTypeGeneration</goal>
 						</goals>
-						<configuration>
-							<title>spot-core</title>
-							<sourceDirectory>target/generated-sources/spot-core</sourceDirectory>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

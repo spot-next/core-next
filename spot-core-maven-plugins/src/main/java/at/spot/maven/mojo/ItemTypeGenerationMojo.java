@@ -81,19 +81,21 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Parameter(property = "project", defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
 
-	@Parameter(property = "resourceDir", defaultValue = "${project.build.resources[0].directory}")
-	protected File resourceDirectory;
-
 	@Parameter(property = "basedir", defaultValue = "${project.basedir}", readonly = true, required = true)
 	protected String projectBaseDir;
 
-	@Parameter(property = "sourceDirectory", defaultValue = "gensrc", readonly = true)
+	@Parameter(property = "sourceDirectory", defaultValue = "src/gen/java", readonly = true)
 	protected String sourceDirectory;
 
-	@Parameter(property = "targetDirectory", defaultValue = "${project.build.directory}/classes/", readonly = true)
-	protected File targetDirectory;
+	@Parameter(property = "resourceDirectory", defaultValue = "src/gen/resources", readonly = true)
+	protected String resourceDirectory;
 
-	protected File outputJavaDirectory = null;
+	// @Parameter(property = "targetDirectory", defaultValue =
+	// "${project.build.directory}/classes/", readonly = true)
+	// protected File targetDirectory;
+
+	protected File targetClassesDirectory = null;
+	protected File targetResourcesDirectory = null;
 
 	@Parameter(property = "title")
 	protected String title;
@@ -102,14 +104,21 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
 
-		outputJavaDirectory = new File(projectBaseDir + "/" + sourceDirectory);
+		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
+		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
 
 		if (this.project != null) {
-			this.project.addCompileSourceRoot(outputJavaDirectory.getAbsolutePath());
+			// add generated sources
+			this.project.addCompileSourceRoot(targetClassesDirectory.getAbsolutePath());
+
+			// add generated resources
+			final Resource resourceDir = new Resource();
+			resourceDir.setDirectory(targetResourcesDirectory.getAbsolutePath());
+			this.project.addResource(resourceDir);
 		}
 
-		if (!outputJavaDirectory.mkdirs()) {
-			if (!outputJavaDirectory.delete()) {
+		if (!targetClassesDirectory.mkdirs()) {
+			if (!targetClassesDirectory.delete()) {
 				getLog().warn("Could not delete target dir.");
 			}
 			;
@@ -318,7 +327,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param itemTypesDefinitions
 	 */
 	protected void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions) {
-		if (!targetDirectory.exists() && !targetDirectory.mkdir()) {
+		if (!targetResourcesDirectory.exists() && !targetResourcesDirectory.mkdir()) {
 			getLog().error("Could not create target output directory for merged item types file.");
 		}
 
@@ -329,7 +338,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
 			jaxb.marshal(itemTypesDefinitions,
-					new File(targetDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME));
+					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME));
 		} catch (final JAXBException e) {
 			getLog().error(e);
 		}
@@ -344,7 +353,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final Marshaller jaxb = context.createMarshaller();
 			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-			jaxb.marshal(outputTypes, new File(targetDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
+			jaxb.marshal(outputTypes,
+					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
 		} catch (final JAXBException e) {
 			getLog().error(e);
 		}
@@ -372,7 +382,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final TypeSpec enumObj = enumBuilder.build();
 
 			final JavaFile javaFile = JavaFile.builder(enumType.getPackage(), enumObj).build();
-			javaFile.writeTo(outputJavaDirectory);
+			javaFile.writeTo(targetClassesDirectory);
 		}
 
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
@@ -383,7 +393,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				continue;
 			}
 
-			final CompilationUnit unit = vm.newCompilationUnit(this.outputJavaDirectory.getAbsolutePath());
+			final CompilationUnit unit = vm.newCompilationUnit(this.targetClassesDirectory.getAbsolutePath());
 			unit.setNamespace(type.getPackage());
 			unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All changes will be overwritten.");
 
