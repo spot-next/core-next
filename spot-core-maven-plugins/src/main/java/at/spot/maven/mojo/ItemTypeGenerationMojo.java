@@ -145,21 +145,25 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final Set<Artifact> files = project.getDependencyArtifacts();
 
 		for (final Artifact a : files) {
-			for (final File f : FileUtils.getFiles(a.getFile().getAbsolutePath())) {
-				if (f.getName().endsWith(".jar")) {
-					final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
-					for (final String c : jarContent) {
-						if (isItemTypeDefinitionFile(c)) {
-							definitions.add(FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
-							definitionFiles.add(f.getName() + "/" + c);
+			if (a.getFile() != null) {
+				for (final File f : FileUtils.getFiles(a.getFile().getAbsolutePath())) {
+					if (f.getName().endsWith(".jar")) {
+						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
+						for (final String c : jarContent) {
+							if (isItemTypeDefinitionFile(c)) {
+								definitions.add(FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
+								definitionFiles.add(f.getName() + "/" + c);
+							}
+						}
+					} else {
+						if (isItemTypeDefinitionFile(f.getName())) {
+							definitions.add(FileUtils.readFile(f));
+							definitionFiles.add(f.getName());
 						}
 					}
-				} else {
-					if (isItemTypeDefinitionFile(f.getName())) {
-						definitions.add(FileUtils.readFile(f));
-						definitionFiles.add(f.getName());
-					}
 				}
+			} else {
+				getLog().warn(String.format("Can't scan %s for item types.", a));
 			}
 		}
 
