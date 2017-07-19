@@ -10,25 +10,6 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<properties>
-	</properties>
-
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>testsrc</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>resource</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>resource</directory>
-			</testResource>
-		</testResources>
-
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>at.spot</groupId>
