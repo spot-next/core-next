@@ -12,6 +12,7 @@ import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.security.strategy.PasswordEncryptionStrategy;
+import at.spot.core.support.util.ValidationUtil;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
 
@@ -29,6 +30,8 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 
 	@Override
 	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
+		ValidationUtil.validateNotEmpty("Password cannot be blank", password);
+
 		String encryptedPassword = password;
 
 		if (!isEncrypted) {
