@@ -61,7 +61,7 @@ public class ValidationUtil {
 	 * @throws IllegalArgumentException
 	 */
 	public static void validateNotEmpty(final String message, final String text) throws IllegalArgumentException {
-		if (StringUtils.isNotBlank(text)) {
+		if (StringUtils.isBlank(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
