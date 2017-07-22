@@ -25,9 +25,10 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.service.SerializationService;
-import at.spot.spring.web.dto.Response;
+import at.spot.spring.web.dto.Payload;
 import at.spot.spring.web.dto.Status;
 import at.spot.spring.web.dto.UserStatus;
+import at.spot.spring.web.http.Response;
 
 /**
  * This handler implementation combines a few spring security handlers together.
@@ -154,14 +155,14 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 		final Response<UserStatus> ret = new Response<>();
-		ret.setPayload(payload);
+		ret.setBody(Payload.of(payload));
 
 		if (exception != null) {
-			ret.getErrors().add(new Status("login.error", exception.getMessage()));
+			ret.getBody().getErrors().add(new Status("login.error", exception.getMessage()));
 		}
 
 		try {
-			response.getWriter().println(serializationService.toJson(ret));
+			response.getWriter().println(serializationService.toJson(ret.getBody()));
 		} catch (final SerializationException e) {
 			throw new IOException("Could not serialize authentication response payload", e);
 		}

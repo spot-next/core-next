@@ -143,7 +143,7 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	 */
 
 	protected boolean logToConsole() {
-		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, true);
+		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, false);
 	}
 
 	protected String getTimeStamp() {

@@ -20,12 +20,17 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 	protected Gson gson;
 
 	protected boolean serializeNulls = false;
+	protected boolean excludeFieldsWithoutExposeAnnotation = true;
 
 	private DefaultJsonSerializationStrategy() {
 		final GsonBuilder builder = new GsonBuilder();
 
 		if (serializeNulls) {
 			builder.serializeNulls();
+		}
+
+		if (excludeFieldsWithoutExposeAnnotation) {
+			builder.excludeFieldsWithoutExposeAnnotation();
 		}
 
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());

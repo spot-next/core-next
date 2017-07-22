@@ -60,11 +60,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@PostConstruct
 	protected void init() throws JAXBException {
+		loadMergedItemTypeDefinitions();
+
 		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCode(i.getClass()))
 				.collect(Collectors.toList());
-		loggingService.debug(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
-
-		loadMergedItemTypeDefinitions();
+		loggingService.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
 	}
 
 	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
@@ -73,7 +73,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 
-		loggingService.debug(String.format("Detected application root path: %s", applicationRoot.toString()));
+		loggingService.info(String.format("Detected application root path: %s", applicationRoot.toString()));
 
 		InputStream mergedItemDef = null;
 

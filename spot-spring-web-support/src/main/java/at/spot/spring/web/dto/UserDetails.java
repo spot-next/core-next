@@ -2,12 +2,19 @@ package at.spot.spring.web.dto;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.google.gson.annotations.Expose;
+
 public class UserDetails {
 	@Email
+	@Expose
 	private String email;
+	@Expose
 	private String firstName;
+	@Expose
 	private String lastName;
+	@Expose
 	private String password;
+	@Expose
 	private String oldPassword;
 
 	public String getPassword() {
@@ -46,7 +53,7 @@ public class UserDetails {
 		return oldPassword;
 	}
 
-	public void setOldPassword(String oldPassword) {
+	public void setOldPassword(final String oldPassword) {
 		this.oldPassword = oldPassword;
 	}
 }

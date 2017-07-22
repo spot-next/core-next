@@ -1,7 +1,11 @@
 package at.spot.spring.web.dto;
 
+import com.google.gson.annotations.Expose;
+
 public class Status {
+	@Expose
 	protected String code;
+	@Expose
 	protected String message;
 
 	public Status(final String code, final String message) {

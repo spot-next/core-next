@@ -8,8 +8,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import at.spot.spring.web.dto.Response;
 import at.spot.spring.web.dto.Status;
+import at.spot.spring.web.http.Response;
 
 public abstract class AbstractBaseRestController extends AbstractBaseController {
 
@@ -28,7 +28,7 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 		loggingService.exception(String.format("Unhandled exception %s occured: %s",
 				exception.getClass().getSimpleName(), exception.getMessage()), exception);
 
-		final Response<Void> ret = new Response<>();
+		final Response<Void> ret = new Response<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		if (exception instanceof HttpMediaTypeNotSupportedException) {
 			response.setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
@@ -36,7 +36,7 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 
-		ret.getErrors().add(new Status("server.error", exception.getMessage()));
+		ret.getBody().getErrors().add(new Status("server.error", exception.getMessage()));
 
 		return ret;
 	}
