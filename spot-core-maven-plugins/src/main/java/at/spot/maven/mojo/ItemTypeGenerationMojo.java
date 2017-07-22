@@ -224,7 +224,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				if (existingEnum != null) {
 					for (final EnumValue v : enumDef.getValue()) {
 						final boolean exists = existingEnum.getValue().stream()
-								.filter((i) -> !StringUtils.equals(i.getCode(), v.getCode())).findAny().isPresent();
+								.filter((i) -> StringUtils.equals(i.getCode(), v.getCode())).findAny().isPresent();
 
 						if (!exists) {
 							existingEnum.getValue().add(v);
@@ -318,6 +318,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @return
 	 */
 	protected boolean isItemTypeDefinitionFile(final String fileName) {
+		// ignore merged itemtypes files.
+		if (StringUtils.equals(InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME, fileName)
+				|| StringUtils.equals(InfrastructureConstants.MERGED_ITEMTYPES_FILENAME, fileName)) {
+
+			return false;
+		}
+
 		return StringUtils.endsWith(fileName, "-itemtypes.xml");
 	}
 
