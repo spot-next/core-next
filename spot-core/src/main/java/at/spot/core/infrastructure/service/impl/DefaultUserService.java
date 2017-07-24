@@ -46,6 +46,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public U createUser(final Class<U> type, final String userId, final String password)
 			throws CannotCreateUserException {
+
 		final U user = modelService.create(type);
 		user.setId(userId);
 
@@ -56,7 +57,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 			modelService.save(user);
 		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-			throw new CannotCreateUserException();
+			throw new CannotCreateUserException(e);
 		}
 
 		return user;

@@ -8,4 +8,8 @@ public class CannotCreateUserException extends ModelNotUniqueException {
 	public CannotCreateUserException() {
 		super("A user with this uid already exists.");
 	}
+
+	public CannotCreateUserException(Exception e) {
+		super(String.format("A user with this uid already exists. Reason: %s", e.getMessage()));
+	}
 }
