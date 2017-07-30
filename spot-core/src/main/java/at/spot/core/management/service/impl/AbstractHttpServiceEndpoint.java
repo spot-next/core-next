@@ -11,24 +11,25 @@ import static spark.Spark.put;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 
 import at.spot.core.infrastructure.exception.SerializationException;
+import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.Payload;
+import at.spot.core.infrastructure.http.Session;
+import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.support.Session;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
@@ -123,9 +124,11 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			exception(Exception.class, (exception, request, response) -> {
 				loggingService.exception(exception.getMessage(), exception);
 
-				final RequestStatus status = RequestStatus.serverError().error(exception.getMessage());
+				final Payload empty = Payload.empty();
+				empty.addError(new Status("internal.error", exception.getMessage()));
 
-				response.status(status.httpStatus());
+				final HttpResponse<?> status = new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+				status.setBody(empty);
 
 				try {
 					response.body(serializationService.toJson(status));
@@ -261,71 +264,92 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);
-			return httpMethodImpl.invoke(serviceImpl, request, response);
+			return processResponse(response, httpMethodImpl.invoke(serviceImpl, request, response));
+		}
+
+		/**
+		 * If the givn response body object is of type {@link HttpResponse} the
+		 * http status code is set according to
+		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
+		 * returned, not the wrapper object itself. In any other case the given
+		 * response body object is returned.
+		 * 
+		 * @param response
+		 * @param responseBody
+		 * @return
+		 */
+		protected Object processResponse(final Response response, final Object responseBody) {
+			if (responseBody instanceof HttpResponse) {
+				final HttpResponse<?> body = (HttpResponse<?>) responseBody;
+				response.status(body.getStatusCodeValue());
+				return body.getBody();
+			}
+
+			return responseBody;
 		}
 	}
 
-	protected static class RequestStatus {
-		private int httpStatus;
-		private Object payload;
-		private final List<String> warnings = new ArrayList<>();
-		private final List<String> errors = new ArrayList<>();
-
-		public RequestStatus(final int httpStatus) {
-			this.httpStatus = httpStatus;
-		}
-
-		public RequestStatus warn(final String warning) {
-			warnings.add(warning);
-
-			return this;
-		}
-
-		public RequestStatus error(final String error) {
-			errors.add(error);
-
-			return this;
-		}
-
-		public int httpStatus() {
-			return this.httpStatus;
-		}
-
-		public Object payload() {
-			return payload;
-		}
-
-		public RequestStatus payload(final Object payload) {
-			this.payload = payload;
-
-			return this;
-		}
-
-		public List<String> warnings() {
-			return warnings;
-		}
-
-		public List<String> errors() {
-			return errors;
-		}
-
-		public RequestStatus httpStatus(final int httpStatus) {
-			this.httpStatus = httpStatus;
-
-			return this;
-		}
-
-		public static final RequestStatus success() {
-			return new RequestStatus(HttpStatus.OK_200);
-		};
-
-		public static final RequestStatus notFound() {
-			return new RequestStatus(HttpStatus.NOT_FOUND_404);
-		};
-
-		public static final RequestStatus serverError() {
-			return new RequestStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
-		};
-	}
+	// protected static class RequestStatus {
+	// private int httpStatus;
+	// private Object payload;
+	// private final List<String> warnings = new ArrayList<>();
+	// private final List<String> errors = new ArrayList<>();
+	//
+	// public RequestStatus(final int httpStatus) {
+	// this.httpStatus = httpStatus;
+	// }
+	//
+	// public RequestStatus warn(final String warning) {
+	// warnings.add(warning);
+	//
+	// return this;
+	// }
+	//
+	// public RequestStatus error(final String error) {
+	// errors.add(error);
+	//
+	// return this;
+	// }
+	//
+	// public int httpStatus() {
+	// return this.httpStatus;
+	// }
+	//
+	// public Object payload() {
+	// return payload;
+	// }
+	//
+	// public RequestStatus payload(final Object payload) {
+	// this.payload = payload;
+	//
+	// return this;
+	// }
+	//
+	// public List<String> warnings() {
+	// return warnings;
+	// }
+	//
+	// public List<String> errors() {
+	// return errors;
+	// }
+	//
+	// public RequestStatus httpStatus(final int httpStatus) {
+	// this.httpStatus = httpStatus;
+	//
+	// return this;
+	// }
+	//
+	// public static final RequestStatus success() {
+	// return new RequestStatus(HttpStatus.OK_200);
+	// };
+	//
+	// public static final RequestStatus notFound() {
+	// return new RequestStatus(HttpStatus.NOT_FOUND_404);
+	// };
+	//
+	// public static final RequestStatus serverError() {
+	// return new RequestStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
+	// };
+	// }
 
 }

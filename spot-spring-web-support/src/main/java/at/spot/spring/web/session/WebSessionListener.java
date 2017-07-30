@@ -9,10 +9,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import at.spot.core.infrastructure.http.Session;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
-import at.spot.core.infrastructure.support.Session;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;

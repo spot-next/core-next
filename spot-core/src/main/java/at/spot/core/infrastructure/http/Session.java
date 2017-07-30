@@ -1,4 +1,4 @@
-package at.spot.core.infrastructure.support;
+package at.spot.core.infrastructure.http;
 
 import java.util.Enumeration;
 import java.util.HashMap;

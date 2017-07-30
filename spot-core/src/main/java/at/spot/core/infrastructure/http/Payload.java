@@ -1,4 +1,4 @@
-package at.spot.spring.web.dto;
+package at.spot.core.infrastructure.http;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Payload<T> {
 	@Expose
 	final protected List<Status> errors = new ArrayList<>();
 	@Expose
-	final protected List<Status> warnings = new ArrayList<>();;
+	final protected List<Status> warnings = new ArrayList<>();
 	@Expose
 	protected T data;
 
@@ -59,7 +59,7 @@ public class Payload<T> {
 	}
 
 	public void addWarning(final Status warning) {
-		this.errors.add(warning);
+		this.warnings.add(warning);
 	}
 
 	@Override

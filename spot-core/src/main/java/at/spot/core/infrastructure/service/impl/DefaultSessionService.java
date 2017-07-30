@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.core.util.UuidUtil;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.http.Session;
 import at.spot.core.infrastructure.service.SessionService;
-import at.spot.core.infrastructure.support.Session;
 
 @Service
 public class DefaultSessionService implements SessionService {

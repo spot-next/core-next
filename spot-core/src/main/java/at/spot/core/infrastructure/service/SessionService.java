@@ -2,7 +2,7 @@ package at.spot.core.infrastructure.service;
 
 import java.util.concurrent.Callable;
 
-import at.spot.core.infrastructure.support.Session;
+import at.spot.core.infrastructure.http.Session;
 
 /**
  * This service provides basic backend sessions handling. It does not integrate

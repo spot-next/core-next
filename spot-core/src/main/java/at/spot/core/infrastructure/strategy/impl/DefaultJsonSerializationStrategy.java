@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import at.spot.core.infrastructure.serialization.ClassSerializer;
+import at.spot.core.infrastructure.serialization.GsonExclusionStrategy;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
 
 /**
@@ -29,10 +30,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 			builder.serializeNulls();
 		}
 
-		if (excludeFieldsWithoutExposeAnnotation) {
-			builder.excludeFieldsWithoutExposeAnnotation();
-		}
-
+		builder.setExclusionStrategies(new GsonExclusionStrategy(excludeFieldsWithoutExposeAnnotation));
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());
 
 		// register helper builders for datetimes etc.

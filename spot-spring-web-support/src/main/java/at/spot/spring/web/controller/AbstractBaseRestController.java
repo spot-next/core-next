@@ -5,12 +5,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import at.spot.spring.web.dto.Status;
-import at.spot.spring.web.http.Response;
+import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.Status;
 
+@ControllerAdvice
 public abstract class AbstractBaseRestController extends AbstractBaseController {
 
 	/**
@@ -20,20 +23,19 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	 * @param exception
 	 * @return
 	 */
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
-	@ExceptionHandler(Exception.class)
-	public Response<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
+	@ExceptionHandler({ Exception.class, IllegalStateException.class, IllegalArgumentException.class })
+	public HttpResponse<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
 			final Exception exception) {
 
 		loggingService.exception(String.format("Unhandled exception %s occured: %s",
 				exception.getClass().getSimpleName(), exception.getMessage()), exception);
 
-		final Response<Void> ret = new Response<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		final HttpResponse<Void> ret = new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
 		if (exception instanceof HttpMediaTypeNotSupportedException) {
 			response.setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value());
-		} else {
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 
 		ret.getBody().getErrors().add(new Status("server.error", exception.getMessage()));

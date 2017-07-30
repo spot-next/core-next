@@ -24,11 +24,11 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import at.spot.core.infrastructure.exception.SerializationException;
+import at.spot.core.infrastructure.http.Payload;
+import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.SerializationService;
-import at.spot.spring.web.dto.Payload;
-import at.spot.spring.web.dto.Status;
 import at.spot.spring.web.dto.UserStatus;
-import at.spot.spring.web.http.Response;
 
 /**
  * This handler implementation combines a few spring security handlers together.
@@ -154,7 +154,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 		response.setStatus(httpStatusCode.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		final Response<UserStatus> ret = new Response<>();
+		final HttpResponse<UserStatus> ret = new HttpResponse<>();
 		ret.setBody(Payload.of(payload));
 
 		if (exception != null) {

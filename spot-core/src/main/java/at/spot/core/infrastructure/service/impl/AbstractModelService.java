@@ -1,10 +1,16 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.support.RelationProxyList;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 
@@ -21,6 +27,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 		final T item = getApplicationContext().getBean(typeCode, type);
 		setTypeCode(item);
+		initRelationProperties(item);
 		return item;
 	}
 
@@ -43,5 +50,35 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Override
 	public <T extends Item> T createProxyModel(final T item) {
 		return createProxyModel((Class<T>) item.getClass(), item.getPk());
+	}
+
+	/**
+	 * Create new {@link RelationProxyList} when accessing a relation property
+	 * 
+	 * @param joinPoint
+	 * @param rel
+	 * @return
+	 * @throws Throwable
+	 */
+	protected <T extends Item> void initRelationProperties(final T referencingItem) {
+		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(referencingItem.getClass())
+				.values()) {
+
+			List<Item> proxyList;
+
+			// if the property is a relation we setup a proxy relation list
+			if (p.relationDefinition != null && referencingItem.getPk() != null) {
+				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
+
+				proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(), referencingItem.getPk(),
+						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name, () -> {
+							referencingItem.markAsDirty(p.name);
+						});
+			} else {
+				proxyList = new ArrayList<>();
+			}
+
+			ClassUtil.setField(referencingItem, p.name, proxyList);
+		}
 	}
 }

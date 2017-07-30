@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -24,6 +24,9 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
+import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.Payload;
+import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
@@ -42,6 +45,7 @@ import at.spot.core.persistence.query.QueryCondition;
 import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
@@ -79,7 +83,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 */
 
 	@Handler(pathMapping = "/types/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public Object getTypes(final Request request, final Response response) throws UnknownTypeException {
+	public List<GenericItemDefinitionData> getTypes(final Request request, final Response response)
+			throws UnknownTypeException {
 
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
 
@@ -94,7 +99,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	@Handler(pathMapping = "/types/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public Object getType(final Request request, final Response response) throws UnknownTypeException {
+	public GenericItemDefinitionData getType(final Request request, final Response response)
+			throws UnknownTypeException {
 		GenericItemDefinitionData ret = null;
 
 		final String typeCode = request.params(":typecode");
@@ -125,18 +131,22 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public Object getModels(final Request request, final Response response) throws UnknownTypeException {
-		final RequestStatus status = RequestStatus.success();
+	public <T extends Item> HttpResponse<PageableData<T>> getModels(final Request request, final Response response)
+			throws UnknownTypeException {
 
-		List<? extends Item> models = null;
+		final HttpResponse<PageableData<T>> body = new HttpResponse<>();
+
+		List<T> models = null;
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
 
-		models = modelService.getAll(type, null, page, pageSize, false);
+		models = (List<T>) modelService.getAll(type, null, page, pageSize, false);
 
-		return returnDataAndStatus(response, status.payload(new PageableData(models, page, pageSize)));
+		body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
+
+		return body;
 	}
 
 	/**
@@ -149,10 +159,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> Object getModel(final Request request, final Response response)
+	public <T extends Item> HttpResponse<T> getModel(final Request request, final Response response)
 			throws ModelNotFoundException, UnknownTypeException {
 
-		final RequestStatus status = RequestStatus.success();
+		final HttpResponse<T> body = new HttpResponse<>();
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
@@ -161,10 +171,12 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final T model = modelService.get(type, pk);
 
 		if (model == null) {
-			status.httpStatus(HttpStatus.NOT_FOUND_404);
+			body.setStatusCode(HttpStatus.NOT_FOUND);
 		}
 
-		return returnDataAndStatus(response, status.payload(model));
+		body.setBody(Payload.of(model));
+
+		return body;
 	}
 
 	/**
@@ -185,7 +197,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	public <T extends Item> Object queryModelByQuery(final Request request, final Response response)
 			throws UnknownTypeException {
 
-		final RequestStatus status = RequestStatus.success();
+		final HttpResponse<QueryResult<T>> body = new HttpResponse<>();
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
@@ -200,15 +212,18 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				final QueryResult<T> result = (QueryResult<T>) queryService.query(type, queryString, null, page,
 						pageSize, false);
 
-				status.payload(result);
+				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
-				status.httpStatus(HttpStatus.BAD_REQUEST_400).error("Cannot execute given query: " + e.getMessage());
+				body.setStatusCode(HttpStatus.BAD_REQUEST);
+				body.getBody()
+						.addError(new Status("error.query.execution", "Cannot execute given query: " + e.getMessage()));
 			}
 		} else {
-			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Query could not be parsed.");
+			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+			body.getBody().addError(new Status("query.error", "Query could not be parsed."));
 		}
 
-		return status;
+		return body;
 	}
 
 	/**
@@ -223,9 +238,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @return
 	 * @throws UnknownTypeException
 	 */
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	public <T extends Item> Object queryModelByExample(final Request request, final Response response)
 			throws UnknownTypeException {
-		final RequestStatus status = RequestStatus.success();
+
+		final HttpResponse<List<T>> body = new HttpResponse<>();
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
@@ -246,29 +263,32 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				try {
 					value = serializationService.fromJson(queryValues[0], propertyType);
 				} catch (final DeserializationException e) {
-					return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
+					body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+					body.getBody().addError(new Status("error.query", e.getMessage()));
+					return body;
 				}
 
 				if (value instanceof Comparable || value == null) {
 					searchParameters.put(prop.name, (Comparable<?>) value);
 				} else {
-					status.warn(String.format("Unknown attribute value %s=%S in query", prop.name, value.toString()));
+					body.getBody().addWarning(new Status("query.unknownattribute",
+							String.format("Unknown attribute value %s=%S in query", prop.name, value.toString())));
 				}
 			} else {
-				status.warn(
-						String.format("Query attribute %s passed more than once - only taking the first.", prop.name));
+				body.getBody().addWarning(new Status("query.duplicateattribute",
+						String.format("Query attribute %s passed more than once - only taking the first.", prop.name)));
 			}
 		}
 
 		final List<T> models = modelService.getAll(type, searchParameters, page, pageSize, false);
 
 		if (models == null) {
-			status.httpStatus(HttpStatus.NOT_FOUND_404);
+			body.setStatusCode(HttpStatus.NOT_FOUND);
 		} else {
-			status.payload(models);
+			body.setBody(Payload.of(models));
 		}
 
-		return returnDataAndStatus(response, status);
+		return body;
 	}
 
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
@@ -294,41 +314,41 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> RequestStatus createModel(final Request request, final Response response)
+	public <T extends Item> HttpResponse<Void> createModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
-		final RequestStatus status = RequestStatus.success();
-
-		T item = null;
+		final HttpResponse<Void> body = new HttpResponse<>(HttpStatus.PRECONDITION_FAILED);
 
 		try {
-			item = deserializeToItem(request);
-		} catch (final DeserializationException e) {
-			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
-		}
+			final T item = deserializeToItem(request);
 
-		if (item.getPk() != null) {
-			status.warn("PK was reset, itmay not be set for new items.");
-			item.setPk(null);
-		}
+			if (item.getPk() != null) {
+				body.getBody()
+						.addWarning(new Status("warning.general", "PK was reset, it may not be set for new items."));
+				item.setPk(null);
+			}
 
-		try {
 			modelService.save(item);
-			response.status(HttpStatus.CREATED_201);
+			body.setStatusCode(HttpStatus.CREATED);
+		} catch (final DeserializationException e) {
+			body.getBody().addError(new Status("error.oncreate", e.getMessage()));
 		} catch (final ModelNotUniqueException e) {
-			status.httpStatus(HttpStatus.CONFLICT_409)
-					.error("Another item with the same uniqueness criteria (but a different PK was found.");
+			body.setStatusCode(HttpStatus.CONFLICT);
+			body.getBody().addError(new Status("error.model.notunique",
+					"Another item with the same uniqueness criteria (but a different PK was found."));
 		} catch (final ModelValidationException e) {
 			final List<String> messages = e.getConstraintViolations().stream().map((c) -> {
 				return String.format("%s.%s could not be set to {%s}: %s", c.getRootBean().getClass().getSimpleName(),
 						c.getPropertyPath(), c.getInvalidValue(), c.getMessage());
 			}).collect(Collectors.toList());
 
-			status.httpStatus(HttpStatus.CONFLICT_409).error(String.join("\n", messages));
+			body.setStatusCode(HttpStatus.CONFLICT);
+			body.getBody().addError(new Status("error.model.validation", String.join("\n", messages)));
 		}
 
-		return returnDataAndStatus(response, status);
+		return body;
 	}
 
 	/**
@@ -341,10 +361,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelSaveException
 	 */
 	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> RequestStatus deleteModel(final Request request, final Response response)
+	public <T extends Item> HttpResponse<Void> deleteModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
-		final RequestStatus status = RequestStatus.success();
+		final HttpResponse<Void> body = new HttpResponse<>();
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
@@ -354,13 +374,15 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			try {
 				modelService.remove(type, pk);
 			} catch (final ModelNotFoundException e) {
-				status.httpStatus(HttpStatus.NOT_FOUND_404).error("Item with given PK not found.");
+				body.setStatusCode(HttpStatus.NOT_FOUND);
+				body.getBody().addError(new Status("error.ondelete", "Item with given PK not found."));
 			}
 		} else {
-			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("No valid PK given.");
+			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+			body.getBody().addError(new Status("error.ondelete", "No valid PK given."));
 		}
 
-		return returnDataAndStatus(response, status);
+		return body;
 	}
 
 	/**
@@ -376,40 +398,44 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelSaveException
 	 */
 	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> RequestStatus updateModel(final Request request, final Response response)
+	public <T extends Item> HttpResponse<Void> updateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
-		final RequestStatus status = RequestStatus.success();
+		final HttpResponse<Void> body = new HttpResponse<Void>();
 
 		T item = null;
 
 		try {
 			item = deserializeToItem(request);
 		} catch (final DeserializationException e) {
-			return status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error(e.getMessage());
+			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+			body.getBody().addError(new Status("error.onupdate", e.getMessage()));
+			return body;
 		}
 
 		if (item.getPk() == null) {
-			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("You cannot update a new item (PK was null)");
+			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+			body.getBody().addError(new Status("error.onupdate", "You cannot update a new item (PK was null)"));
 		} else {
 			try {
 				modelService.save(item);
-				response.status(HttpStatus.ACCEPTED_202);
+				body.setStatusCode(HttpStatus.ACCEPTED);
 				item.markAsDirty();
 			} catch (final ModelNotUniqueException | ModelValidationException e) {
-				status.httpStatus(HttpStatus.CONFLICT_409)
-						.error("Another item with the same uniqueness criteria (but a different PK was found.");
+				body.setStatusCode(HttpStatus.CONFLICT);
+				body.getBody().addError(new Status("error.onupdate",
+						"Another item with the same uniqueness criteria (but a different PK was found."));
 			}
 		}
 
-		return returnDataAndStatus(response, status);
+		return body;
 	}
 
 	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> RequestStatus partiallyUpdateModel(final Request request, final Response response)
+	public <T extends Item> HttpResponse<Void> partiallyUpdateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
-		final RequestStatus status = RequestStatus.success();
+		final HttpResponse<Void> body = new HttpResponse<>();
 
 		// get type
 		final String typeCode = request.params(":typecode");
@@ -444,28 +470,20 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 			modelService.save(oldItem);
 
-			response.status(HttpStatus.ACCEPTED_202);
+			body.setStatusCode(HttpStatus.ACCEPTED);
 		} catch (final ModelNotUniqueException | ModelValidationException e) {
-			status.httpStatus(HttpStatus.CONFLICT_409)
-					.error("Another item with the same uniqueness criteria (but a different PK was found.");
+			body.setStatusCode(HttpStatus.CONFLICT);
+			body.getBody().addError(new Status("error.onpartialupdate",
+					"Another item with the same uniqueness criteria (but a different PK was found."));
 		} catch (final ModelNotFoundException e) {
-			status.httpStatus(HttpStatus.NOT_FOUND_404).error("No item with the given PK found to update.");
+			body.setStatusCode(HttpStatus.NOT_FOUND);
+			body.getBody().addError(new Status("error.onpartialupdate", "No item with the given PK found to update."));
 		} catch (final DeserializationException e) {
-			status.httpStatus(HttpStatus.PRECONDITION_FAILED_412).error("Could not deserialize body json content");
+			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+			body.getBody().addError(new Status("error.onpartialupdate", "Could not deserialize body json content."));
 		}
 
-		return returnDataAndStatus(response, status);
-	}
-
-	protected RequestStatus returnDataAndStatus(final Response response, final RequestStatus status,
-			final Object payload) {
-		status.payload(payload);
-		return returnDataAndStatus(response, status);
-	}
-
-	protected RequestStatus returnDataAndStatus(final Response response, final RequestStatus status) {
-		response.status(status.httpStatus());
-		return status;
+		return body;
 	}
 
 	protected <T extends Item> T deserializeToItem(final Request request)
@@ -474,7 +492,13 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
 
-		return serializationService.fromJson(request.body(), type);
+		final T item = serializationService.fromJson(request.body(), type);
+
+		if (item == null) {
+			throw new DeserializationException("Request body was empty");
+		}
+
+		return item;
 	}
 
 	protected JsonObject deserializeToJsonToken(final Request request)

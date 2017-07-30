@@ -1,11 +1,9 @@
-package at.spot.spring.web.http;
+package at.spot.core.infrastructure.http;
 
 import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import at.spot.spring.web.dto.Payload;
 
 /**
  * This entity extends the spring {@link ResponseEntity} with the ability to set
@@ -13,24 +11,26 @@ import at.spot.spring.web.dto.Payload;
  * 
  * @param <T>
  */
-public class Response<T> extends ResponseEntity<Payload<T>> {
+public class HttpResponse<T> extends ResponseEntity<Payload<T>> {
 	protected Payload<T> body;
 	protected HttpStatus statusCode;
 
-	public Response() {
+	public HttpResponse() {
 		this(HttpStatus.OK);
 	}
 
-	public Response(final HttpStatus status) {
-		super(status);
-		this.statusCode = super.getStatusCode();
-		this.body = Payload.empty();
+	public HttpResponse(final HttpStatus status) {
+		this(Payload.empty(), status);
 	}
 
-	public Response(final Payload<T> body, final HttpStatus status) {
+	public HttpResponse(final Payload<T> body, final HttpStatus status) {
 		super(status);
 		this.body = body;
 		this.statusCode = status;
+	}
+
+	public static HttpResponse<?> internalError() {
+		return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**

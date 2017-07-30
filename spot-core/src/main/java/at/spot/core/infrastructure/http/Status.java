@@ -1,4 +1,4 @@
-package at.spot.spring.web.dto;
+package at.spot.core.infrastructure.http;
 
 import com.google.gson.annotations.Expose;
 

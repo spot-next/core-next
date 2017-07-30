@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import at.spot.core.infrastructure.http.Session;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SessionService;
-import at.spot.core.infrastructure.support.Session;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.spring.web.constants.SpringWebSupportConstants;
 

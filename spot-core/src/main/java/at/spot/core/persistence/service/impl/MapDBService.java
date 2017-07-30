@@ -25,7 +25,6 @@ import org.mapdb.DBMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -383,38 +382,7 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			}
 		}
 
-		if (item.isPersisted()) {
-			initRelationProperties(item);
-		}
-
 		loggingService.debug("Refreshed item");
-	}
-
-	/**
-	 * Create new {@link RelationProxyList} when accessing a relation property
-	 * 
-	 * @param joinPoint
-	 * @param rel
-	 * @return
-	 * @throws Throwable
-	 */
-	protected <T extends Item> void initRelationProperties(final T referencingItem) {
-		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(referencingItem.getClass())
-				.values()) {
-
-			// if the property is a relation we setup a proxy relation list
-			if (p.relationDefinition != null) {
-				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
-
-				final List<Item> proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(),
-						referencingItem.getPk(), typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()),
-						p.name, () -> {
-							referencingItem.markAsDirty(p.name);
-						});
-
-				ClassUtil.setField(referencingItem, p.name, proxyList);
-			}
-		}
 	}
 
 	@Override

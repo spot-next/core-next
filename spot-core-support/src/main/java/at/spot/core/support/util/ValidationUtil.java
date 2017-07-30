@@ -47,7 +47,7 @@ public class ValidationUtil {
 	 * @throws IllegalArgumentException
 	 */
 	public static void validateNotNull(final String message, final Object object) throws IllegalArgumentException {
-		if (object != null) {
+		if (object == null) {
 			throw new IllegalArgumentException(message);
 		}
 	}

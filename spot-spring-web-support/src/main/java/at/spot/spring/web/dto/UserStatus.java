@@ -1,17 +1,12 @@
 package at.spot.spring.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.Expose;
 
 public class UserStatus {
-	@Expose
 	@JsonProperty("isAuthenticated")
 	private boolean isAuthenticated = false;
-	@Expose
 	private String username;
-	@Expose
 	private String sessionId;
-	@Expose
 	private String redirectUrl;
 
 	public String getRedirectUrl() {
