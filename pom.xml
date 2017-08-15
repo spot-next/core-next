@@ -170,11 +170,11 @@
 						<artifactId>aspectjtools</artifactId>
 						<version>${aspectj.version}</version>
 					</dependency>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
+					<!-- <dependency> -->
+					<!-- <groupId>org.aspectj</groupId> -->
+					<!-- <artifactId>aspectjrt</artifactId> -->
+					<!-- <version>${aspectj.version}</version> -->
+					<!-- </dependency> -->
 				</dependencies>
 				<configuration>
 					<aspectLibraries>
@@ -339,6 +339,16 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>3.0.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.jcip</groupId>
+					<artifactId>jcip-annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- apache tools -->
