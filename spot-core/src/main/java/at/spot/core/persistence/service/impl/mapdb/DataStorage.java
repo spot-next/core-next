@@ -147,7 +147,7 @@ public class DataStorage {
 		for (final Integer id : uniqueIndex.getKeys()) {
 			final Long val = uniqueIndex.get(id);
 
-			if (val != null && val.equals(entity.getPK())) {
+			if (val != null && entity != null && val.equals(entity.getPK())) {
 				uniqueIndex.remove(id);
 				break;
 			}
@@ -162,14 +162,16 @@ public class DataStorage {
 	}
 
 	public synchronized void removePropertyIndexes(final Entity entity) {
-		for (final String prop : entity.getProperties().keySet()) {
-			if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
-				continue;
+		if (entity != null) {
+			for (final String prop : entity.getProperties().keySet()) {
+				if (StringUtils.equalsIgnoreCase(prop, MapDBService.PK_PROPERTY_NAME)) {
+					continue;
+				}
+
+				final Index index = getIndex(prop);
+
+				index.removeIndex(entity.getPK());
 			}
-
-			final Index index = getIndex(prop);
-
-			index.removeIndex(entity.getPK());
 		}
 	}
 
