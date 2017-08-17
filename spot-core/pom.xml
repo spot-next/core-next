@@ -30,42 +30,42 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!-- packaging -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-shade-plugin</artifactId> -->
-<!-- 				<version>2.4.3</version> -->
-<!-- 				<configuration> -->
-<!-- 					<transformers> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
-<!-- 							<manifestEntries> -->
-<!-- 								<Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class> -->
-<!-- 							</manifestEntries> -->
-<!-- 						</transformer> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
-<!-- 							<resource>META-INF/spring.handlers</resource> -->
-<!-- 						</transformer> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
-<!-- 							<resource>META-INF/spring.schemas</resource> -->
-<!-- 						</transformer> -->
-<!-- 					</transformers> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>shade</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-shade-plugin</artifactId> -->
+			<!-- <version>2.4.3</version> -->
+			<!-- <configuration> -->
+			<!-- <transformers> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
+			<!-- <manifestEntries> -->
+			<!-- <Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class> -->
+			<!-- </manifestEntries> -->
+			<!-- </transformer> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
+			<!-- <resource>META-INF/spring.handlers</resource> -->
+			<!-- </transformer> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
+			<!-- <resource>META-INF/spring.schemas</resource> -->
+			<!-- </transformer> -->
+			<!-- </transformers> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>shade</goal> -->
+			<!-- </goals> -->
+			<!-- <configuration> -->
+			<!-- <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
@@ -92,6 +92,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.8.3</version>
 		</dependency>
+		
 		<!-- storage -->
 		<dependency>
 			<groupId>org.mapdb</groupId>
@@ -159,13 +160,13 @@
 			<artifactId>gson</artifactId>
 			<version>2.7</version>
 		</dependency>
-		<!-- spring -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework.boot</groupId> -->
-		<!-- <artifactId>spring-boot</artifactId> -->
-		<!-- <version>1.5.4.RELEASE</version> -->
-		<!-- </dependency> -->
 
+		<!-- spring -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<version>${spring.boot.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springmodules</groupId>
