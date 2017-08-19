@@ -2,11 +2,15 @@ package at.spot.spring.web.facade;
 
 import javax.annotation.Resource;
 
+import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
 
 public abstract class AbstractBaseFacade {
+	@Resource
+	protected LoggingService loggingService;
+
 	@Resource
 	protected UserService<User, UserGroup> userService;
 
