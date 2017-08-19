@@ -29,8 +29,10 @@ public class RelationProxyList<E extends Item> implements List<E> {
 
 	protected final List<E> internalList;
 	protected final Relation relationDefinition;
-	protected final long referencingItemPk;
-	protected Class<? extends Item> referencingItemType;
+	// protected final long referencingItemPk;
+	// protected Class<? extends Item> referencingItemType;
+	protected E referencingItem;
+
 	protected boolean isMappedPropertyUnique;
 
 	// these referenced items have changed and need to be added, removed or
@@ -39,13 +41,27 @@ public class RelationProxyList<E extends Item> implements List<E> {
 	final protected List<E> itemsToUpdate = new ArrayList<>();
 	final protected Runnable changeCallback;
 
-	public RelationProxyList(final Relation relationDefinition, final Class<? extends Item> referencingItemType,
-			final long referencingItemPk, final boolean isMappedPropertyUnique, final String onChangePropertyName,
-			final Runnable changeCallback) throws RuntimeException {
+	// public RelationProxyList(final Relation relationDefinition, final Class<?
+	// extends Item> referencingItemType,
+	// final long referencingItemPk, final boolean isMappedPropertyUnique, final
+	// String onChangePropertyName,
+	// final Runnable changeCallback) throws RuntimeException {
+	//
+	// this.relationDefinition = relationDefinition;
+	// this.referencingItemPk = referencingItemPk;
+	// this.referencingItemType = referencingItemType;
+	// this.isMappedPropertyUnique = isMappedPropertyUnique;
+	// this.internalList = new ArrayList<>();
+	// this.changeCallback = changeCallback;
+	// }
+
+	public RelationProxyList(final Relation relationDefinition, final E referencingItem,
+			final boolean isMappedPropertyUnique, final String onChangePropertyName, final Runnable changeCallback)
+			throws RuntimeException {
 
 		this.relationDefinition = relationDefinition;
-		this.referencingItemPk = referencingItemPk;
-		this.referencingItemType = referencingItemType;
+		this.referencingItem = referencingItem;
+		// this.referencingItemType = referencingItem.getClass();
 		this.isMappedPropertyUnique = isMappedPropertyUnique;
 		this.internalList = new ArrayList<>();
 		this.changeCallback = changeCallback;
@@ -64,7 +80,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 					// ignore item as it might have already been deleted
 				}
 
-				return referencedItem != null && referencedItem.getPk().equals(referencingItemPk);
+				return referencedItem != null && referencedItem.getPk().equals(referencingItem.getPk());
 			};
 		}
 
@@ -75,7 +91,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 
 				if (referencedItems != null) {
 					return referencedItems.stream().filter((e) -> {
-						return e.getPk().equals(referencingItemPk);
+						return e.getPk().equals(referencingItem.getPk());
 					}).findAny().isPresent();
 				} else {
 					return false;
@@ -345,7 +361,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 							relationDefinition.mappedTo(), List.class);
 
 					final List<Item> toRemoveFromRelation = relationList.stream().filter((i) -> {
-						return i.getPk().equals(referencingItemPk);
+						return i.getPk().equals(referencingItem.getPk());
 					}).collect(Collectors.toList());
 
 					relationList.removeAll(toRemoveFromRelation);
@@ -369,10 +385,6 @@ public class RelationProxyList<E extends Item> implements List<E> {
 	 */
 	protected void setItemRelation(final Collection<? extends E> items) {
 		for (final E item : items) {
-			Item referencingItem = null;
-
-			referencingItem = getModelService().createProxyModel(referencingItemType, referencingItemPk);
-
 			if (relationDefinition.type() == RelationType.OneToMany) {
 				getModelService().setPropertyValue(item, relationDefinition.mappedTo(), referencingItem);
 			} else {
@@ -380,7 +392,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 						List.class);
 
 				final List<Item> toAddToRelation = relationList.stream().filter((i) -> {
-					return i.getPk().equals(referencingItemPk);
+					return i.getPk().equals(this.referencingItem.getPk());
 				}).collect(Collectors.toList());
 
 				relationList.addAll(toAddToRelation);

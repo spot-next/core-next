@@ -84,8 +84,9 @@
 	<!-- ALIASES -->
 
 	<!-- services -->
-	<alias name="defaultTypeService" alias="typeService" />
+	<alias name="mapDBService" alias="serialNumberGenerator" />
 	<alias name="mapDBService" alias="persistenceService" />
+	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="defaultQueryService" alias="queryService" />
 	<alias name="consoleLoggingService" alias="loggingService" />

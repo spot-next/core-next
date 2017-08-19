@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapdb.DB;
 import org.mapdb.DBException;
 import org.mapdb.DBMaker;
+import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,7 @@ import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.SerialNumberGenerator;
 import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
@@ -50,7 +52,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 @Service
-public class MapDBService extends AbstractService implements PersistenceService {
+public class MapDBService extends AbstractService implements PersistenceService, SerialNumberGenerator {
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
 
@@ -61,6 +63,8 @@ public class MapDBService extends AbstractService implements PersistenceService 
 
 	protected DB database;
 	protected final Map<String, DataStorage> dataStorage = new HashMap<>();
+
+	protected Map<String, Long> serialNumberSequences;
 
 	@Autowired
 	protected ModelService modelService;
@@ -94,6 +98,9 @@ public class MapDBService extends AbstractService implements PersistenceService 
 				dataStorage.put(t.typeCode,
 						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
 			}
+
+			serialNumberSequences = database.hashMap("serialNumbers").keySerializer(Serializer.STRING)
+					.valueSerializer(Serializer.LONG).createOrOpen();
 		} catch (final DBException e) {
 			// org.mapdb.DBException$DataCorruption
 			throw new PersistenceStorageException("Datastore is corrupt", e);
@@ -449,5 +456,38 @@ public class MapDBService extends AbstractService implements PersistenceService 
 			database.commit();
 			database.close();
 		}
+	}
+
+	/******************************************************************************
+	 * Serial number generator interface
+	 ******************************************************************************/
+
+	@Override
+	public <T extends Item> String generate(Class<T> type, String... args) {
+		String typeCode = typeService.getTypeCode(type);
+		String pattern = configurationService.getString(SerialNumberGenerator.KEY_SERIAL_NUMBER_GENERATOR
+				.replace(SerialNumberGenerator.TOKEN_TYPE_TOKEN, typeCode));
+
+		// get the last number for the given type
+		Long numberSequence = serialNumberSequences.get(typeCode);
+
+		// if not yet set, set it to -1 ...
+		if (numberSequence == null) {
+			numberSequence = Long.valueOf(-1);
+		}
+
+		// ... so that the first number is 0
+		numberSequence += 1;
+
+		serialNumberSequences.put(typeCode, numberSequence);
+
+		pattern = pattern.replace(SerialNumberGenerator.TOKEN_SERIAL_NUMBER_ID, numberSequence.toString());
+
+		// replace generic arguments
+		for (byte b = 0; b < args.length; b++) {
+			pattern = pattern.replace("{" + b + "}", args[b]);
+		}
+
+		return pattern;
 	}
 }
