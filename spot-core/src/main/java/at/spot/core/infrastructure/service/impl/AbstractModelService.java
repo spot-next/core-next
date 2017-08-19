@@ -70,7 +70,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			if (p.relationDefinition != null && referencingItem.getPk() != null) {
 				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
 
-				proxyList = new RelationProxyList<Item>(rel, referencingItem.getClass(), referencingItem.getPk(),
+				proxyList = new RelationProxyList<Item>(rel, referencingItem,
 						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name, () -> {
 							referencingItem.markAsDirty(p.name);
 						});
