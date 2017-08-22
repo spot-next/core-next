@@ -114,8 +114,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is one
-	 * stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is
+	 * one stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -462,10 +462,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	 * Serial number generator interface
 	 ******************************************************************************/
 
-	@Override
-	public <T extends Item> String generate(Class<T> type, String... args) {
-		String typeCode = typeService.getTypeCode(type);
-		String pattern = configurationService.getString(SerialNumberGenerator.KEY_SERIAL_NUMBER_GENERATOR
+	protected synchronized <T extends Item> String generateBaseId(final Class<T> type) {
+		final String typeCode = typeService.getTypeCode(type);
+		String id = configurationService.getString(SerialNumberGenerator.KEY_SERIAL_NUMBER_GENERATOR
 				.replace(SerialNumberGenerator.TOKEN_TYPE_TOKEN, typeCode));
 
 		// get the last number for the given type
@@ -481,11 +480,34 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 		serialNumberSequences.put(typeCode, numberSequence);
 
-		pattern = pattern.replace(SerialNumberGenerator.TOKEN_SERIAL_NUMBER_ID, numberSequence.toString());
+		id = id.replace(SerialNumberGenerator.TOKEN_SERIAL_NUMBER_ID, numberSequence.toString());
+
+		return id;
+	}
+
+	@Override
+	public <T extends Item> String generate(final Class<T> type, final String... args) {
+		String pattern = generateBaseId(type);
 
 		// replace generic arguments
-		for (byte b = 0; b < args.length; b++) {
-			pattern = pattern.replace("{" + b + "}", args[b]);
+		if (args != null) {
+			for (byte b = 0; b < args.length; b++) {
+				pattern = pattern.replace("{" + b + "}", args[b]);
+			}
+		}
+
+		return pattern;
+	}
+
+	@Override
+	public <T extends Item> String generate(final Class<T> type, final Map<String, String> args) {
+		String pattern = generateBaseId(type);
+
+		// replace generic arguments
+		if (args != null) {
+			for (final Map.Entry<String, String> entry : args.entrySet()) {
+				pattern = pattern.replace("{" + entry.getKey() + "}", entry.getValue());
+			}
 		}
 
 		return pattern;

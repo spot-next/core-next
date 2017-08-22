@@ -1,5 +1,7 @@
 package at.spot.core.persistence.service;
 
+import java.util.Map;
+
 import at.spot.core.constant.CoreConstants;
 import at.spot.core.model.Item;
 
@@ -29,4 +31,11 @@ public interface SerialNumberGenerator {
 	 */
 	<T extends Item> String generate(Class<T> type, String... args);
 
+	/**
+	 * 
+	 * @param type
+	 * @param args
+	 * @return
+	 */
+	<T extends Item> String generate(Class<T> type, Map<String, String> args);
 }
