@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/mojo2012/spot-framework.svg?branch=master)](https://travis-ci.org/mojo2012/spot-framework)
+
+
 # spOt micro framework
 
 The idea of the spOt micro framework is to take the good parts of the SAP Hybris framework and bring them to the next level.
