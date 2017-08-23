@@ -1,2 +1,18 @@
 language: java
 
+cache:
+  directories:
+  - "$HOME/.cache"
+deploy:
+  provider: script
+  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
+  skip_cleanup: true
+  on:
+    tags: false
+
+notifications:
+  email:
+    recipients:
+    - meister.fuchs@gmail.com
+    on_success: change
+    on_failure: always
