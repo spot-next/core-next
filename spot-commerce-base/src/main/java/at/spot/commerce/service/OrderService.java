@@ -3,7 +3,7 @@ package at.spot.commerce.service;
 import java.util.List;
 
 import at.spot.commerce.exception.OrderCancellationException;
-import at.spot.commerce.strategy.impl.OrderIdGeneratorStrategy;
+import at.spot.core.persistence.service.SerialNumberGeneratorService;
 import at.spot.itemtype.commerce.customer.Customer;
 import at.spot.itemtype.commerce.enumeration.OrderStatus;
 import at.spot.itemtype.commerce.order.Order;
@@ -15,7 +15,7 @@ public interface OrderService {
 
 	/**
 	 * Creates a new order order for the given customer. The order id is
-	 * generated using the {@link OrderIdGeneratorStrategy}.
+	 * generated using the {@link SerialNumberGeneratorService}.
 	 * 
 	 * @param customer
 	 * @return

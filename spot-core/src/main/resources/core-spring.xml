@@ -13,6 +13,9 @@
 
 	<context:spring-configured />
 	<context:annotation-config />
+	
+	<!-- enable @Value property resolution -->
+	<context:property-placeholder  />
 
 	<context:component-scan base-package="at.spot.core.infrastructure.support.spring" />
 	<context:component-scan base-package="at.spot.core.infrastructure.service" />

@@ -26,6 +26,7 @@ import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -43,7 +44,7 @@ import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.PersistenceStorageException;
 import at.spot.core.persistence.service.PersistenceService;
-import at.spot.core.persistence.service.SerialNumberGenerator;
+import at.spot.core.persistence.service.SerialNumberGeneratorService;
 import at.spot.core.persistence.service.impl.mapdb.DataStorage;
 import at.spot.core.persistence.service.impl.mapdb.Entity;
 import at.spot.core.support.util.ClassUtil;
@@ -52,7 +53,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 @Service
-public class MapDBService extends AbstractService implements PersistenceService, SerialNumberGenerator {
+public class MapDBService extends AbstractService implements PersistenceService, SerialNumberGeneratorService {
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
 
@@ -168,9 +169,15 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		}
 	}
 
+	protected void saveInternal(final Item item, final boolean commit, final List<Item> itemsToIgnore)
+			throws IntrospectionException, ModelNotUniqueException, ModelSaveException {
+
+		saveInternal(item, commit, itemsToIgnore != null ? itemsToIgnore.toArray(new Item[] {}) : null);
+	}
+
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	// @Log(logLevel = LogLevel.DEBUG, measureTime = true, after = true)
-	protected void saveInternal(final Item item, final boolean commit)
+	protected void saveInternal(final Item item, final boolean commit, final Item... itemsToIgnore)
 			throws IntrospectionException, ModelNotUniqueException, ModelSaveException {
 
 		final boolean unsavedChanges = !item.isPersisted() || item.isDirty();
@@ -194,6 +201,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 			final Entity entity = new Entity(item.getPk(), item.getClass().getName(), item.uniquenessHash());
 
+			final List<Item> toIgnore = new ArrayList<Item>(Arrays.asList(itemsToIgnore));
+			toIgnore.add(item);
+
 			for (final ItemTypePropertyDefinition member : itemMembers.values()) {
 				// ignore pk property and relation properties
 				if (!StringUtils.equalsIgnoreCase(member.name, PK_PROPERTY_NAME)) {
@@ -206,21 +216,21 @@ public class MapDBService extends AbstractService implements PersistenceService,
 						if (value instanceof RelationProxyList) {
 							final RelationProxyList proxyList = ((RelationProxyList) value);
 
-							saveInternalCollection(proxyList.getItemsToUpdate(), commit);
+							saveInternalCollection(proxyList.getItemsToUpdate(), commit, itemsToIgnore);
 							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
 						}
 
 						if (value instanceof Item) {
 							final Item valueItem = (Item) value;
 
-							saveInternal(valueItem, commit);
+							saveInternal(valueItem, commit, toIgnore);
 
 							// replace actual item with proxy
 							value = createProxyModel(valueItem);
 						} else if (value.getClass().isArray()) {
-							value = saveInternalCollection((Collection) Arrays.asList(value), commit);
+							value = saveInternalCollection((Collection) Arrays.asList(value), commit, toIgnore);
 						} else if (Collection.class.isAssignableFrom(value.getClass())) {
-							value = saveInternalCollection((Collection) value, commit);
+							value = saveInternalCollection((Collection) value, commit, toIgnore);
 						} else if (Map.class.isAssignableFrom(value.getClass())) {
 							// Map items = (Map) value;
 							//
@@ -257,17 +267,29 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		return newPk;
 	}
 
-	protected Collection<Item> saveInternalCollection(final Collection<Item> items, final boolean commit)
-			throws IntrospectionException, CannotCreateModelProxyException, ModelNotUniqueException,
-			ModelSaveException {
+	protected Collection<Item> saveInternalCollection(final Collection<Item> items, final boolean commit,
+			final List<Item> itemsToIgnore) throws IntrospectionException, CannotCreateModelProxyException,
+			ModelNotUniqueException, ModelSaveException {
+
+		return saveInternalCollection(items, commit,
+				itemsToIgnore != null ? itemsToIgnore.toArray(new Item[] {}) : null);
+	}
+
+	protected Collection<Item> saveInternalCollection(final Collection<Item> items, final boolean commit,
+			final Item... itemsToIgnore) throws IntrospectionException, CannotCreateModelProxyException,
+			ModelNotUniqueException, ModelSaveException {
 
 		if (items != null) {
 			final Collection<Item> savedItems = new ArrayList<>();
 
 			for (final Item v : items) {
 				if (v != null) {
-					saveInternal(v, commit);
-					savedItems.add(createProxyModel(v));
+					final boolean ignore = Stream.of(itemsToIgnore).filter(i -> i.equals(v)).findFirst().isPresent();
+
+					if (!ignore) {
+						saveInternal(v, commit);
+						savedItems.add(createProxyModel(v));
+					}
 				}
 			}
 
@@ -389,7 +411,41 @@ public class MapDBService extends AbstractService implements PersistenceService,
 			}
 		}
 
+		if (item.isPersisted()) {
+			initRelationProperties(item);
+		}
+
 		loggingService.debug("Refreshed item");
+	}
+
+	/**
+	 * Create new {@link RelationProxyList} when accessing a relation property
+	 * 
+	 * @param joinPoint
+	 * @param rel
+	 * @return
+	 * @throws Throwable
+	 */
+	protected <T extends Item> void initRelationProperties(final T referencingItem) {
+		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(referencingItem.getClass())
+				.values()) {
+
+			List<Item> proxyList;
+
+			// if the property is a relation we setup a proxy relation list
+			if (p.relationDefinition != null) {
+				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
+
+				proxyList = new RelationProxyList<Item>(rel, referencingItem,
+						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name, () -> {
+							referencingItem.markAsDirty(p.name);
+						});
+			} else {
+				proxyList = new ArrayList<>();
+			}
+
+			ClassUtil.setField(referencingItem, p.name, proxyList);
+		}
 	}
 
 	@Override
@@ -462,13 +518,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	 * Serial number generator interface
 	 ******************************************************************************/
 
-	protected synchronized <T extends Item> String generateBaseId(final Class<T> type) {
-		final String typeCode = typeService.getTypeCode(type);
-		String id = configurationService.getString(SerialNumberGenerator.KEY_SERIAL_NUMBER_GENERATOR
-				.replace(SerialNumberGenerator.TOKEN_TYPE_TOKEN, typeCode));
-
+	protected synchronized <T extends Item> String generateBaseId(final String type, String template) {
 		// get the last number for the given type
-		Long numberSequence = serialNumberSequences.get(typeCode);
+		Long numberSequence = serialNumberSequences.get(type);
 
 		// if not yet set, set it to -1 ...
 		if (numberSequence == null) {
@@ -478,30 +530,43 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		// ... so that the first number is 0
 		numberSequence += 1;
 
-		serialNumberSequences.put(typeCode, numberSequence);
+		serialNumberSequences.put(type, numberSequence);
 
-		id = id.replace(SerialNumberGenerator.TOKEN_SERIAL_NUMBER_ID, numberSequence.toString());
+		template = template.replace(SerialNumberGeneratorService.TOKEN_SERIAL_NUMBER_ID, numberSequence.toString());
 
-		return id;
+		return template;
 	}
 
 	@Override
 	public <T extends Item> String generate(final Class<T> type, final String... args) {
-		String pattern = generateBaseId(type);
+		final Map<String, String> mapArgs = new HashMap<>();
 
-		// replace generic arguments
-		if (args != null) {
-			for (byte b = 0; b < args.length; b++) {
-				pattern = pattern.replace("{" + b + "}", args[b]);
-			}
+		// convert the string array to and indexed map
+		for (int i = 0; i < args.length; i++) {
+			mapArgs.put(i + "", args[i]);
 		}
 
-		return pattern;
+		return generate(type, mapArgs);
 	}
 
 	@Override
 	public <T extends Item> String generate(final Class<T> type, final Map<String, String> args) {
-		String pattern = generateBaseId(type);
+		final String typeCode = typeService.getTypeCode(type);
+
+		// get the template for the type from the properties
+		final String configKey = SerialNumberGeneratorService.KEY_SERIAL_NUMBER_GENERATOR
+				.replace(SerialNumberGeneratorService.TOKEN_TYPE_TOKEN, typeCode);
+
+		// if there is not template configured, we just print the serial number
+		final String template = configurationService.getString(configKey,
+				SerialNumberGeneratorService.TOKEN_SERIAL_NUMBER_ID);
+
+		return generate(typeCode, template, args);
+	}
+
+	@Override
+	public String generate(final String type, final String template, final Map<String, String> args) {
+		String pattern = generateBaseId(type, template);
 
 		// replace generic arguments
 		if (args != null) {
@@ -511,5 +576,15 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		}
 
 		return pattern;
+	}
+
+	@Override
+	public <T extends Item> void reset(final Class<T> type) {
+		reset(typeService.getTypeCode(type));
+	}
+
+	@Override
+	public <T extends Item> void reset(final String type) {
+		serialNumberSequences.remove(type);
 	}
 }

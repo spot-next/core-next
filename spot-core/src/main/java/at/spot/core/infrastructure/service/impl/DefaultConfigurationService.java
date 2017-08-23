@@ -1,17 +1,23 @@
 
 package at.spot.core.infrastructure.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 
 @Service
-public class DefaultConfigurationService extends BeanAware implements ConfigurationService {
+public class DefaultConfigurationService extends BeanAware implements ConfigurationService, EnvironmentAware {
 
-	@Autowired
+	@Resource
 	protected LoggingService loggingService;
+
+	@Resource
+	protected Environment environment;
 
 	@Override
 	public String getString(final String key) {
@@ -84,7 +90,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	 * @return
 	 */
 	protected String getProperty(final String key) {
-		final String value = getApplicationContext().getEnvironment().getProperty(key);
+		final String value = environment.getProperty(key);
 
 		// for (final Properties prop :
 		// Registry.getAppConfiguration().getConfiguration()) {
@@ -125,5 +131,10 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		}
 
 		return b;
+	}
+
+	@Override
+	public void setEnvironment(final Environment environment) {
+		this.environment = environment;
 	}
 }
