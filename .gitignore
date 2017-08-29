@@ -25,3 +25,4 @@ spot-management-console/gwt-unitCache
 spot-core/gensrc
 /spot/build-tools/target/
 /spot/target/
+**/src/gen
