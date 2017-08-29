@@ -44,8 +44,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object
+	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && get(* *.*)")
 
@@ -53,8 +53,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all getter that are accessing a field in an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all getter that are accessing a field in an
+	 * object of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty) && within(@at.spot.core.infrastructure.annotation.ItemType *)")
 
@@ -62,8 +62,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object
+	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && set(* *.*)")
 
@@ -71,8 +71,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object
+	 * of type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty) && "
 			+ "within(@at.spot.core.infrastructure.annotation.ItemType *) && execution(* set*(..))")
@@ -127,7 +127,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		}
 
 		// if there's a value provider configured, use it
-		if (StringUtils.isNotBlank(ann.itemValueProvider())) {
+		if (ann != null && StringUtils.isNotBlank(ann.itemValueProvider())) {
 			final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider());
 			return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
 		} else { // get currently stored object

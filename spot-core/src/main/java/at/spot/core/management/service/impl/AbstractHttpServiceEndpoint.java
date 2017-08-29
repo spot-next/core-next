@@ -264,7 +264,19 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);
-			return processResponse(response, httpMethodImpl.invoke(serviceImpl, request, response));
+
+			Object ret = null;
+
+			try {
+				ret = httpMethodImpl.invoke(serviceImpl, request, response);
+			} catch (final Exception e) {
+				final HttpResponse<?> errorResponse = HttpResponse.internalError();
+				errorResponse.getBody().addError(new Status("error.internal", "Cannot execute request."));
+				ret = errorResponse;
+				serviceImpl.loggingService.exception("An error occured during execution of request", e);
+			}
+
+			return processResponse(response, ret);
 		}
 
 		/**

@@ -522,12 +522,12 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		// get the last number for the given type
 		Long numberSequence = serialNumberSequences.get(type);
 
-		// if not yet set, set it to -1 ...
+		// if not yet set, set it to 0 ...
 		if (numberSequence == null) {
-			numberSequence = Long.valueOf(-1);
+			numberSequence = Long.valueOf(0);
 		}
 
-		// ... so that the first number is 0
+		// ... so that the first number is 1
 		numberSequence += 1;
 
 		serialNumberSequences.put(type, numberSequence);
