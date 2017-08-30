@@ -337,7 +337,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		} catch (final ModelNotUniqueException e) {
 			body.setStatusCode(HttpStatus.CONFLICT);
 			body.getBody().addError(new Status("error.model.notunique",
-					"Another item with the same uniqueness criteria (but a different PK was found."));
+					"Another item with the same uniqueness criteria (but a different PK) was found."));
 		} catch (final ModelValidationException e) {
 			final List<String> messages = e.getConstraintViolations().stream().map((c) -> {
 				return String.format("%s.%s could not be set to {%s}: %s", c.getRootBean().getClass().getSimpleName(),
@@ -424,7 +424,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			} catch (final ModelNotUniqueException | ModelValidationException e) {
 				body.setStatusCode(HttpStatus.CONFLICT);
 				body.getBody().addError(new Status("error.onupdate",
-						"Another item with the same uniqueness criteria (but a different PK was found."));
+						"Another item with the same uniqueness criteria (but a different PK) was found."));
 			}
 		}
 
@@ -474,7 +474,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		} catch (final ModelNotUniqueException | ModelValidationException e) {
 			body.setStatusCode(HttpStatus.CONFLICT);
 			body.getBody().addError(new Status("error.onpartialupdate",
-					"Another item with the same uniqueness criteria (but a different PK was found."));
+					"Another item with the same uniqueness criteria (but a different PK) was found."));
 		} catch (final ModelNotFoundException e) {
 			body.setStatusCode(HttpStatus.NOT_FOUND);
 			body.getBody().addError(new Status("error.onpartialupdate", "No item with the given PK found to update."));
