@@ -2,6 +2,7 @@ package at.spot.maven.mojo;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
 import com.squareup.javapoet.JavaFile;
@@ -53,6 +55,7 @@ import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
+import at.spot.maven.util.MavenUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
@@ -71,8 +74,9 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 
 /**
  * @description Generates the java source code for the defined item types.
+ * @requiresDependencyResolution test
  */
-@Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+@Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
@@ -145,8 +149,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 *
 	 * @return
 	 * @throws IOException
+	 * @throws MojoExecutionException
+	 * @throws DependencyResolutionException
 	 */
-	protected List<InputStream> findItemTypeDefinitions() throws IOException {
+	protected List<InputStream> findItemTypeDefinitions() throws MojoExecutionException {
 		final List<InputStream> definitions = new ArrayList<>();
 		final List<String> definitionFiles = new ArrayList<>();
 
@@ -154,8 +160,15 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final Set<Artifact> files = project.getDependencyArtifacts();
 
 		for (final Artifact a : files) {
-			if (a.getFile() != null) {
-				for (final File f : FileUtils.getFiles(a.getFile().getAbsolutePath())) {
+			getLog().info(String.format("Scanning %s for item types ...", a));
+
+			try {
+				final File file = MavenUtil.getArtiactFile(localRepository, a);
+
+				// final File file = deps.get(0).getFile();
+				getLog().info(String.format("Resolved artfact %s: %s", a.getArtifactId(), file.getAbsolutePath()));
+
+				for (final File f : FileUtils.getFiles(file.getAbsolutePath())) {
 					if (f.getName().endsWith(".jar")) {
 						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 						for (final String c : jarContent) {
@@ -171,8 +184,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						}
 					}
 				}
-			} else {
-				getLog().warn(String.format("Can't scan %s for item types.", a));
+			} catch (final IOException e) {
+				throw new MojoExecutionException(String.format("Can't read artifact file for artifact %s.", a), e);
 			}
 		}
 
@@ -182,8 +195,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			for (final File f : projectFiles) {
 				if (isItemTypeDefinitionFile(f.getName())) {
-					definitions.add(FileUtils.readFile(f));
-					definitionFiles.add(f.getName());
+					try {
+						definitions.add(FileUtils.readFile(f));
+						definitionFiles.add(f.getName());
+					} catch (final FileNotFoundException e) {
+						throw new MojoExecutionException("Could not scan for item types.", e);
+					}
 				}
 			}
 		}
