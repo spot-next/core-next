@@ -152,15 +152,6 @@
 		<plugins>
 
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.2</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<version>1.10</version>
@@ -220,8 +211,8 @@
 				<executions>
 					<!-- Ensures that FindBugs inspects source code when project is compiled. -->
 					<execution>
-						<id>analyze-compile</id>
-						<phase>compile</phase>
+						<id>analyze-deploy</id>
+						<phase>deploy</phase>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -243,9 +234,9 @@
 				</configuration>
 				<executions>
 					<execution>
+						<phase>deploy</phase>
 						<goals>
 							<goal>check</goal>
-							<goal>cpd-check</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -265,6 +256,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.6.2</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
