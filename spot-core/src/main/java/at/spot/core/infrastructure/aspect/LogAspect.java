@@ -14,7 +14,6 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 @Aspect
 public class LogAspect extends AbstractBaseAspect {
 
-	@Override
 	@PostConstruct
 	public void init() {
 		loggingService.debug("Initialized logging aspect.");

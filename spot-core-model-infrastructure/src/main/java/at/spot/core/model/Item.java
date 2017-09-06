@@ -37,7 +37,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * is true. The item property handler then knows it has to load it on the
 	 * fly.
 	 */
-	public final transient boolean isProxy;
+	public transient boolean isProxy;
 
 	public Item() {
 		this.createdAt = new DateTime();
@@ -66,6 +66,10 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	public boolean isProxy() {
 		return isProxy;
+	}
+
+	public void setIsProxy(final boolean isProxy) {
+		this.isProxy = isProxy;
 	}
 
 	/**

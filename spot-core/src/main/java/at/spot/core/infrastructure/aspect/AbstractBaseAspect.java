@@ -2,28 +2,23 @@ package at.spot.core.infrastructure.aspect;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.aspectj.lang.JoinPoint;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.support.util.ClassUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-@Configurable
+@Configurable(autowire = Autowire.BY_TYPE, dependencyCheck = true, preConstruction = true)
 @SuppressFBWarnings(value = {
 		"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" }, justification = "AspectJ compile time weaving causes wrong warning")
 public abstract class AbstractBaseAspect {
 
-	@Autowired
+	@Resource
 	protected LoggingService loggingService;
-
-	@PostConstruct
-	public void init() {
-		loggingService.debug("Initialized abstract base aspect.");
-	}
 
 	protected <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		return ClassUtil.getAnnotation(joinPoint, annotation);
@@ -33,4 +28,13 @@ public abstract class AbstractBaseAspect {
 		return String.format("%s.%s", joinPoint.getSignature().getClass().getSimpleName(),
 				joinPoint.getSignature().getName());
 	}
+
+	public LoggingService getLoggingService() {
+		return loggingService;
+	}
+
+	public void setLoggingService(final LoggingService loggingService) {
+		this.loggingService = loggingService;
+	}
+
 }

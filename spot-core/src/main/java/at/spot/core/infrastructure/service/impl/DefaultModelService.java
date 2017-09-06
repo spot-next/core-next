@@ -18,15 +18,11 @@ import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.ELParser;
 
 @Service
 public class DefaultModelService extends AbstractModelService {
-
-	@Autowired
-	protected PersistenceService persistenceService;
 
 	@Autowired
 	protected ValidationService validationService;

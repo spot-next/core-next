@@ -49,7 +49,11 @@ public class DataStorage {
 	}
 
 	public synchronized Entity get(final Long key) {
-		return items.get(key);
+		if (key != null) {
+			return items.get(key);
+		}
+
+		return null;
 	}
 
 	public synchronized Entity get(final int uniqueHash) {
@@ -84,6 +88,8 @@ public class DataStorage {
 	public synchronized Set<Long> get(final Map<String, Comparable<?>> criteria) {
 		final Map<String, List<Long>> pksForProperty = new TreeMap<>();
 
+		boolean allValuesFound = true;
+
 		for (final Map.Entry<String, Comparable<?>> entry : criteria.entrySet()) {
 			final Comparable<?> v = entry.getValue();
 
@@ -91,10 +97,19 @@ public class DataStorage {
 
 			if (pk != null) {
 				pksForProperty.put(entry.getKey(), pk);
+			} else {
+				// if there's nothing found, we don't have a valid AND join
+				allValuesFound = false;
 			}
 		}
 
-		final Set<Long> commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+		Set<Long> commonPKs;
+
+		if (allValuesFound) {
+			commonPKs = intersection(new ArrayList<List<Long>>(pksForProperty.values()));
+		} else {
+			commonPKs = Collections.emptySet();
+		}
 
 		return commonPKs;
 	}

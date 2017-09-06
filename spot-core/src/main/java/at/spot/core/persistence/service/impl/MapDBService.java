@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -218,9 +216,10 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 							saveInternalCollection(proxyList.getItemsToUpdate(), commit, itemsToIgnore);
 							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
-						}
 
-						if (value instanceof Item) {
+							value = new ArrayList<>(proxyList);
+						} else if (value instanceof Item) {
+							// replace actual item with proxy
 							final Item valueItem = (Item) value;
 
 							saveInternal(valueItem, commit, toIgnore);
@@ -323,60 +322,64 @@ public class MapDBService extends AbstractService implements PersistenceService,
 			for (final Class<? extends Item> subType : typeService.getAllSubTypes(type, true)) {
 				final String typeCode = typeService.getTypeCode(subType);
 
-				final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
-					Stream<Long> stream = null;
-					Set<Long> pks = null;
+				// final ForkJoinTask<Stream<T>> ret = threadPool.submit(() -> {
+				Stream<Long> stream = null;
+				Set<Long> pks = null;
 
-					if (searchParameters != null && !searchParameters.isEmpty()) {
-						final DataStorage data = getDataStorageForType(typeCode);
-						if (data != null) {
-							pks = data.get(searchParameters);
+				if (searchParameters != null && !searchParameters.isEmpty()) {
+					final DataStorage data = getDataStorageForType(typeCode);
+					if (data != null) {
+						pks = data.get(searchParameters);
+					} else {
+						// throw new PersistenceStorageException(
+						// String.format("Could not get datastorage for type
+						// %s", typeCode));
+						// loggingService.warn(String.format("Could not get
+						// datastorage for type %s", type));
+					}
+				} else {
+					final DataStorage storage = getDataStorageForType(typeCode);
+					pks = storage != null ? storage.getAll() : Collections.emptySet();
+				}
+
+				if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {
+					stream = pks.parallelStream();
+				} else {
+					stream = pks.stream();
+				}
+
+				if (pageSize > 0) {
+					stream = stream.skip((page - 1) * pageSize).limit(pageSize);
+				}
+
+				final Stream<T> retStream = stream.map((pk) -> {
+					try {
+
+						if (returnProxies) {
+							return (T) createProxyModel(subType, pk);
 						} else {
-							throw new PersistenceStorageException(
-									String.format("Could not get datastorage for type %s", typeCode));
-							// loggingService.warn(String.format("Could not get
-							// datastorage for type %s", type));
+							return (T) load(subType, pk);
 						}
-					} else {
-						final DataStorage storage = getDataStorageForType(typeCode);
-						pks = storage != null ? storage.getAll() : Collections.emptySet();
-					}
-
-					if (minCountForParallelStream != null && pks.size() >= minCountForParallelStream) {
-						stream = pks.parallelStream();
-					} else {
-						stream = pks.stream();
-					}
-
-					if (pageSize > 0) {
-						stream = stream.skip((page - 1) * pageSize).limit(pageSize);
-					}
-
-					Stream<T> retStream = stream.map((pk) -> {
-						try {
-
-							if (returnProxies) {
-								return (T) createProxyModel(subType, pk);
-							} else {
-								return (T) load(subType, pk);
-							}
-						} catch (final ModelNotFoundException e1) {
-							// ignore it for now
-						}
-
+					} catch (final ModelNotFoundException e1) {
+						// ignore it for now
 						return null;
-					});
-
-					if (minCountForParallelStream != null && pageSize >= minCountForParallelStream) {
-						retStream = retStream.parallel();
 					}
-
-					return retStream;
 				});
 
-				foundItems.addAll(ret.get().collect(Collectors.toList()));
+				foundItems.addAll(retStream.collect(Collectors.toList()));
+
+				// if (minCountForParallelStream != null && pageSize >=
+				// minCountForParallelStream) {
+				// retStream = retStream.parallel();
+				// }
+
+				// return retStream;
+				// });
+
+				// foundItems.addAll(ret.get().collect(Collectors.toList()));
 			}
-		} catch (InterruptedException | ExecutionException | UnknownTypeException e) {
+			// InterruptedException | ExecutionException |
+		} catch (final UnknownTypeException e) {
 			loggingService.exception("Can't load items", e);
 			// throw new PersistenceStorageException("Can't load items from
 			// storage.");
@@ -412,39 +415,29 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		}
 
 		if (item.isPersisted()) {
-			initRelationProperties(item);
+			initItem(item);
 		}
 
 		loggingService.debug("Refreshed item");
 	}
 
-	/**
-	 * Create new {@link RelationProxyList} when accessing a relation property
-	 * 
-	 * @param joinPoint
-	 * @param rel
-	 * @return
-	 * @throws Throwable
-	 */
-	protected <T extends Item> void initRelationProperties(final T referencingItem) {
-		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(referencingItem.getClass())
-				.values()) {
+	@Override
+	public <T extends Item> void initItem(final T item) {
+		for (final ItemTypePropertyDefinition p : typeService.getItemTypeProperties(item.getClass()).values()) {
 
 			List<Item> proxyList;
 
 			// if the property is a relation we setup a proxy relation list
 			if (p.relationDefinition != null) {
-				final Relation rel = ClassUtil.getAnnotation(referencingItem.getClass(), p.name, Relation.class);
+				final Relation rel = ClassUtil.getAnnotation(item.getClass(), p.name, Relation.class);
 
-				proxyList = new RelationProxyList<Item>(rel, referencingItem,
-						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name, () -> {
-							referencingItem.markAsDirty(p.name);
-						});
+				proxyList = new RelationProxyList<Item>(rel, item,
+						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name);
 			} else {
 				proxyList = new ArrayList<>();
 			}
 
-			ClassUtil.setField(referencingItem, p.name, proxyList);
+			ClassUtil.setField(item, p.name, proxyList);
 		}
 	}
 
@@ -472,7 +465,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 	protected void resetModelState(final Item item) {
 		ClassUtil.invokeMethod(item, "clearDirtyFlag");
-		ClassUtil.setField(item, "isProxy", false);
+		// ClassUtil.setField(item, "isProxy", false);
+		item.setIsProxy(false);
 	}
 
 	@Override

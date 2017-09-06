@@ -10,11 +10,11 @@ import org.mapdb.Serializer;
 public class Index {
 	protected Map<Object, List<Long>> index;
 
-	public Index(DB database, String name) {
+	public Index(final DB database, final String name) {
 		index = database.hashMap(name).keySerializer(Serializer.JAVA).valueSerializer(Serializer.JAVA).createOrOpen();
 	}
 
-	public synchronized void index(Comparable<?> valueKey, Long pk) {
+	public synchronized void index(final Comparable<?> valueKey, final Long pk) {
 		List<Long> indexedPks = index.get(valueKey);
 
 		if (indexedPks == null) {
@@ -26,9 +26,9 @@ public class Index {
 		index.put(valueKey, indexedPks);
 	}
 
-	public synchronized void removeIndex(Long pk) {
-		for (Map.Entry<Object, List<Long>> entry : index.entrySet()) {
-			List<Long> val = entry.getValue();
+	public synchronized void removeIndex(final Long pk) {
+		for (final Map.Entry<Object, List<Long>> entry : index.entrySet()) {
+			final List<Long> val = entry.getValue();
 
 			if (val != null) {
 				val.remove(pk);
@@ -37,7 +37,7 @@ public class Index {
 		}
 	}
 
-	public List<Long> getPk(Comparable<?> valueKey) {
+	public List<Long> getPk(final Comparable<?> valueKey) {
 		return index.get(valueKey);
 	}
 }

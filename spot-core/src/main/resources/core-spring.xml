@@ -35,6 +35,16 @@
 
 	<bean id="itemTypeAnnotationProcessor" class="at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
 
+	<bean id="abstractBaseAspect" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect" abstract="true">
+		<property name="loggingService" ref="loggingService" />
+	</bean>
+
+	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
+	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect">
+		<property name="modelService" ref="modelService" />
+		<property name="queryService" ref="queryService" />
+	</bean>
+
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
 	<util:map id="itemPropertyValueProviders" key-type="java.lang.String"

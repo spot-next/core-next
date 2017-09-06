@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.support.RelationProxyList;
 import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
@@ -145,4 +146,14 @@ public interface PersistenceService {
 	 * Clears all stored data from the storage.
 	 */
 	void clearDataStorage();
+
+	/**
+	 * Create new {@link RelationProxyList} when accessing a relation property
+	 * 
+	 * @param joinPoint
+	 * @param rel
+	 * @return
+	 * @throws Throwable
+	 */
+	<T extends Item> void initItem(T item);
 }

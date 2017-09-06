@@ -3,6 +3,9 @@ package at.spot.core.infrastructure.aspect;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,7 +13,6 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Property;
@@ -25,11 +27,16 @@ import at.spot.core.support.util.ClassUtil;
 @Aspect
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
-	@Autowired
+	@Resource
 	protected ModelService modelService;
 
-	@Autowired
+	@Resource
 	protected QueryService queryService;
+
+	@PostConstruct
+	public void init() {
+		loggingService.debug("Initialized item property access aspect.");
+	}
 
 	// @Autowired
 	Map<String, ItemPropertyValueProvider> itemPropertyValueProviders = new HashMap<>();
@@ -38,7 +45,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * PointCuts
 	 */
 
-	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*) && !within(at.spot.core.model..*)")
+	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*)")
 
 	protected void notFromPersistencePackage() {
 	};
@@ -56,10 +63,11 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * Define the pointcut for all getter that are accessing a field in an
 	 * object of type @Item that are annotated with @Property.
 	 */
-	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty) && within(@at.spot.core.infrastructure.annotation.ItemType *)")
-
-	final protected void getMethod() {
-	};
+	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty)
+	// && within(@at.spot.core.infrastructure.annotation.ItemType *)")
+	//
+	// final protected void getMethod() {
+	// };
 
 	/**
 	 * Define the pointcut for all fields that are accessed (set) on an object
@@ -74,17 +82,19 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * Define the pointcut for all fields that are accessed (set) on an object
 	 * of type @Item that are annotated with @Property.
 	 */
-	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty) && "
-			+ "within(@at.spot.core.infrastructure.annotation.ItemType *) && execution(* set*(..))")
-
-	final protected void setMethod() {
-	};
+	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty)
+	// && "
+	// + "within(@at.spot.core.infrastructure.annotation.ItemType *) &&
+	// execution(* set*(..))")
+	//
+	// final protected void setMethod() {
+	// };
 
 	/*
 	 * JoinPoints
 	 */
 
-	@After("(setField() || setMethod()) && notFromPersistencePackage()")
+	@After("setField() && notFromPersistencePackage()")
 	public void setPropertyValue(final JoinPoint joinPoint) {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 		final SetProperty setAnn = getAnnotation(joinPoint, SetProperty.class);
@@ -107,7 +117,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		}
 	}
 
-	@Around("(getField() || getMethod()) && notFromPersistencePackage()")
+	@Around("getField() && notFromPersistencePackage()")
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 		final GetProperty getAnn = getAnnotation(joinPoint, GetProperty.class);
@@ -121,7 +131,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		if (joinPoint.getTarget() instanceof Item) {
 			final Item i = (Item) joinPoint.getTarget();
 
-			if (i.isProxy) {
+			if (i.isPersisted()) {
 				modelService.loadProxyModel(i);
 			}
 		}
@@ -139,4 +149,21 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	protected Object getPropertyValueInternal(final ProceedingJoinPoint joinPoint) throws Throwable {
 		return joinPoint.proceed(joinPoint.getArgs());
 	}
+
+	public ModelService getModelService() {
+		return modelService;
+	}
+
+	public void setModelService(final ModelService modelService) {
+		this.modelService = modelService;
+	}
+
+	public QueryService getQueryService() {
+		return queryService;
+	}
+
+	public void setQueryService(final QueryService queryService) {
+		this.queryService = queryService;
+	}
+
 }

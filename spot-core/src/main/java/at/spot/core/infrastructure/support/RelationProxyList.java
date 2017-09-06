@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.support;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.RandomAccess;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,24 +23,29 @@ import at.spot.core.model.Item;
 import at.spot.core.persistence.query.QueryCondition;
 import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class RelationProxyList<E extends Item> implements List<E> {
+@SuppressFBWarnings(value = { "SE_TRANSIENT_FIELD_NOT_RESTORED", "SE_BAD_FIELD" })
+public class RelationProxyList<E extends Item> implements List<E>, RandomAccess, Serializable {
+
+	private static final long serialVersionUID = 1770972929572955365L;
 
 	protected boolean isInitialized = false;
 
-	protected final List<E> internalList;
-	protected final Relation relationDefinition;
+	final protected Relation relationDefinition;
 	// protected final long referencingItemPk;
 	// protected Class<? extends Item> referencingItemType;
-	protected E referencingItem;
+	final protected E referencingItem;
 
-	protected boolean isMappedPropertyUnique;
+	final protected boolean isMappedPropertyUnique;
+	// final protected SerializableRunnable changeCallback;
 
 	// these referenced items have changed and need to be added, removed or
 	// updated when saving
-	final protected List<E> itemsToRemove = new ArrayList<>();
-	final protected List<E> itemsToUpdate = new ArrayList<>();
-	final protected Runnable changeCallback;
+	protected transient final List<E> internalList;
+	final protected transient List<E> itemsToRemove = new ArrayList<>();
+	final protected transient List<E> itemsToUpdate = new ArrayList<>();
+	final protected String onChangePropertyName;
 
 	// public RelationProxyList(final Relation relationDefinition, final Class<?
 	// extends Item> referencingItemType,
@@ -55,15 +62,14 @@ public class RelationProxyList<E extends Item> implements List<E> {
 	// }
 
 	public RelationProxyList(final Relation relationDefinition, final E referencingItem,
-			final boolean isMappedPropertyUnique, final String onChangePropertyName, final Runnable changeCallback)
-			throws RuntimeException {
+			final boolean isMappedPropertyUnique, final String onChangePropertyName) throws RuntimeException {
 
 		this.relationDefinition = relationDefinition;
 		this.referencingItem = referencingItem;
 		// this.referencingItemType = referencingItem.getClass();
 		this.isMappedPropertyUnique = isMappedPropertyUnique;
 		this.internalList = new ArrayList<>();
-		this.changeCallback = changeCallback;
+		this.onChangePropertyName = onChangePropertyName;
 	}
 
 	public void refresh() {
@@ -123,7 +129,7 @@ public class RelationProxyList<E extends Item> implements List<E> {
 	}
 
 	public void notifyObserver(final ListModification change, final Object element) {
-		changeCallback.run();
+		referencingItem.markAsDirty(onChangePropertyName);
 	}
 
 	@Override
