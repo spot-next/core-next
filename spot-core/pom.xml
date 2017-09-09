@@ -92,7 +92,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.8.3</version>
 		</dependency>
-		
+
 		<!-- storage -->
 		<dependency>
 			<groupId>org.mapdb</groupId>
@@ -167,7 +167,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<version>${spring.boot.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springmodules</groupId>
 			<artifactId>spring-modules-validation</artifactId>
@@ -179,6 +178,19 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>5.0.0.RC3</version>
+		</dependency>
+
+		<!-- persistence -->
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
 		<!-- validation -->
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -188,8 +200,9 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>5.3.5.Final</version>
+			<version>5.4.1.Final</version>
 		</dependency>
+
 		<!-- <dependency> -->
 		<!-- <groupId>org.glassfish.web</groupId> -->
 		<!-- <artifactId>javax.el</artifactId> -->

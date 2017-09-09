@@ -6,11 +6,9 @@ package at.spot.itemtype.commerce.catalog;
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
 
 import at.spot.core.infrastructure.type.LocalizedString;
-import at.spot.core.infrastructure.type.RelationType;
 
 import at.spot.itemtype.core.UniqueIdItem;
 
@@ -18,11 +16,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+
 
 /**
 * Categories are used to group products.
  */
 @ItemType(typeCode = "category")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Category extends UniqueIdItem {
     private static final long serialVersionUID = -1L;
@@ -33,7 +35,7 @@ public class Category extends UniqueIdItem {
 
     /** The products in this catalog. */
     @Property
-    @Relation(type = RelationType.ManyToMany, mappedTo = "categories", referencedType = Product.class)
+    @ElementCollection
     protected List<Product> products;
 
     @GetProperty

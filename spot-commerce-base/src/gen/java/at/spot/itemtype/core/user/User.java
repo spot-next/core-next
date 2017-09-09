@@ -15,17 +15,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
 
 /**
 * Represents a user.
  */
 @ItemType(typeCode = "user")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class User extends Principal {
     private static final long serialVersionUID = -1L;
 
     /** The user's addresses. */
     @Property
+    @OneToMany(mappedBy = "owner", targetEntity = Address.class)
     @Relation(type = RelationType.OneToMany, mappedTo = "owner", referencedType = Address.class)
     protected List<Address> addresses;
 

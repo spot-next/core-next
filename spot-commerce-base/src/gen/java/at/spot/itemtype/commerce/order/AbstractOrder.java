@@ -16,6 +16,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 
@@ -23,6 +26,7 @@ import javax.validation.constraints.NotNull;
 * The abstract base type for orders and carts.
  */
 @ItemType(typeCode = "abstractorder")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public abstract class AbstractOrder extends UniqueIdItem {
     private static final long serialVersionUID = -1L;
@@ -30,6 +34,7 @@ public abstract class AbstractOrder extends UniqueIdItem {
     @NotNull
     protected Customer customer;
     @Property
+    @ElementCollection
     protected List<AbstractOrderEntry> entries;
 
     @GetProperty

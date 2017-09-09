@@ -14,6 +14,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.Locale;
 
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
@@ -23,6 +25,7 @@ import org.hibernate.validator.constraints.Length;
 * This represents a language object and it's locale.
  */
 @ItemType(typeCode = "language")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Language extends Item {
     private static final long serialVersionUID = -1L;

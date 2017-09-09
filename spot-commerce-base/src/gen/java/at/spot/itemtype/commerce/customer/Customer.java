@@ -14,8 +14,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+
 
 @ItemType(typeCode = "customer")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Customer extends User {
     private static final long serialVersionUID = -1L;

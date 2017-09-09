@@ -9,8 +9,11 @@ import at.spot.itemtype.core.media.FileMedia;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import javax.persistence.Entity;
+
 
 @ItemType(typeCode = "imagemedia")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class ImageMedia extends FileMedia {
     private static final long serialVersionUID = -1L;

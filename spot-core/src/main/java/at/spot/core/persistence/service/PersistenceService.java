@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.support.RelationProxyList;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -50,25 +49,23 @@ public interface PersistenceService {
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
 	/**
-	 * Returns an object based on the given search parameters (key = property
-	 * name, value = property value).
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
 	 * 
 	 * @param type
 	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be
-	 *            returned.
+	 *            if empty or null, all items of the given type will be returned.
 	 * @return
 	 */
 	<T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
 
 	/**
-	 * Returns an object based on the given search parameters (key = property
-	 * name, value = property value).
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
 	 * 
 	 * @param type
 	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be
-	 *            returned.
+	 *            if empty or null, all items of the given type will be returned.
 	 * @param start
 	 *            defines the amount of items that are being skipped.
 	 * @param amount
@@ -82,13 +79,12 @@ public interface PersistenceService {
 			final int page, final int pageSize, boolean loadAsProxy);
 
 	/**
-	 * Returns an object based on the given search parameters (key = property
-	 * name, value = property value).
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
 	 * 
 	 * @param type
 	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be
-	 *            returned.
+	 *            if empty or null, all items of the given type will be returned.
 	 * @param start
 	 *            defines the amount of items that are being skipped.
 	 * @param amount
@@ -97,9 +93,9 @@ public interface PersistenceService {
 	 * @param loadAsProxy
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @param
-	 * @return minCountForParallelStream if the amount of items to be processed
-	 *         is greater than this value, a parallel stream is used instead of
-	 *         a regular one.
+	 * @return minCountForParallelStream if the amount of items to be processed is
+	 *         greater than this value, a parallel stream is used instead of a
+	 *         regular one.
 	 */
 	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
@@ -122,13 +118,6 @@ public interface PersistenceService {
 	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
-	 * Removes the given items.
-	 * 
-	 * @param item
-	 */
-	void remove(PK... pks);
-
-	/**
 	 * Removes the given item.
 	 * 
 	 * @param item
@@ -137,8 +126,16 @@ public interface PersistenceService {
 	<T extends Item> void remove(T... items);
 
 	/**
-	 * Saves the database to disk. This has to be done before the application
-	 * quits to prevent data corruption.
+	 * Removes the item of the given type with the given PK.
+	 * 
+	 * @param type
+	 * @param pk
+	 */
+	<T extends Item> void remove(Class<T> type, long pk);
+
+	/**
+	 * Saves the database to disk. This has to be done before the application quits
+	 * to prevent data corruption.
 	 */
 	void saveDataStorage();
 
@@ -156,4 +153,5 @@ public interface PersistenceService {
 	 * @throws Throwable
 	 */
 	<T extends Item> void initItem(T item);
+
 }

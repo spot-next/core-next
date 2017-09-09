@@ -3,6 +3,8 @@
  */
 package at.spot.itemtype.cms.model;
 
+import ConfigEntry.MetaTag;
+
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
@@ -14,10 +16,14 @@ import at.spot.core.model.media.ImageMedia;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import java.util.Map;
+import java.util.List;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 
 
 @ItemType(typeCode = "cmspagetemplate")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class CmsPageTemplate extends AbstractCmsContainerComponent {
     private static final long serialVersionUID = -1L;
@@ -26,7 +32,8 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
     @Property
     protected LocalizedString favIconPath;
     @Property
-    protected Map<String, LocalizedString> metaTags;
+    @ElementCollection
+    protected List<MetaTag> metaTags;
     @Property
     protected LocalizedString title;
 
@@ -41,7 +48,7 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
     }
 
     @GetProperty
-    public Map<String, LocalizedString> getMetaTags() {
+    public List<MetaTag> getMetaTags() {
         return this.metaTags;
     }
 
@@ -63,7 +70,7 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
     }
 
     @SetProperty
-    public void setMetaTags(Map<String, LocalizedString> metaTags) {
+    public void setMetaTags(List<MetaTag> metaTags) {
         this.metaTags = metaTags;
         markAsDirty("metaTags");
     }

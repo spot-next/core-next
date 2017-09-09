@@ -22,7 +22,7 @@ import org.mapdb.DBException;
 import org.mapdb.DBMaker;
 import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Required;
 
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -36,7 +36,6 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.infrastructure.support.RelationProxyList;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -50,7 +49,6 @@ import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
-@Service
 public class MapDBService extends AbstractService implements PersistenceService, SerialNumberGeneratorService {
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
@@ -59,6 +57,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	public static final String DEFAULT_DB_FILEPATH = "/private/tmp/storage.db";
 
 	public static final String PK_PROPERTY_NAME = "pk";
+
+	protected boolean initializeTypeSystem = false;
 
 	protected DB database;
 	protected final Map<String, DataStorage> dataStorage = new HashMap<>();
@@ -82,20 +82,22 @@ public class MapDBService extends AbstractService implements PersistenceService,
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
 					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 
-			// database =
-			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
-			// DEFAULT_DB_FILEPATH))
-			// .transactionEnable().make();
+			if (initializeTypeSystem) {
+				// database =
+				// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
+				// DEFAULT_DB_FILEPATH))
+				// .transactionEnable().make();
 
-			final Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
+				final Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
-			// dataStorage =
-			// database.hashMap("items").keySerializer(Serializer.LONG)
-			// .valueSerializer(new ItemSerializer<>()).createOrOpen();
+				// dataStorage =
+				// database.hashMap("items").keySerializer(Serializer.LONG)
+				// .valueSerializer(new ItemSerializer<>()).createOrOpen();
 
-			for (final ItemTypeDefinition t : itemTypes.values()) {
-				dataStorage.put(t.typeCode,
-						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
+				for (final ItemTypeDefinition t : itemTypes.values()) {
+					dataStorage.put(t.typeCode,
+							new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
+				}
 			}
 
 			serialNumberSequences = database.hashMap("serialNumbers").keySerializer(Serializer.STRING)
@@ -113,8 +115,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is
-	 * one stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is one
+	 * stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -442,12 +444,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	@Override
-	public void remove(final PK... pks) {
-		for (final PK pk : pks) {
-			if (pk != null) {
-				getDataStorageForType(typeService.getTypeCode(pk.getType())).remove(pk.longValue());
-			}
-		}
+	public <T extends Item> void remove(Class<T> type, long pk) {
+		getDataStorageForType(typeService.getTypeCode(type)).remove(pk);
 
 		saveDataStorage();
 	}
@@ -580,5 +578,10 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	@Override
 	public <T extends Item> void reset(final String type) {
 		serialNumberSequences.remove(type);
+	}
+
+	@Required
+	public void setInitializeTypeSystem(boolean initializeTypeSystem) {
+		this.initializeTypeSystem = initializeTypeSystem;
 	}
 }

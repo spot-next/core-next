@@ -18,17 +18,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+
 
 /**
 * The base type Product is used for all purchasable items.
  */
 @ItemType(typeCode = "product")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Product extends UniqueIdItem {
     private static final long serialVersionUID = -1L;
 
     /** The categories the product is referenced by. */
     @Property
+    @ManyToMany(mappedBy = "products", targetEntity = Category.class)
     @Relation(type = RelationType.ManyToMany, mappedTo = "products", referencedType = Category.class)
     protected List<Category> categories;
 

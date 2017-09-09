@@ -12,8 +12,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+
 
 @ItemType(typeCode = "cmspage")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class CmsPage extends CmsPageTemplate {
     private static final long serialVersionUID = -1L;
@@ -22,6 +26,7 @@ public class CmsPage extends CmsPageTemplate {
 
     /** Holds the regex string to determine which URL should be handler by this page. */
     @Property
+    @ElementCollection
     protected List<String> urlMatches;
 
     @GetProperty

@@ -12,8 +12,11 @@ import at.spot.itemtype.core.UniqueIdItem;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import javax.persistence.Entity;
+
 
 @ItemType(typeCode = "contactdetailstype")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class ContactDetailsType extends UniqueIdItem {
     private static final long serialVersionUID = -1L;

@@ -122,12 +122,14 @@
 	<type name="ContentSlot" extends="AbstractCmsItem" package="at.spot.itemtype.cms.model">
 		<properties>
 			<property name="cmsComponents">
-				<datatype class="java.util.Map">
-					<genericArgument class="java.lang.String" />
+				<datatype class="java.util.List">
 					<genericArgument class="CmsComponent" />
 				</datatype>
 			</property>
 		</properties>
+	</type>
+
+	<type name="MetaTag" package="ConfigEntry">
 	</type>
 
 	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
@@ -143,10 +145,10 @@
 				<datatype class="ImageMedia" />
 			</property>
 			<property name="metaTags">
-				<datatype class="java.util.Map">
-					<genericArgument class="java.lang.String" />
-					<genericArgument class="at.spot.core.infrastructure.type.LocalizedString" />
+				<datatype class="java.util.List">
+					<genericArgument class="MetaTag" />
 				</datatype>
+<!-- 				<relation type="OneToMany" referencedType="MetaTag" /> -->
 			</property>
 		</properties>
 	</type>
@@ -157,7 +159,8 @@
 				<datatype class="java.util.List">
 					<genericArgument class="java.lang.String" />
 				</datatype>
-				<description>Holds the regex string to determine which URL should be handler by this page.</description>
+				<description>Holds the regex string to determine which URL should
+						be handler by this page.</description>
 			</property>
 			<property name="template">
 				<datatype class="CmsPageTemplate" />

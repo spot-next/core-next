@@ -14,10 +14,13 @@ import at.spot.itemtype.commerce.catalog.Product;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 
 @ItemType(typeCode = "abstractorderentry")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public abstract class AbstractOrderEntry extends Item {
     private static final long serialVersionUID = -1L;

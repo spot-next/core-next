@@ -14,6 +14,8 @@ import at.spot.core.model.Item;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 
@@ -21,6 +23,7 @@ import javax.validation.constraints.NotNull;
 * Represents a currency.
  */
 @ItemType(typeCode = "currency")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Currency extends Item {
     private static final long serialVersionUID = -1L;

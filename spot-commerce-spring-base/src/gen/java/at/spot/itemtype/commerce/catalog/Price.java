@@ -19,6 +19,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 
@@ -26,6 +28,7 @@ import javax.validation.constraints.NotNull;
 * This is the container for all categories and products.
  */
 @ItemType(typeCode = "price")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class Price extends Item {
     private static final long serialVersionUID = -1L;

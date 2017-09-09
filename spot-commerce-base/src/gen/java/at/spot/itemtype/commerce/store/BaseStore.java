@@ -16,17 +16,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+
 
 /**
 * This holds the base configuration for a store.
  */
 @ItemType(typeCode = "basestore")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class BaseStore extends UniqueIdItem {
     private static final long serialVersionUID = -1L;
 
     /** The countries that are assigned to this base store. */
     @Property
+    @ElementCollection
     protected List<Country> countries;
 
     /** The name of the base store. */
@@ -35,6 +40,7 @@ public class BaseStore extends UniqueIdItem {
 
     /** These regex strings are used to match browser url to the base store. */
     @Property
+    @ElementCollection
     protected List<String> urlMatchers;
 
     @GetProperty

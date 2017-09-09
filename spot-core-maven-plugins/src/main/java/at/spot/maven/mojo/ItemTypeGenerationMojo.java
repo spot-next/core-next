@@ -16,6 +16,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -436,9 +441,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			{ // add annotations
+				// spot item type definition
 				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
-
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
+
+				// JPA settings
+				addImport(definitions, cls, Entity.class);
+				cls.addAnnotation(Entity.class.getSimpleName());
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
 					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
@@ -482,6 +491,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					if (p.getDatatype() != null && StringUtils.isNotBlank(p.getDatatype().getClazz())) {
 						String propertyType = addImport(definitions, cls, p.getDatatype().getClazz());
 
+						// this property is some sort of collection
 						if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
 							final List<String> args = new ArrayList<>();
 
@@ -692,20 +702,58 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final ClassType fieldType, final PackageClass cls, final VirtualMachine vm) {
 
 		if (propertyDefinition.getRelation() != null) {
-			cls.addImport(Relation.class.getName());
-			cls.addImport(RelationType.class.getName());
+			{// JPA settings
+				Annotation ann = null;
 
-			final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
+				if (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY
+						.equals(propertyDefinition.getRelation().getType())) {
 
-			ann.addAnnotationAttribute("type", vm.newFree(
-					RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
-			ann.addAnnotationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
-			ann.addAnnotationAttribute("referencedType",
-					vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
+					cls.addImport(ManyToMany.class.getName());
+					ann = property.addAnnotation(ManyToMany.class.getSimpleName());
+				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY
 
-			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
-				ann.addAnnotationAttribute("casacadeOnDelete",
-						getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
+						.equals(propertyDefinition.getRelation().getType())) {
+					cls.addImport(OneToMany.class.getName());
+					ann = property.addAnnotation(OneToMany.class.getSimpleName());
+				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE
+						.equals(propertyDefinition.getRelation().getType())) {
+
+					cls.addImport(OneToOne.class.getName());
+					ann = property.addAnnotation(OneToOne.class.getSimpleName());
+				}
+
+				// ann.addAnnotationAttribute("fetch", vm.newFree(
+				// RelationType.class.getSimpleName() + "." +
+				// propertyDefinition.getRelation().getType().value()));
+				ann.addAnnotationAttribute("mappedBy", vm.newString(propertyDefinition.getRelation().getMappedTo()));
+				ann.addAnnotationAttribute("targetEntity",
+						vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
+			}
+
+			{// spot settings
+				cls.addImport(Relation.class.getName());
+				cls.addImport(RelationType.class.getName());
+
+				final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
+
+				ann.addAnnotationAttribute("type", vm.newFree(
+						RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
+				ann.addAnnotationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
+				ann.addAnnotationAttribute("referencedType",
+						vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
+
+				if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
+					ann.addAnnotationAttribute("casacadeOnDelete",
+							getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
+				}
+			}
+		} else {
+			String propertyType = propertyDefinition.getDatatype().getClazz();
+			// Class<?> type = Class.forName(propertyType);
+
+			if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
+				cls.addImport(ElementCollection.class.getName());
+				final Annotation ann = property.addAnnotation(ElementCollection.class.getSimpleName());
 			}
 		}
 	}

@@ -14,6 +14,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.Locale;
 
+import javax.persistence.Entity;
+
 import javax.validation.constraints.NotNull;
 
 
@@ -21,6 +23,7 @@ import javax.validation.constraints.NotNull;
 * This type can be used to store localized values different languages/locales.
  */
 @ItemType(typeCode = "localizationkey")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class LocalizationKey extends UniqueIdItem {
     private static final long serialVersionUID = -1L;

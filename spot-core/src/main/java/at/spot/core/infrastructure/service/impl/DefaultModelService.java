@@ -15,7 +15,6 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.ValidationService;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
@@ -109,7 +108,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		persistenceService.remove(new PK(pk, type));
+		persistenceService.remove(type, pk);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -17,17 +17,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+
 
 /**
 * The base type all user related item types.
  */
 @ItemType(typeCode = "principal")
+@Entity
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public abstract class Principal extends UniqueIdItem {
     private static final long serialVersionUID = -1L;
 
     /** The principal groups assigned to the user. */
     @Property(isReference = true)
+    @ManyToMany(mappedBy = "members", targetEntity = PrincipalGroup.class)
     @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
     protected List<PrincipalGroup> groups;
 
