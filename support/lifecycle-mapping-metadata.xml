@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lifecycleMappingMetadata>
+	<pluginExecutions>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<groupId>at.spot</groupId>
+				<artifactId>spot-core-maven-plugins</artifactId>
+				<versionRange>1.0-SNAPSHOT</versionRange>
+				<goals>
+					<goal>itemTypeGeneration</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute />
+			</action>
+		</pluginExecution>
+	</pluginExecutions>
+	<pluginExecutions>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<versionRange>[1.8,)</versionRange>
+				<goals>
+					<goal>compile</goal>
+					<goal>test-compile</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute />
+			</action>
+		</pluginExecution>
+	</pluginExecutions>
+</lifecycleMappingMetadata>
