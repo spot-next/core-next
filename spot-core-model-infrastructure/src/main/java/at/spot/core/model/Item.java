@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
@@ -42,6 +43,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected String typeCode;
 
 	@Property
+	@UpdateTimestamp
 	protected Date lastModifiedAt;
 
 	@Property
