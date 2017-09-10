@@ -14,8 +14,6 @@
 				<execute />
 			</action>
 		</pluginExecution>
-	</pluginExecutions>
-	<pluginExecutions>
 		<pluginExecution>
 			<pluginExecutionFilter>
 				<groupId>org.codehaus.mojo</groupId>
