@@ -20,12 +20,17 @@ import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.persistence.service.impl.MapDBService;
 import at.spot.core.persistence.valueprovider.ItemPropertyValueProvider;
 import at.spot.core.support.util.ClassUtil;
 
 @Aspect
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {
+
+	@Resource
+	protected PersistenceService persistenceService;
 
 	@Resource
 	protected ModelService modelService;
@@ -51,8 +56,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && get(* *.*)")
 
@@ -60,8 +65,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all getter that are accessing a field in an
-	 * object of type @Item that are annotated with @Property.
+	 * Define the pointcut for all getter that are accessing a field in an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty)
 	// && within(@at.spot.core.infrastructure.annotation.ItemType *)")
@@ -70,8 +75,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// };
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && set(* *.*)")
 
@@ -79,8 +84,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty)
 	// && "
@@ -96,54 +101,67 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	@After("setField() && notFromPersistencePackage()")
 	public void setPropertyValue(final JoinPoint joinPoint) {
-		final Property ann = getAnnotation(joinPoint, Property.class);
-		final SetProperty setAnn = getAnnotation(joinPoint, SetProperty.class);
+		if (isCompatibleWithPersistenceService()) {
 
-		if (setAnn == null && (ann == null || !ann.writable())) {
-			throw new RuntimeException(String.format("Attribute %s is not writable.", createSignature(joinPoint)));
-		}
+			final Property ann = getAnnotation(joinPoint, Property.class);
+			final SetProperty setAnn = getAnnotation(joinPoint, SetProperty.class);
 
-		// handle relation annotation
-		final Relation rel = getAnnotation(joinPoint, Relation.class);
+			if (setAnn == null && (ann == null || !ann.writable())) {
+				throw new RuntimeException(String.format("Attribute %s is not writable.", createSignature(joinPoint)));
+			}
 
-		if (rel != null) {
-			loggingService.warn("Handling relations not implemented here.");
-			// handleRelationProperty(joinPoint, rel);
-		}
+			// handle relation annotation
+			final Relation rel = getAnnotation(joinPoint, Relation.class);
 
-		// set the changed field to dirty
-		if (joinPoint.getTarget() instanceof Item) {
-			ClassUtil.invokeMethod(joinPoint.getTarget(), "markAsDirty", joinPoint.getSignature().getName());
+			if (rel != null) {
+				loggingService.warn("Handling relations not implemented here.");
+				// handleRelationProperty(joinPoint, rel);
+			}
+
+			// set the changed field to dirty
+			if (joinPoint.getTarget() instanceof Item) {
+				ClassUtil.invokeMethod(joinPoint.getTarget(), "markAsDirty", joinPoint.getSignature().getName());
+			}
 		}
 	}
 
 	@Around("getField() && notFromPersistencePackage()")
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
-		final Property ann = getAnnotation(joinPoint, Property.class);
-		final GetProperty getAnn = getAnnotation(joinPoint, GetProperty.class);
+		if (isCompatibleWithPersistenceService()) {
+			final Property ann = getAnnotation(joinPoint, Property.class);
+			final GetProperty getAnn = getAnnotation(joinPoint, GetProperty.class);
 
-		if (getAnn == null && (ann == null || !ann.readable())) {
-			throw new RuntimeException(String.format("Attribute %s is not readable.", createSignature(joinPoint)));
-		}
+			if (getAnn == null && (ann == null || !ann.readable())) {
+				throw new RuntimeException(String.format("Attribute %s is not readable.", createSignature(joinPoint)));
+			}
 
-		// if the target is a proxy item, we load it first, then we invoke the
-		// getter functionality
-		if (joinPoint.getTarget() instanceof Item) {
-			final Item i = (Item) joinPoint.getTarget();
+			// if the target is a proxy item, we load it first, then we invoke the
+			// getter functionality
+			if (joinPoint.getTarget() instanceof Item) {
+				final Item i = (Item) joinPoint.getTarget();
 
-			if (i.isPersisted()) {
-				modelService.loadProxyModel(i);
+				if (i.isPersisted()) {
+					modelService.loadProxyModel(i);
+				}
+			}
+
+			// if there's a value provider configured, use it
+			if (ann != null && StringUtils.isNotBlank(ann.itemValueProvider())) {
+				final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider());
+				return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
 			}
 		}
 
-		// if there's a value provider configured, use it
-		if (ann != null && StringUtils.isNotBlank(ann.itemValueProvider())) {
-			final ItemPropertyValueProvider pv = itemPropertyValueProviders.get(ann.itemValueProvider());
-			return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
-		} else { // get currently stored object
-			final Object retVal = getPropertyValueInternal(joinPoint);
-			return retVal;
-		}
+		// get currently stored object
+		final Object retVal = getPropertyValueInternal(joinPoint);
+		return retVal;
+	}
+
+	/**
+	 * This aspect is only compatible with the {@link MapDBService}.
+	 */
+	protected boolean isCompatibleWithPersistenceService() {
+		return persistenceService instanceof MapDBService;
 	}
 
 	protected Object getPropertyValueInternal(final ProceedingJoinPoint joinPoint) throws Throwable {

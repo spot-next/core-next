@@ -446,8 +446,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				// JPA settings
+
+				// if the type is abstract we just don't make it a JPA entity
 				addImport(definitions, cls, Entity.class);
 				cls.addAnnotation(Entity.class.getSimpleName());
+				// if (type.isAbstract() == null || !type.isAbstract()) {
+				// } else {
+				// // instead we just declare it a mapped superclass
+				// addImport(definitions, cls, MappedSuperclass.class);
+				// cls.addAnnotation(MappedSuperclass.class.getSimpleName());
+				// }
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
 					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));

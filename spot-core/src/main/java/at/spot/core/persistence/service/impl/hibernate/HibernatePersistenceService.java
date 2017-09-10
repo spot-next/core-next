@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
@@ -14,6 +15,8 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -37,7 +40,13 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	@Override
 	public <T extends Item> void save(List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		for (T item : items) {
-			em.persist(item);
+			try {
+				em.persist(item);
+			} catch (EntityExistsException e) {
+				throw new ModelNotUniqueException(e);
+			} catch (IllegalArgumentException e) {
+				throw new ModelSaveException(e);
+			}
 		}
 	}
 
@@ -51,25 +60,41 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	@Override
 	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
 		try {
-			em.refresh(item);
-		} catch (TransactionRequiredException | IllegalArgumentException | EntityNotFoundException e) {
+			// em.refresh(item);
+
+			T attached = (T) getEntitySession().load(item.getClass(), item.getPk());
+			if (attached != item) {
+				getEntitySession().evict(attached);
+				getEntitySession().lock(item, LockMode.NONE);
+			}
+
+			getEntitySession().refresh(item);
+		} catch (NullPointerException | TransactionRequiredException | IllegalArgumentException
+				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
 		}
 	}
 
 	@Override
 	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
-		List<String> params = new ArrayList<>();
-		for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
-			params.add(e.getKey() + " = :" + e.getKey());
+		String query = String.format("FROM %s", type.getSimpleName());
+		TypedQuery<T> qry = null;
+
+		if (searchParameters != null) {
+			List<String> params = new ArrayList<>();
+			for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
+				params.add(e.getKey() + " = :" + e.getKey());
+			}
+
+			query += String.format(" WHERE %s", StringUtils.join(params, " AND "));
 		}
 
-		String query = String.format("FROM %s WHERE %s", type.getSimpleName(), StringUtils.join(params, " AND "));
+		qry = em.createQuery(query, type);
 
-		TypedQuery<T> qry = em.createQuery(query, type);
-
-		for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
-			qry.setParameter(e.getKey(), e.getValue());
+		if (searchParameters != null) {
+			for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
+				qry.setParameter(e.getKey(), e.getValue());
+			}
 		}
 
 		return qry.getResultList().stream();
@@ -125,15 +150,21 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void initItem(T item) {
-		if (item != null && item.getPk() != null) {
-			try {
-				refresh(item);
-			} catch (ModelNotFoundException e) {
-				loggingService.warn(String.format("Could not initialize item with pk=%s", item.getPk()));
-			}
-		} else {
-			loggingService.warn("Could not initialize null item");
-		}
+		// if (item != null && item.getPk() != null) {
+		// try {
+		// refresh(item);
+		// } catch (ModelNotFoundException e) {
+		// loggingService.warn(String.format("Could not initialize item with pk=%s",
+		// item.getPk()));
+		// }
+		// } else {
+		// loggingService.warn("Could not initialize null item");
+		// }
+		// not needed
+	}
+
+	protected Session getEntitySession() {
+		return em.unwrap(Session.class);
 	}
 
 }

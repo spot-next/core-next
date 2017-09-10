@@ -3,8 +3,6 @@
  */
 package at.spot.itemtype.cms.model;
 
-import ConfigEntry.MetaTag;
-
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,17 +12,20 @@ import java.util.Objects;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
 
 @MappedSuperclass
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
@@ -38,10 +42,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected String typeCode;
 
 	@Property
-	protected DateTime lastModifiedAt;
+	protected Date lastModifiedAt;
 
 	@Property
-	protected DateTime createdAt;
+	@CreationTimestamp
+	protected Date createdAt;
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this is
@@ -50,7 +55,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	public transient boolean isProxy;
 
 	public Item() {
-		this.createdAt = new DateTime();
+		this.createdAt = new Date();
 		this.isProxy = false;
 	}
 
@@ -66,11 +71,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return pk;
 	}
 
-	public DateTime getLastModifiedAt() {
+	public Date getLastModifiedAt() {
 		return lastModifiedAt;
 	}
 
-	public DateTime getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
@@ -101,7 +106,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	public void markAsDirty(final String propertyName) {
 		this.dirtyAttributes.add(propertyName);
-		this.lastModifiedAt = new DateTime();
+		this.lastModifiedAt = new Date();
 	}
 
 	/**

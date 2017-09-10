@@ -99,7 +99,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
-		if (item == null) {
+		if (item == null || item.getPk() == null) {
 			throw new ModelNotFoundException("Given item is null");
 		}
 

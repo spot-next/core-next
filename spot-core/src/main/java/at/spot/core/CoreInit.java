@@ -224,6 +224,8 @@ public class CoreInit extends ModuleInit {
 
 			try {
 				modelService.save(admin);
+
+				loggingService.debug("Created admin user.");
 			} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
 				throw new ModuleInitializationException("Couln't create admin user account.", e);
 			}

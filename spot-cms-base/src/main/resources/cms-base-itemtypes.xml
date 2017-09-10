@@ -129,7 +129,7 @@
 		</properties>
 	</type>
 
-	<type name="MetaTag" package="ConfigEntry">
+	<type name="MetaTag" extends="ConfigEntry" package="at.spot.itemtype.cms.model">
 	</type>
 
 	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
