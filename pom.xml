@@ -174,7 +174,8 @@
 							<artifactId>spring-aspects</artifactId>
 						</aspectLibrary>
 					</aspectLibraries>
-					<showWeaveInfo>true</showWeaveInfo>
+					<!-- setting this to true can cause build errors im M2E -->
+					<showWeaveInfo>false</showWeaveInfo>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<Xlint>ignore</Xlint>
