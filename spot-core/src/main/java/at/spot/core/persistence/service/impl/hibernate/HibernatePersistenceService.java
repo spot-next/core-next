@@ -33,36 +33,36 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	protected EntityManager em;
 
 	@Override
-	public <T extends Item> void save(T... items) throws ModelSaveException, ModelNotUniqueException {
+	public <T extends Item> void save(final T... items) throws ModelSaveException, ModelNotUniqueException {
 		save(Arrays.asList(items));
 	}
 
 	@Override
-	public <T extends Item> void save(List<T> items) throws ModelSaveException, ModelNotUniqueException {
-		for (T item : items) {
+	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
+		for (final T item : items) {
 			try {
 				em.persist(item);
-			} catch (EntityExistsException e) {
+			} catch (final EntityExistsException e) {
 				throw new ModelNotUniqueException(e);
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				throw new ModelSaveException(e);
 			}
 		}
 	}
 
 	@Override
-	public <T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException {
-		String query = String.format("SELECT i FROM %s i WHERE pk = ?pk", type.getSimpleName());
+	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
+		final String query = String.format("SELECT i FROM %s i WHERE pk = ?pk", type.getSimpleName());
 
 		return em.createQuery(query, type).setParameter("pk", pk).getSingleResult();
 	}
 
 	@Override
-	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
+	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		try {
 			// em.refresh(item);
 
-			T attached = (T) getEntitySession().load(item.getClass(), item.getPk());
+			final T attached = (T) getEntitySession().load(item.getClass(), item.getPk());
 			if (attached != item) {
 				getEntitySession().evict(attached);
 				getEntitySession().lock(item, LockMode.NONE);
@@ -76,64 +76,95 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
-		String query = String.format("FROM %s", type.getSimpleName());
-		TypedQuery<T> qry = null;
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+		String queryString = String.format("FROM %s", type.getSimpleName());
+		TypedQuery<T> query = null;
 
 		if (searchParameters != null) {
-			List<String> params = new ArrayList<>();
-			for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
+			final List<String> params = new ArrayList<>();
+			for (final Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
 				params.add(e.getKey() + " = :" + e.getKey());
 			}
 
-			query += String.format(" WHERE %s", StringUtils.join(params, " AND "));
+			queryString += String.format(" WHERE %s", StringUtils.join(params, " AND "));
 		}
 
-		qry = em.createQuery(query, type);
+		query = em.createQuery(queryString, type);
 
 		if (searchParameters != null) {
-			for (Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
-				qry.setParameter(e.getKey(), e.getValue());
+			for (final Map.Entry<String, Comparable<?>> e : searchParameters.entrySet()) {
+				query.setParameter(e.getKey(), e.getValue());
 			}
 		}
 
-		return qry.getResultList().stream();
+		// final CriteriaBuilder builder = em.getCriteriaBuilder();
+		//
+		// final CriteriaQuery<T> query =
+		// em.getCriteriaBuilder().createQuery(type);
+		//
+		// query.from(type);
+
+		// if (searchParameters != null) {
+		// for (final Map.Entry<String, Comparable<?>> e :
+		// searchParameters.entrySet()) {
+		// if (e.getValue() instanceof Item) {
+		// query.where(builder.equal(builder.crea y));
+		// } else {
+		//
+		// }
+
+		// String key = e.getKey();
+		//
+		// if (e.getValue() instanceof Item) {
+		// key = key + ".pk";
+		// }
+		//
+		// params.add(e.getKey() + " = :" + e.getKey());
+		//// }
+		// }
+
+		return query.getResultList().stream();
+	}
+
+	protected <T extends Item> boolean isPersisted(final T item) {
+		return em.contains(item);
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
-			int pageSize, boolean loadAsProxy) {
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final int page, final int pageSize, final boolean loadAsProxy) {
 
 		return load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
-			int pageSize, boolean loadAsProxy, Integer minCountForParallelStream, boolean returnProxies) {
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
+			final boolean returnProxies) {
 
 		return load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException {
+	public <T extends Item> void loadProxyModel(final T proxyItem) throws ModelNotFoundException {
 		refresh(proxyItem);
 	}
 
 	@Override
-	public <T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException {
+	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
 		return item;
 	}
 
 	@Override
-	public <T extends Item> void remove(T... items) {
-		for (T item : items) {
+	public <T extends Item> void remove(final T... items) {
+		for (final T item : items) {
 			em.remove(item);
 		}
 	}
 
 	@Override
-	public <T extends Item> void remove(Class<T> type, long pk) {
-		String query = String.format("DELETE FROM %s WHERE pk IN (?pk)", type.getSimpleName());
+	public <T extends Item> void remove(final Class<T> type, final long pk) {
+		final String query = String.format("DELETE FROM %s WHERE pk IN (?pk)", type.getSimpleName());
 
 		em.createQuery(query, type).setParameter("pk", pk);
 	}
@@ -149,12 +180,13 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> void initItem(T item) {
+	public <T extends Item> void initItem(final T item) {
 		// if (item != null && item.getPk() != null) {
 		// try {
 		// refresh(item);
 		// } catch (ModelNotFoundException e) {
-		// loggingService.warn(String.format("Could not initialize item with pk=%s",
+		// loggingService.warn(String.format("Could not initialize item with
+		// pk=%s",
 		// item.getPk()));
 		// }
 		// } else {

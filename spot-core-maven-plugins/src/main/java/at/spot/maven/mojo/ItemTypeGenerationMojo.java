@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -668,6 +669,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
 				ann.addAnnotationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
+
+				// JAP unique property
+				final Annotation jpaCollumnAnn = property.addAnnotation(Column.class.getSimpleName());
+				jpaCollumnAnn.addAnnotationAttribute("unique", getBooleanValue(Boolean.TRUE, vm));
+
+				cls.addImport(Column.class.getName());
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
@@ -733,9 +740,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				// ann.addAnnotationAttribute("fetch", vm.newFree(
 				// RelationType.class.getSimpleName() + "." +
 				// propertyDefinition.getRelation().getType().value()));
-				ann.addAnnotationAttribute("mappedBy", vm.newString(propertyDefinition.getRelation().getMappedTo()));
-				ann.addAnnotationAttribute("targetEntity",
-						vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
+				// ann.addAnnotationAttribute("mappedBy",
+				// vm.newString(propertyDefinition.getRelation().getMappedTo()));
+				// ann.addAnnotationAttribute("targetEntity",
+				// vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
 			}
 
 			{// spot settings
@@ -756,7 +764,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 			}
 		} else {
-			String propertyType = propertyDefinition.getDatatype().getClazz();
+			final String propertyType = propertyDefinition.getDatatype().getClazz();
 			// Class<?> type = Class.forName(propertyType);
 
 			if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {

@@ -2,6 +2,7 @@ package at.spot.core.persistence.service.impl.hibernate;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 
@@ -16,13 +17,14 @@ public class TypeServicePersistenceUnitPostProcessor extends AbstractService imp
 	protected TypeService typeService;
 
 	@Override
-	public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
+	public void postProcessPersistenceUnitInfo(final MutablePersistenceUnitInfo pui) {
 		try {
-			for (ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
-				pui.addManagedClassName(def.packageName + "." + def.typeClass);
+			for (final ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
+				loggingService.debug(String.format("Register item type JPA entity %s", def.typeName));
+				pui.addManagedClassName(def.typeClass);
 			}
-		} catch (UnknownTypeException e) {
-			// ignore
+		} catch (final UnknownTypeException e) {
+			throw new BeanCreationException("Could not register Item type JPA entity.", e);
 		}
 	}
 
