@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -33,6 +34,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource("classpath:/core.properties")
 @EnableAsync
+@EnableTransactionManagement
 @EnableScheduling
 public class CoreInit extends ModuleInit {
 

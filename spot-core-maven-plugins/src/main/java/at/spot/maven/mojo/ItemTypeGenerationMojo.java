@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.lang.model.element.Modifier;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -40,6 +41,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.hibernate.annotations.Where;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
@@ -450,7 +452,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 				// if the type is abstract we just don't make it a JPA entity
 				addImport(definitions, cls, Entity.class);
+				addImport(definitions, cls, DiscriminatorValue.class);
 				cls.addAnnotation(Entity.class.getSimpleName());
+				final Annotation discriminatorAnn = cls.addAnnotation(DiscriminatorValue.class.getSimpleName());
+				discriminatorAnn.addAnnotationAttribute("value", vm.newString(type.getName()));
+
 				// if (type.isAbstract() == null || !type.isAbstract()) {
 				// } else {
 				// // instead we just declare it a mapped superclass
@@ -520,8 +526,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						final ClassType fieldType = vm.newType(propertyType);
 						final ClassField property = createProperty(p, fieldType, cls, vm);
 
-						populatePropertyAnnotation(property, p, fieldType, cls, vm);
-						populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
+						populatePropertyAnnotation(property, p, definitions, fieldType, cls, vm);
+						populatePropertyRelationAnnotation(property, p, definitions, fieldType, cls, vm);
 						populatePropertyValidators(property, p, cls, vm);
 					} else {
 						throw new MojoExecutionException(String.format(
@@ -658,7 +664,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void populatePropertyAnnotation(final ClassField property, final Property propertyDefinition,
-			final ClassType fieldType, final PackageClass cls, final VirtualMachine vm) {
+			final TypeDefinitions definitions, final ClassType fieldType, final PackageClass cls,
+			final VirtualMachine vm) {
 
 		cls.addImport(at.spot.core.infrastructure.annotation.Property.class.getName());
 
@@ -671,10 +678,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				ann.addAnnotationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
 
 				// JAP unique property
-				final Annotation jpaCollumnAnn = property.addAnnotation(Column.class.getSimpleName());
-				jpaCollumnAnn.addAnnotationAttribute("unique", getBooleanValue(Boolean.TRUE, vm));
+				if (propertyDefinition.getRelation() == null
+						&& definitions.getItemTypes().get(propertyDefinition.getDatatype().getClazz()) == null) {
+					cls.addImport(Column.class.getName());
 
-				cls.addImport(Column.class.getName());
+					final Annotation jpaCollumnAnn = property.addAnnotation(Column.class.getSimpleName());
+					jpaCollumnAnn.addAnnotationAttribute("unique", getBooleanValue(Boolean.TRUE, vm));
+				}
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
@@ -714,7 +724,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void populatePropertyRelationAnnotation(final ClassField property, final Property propertyDefinition,
-			final ClassType fieldType, final PackageClass cls, final VirtualMachine vm) {
+			final TypeDefinitions definitions, final ClassType fieldType, final PackageClass cls,
+			final VirtualMachine vm) {
 
 		if (propertyDefinition.getRelation() != null) {
 			{// JPA settings
@@ -725,16 +736,31 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 					cls.addImport(ManyToMany.class.getName());
 					ann = property.addAnnotation(ManyToMany.class.getSimpleName());
+
+					cls.addImport(Where.class.getName());
+					ann = property.addAnnotation(Where.class.getSimpleName());
+					ann.addAnnotationAttribute("clause",
+							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
 				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY
 
 						.equals(propertyDefinition.getRelation().getType())) {
 					cls.addImport(OneToMany.class.getName());
 					ann = property.addAnnotation(OneToMany.class.getSimpleName());
+
+					cls.addImport(Where.class.getName());
+					ann = property.addAnnotation(Where.class.getSimpleName());
+					ann.addAnnotationAttribute("clause",
+							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
 				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE
 						.equals(propertyDefinition.getRelation().getType())) {
 
 					cls.addImport(OneToOne.class.getName());
 					ann = property.addAnnotation(OneToOne.class.getSimpleName());
+
+					cls.addImport(Where.class.getName());
+					ann = property.addAnnotation(Where.class.getSimpleName());
+					ann.addAnnotationAttribute("clause",
+							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
 				}
 
 				// ann.addAnnotationAttribute("fetch", vm.newFree(
@@ -765,11 +791,18 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 		} else {
 			final String propertyType = propertyDefinition.getDatatype().getClazz();
-			// Class<?> type = Class.forName(propertyType);
 
-			if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
-				cls.addImport(ElementCollection.class.getName());
-				final Annotation ann = property.addAnnotation(ElementCollection.class.getSimpleName());
+			// check if the property type is an Item, if yes add the OneToOne
+			// annotation
+			if (definitions.getItemTypes().get(propertyType) != null) {
+				cls.addImport(OneToOne.class.getName());
+				property.addAnnotation(OneToOne.class.getSimpleName());
+			} else { // or check if it's some kind of collection
+				if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
+					// and add the element collection annotation
+					cls.addImport(ElementCollection.class.getName());
+					final Annotation ann = property.addAnnotation(ElementCollection.class.getSimpleName());
+				}
 			}
 		}
 	}

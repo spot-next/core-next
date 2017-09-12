@@ -115,8 +115,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is one
-	 * stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is
+	 * one stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -444,7 +444,7 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	@Override
-	public <T extends Item> void remove(Class<T> type, long pk) {
+	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		getDataStorageForType(typeService.getTypeCode(type)).remove(pk);
 
 		saveDataStorage();
@@ -581,7 +581,12 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	@Required
-	public void setInitializeTypeSystem(boolean initializeTypeSystem) {
+	public void setInitializeTypeSystem(final boolean initializeTypeSystem) {
 		this.initializeTypeSystem = initializeTypeSystem;
+	}
+
+	@Override
+	public <T extends Item> void detach(final T... items) {
+		// not needed
 	}
 }

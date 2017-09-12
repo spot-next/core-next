@@ -16,16 +16,32 @@
 
 	<!-- service.persistence.hsql.filepath -->
 
+	<!-- <bean id="dataSource" -->
+	<!-- class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+	<!-- <property name="driverClassName"> -->
+	<!-- <value>org.hsqldb.jdbcDriver</value> -->
+	<!-- </property> -->
+	<!-- <property name="url"> -->
+	<!-- <value>jdbc:hsqldb:file:${service.persistence.hsql.filepath}</value> -->
+	<!-- </property> -->
+	<!-- <property name="username"> -->
+	<!-- <value>sa</value> -->
+	<!-- </property> -->
+	<!-- <property name="password"> -->
+	<!-- <value></value> -->
+	<!-- </property> -->
+	<!-- </bean> -->
+
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName">
-			<value>org.hsqldb.jdbcDriver</value>
+			<value>com.mysql.jdbc.Driver</value>
 		</property>
 		<property name="url">
-			<value>jdbc:hsqldb:mem:mydatabase</value>
+			<value>jdbc:mysql://localhost/spot</value>
 		</property>
 		<property name="username">
-			<value>sa</value>
+			<value>root</value>
 		</property>
 		<property name="password">
 			<value></value>
@@ -42,16 +58,20 @@
 		</property>
 		<property name="persistenceUnitPostProcessors">
 			<list>
-				<bean class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
+				<bean
+					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
 			</list>
 		</property>
-		
+
 		<property name="jpaProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+				<prop key="hibernate.dialect.storage_engine">myisam</prop>
 			</props>
 		</property>
 	</bean>

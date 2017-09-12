@@ -190,6 +190,12 @@
 			<artifactId>hsqldb</artifactId>
 			<version>2.4.0</version>
 		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.7-dmr</version>
+		</dependency>
+
 
 		<!-- validation -->
 		<dependency>
