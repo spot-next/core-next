@@ -24,12 +24,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	private static final long serialVersionUID = 1L;
 
 	@Resource
-	protected ItemPropertyHandler handler;
+	protected transient ItemPropertyHandler handler;
 
 	protected transient boolean forceDirty = false;
+	protected final transient Map<String, Boolean> propertiesInitializationState = new HashMap<>();
 	protected final List<String> dirtyAttributes = new ArrayList<>();
-
-	protected Map<String, Boolean> propertiesInitializationState = new HashMap<>();
 
 	protected Long pk;
 	protected String typeCode;
