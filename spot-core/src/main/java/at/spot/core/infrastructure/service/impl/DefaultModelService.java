@@ -19,7 +19,6 @@ import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
-import at.spot.core.support.util.ELParser;
 
 @Service
 public class DefaultModelService extends AbstractModelService {
@@ -143,9 +142,11 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
-		final ELParser<T, V> transformer = new ELParser<>(propertyName);
+		// final ELParser<T, V> transformer = new ELParser<>(propertyName);
+		//
+		// return transformer.transform(item);
 
-		return transformer.transform(item);
+		return (V) ClassUtil.getField(item, propertyName, true);
 	}
 
 	@Override

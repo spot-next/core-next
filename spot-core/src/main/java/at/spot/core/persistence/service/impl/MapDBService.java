@@ -113,8 +113,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is
-	 * one stored, the given item is not unique.
+	 * Try to laod an item with the same unique properties. If there already is one
+	 * stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -580,5 +580,17 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	@Override
 	public <T extends Item> void reset(final String type) {
 		serialNumberSequences.remove(type);
+	}
+
+	@Override
+	public <T extends Item> Object getPropertyValue(T item, String propertyName) {
+		if (item.getPk() != null) {
+			DataStorage storage = getDataStorageForType(typeService.getTypeCode(item.getClass()));
+			Entity entity = storage.get(item.getPk());
+
+			return entity.getProperty(propertyName);
+		}
+
+		return null;
 	}
 }

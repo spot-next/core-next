@@ -9,10 +9,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Property;
@@ -24,7 +20,7 @@ import at.spot.core.persistence.service.QueryService;
 import at.spot.core.persistence.valueprovider.ItemPropertyValueProvider;
 import at.spot.core.support.util.ClassUtil;
 
-@Aspect
+//@Aspect
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	@Resource
@@ -45,23 +41,25 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * PointCuts
 	 */
 
-	@Pointcut("!within(at.spot.core.persistence..*) && !within(at.spot.core.infrastructure.aspect..*)")
+	// @Pointcut("!within(at.spot.core.persistence..*) &&
+	// !within(at.spot.core.infrastructure.aspect..*)")
 
 	protected void notFromPersistencePackage() {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
-	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && get(* *.*)")
+	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) &&
+	// get(* *.*)")
 
 	final protected void getField() {
 	};
 
 	/**
-	 * Define the pointcut for all getter that are accessing a field in an
-	 * object of type @Item that are annotated with @Property.
+	 * Define the pointcut for all getter that are accessing a field in an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.GetProperty)
 	// && within(@at.spot.core.infrastructure.annotation.ItemType *)")
@@ -70,17 +68,18 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// };
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
-	@Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) && set(* *.*)")
+	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.Property) &&
+	// set(* *.*)")
 
 	final protected void setField() {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object
-	 * of type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of
+	 * type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(at.spot.core.infrastructure.annotation.SetProperty)
 	// && "
@@ -94,7 +93,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * JoinPoints
 	 */
 
-	@After("setField() && notFromPersistencePackage()")
+	// @After("setField() && notFromPersistencePackage()")
 	public void setPropertyValue(final JoinPoint joinPoint) {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 		final SetProperty setAnn = getAnnotation(joinPoint, SetProperty.class);
@@ -117,7 +116,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		}
 	}
 
-	@Around("getField() && notFromPersistencePackage()")
+	// @Around("getField() && notFromPersistencePackage()")
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 		final GetProperty getAnn = getAnnotation(joinPoint, GetProperty.class);

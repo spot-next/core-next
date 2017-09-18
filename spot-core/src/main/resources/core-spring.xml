@@ -40,10 +40,10 @@
 	</bean>
 
 	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
-	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect">
-		<property name="modelService" ref="modelService" />
-		<property name="queryService" ref="queryService" />
-	</bean>
+<!-- 	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
+<!-- 		<property name="modelService" ref="modelService" /> -->
+<!-- 		<property name="queryService" ref="queryService" /> -->
+<!-- 	</bean> -->
 
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
@@ -63,6 +63,8 @@
 		<!-- </entry> -->
 	</util:map>
 
+	<alias name="mapDbItemPropertyHandler" alias="itemPropertyHandler"/>
+	<bean id="mapDbItemPropertyHandler" class="at.spot.core.persistence.handler.MapDbItemPropertyHandler" />
 
 	<!-- spring beans -->
 	<!-- define properties based parent messagesource -->

@@ -436,9 +436,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			{ // add annotations
+				addImport(definitions, cls, SuppressWarnings.class);
+				Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(), "\"unchecked\"");
+
 				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
 
-				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
+				ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				if (StringUtils.isNotBlank(type.getTypeCode())) {
 					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
@@ -580,6 +583,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final PackageClass cls, final VirtualMachine vm) {
 
 		final ClassField property = cls.newField(fieldType, propertyDefinition.getName());
+		property.setAccess(AccessType.PROTECTED);
 
 		if (StringUtils.isNotBlank(propertyDefinition.getDescription())) {
 			property.setComment(Comment.DOCUMENTATION, propertyDefinition.getDescription());
@@ -596,28 +600,35 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
 					"set" + capitalize(propertyDefinition.getName()));
+			{// create setter
+				setterMethod.addParameter(fieldType, propertyDefinition.getName());
+				setterMethod.addAnnotation(SetProperty.class.getSimpleName());
+				addImport(null, cls, SetProperty.class);
 
-			setterMethod.addParameter(fieldType, propertyDefinition.getName());
-			setterMethod.newStmt(vm.newAssign(thisVar, var));
+				setterMethod.setAccess(Access.PUBLIC);
 
-			{ // mark the updated field as dirty
-				final Invoke markDirtyCall = vm.newInvoke("markAsDirty");
-				markDirtyCall.addArg(propertyDefinition.getName());
-				setterMethod.newStmt(markDirtyCall);
+				// setter delegate
+				Invoke setCall = vm.newInvoke("handler", "setProperty");
+				setCall.addArg(vm.newVar("this"));
+				setCall.addArg(propertyDefinition.getName());
+				setCall.addArg(vm.newVar(propertyDefinition.getName()));
+				setterMethod.newStmt(setCall);
 			}
 
-			setterMethod.addAnnotation(SetProperty.class.getSimpleName());
-			addImport(null, cls, SetProperty.class);
-
 			final ClassMethod getterMethod = cls.newMethod(fieldType, "get" + capitalize(propertyDefinition.getName()));
-			getterMethod.newReturn().setExpression(thisVar);
-			getterMethod.addAnnotation(GetProperty.class.getSimpleName());
-			addImport(null, cls, GetProperty.class);
+			{// create getter
+				getterMethod.addAnnotation(GetProperty.class.getSimpleName());
+				addImport(null, cls, GetProperty.class);
 
-			// default values
-			property.setAccess(AccessType.PROTECTED);
-			setterMethod.setAccess(Access.PUBLIC);
-			getterMethod.setAccess(Access.PUBLIC);
+				getterMethod.setAccess(Access.PUBLIC);
+
+				// getter delegate
+				Invoke getCall = vm.newInvoke("handler", "getProperty");
+				getCall.addArg(vm.newVar("this"));
+				getCall.addArg(vm.newString(propertyDefinition.getName()));
+
+				getterMethod.newReturn().setExpression(vm.newCast(fieldType, getCall));
+			}
 
 			// override them
 			if (propertyDefinition.getAccessors() != null) {

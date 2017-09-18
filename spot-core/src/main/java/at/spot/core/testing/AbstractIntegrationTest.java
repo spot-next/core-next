@@ -6,17 +6,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import at.spot.core.CoreInit;
+import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.infrastructure.support.init.ModuleInit;
 
 /**
  * This is the base class for all integration tasks..
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest()
+@RunWith(SpotJunitRunner.class)
+@Test
+@SpringBootTest(classes = { CoreInit.class })
 public abstract class AbstractIntegrationTest {
+
+	@Resource
+	protected LoggingService loggingService;
 
 	@Resource
 	protected ModelService modelService;
@@ -34,12 +38,14 @@ public abstract class AbstractIntegrationTest {
 		return this.getClass().getPackage().getName();
 	}
 
-	protected abstract Class<? extends ModuleInit> getInitClass();
-
 	@Before
 	public void beforeTest() {
 		// start transaction
-		prepareTest();
+		try {
+			prepareTest();
+		} catch (Exception e) {
+			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
+		}
 	}
 
 	/**
@@ -48,7 +54,11 @@ public abstract class AbstractIntegrationTest {
 	@After
 	public void afterTest() {
 		// revert transaction
-		teardownTest();
+		try {
+			teardownTest();
+		} catch (Exception e) {
+			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
+		}
 	}
 
 	/**

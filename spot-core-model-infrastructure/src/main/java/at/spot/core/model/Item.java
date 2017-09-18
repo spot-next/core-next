@@ -9,19 +9,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 
 import at.spot.core.infrastructure.annotation.Property;
+import at.spot.core.infrastructure.handler.ItemPropertyHandler;
 import at.spot.core.support.util.ClassUtil;
 
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 
+	@Resource
+	protected ItemPropertyHandler handler;
+
 	protected transient boolean forceDirty = false;
 	protected final List<String> dirtyAttributes = new ArrayList<>();
+
+	protected Map<String, Boolean> propertiesInitializationState = new HashMap<>();
 
 	protected Long pk;
 	protected String typeCode;
@@ -33,9 +41,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected DateTime createdAt;
 
 	/**
-	 * If this object is used as a proxy, eg. in a collection or relation, this
-	 * is true. The item property handler then knows it has to load it on the
-	 * fly.
+	 * If this object is used as a proxy, eg. in a collection or relation, this is
+	 * true. The item property handler then knows it has to load it on the fly.
 	 */
 	public transient boolean isProxy;
 
@@ -74,8 +81,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing
-	 *         item with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing item
+	 *         with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -106,8 +113,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated
-	 * with @Unique.
+	 * Returns the names and the values of all properties annotated with @Unique.
 	 *
 	 * @return
 	 */
@@ -132,8 +138,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as
-	 * unique (with the {@link Property} annotation).
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation).
 	 *
 	 * @return
 	 */
@@ -146,8 +152,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current
-	 * object, both are equal.
+	 * If the type and the pk of the given object is the same as the current object,
+	 * both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */
@@ -182,5 +188,13 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		} else {
 			return 1;
 		}
+	}
+
+	public boolean isPropertyInitialized(String propertyName) {
+		return propertiesInitializationState.get(propertyName) != null;
+	}
+
+	public void setPropertyInitialized(String propertyName) {
+		propertiesInitializationState.put(propertyName, Boolean.TRUE);
 	}
 }
