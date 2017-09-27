@@ -8,6 +8,7 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.support.util.ValidationUtil;
 
 @SuppressWarnings("unchecked")
 @Service
@@ -48,6 +49,10 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Override
 	public <T extends Item> T createProxyModel(final T item) {
+		ValidationUtil.validateNotNull(
+				"The given item has to be persisted, before it can be used to generate a proxy item from it.",
+				item.getPk());
+
 		return createProxyModel((Class<T>) item.getClass(), item.getPk());
 	}
 }

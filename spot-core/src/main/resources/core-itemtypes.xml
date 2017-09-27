@@ -59,6 +59,8 @@
                 </datatype>
                 <description>The members of the group.
                 </description>
+                <relation type="ManyToMany" referencedType="Principal"
+                          mappedTo="groups" />
             </property>
         </properties>
     </type>

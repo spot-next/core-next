@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ModelService;
@@ -20,8 +23,6 @@ import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.infrastructure.type.ListModification;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -170,14 +171,7 @@ public class RelationProxyList<E extends Item> implements List<E>, RandomAccess,
 
 	@Override
 	public boolean add(final E element) {
-		initialize();
-
-		setItemRelation(element);
-		final boolean ret = internalList.add(element);
-
-		notifyObserver(ListModification.ADD, element);
-
-		return ret;
+		return addAll(Collections.singletonList(element));
 	}
 
 	@Override
@@ -201,14 +195,9 @@ public class RelationProxyList<E extends Item> implements List<E>, RandomAccess,
 
 	@Override
 	public boolean addAll(final Collection<? extends E> c) {
-		initialize();
+		final int index = internalList.size() > 0 ? internalList.size() - 1 : 0;
 
-		setItemRelation(c);
-		final boolean ret = internalList.addAll(c);
-
-		notifyObserver(ListModification.ADD, c);
-
-		return ret;
+		return addAll(index, c);
 	}
 
 	@Override
@@ -220,6 +209,10 @@ public class RelationProxyList<E extends Item> implements List<E>, RandomAccess,
 
 		notifyObserver(ListModification.ADD, c);
 		return ret;
+	}
+
+	public void addAllInternal(final Collection<? extends E> c) {
+		internalList.addAll(c);
 	}
 
 	@Override
@@ -393,14 +386,16 @@ public class RelationProxyList<E extends Item> implements List<E>, RandomAccess,
 			if (relationDefinition.type() == RelationType.OneToMany) {
 				getModelService().setPropertyValue(item, relationDefinition.mappedTo(), referencingItem);
 			} else {
-				final List<Item> relationList = getModelService().getPropertyValue(item, relationDefinition.mappedTo(),
-						List.class);
+				final RelationProxyList<Item> relationList = (RelationProxyList<Item>) getModelService()
+						.getPropertyValue(item, relationDefinition.mappedTo(), List.class);
 
-				final List<Item> toAddToRelation = relationList.stream().filter((i) -> {
-					return i.getPk().equals(this.referencingItem.getPk());
-				}).collect(Collectors.toList());
+				// final List<Item> toAddToRelation = relationList.stream().filter((i) -> {
+				// return i.getPk().equals(this.referencingItem.getPk());
+				// }).collect(Collectors.toList());
 
-				relationList.addAll(toAddToRelation);
+				E proxyReferencingItem = getModelService().createProxyModel(referencingItem);
+
+				relationList.addAllInternal(Collections.singletonList(proxyReferencingItem));
 			}
 		}
 

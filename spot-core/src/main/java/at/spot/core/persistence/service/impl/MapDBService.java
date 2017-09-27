@@ -214,6 +214,10 @@ public class MapDBService extends AbstractService implements PersistenceService,
 						if (value instanceof RelationProxyList) {
 							final RelationProxyList proxyList = ((RelationProxyList) value);
 
+							if (!item.isPersisted() && proxyList.getItemsToUpdate().size() > 0) {
+								throw new ModelSaveException("Cannot save relations when the parent item is unsafed.");
+							}
+
 							saveInternalCollection(proxyList.getItemsToUpdate(), commit, itemsToIgnore);
 							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
 
@@ -433,11 +437,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 				proxyList = new RelationProxyList<Item>(rel, item,
 						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name);
-			} else {
-				proxyList = new ArrayList<>();
-			}
 
-			ClassUtil.setField(item, p.name, proxyList);
+				ClassUtil.setField(item, p.name, proxyList);
+			}
 		}
 	}
 
