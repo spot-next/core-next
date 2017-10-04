@@ -18,7 +18,7 @@ import at.spot.core.infrastructure.support.init.ModuleInit;
 @Documented
 @Inherited
 @BootstrapWith(SpringBootTestContextBootstrapper.class)
-public @interface Test {
+public @interface IntegrationTest {
 	/**
 	 * The init class used to startup the spOt instance.
 	 */

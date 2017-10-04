@@ -389,18 +389,23 @@ public class RelationProxyList<E extends Item> implements List<E>, RandomAccess,
 	 * @param items
 	 */
 	protected void setItemRelation(final Collection<? extends E> items) {
+		// final E proxy =
+		// getModelService().createProxyModel(this.referencingItem);
+		final E proxy = this.referencingItem;
+
 		for (final E item : items) {
 			if (relationDefinition.type() == RelationType.OneToMany) {
-				getModelService().setPropertyValue(item, relationDefinition.mappedTo(), referencingItem);
+				getModelService().setPropertyValue(item, relationDefinition.mappedTo(), proxy);
 			} else {
 				final List<Item> relationList = getModelService().getPropertyValue(item, relationDefinition.mappedTo(),
 						List.class);
 
-				final List<Item> toAddToRelation = relationList.stream().filter((i) -> {
-					return i.getPk().equals(this.referencingItem.getPk());
-				}).collect(Collectors.toList());
+				// final List<Item> toAddToRelation =
+				// relationList.stream().filter((i) -> {
+				// return i.getPk().equals(this.referencingItem.getPk());
+				// }).collect(Collectors.toList());
 
-				relationList.addAll(toAddToRelation);
+				relationList.add(proxy);
 			}
 		}
 
