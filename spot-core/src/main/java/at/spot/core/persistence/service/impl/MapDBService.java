@@ -113,7 +113,7 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is
+	 * Try to load an item with the same unique properties. If there already is
 	 * one stored, the given item is not unique.
 	 * 
 	 * @param model
@@ -214,7 +214,11 @@ public class MapDBService extends AbstractService implements PersistenceService,
 						if (value instanceof RelationProxyList) {
 							final RelationProxyList proxyList = ((RelationProxyList) value);
 
-							saveInternalCollection(proxyList.getItemsToUpdate(), commit, item);
+							if (!item.isPersisted() && proxyList.getItemsToUpdate().size() > 0) {
+								throw new ModelSaveException("Cannot save relations when the parent item is unsafed.");
+							}
+
+							saveInternalCollection(proxyList.getItemsToUpdate(), commit, itemsToIgnore);
 							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
 
 							value = new ArrayList<>(proxyList);
@@ -433,11 +437,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 				proxyList = new RelationProxyList<Item>(rel, item,
 						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name);
-			} else {
-				proxyList = new ArrayList<>();
-			}
 
-			ClassUtil.setField(item, p.name, proxyList);
+				ClassUtil.setField(item, p.name, proxyList);
+			}
 		}
 	}
 
