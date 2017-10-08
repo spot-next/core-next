@@ -11,6 +11,16 @@ public class JavaMethod extends JavaMember {
 	protected final Set<MethodModifier> modifiers = new TreeSet<>();
 	protected final Map<String, Class<?>> arguments = new HashMap<>();
 
+	protected String codeBlock;
+
+	public String getCodeBlock() {
+		return codeBlock;
+	}
+
+	public void setCodeBlock(String codeBlock) {
+		this.codeBlock = codeBlock;
+	}
+
 	public Set<MethodModifier> getModifiers() {
 		return modifiers;
 	}

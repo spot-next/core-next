@@ -7,7 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.lang.model.element.Modifier;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -34,9 +37,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
@@ -53,9 +56,14 @@ import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
+import at.spot.maven.velocity.AbstractJavaType;
+import at.spot.maven.velocity.JavaEnum;
+import at.spot.maven.velocity.JavaEnumValue;
+import at.spot.maven.velocity.TemplateFile;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
@@ -78,6 +86,8 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
  */
 @Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
+
+	protected VelocityEngine velocityEngine = new VelocityEngine();
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
 	protected ArtifactRepository localRepository;
@@ -107,6 +117,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
+
+		velocityEngine.init();
 
 		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
 		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
@@ -390,24 +402,28 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		// Get the VirtualMachine implementation.
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
+		List<AbstractJavaType> types = new ArrayList<>();
+
 		for (final String enumName : definitions.getEnumTypes().keySet()) {
 			final EnumType enumType = definitions.getEnumTypes().get(enumName);
 
-			final TypeSpec.Builder enumBuilder = TypeSpec.enumBuilder(enumName).addModifiers(Modifier.PUBLIC);
+			JavaEnum enumeration = new JavaEnum();
+			enumeration.setDescription(enumType.getDescription());
+			enumeration.setName(enumName);
+			enumeration.setPackagePath(enumType.getPackage());
 
-			if (StringUtils.isNotBlank(enumType.getDescription())) {
-				enumBuilder.addJavadoc(enumType.getDescription());
+			for (EnumValue value : enumType.getValue()) {
+				JavaEnumValue v = new JavaEnumValue();
+				v.setName(value.getValue());
+				v.setInternalName(value.getCode());
+
+				enumeration.addValue(v);
 			}
 
-			for (final EnumValue enumVal : enumType.getValue()) {
-				enumBuilder.addEnumConstant(enumVal.getCode());
-			}
-
-			final TypeSpec enumObj = enumBuilder.build();
-
-			final JavaFile javaFile = JavaFile.builder(enumType.getPackage(), enumObj).build();
-			javaFile.writeTo(targetClassesDirectory);
+			types.add(enumeration);
 		}
+
+		writeJavaTypes(types);
 
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
@@ -524,16 +540,47 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void writeFile(final String content, final String path, final String fileName) throws IOException {
-		Writer writer = null;
+	protected void writeJavaTypes(List<AbstractJavaType> types) throws IOException, MojoExecutionException {
+		for (AbstractJavaType type : types) {
+			String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
 
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(Paths.get(path, fileName).toFile().getAbsolutePath() + ".java"), "utf-8"));
-			writer.write(content);
-		} finally {
-			MiscUtil.closeQuietly(writer);
+			Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
+					type.getName() + ".java");
+
+			if (Files.exists(filePath)) {
+				Files.delete(filePath);
+			}
+
+			Files.createFile(filePath);
+
+			Writer writer = null;
+
+			try {
+				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile())));
+				writer.write(encodeType(type));
+			} finally {
+				MiscUtil.closeQuietly(writer);
+			}
 		}
+	}
+
+	protected String encodeType(AbstractJavaType type) throws MojoExecutionException {
+		TemplateFile template = ClassUtil.getAnnotation(type.getClass(), TemplateFile.class);
+
+		if (StringUtils.isEmpty(template.value())) {
+			throw new MojoExecutionException(
+					String.format("No velocity template defined for type %s", type.getClass()));
+		}
+
+		URL templateUrl = this.getClass().getResource("/templates/" + template.value());
+		Template t = velocityEngine.getTemplate(templateUrl.getFile().toString());
+		VelocityContext context = new VelocityContext();
+
+		context.put("_", type);
+		StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+
+		return t.toString();
 	}
 
 	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {

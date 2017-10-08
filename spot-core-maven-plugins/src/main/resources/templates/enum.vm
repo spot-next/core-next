@@ -1,0 +1,21 @@
+/**
+ * This file is auto-generated. All changes will be overwritten.
+ */
+
+package $packagepath;
+
+#foreach($i in $imports)
+import $i;
+#end
+
+#if ( $!description )
+/**
+ * $description
+ */
+#end
+@SuppressWarnings("unchecked")
+public enum $name {
+	#foreach($value in $values)
+	$value.value("$!value.code")
+	#end
+}

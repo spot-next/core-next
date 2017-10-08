@@ -8,17 +8,17 @@ import java.util.List;
 public abstract class AbstractJavaObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	protected String comment;
-	protected Visibility visiblity;
+	protected String description;
+	protected Visibility visiblity = Visibility.PUBLIC;
 	protected String name;
 	protected final List<JavaAnnotation> annotations = new ArrayList<>();
 
-	public String getComment() {
-		return comment;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public List<JavaAnnotation> getAnnotations() {

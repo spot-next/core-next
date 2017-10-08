@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JavaClass extends JavaInterface {
+@TemplateFile("class.vm")
+public class JavaClass extends AbstractJavaType {
 	private static final long serialVersionUID = 1L;
 
 	protected final List<JavaField> fields = new ArrayList<>();
