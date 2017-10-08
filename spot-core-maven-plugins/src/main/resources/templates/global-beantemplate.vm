@@ -1,0 +1,157 @@
+/*
+ * ----------------------------------------------------------------
+ * --- WARNING: THIS FILE IS GENERATED AND WILL BE OVERWRITTEN!
+ * --- Generated at $currentDateTime
+ * ----------------------------------------------------------------
+ *
+ * [y] hybris Platform
+ * 
+ * Copyright (c) 2000-2016 SAP SE
+ * All rights reserved.
+ * 
+ * This software is the confidential and proprietary information of SAP 
+ * Hybris ("Confidential Information"). You shall not disclose such 
+ * Confidential Information and shall use it only in accordance with the 
+ * terms of the license agreement you entered into with SAP Hybris.
+ */
+package $packageName;
+
+#if( ! $superclassName)
+import java.io.Serializable;
+#end
+#foreach($i in $imports)
+import $i;
+#end
+#if ( ! ($imports.isEmpty() && $superclassName) )
+
+#end
+#if ( $hasDescription || $hasDeprecated )
+/**
+#end
+#if ( $hasDescription)
+ * $description
+#end
+#if ( $hasDescription && $hasDeprecated )
+ *
+#end
+#if ( $hasDeprecated )
+ * @deprecated $deprecated
+#end
+#if ( $hasDescription || $hasDeprecated )
+ */
+#end
+#if ( $hasAnnotations )
+$annotations.trim()
+#end
+#if ( $hasDeprecated )
+@Deprecated
+#end
+public #if ($isAbstract)abstract #end class $shortClassName #if($superclassName)extends $superclassName #else implements Serializable #end
+
+{
+
+ #if( ! $superclassName)	/** Default serialVersionUID value. */
+ 
+ 	private static final long serialVersionUID = 1L;#end
+
+#foreach($v in $memberVariables)
+
+	$v.comment
+	#if ("$!v.memberAnnotations" != "")$v.memberAnnotations.trim() #end
+	
+	private $v.type $v.name;
+#end
+	
+	public ${constructorName}()
+	{
+		// default constructor
+	}
+	
+#foreach($v in $memberVariables)
+	#if ($v.deprecated)@Deprecated
+    /**
+     * @deprecated $v.deprecatedMessage
+     */
+	#end
+	#if ($v.overridden)@Override #end
+
+	#if ("$!v.setterAnnotations" != "")$v.setterAnnotations.trim() #end
+
+	public void set${StringUtils.capitalize($v.name)}(final ${v.type} ${v.name})
+	{
+		this.${v.name} = ${v.name};
+	}
+
+	#if ($v.deprecated)@Deprecated
+	/**
+	 * @deprecated $v.deprecatedMessage
+	 */
+	#end
+	#if ($v.overridden)@Override #end
+
+	#if ("$!v.getterAnnotations" != "")$v.getterAnnotations.trim() #end
+
+#if ($v.type == 'boolean')	
+	public $v.type is${StringUtils.capitalize($v.name)}() 
+	{
+		return $v.name;
+	}
+#else
+	public $v.type get${StringUtils.capitalize($v.name)}() 
+	{
+		return $v.name;
+	}
+#end
+	
+#end
+
+#if ($hasEqualsProperties)
+	@Override
+	public boolean equals(final Object o)
+	{
+#if ($superEquals)
+		boolean superEquals = super.equals(o);
+		if( !superEquals ) return false;
+#end
+	
+		if (o == null) return false;
+		if (o == this) return true;
+
+		try
+		{
+			final $shortClassName other = ($shortClassName) o;
+			return new org.apache.commons.lang.builder.EqualsBuilder()
+#foreach($v in $equalsProperties)
+#if ($v.type == 'boolean')
+			.append(is${StringUtils.capitalize($v.name)}(), other.is${StringUtils.capitalize($v.name)}())
+#else
+			.append(get${StringUtils.capitalize($v.name)}(), other.get${StringUtils.capitalize($v.name)}()) 
+#end
+#end
+			.isEquals();
+		} 
+		catch (ClassCastException c)
+		{
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return new org.apache.commons.lang.builder.HashCodeBuilder()
+#if ($superEquals)
+		.appendSuper(super.hashCode())
+#end
+#foreach($v in $equalsProperties)
+#if ($v.type == 'boolean')
+		.append(is${StringUtils.capitalize($v.name)}())
+#else
+		.append(get${StringUtils.capitalize($v.name)}()) 
+#end
+#end
+		.toHashCode();
+	}
+#end
+
+}
