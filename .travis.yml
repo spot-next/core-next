@@ -1,8 +1,29 @@
 language: java
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "PBGrjTx78M2LdmR4IMvmHySGTlFQ38cMXS5uJZjwogc2Bb1MQiH5l0x9AVM8zqdRBSQZUYYXeZnenMAaQCE3+aI0ZSVwv2kT/acbbmyLCG1t/qKDF7w4orejgJYFW+PI08YE370BSjCQu91JzYGwogc3k6W4gNxOkxM6kFOCJHdSmhxOe19wrEdTr98Hu83lge2xTAvaSC9rK0yOA85MGYPEnNbCd3VV8kEUZ8hg1W+RNDWeyXpsYMxCwXN43Dl+D/OoAj/eL01zV0g7YYryfe8qcvicILm9nUtHbDTdDWYkoahtl7xNWuYyOxyjHxF4ccXsEWxp3/A4bHzW13HBUO2+yr6GDy9Myb/KHIiONfyCwBe7ZH7OSuoT+Pn/2pzcH33jQvbOefQuWdHxrd3dvE5iQi7muqbh85r0EX29rBUWsueJjobuYC+4CLHtg+h5iTFl3UNGWDcvtPWOACNGC4IgtZ2zmsYTr5HDBPxf/ADkWtgvlfpEsyykS+cAWW9qhXyAXaUDAbUjiuVRwtGRCNzfcm/GQggEqt22VaapJYU7q3/SQEbvaEnLBsDu06UVBKOQkI3JJGrmJ9oFeClehm+E6GQqHq46qMCMJOParRjqDtFxb/Ii8hLtjLWMvy5l+xuvnPX9Ut7OsJfG/5GpO+51+vCWw0T/XjdIoEYNxLc="
+
 cache:
   directories:
   - "$HOME/.cache"
+
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+
+    project:
+      name: "mojo2012/spot-framework"
+      description: "Build submitted via Travis CI"
+    notification_email: meister.fuchs@gmail.com
+    build_command_prepend: "mvn clean"
+    build_command:   "mvn -DskipTests=true compile"
+    branch_pattern: master
+
 deploy:
   provider: script
   script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy"
