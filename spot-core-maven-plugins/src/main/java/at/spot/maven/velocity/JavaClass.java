@@ -1,6 +1,7 @@
 package at.spot.maven.velocity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaClass extends JavaInterface {
@@ -9,6 +10,11 @@ public class JavaClass extends JavaInterface {
 	protected final List<JavaField> fields = new ArrayList<>();
 
 	public List<JavaField> getFields() {
-		return fields;
+		return Collections.unmodifiableList(fields);
+	}
+
+	public void addField(JavaField field) {
+		this.getFields().add(field);
+		this.imports.add(field.getType().getName());
 	}
 }

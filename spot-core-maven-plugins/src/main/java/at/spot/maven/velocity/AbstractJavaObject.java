@@ -2,6 +2,7 @@ package at.spot.maven.velocity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractJavaObject implements Serializable {
@@ -21,7 +22,7 @@ public abstract class AbstractJavaObject implements Serializable {
 	}
 
 	public List<JavaAnnotation> getAnnotations() {
-		return annotations;
+		return Collections.unmodifiableList(annotations);
 	}
 
 	public Visibility getVisiblity() {
