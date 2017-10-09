@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -118,7 +117,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
 
-		velocityEngine.init();
+		initVelocity();
 
 		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
 		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
@@ -147,6 +146,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
+	protected void initVelocity() {
+		// Properties props = new Properties();
+		// props.put("file.resource.loader.path", "/");
+		// velocityEngine.init(props);
+		velocityEngine.setProperty("resource.loader", "class");
+		velocityEngine.setProperty("class.resource.loader.class",
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		velocityEngine.init();
+	}
+
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
 		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
 		final TypeDefinitions itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
@@ -162,7 +171,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @return
 	 * @throws IOException
 	 * @throws MojoExecutionException
-	 * @throws DependencyResolutionException
+	 * @throws DependencyResolutionException1
 	 */
 	protected List<InputStream> findItemTypeDefinitions() throws MojoExecutionException {
 		final List<InputStream> definitions = new ArrayList<>();
@@ -572,15 +581,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					String.format("No velocity template defined for type %s", type.getClass()));
 		}
 
-		URL templateUrl = this.getClass().getResource("/templates/" + template.value());
-		Template t = velocityEngine.getTemplate(templateUrl.getFile().toString());
+		Template t = velocityEngine.getTemplate("templates/" + template.value());
 		VelocityContext context = new VelocityContext();
 
 		context.put("_", type);
 		StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
-		return t.toString();
+		return writer.toString();
 	}
 
 	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {
