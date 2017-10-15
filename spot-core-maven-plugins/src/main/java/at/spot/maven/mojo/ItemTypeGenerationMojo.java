@@ -40,6 +40,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
@@ -411,18 +413,18 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		// Get the VirtualMachine implementation.
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
-		List<AbstractJavaType> types = new ArrayList<>();
+		final List<AbstractJavaType> types = new ArrayList<>();
 
 		for (final String enumName : definitions.getEnumTypes().keySet()) {
 			final EnumType enumType = definitions.getEnumTypes().get(enumName);
 
-			JavaEnum enumeration = new JavaEnum();
+			final JavaEnum enumeration = new JavaEnum();
 			enumeration.setDescription(enumType.getDescription());
 			enumeration.setName(enumName);
 			enumeration.setPackagePath(enumType.getPackage());
 
-			for (EnumValue value : enumType.getValue()) {
-				JavaEnumValue v = new JavaEnumValue();
+			for (final EnumValue value : enumType.getValue()) {
+				final JavaEnumValue v = new JavaEnumValue();
 				v.setName(value.getValue());
 				v.setInternalName(value.getCode());
 
@@ -549,11 +551,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void writeJavaTypes(List<AbstractJavaType> types) throws IOException, MojoExecutionException {
-		for (AbstractJavaType type : types) {
-			String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
+	protected void writeJavaTypes(final List<AbstractJavaType> types) throws IOException, MojoExecutionException {
+		for (final AbstractJavaType type : types) {
+			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
 
-			Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
+			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
 					type.getName() + ".java");
 
 			if (Files.exists(filePath)) {
@@ -573,22 +575,27 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected String encodeType(AbstractJavaType type) throws MojoExecutionException {
-		TemplateFile template = ClassUtil.getAnnotation(type.getClass(), TemplateFile.class);
+	protected String encodeType(final AbstractJavaType type) throws MojoExecutionException {
+		final TemplateFile template = ClassUtil.getAnnotation(type.getClass(), TemplateFile.class);
 
 		if (StringUtils.isEmpty(template.value())) {
 			throw new MojoExecutionException(
 					String.format("No velocity template defined for type %s", type.getClass()));
 		}
 
-		Template t = velocityEngine.getTemplate("templates/" + template.value());
-		VelocityContext context = new VelocityContext();
+		final Template t = velocityEngine.getTemplate("templates/" + template.value());
+		final VelocityContext context = new VelocityContext(convertoObjectoToMap(type));
 
-		context.put("_", type);
-		StringWriter writer = new StringWriter();
+		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
 		return writer.toString();
+	}
+
+	protected Map<String, Object> convertoObjectoToMap(final AbstractJavaType type) {
+		final ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.convertValue(type, Map.class);
 	}
 
 	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {
@@ -663,7 +670,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				setterMethod.setAccess(Access.PUBLIC);
 
 				// setter delegate
-				Invoke setCall = vm.newInvoke("handler", "setProperty");
+				final Invoke setCall = vm.newInvoke("handler", "setProperty");
 				setCall.addArg(vm.newVar("this"));
 				setCall.addArg(propertyDefinition.getName());
 				setCall.addArg(vm.newVar(propertyDefinition.getName()));
@@ -678,7 +685,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				getterMethod.setAccess(Access.PUBLIC);
 
 				// getter delegate
-				Invoke getCall = vm.newInvoke("handler", "getProperty");
+				final Invoke getCall = vm.newInvoke("handler", "getProperty");
 				getCall.addArg(vm.newVar("this"));
 				getCall.addArg(vm.newString(propertyDefinition.getName()));
 
