@@ -1,55 +1,71 @@
 /**
  * This file is auto-generated. All changes will be overwritten.
  */
- 
-package $packagepath;
+package $packagePath;
 
 #if( ! $superclassName)
-import java.io.Serializable;
+	import java.io.Serializable;
 #end
 #foreach($i in $imports)
-import $i;
+	import $i;
 #end
+import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.itemtype.core.UniqueIdItem;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 #if ( $!description )
-/**
- * $description
- */
+	/**
+	 * $description
+	 */
 #end
 @SuppressWarnings("unchecked")
 @ItemType(typeCode = "$typeCode")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
-public #if ($isAbstract)abstract #end class $className #if($superClassName)extends $superClassName #else implements Serializable #end {
+public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
- 	private static final long serialVersionUID = 1L;
+ 		private static final long serialVersionUID = 1L;
  	#end
 
-    /** The principal groups assigned to the user. */
-    @Property(isReference = true)
-    @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
-    protected List<PrincipalGroup> groups;
+	#foreach ($field in $fields)
+		#if ( $field.description )
+			/**
+			 * $field.description
+			 */
+		#end
+		@Property
+		protected $field.type.simpleName $field.name;
+	#end
 
-    /** The short name identifying the principal object. */
-    @Property
-    protected String shortName;
+##    @Property(isReference = true)
+##   @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
+##    protected List<PrincipalGroup> groups;
 
-    @GetProperty
-    public List<PrincipalGroup> getGroups() {
-        return ((List<PrincipalGroup>) handler.getProperty(this, "groups"));
-    }
+	#foreach ($method in $methods)
+		#if ( $!method.description )
+			/**
+			 * $method.description
+			 */
+		#end
+		@Property
+		public $method.type.simpleName $method.name (
+			#foreach ( $arg in $method.arguments )
+				$arg.type.simpleName $arg.name
+				#if( $foreach.hasNext ), #end
+			#end
+		) {
+			$method.codeBlock;
+		}
+	#end
+	
 
-    @GetProperty
-    public String getShortName() {
-        return ((String) handler.getProperty(this, "shortName"));
-    }
+##    @GetProperty
+##    public List<PrincipalGroup> getGroups() {
+##        return ((List<PrincipalGroup>) handler.getProperty(this, "groups"));
+##    }
 
-    @SetProperty
-    public void setGroups(List<PrincipalGroup> groups) {
-        handler.setProperty(this, "groups", groups);
-    }
+##    @SetProperty
+##    public void setGroups(List<PrincipalGroup> groups) {
+##        handler.setProperty(this, "groups", groups);
+##    }
 
-    @SetProperty
-    public void setShortName(String shortName) {
-        handler.setProperty(this, "shortName", shortName);
-    }
 }

@@ -37,18 +37,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.velocity.context.Context;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
 import at.spot.core.infrastructure.constants.InfrastructureConstants;
+import at.spot.core.infrastructure.maven.xml.DataType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
-import at.spot.core.infrastructure.maven.xml.GenericArgument;
 import at.spot.core.infrastructure.maven.xml.ItemType;
 import at.spot.core.infrastructure.maven.xml.Property;
 import at.spot.core.infrastructure.maven.xml.TypeDefinitions;
@@ -61,11 +59,17 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
+import at.spot.maven.velocity.AbstractComplexJavaType;
 import at.spot.maven.velocity.AbstractJavaType;
+import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
 import at.spot.maven.velocity.JavaEnumValue;
+import at.spot.maven.velocity.JavaField;
+import at.spot.maven.velocity.JavaInterface;
+import at.spot.maven.velocity.JavaPrimitiveType;
 import at.spot.maven.velocity.TemplateFile;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import at.spot.maven.velocity.Visibility;
+import at.spot.maven.velocity.util.VelocityUtil;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
 import net.sourceforge.jenesis4java.Annotation;
@@ -74,7 +78,6 @@ import net.sourceforge.jenesis4java.ClassField;
 import net.sourceforge.jenesis4java.ClassMethod;
 import net.sourceforge.jenesis4java.ClassType;
 import net.sourceforge.jenesis4java.Comment;
-import net.sourceforge.jenesis4java.CompilationUnit;
 import net.sourceforge.jenesis4java.Invoke;
 import net.sourceforge.jenesis4java.PackageClass;
 import net.sourceforge.jenesis4java.Variable;
@@ -407,13 +410,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void generateJavaCode(final TypeDefinitions definitions) throws IOException, MojoExecutionException {
+	protected void generateJavaCode(final TypeDefinitions definitions) throws MojoExecutionException {
 		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 
 		// Get the VirtualMachine implementation.
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
-		final List<AbstractJavaType> types = new ArrayList<>();
+		final List<AbstractComplexJavaType> types = new ArrayList<>();
 
 		for (final String enumName : definitions.getEnumTypes().keySet()) {
 			final EnumType enumType = definitions.getEnumTypes().get(enumName);
@@ -434,125 +437,247 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			types.add(enumeration);
 		}
 
-		writeJavaTypes(types);
+		// write all enums
+		try {
+			writeJavaTypes(types);
+			types.clear();
+		} catch (IOException e) {
+			throw new MojoExecutionException("Could not write enumerations.", e);
+		}
 
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
 
-			// the Item type base class is hardcoded, so ignore it
-			if (StringUtils.equals(type.getName(), Item.class.getSimpleName())) {
+			// ignore base item type
+			if (StringUtils.equals(Item.class.getSimpleName(), type.getName())) {
 				continue;
 			}
 
-			final CompilationUnit unit = vm.newCompilationUnit(this.targetClassesDirectory.getAbsolutePath());
-			unit.setNamespace(type.getPackage());
-			unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All changes will be overwritten.");
+			final JavaClass javaClass = new JavaClass();
 
-			final PackageClass cls = unit.newPublicClass(type.getName());
+			javaClass.setPackagePath(type.getPackage());
+			javaClass.setName(type.getName());
+			javaClass.setDescription(type.getDescription());
 
-			if (type.isAbstract() != null) {
-				cls.isAbstract(type.isAbstract());
-			}
-
-			{// set private static final long serialVersionUID = 1L;
-				final ClassField serialId = cls.newField(vm.newType("long"), "serialVersionUID");
-				serialId.setAccess(AccessType.PRIVATE);
-				serialId.isStatic(true);
-				serialId.isFinal(true);
-				serialId.setExpression(vm.newLong(-1));
-			}
-
-			{ // add annotations
-				addImport(definitions, cls, SuppressWarnings.class);
-				Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(), "\"unchecked\"");
-
-				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
-
-				ann = cls.addAnnotation(ItemType.class.getSimpleName());
-
-				if (StringUtils.isNotBlank(type.getTypeCode())) {
-					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
-				} else { // add the type name as typecode as default
-					throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
-				}
-
-				addImport(definitions, cls, SuppressFBWarnings.class);
-
-				// add findbugs suppress warning annotation
-
-				cls.addAnnotation(vm.newAnnotation(SuppressFBWarnings.class.getSimpleName(),
-						"{ \"MF_CLASS_MASKS_FIELD\", \"EI_EXPOSE_REP\", \"EI_EXPOSE_REP2\" }"));
-			}
-
-			// set default
-			cls.setExtends(Item.class.getName());
+			JavaInterface superClass = new JavaInterface();
 
 			if (StringUtils.isNotBlank(type.getExtends())) {
-				final ItemType superType = definitions.getItemTypes().get(type.getExtends());
+				ItemType superItemType = definitions.getItemTypes().get(type.getExtends());
 
-				if (superType != null) {
-					cls.setExtends(superType.getName());
-					addImport(definitions, cls, superType.getName());
-				} else {
-					throw new MojoExecutionException(
-							String.format("Non-existing super type '%s' defined for item type %s", type.getExtends(),
-									type.getName()));
-				}
+				superClass.setName(superItemType.getName());
+				superClass.setPackagePath(superItemType.getPackage());
 			} else {
-				addImport(definitions, cls, Item.class);
+				superClass.setName("Item");
+				superClass.setPackagePath(Item.class.getPackage().getName());
 			}
 
-			if (StringUtils.isNotBlank(type.getDescription())) {
-				cls.setComment(Comment.DOCUMENTATION, type.getDescription());
-			}
+			javaClass.setSuperClass(superClass);
+			javaClass.setVisiblity(Visibility.PUBLIC);
 
-			// populate the properties
 			if (type.getProperties() != null) {
-				for (final Property p : type.getProperties().getProperty()) {
-					if (p.getDatatype() != null && StringUtils.isNotBlank(p.getDatatype().getClazz())) {
-						String propertyType = addImport(definitions, cls, p.getDatatype().getClazz());
+				for (Property prop : type.getProperties().getProperty()) {
+					JavaField field = new JavaField();
+					field.setVisiblity(Visibility.PROTECTED);
 
-						if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
-							final List<String> args = new ArrayList<>();
+					AbstractJavaType propType = getDataType(definitions, prop);
 
-							for (final GenericArgument genericArg : p.getDatatype().getGenericArgument()) {
-								String arg = addImport(definitions, cls, genericArg.getClazz());
-
-								if (genericArg.isWildcard()) {
-									arg = "? extends " + arg;
-								}
-
-								args.add(arg);
-							}
-
-							propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args, ", "));
-						}
-
-						final ClassType fieldType = vm.newType(propertyType);
-						final ClassField property = createProperty(p, fieldType, cls, vm);
-
-						populatePropertyAnnotation(property, p, fieldType, cls, vm);
-						populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
-						populatePropertyValidators(property, p, cls, vm);
-					} else {
-						throw new MojoExecutionException(String.format(
-								"No datatype set for property %s on item type %s", p.getName(), type.getName()));
+					if (propType instanceof AbstractComplexJavaType) {
+						field.setComplexType((AbstractComplexJavaType) propType);
+					} else if (propType instanceof JavaPrimitiveType) {
+						field.setPrimitiveType((JavaPrimitiveType) propType);
 					}
+
+					field.setName(prop.getName());
+					field.setDescription(prop.getDescription());
+
+					javaClass.addField(field);
 				}
 			}
 
-			// Write the java file
-			try {
-				unit.encode();
-			} catch (final Exception e) {
-				getLog().error(String.format("Could not generate item type defintion %s: %n %s", type.getName(),
-						unit.toString()));
-			}
+			types.add(javaClass);
 		}
+
+		// write all java classes
+		try {
+			writeJavaTypes(types);
+			types.clear();
+		} catch (IOException e) {
+			throw new MojoExecutionException("Could not write item types.", e);
+		}
+
+		// for (final Map.Entry<String, ItemType> typeEntry :
+		// definitions.getItemTypes().entrySet()) {
+		// final ItemType type = typeEntry.getValue();
+		//
+		// // the Item type base class is hardcoded, so ignore it
+		// if (StringUtils.equals(type.getName(), Item.class.getSimpleName())) {
+		// continue;
+		// }
+		//
+		// final CompilationUnit unit =
+		// vm.newCompilationUnit(this.targetClassesDirectory.getAbsolutePath());
+		// unit.setNamespace(type.getPackage());
+		// unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All
+		// changes will be overwritten.");
+		//
+		// final PackageClass cls = unit.newPublicClass(type.getName());
+		//
+		// if (type.isAbstract() != null) {
+		// cls.isAbstract(type.isAbstract());
+		// }
+		//
+		// {// set private static final long serialVersionUID = 1L;
+		// final ClassField serialId = cls.newField(vm.newType("long"),
+		// "serialVersionUID");
+		// serialId.setAccess(AccessType.PRIVATE);
+		// serialId.isStatic(true);
+		// serialId.isFinal(true);
+		// serialId.setExpression(vm.newLong(-1));
+		// }
+		//
+		// { // add annotations
+		// addImport(definitions, cls, SuppressWarnings.class);
+		// Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(),
+		// "\"unchecked\"");
+		//
+		// addImport(definitions, cls,
+		// at.spot.core.infrastructure.annotation.ItemType.class);
+		//
+		// ann = cls.addAnnotation(ItemType.class.getSimpleName());
+		//
+		// if (StringUtils.isNotBlank(type.getTypeCode())) {
+		// ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
+		// } else { // add the type name as typecode as default
+		// throw new MojoExecutionException(String.format("No typecode set for type %s",
+		// type.getName()));
+		// }
+		//
+		// addImport(definitions, cls, SuppressFBWarnings.class);
+		//
+		// // add findbugs suppress warning annotation
+		//
+		// cls.addAnnotation(vm.newAnnotation(SuppressFBWarnings.class.getSimpleName(),
+		// "{ \"MF_CLASS_MASKS_FIELD\", \"EI_EXPOSE_REP\", \"EI_EXPOSE_REP2\" }"));
+		// }
+		//
+		// // set default
+		// cls.setExtends(Item.class.getName());
+		//
+		// if (StringUtils.isNotBlank(type.getExtends())) {
+		// final ItemType superType = definitions.getItemTypes().get(type.getExtends());
+		//
+		// if (superType != null) {
+		// cls.setExtends(superType.getName());
+		// addImport(definitions, cls, superType.getName());
+		// } else {
+		// throw new MojoExecutionException(
+		// String.format("Non-existing super type '%s' defined for item type %s",
+		// type.getExtends(),
+		// type.getName()));
+		// }
+		// } else {
+		// addImport(definitions, cls, Item.class);
+		// }
+		//
+		// if (StringUtils.isNotBlank(type.getDescription())) {
+		// cls.setComment(Comment.DOCUMENTATION, type.getDescription());
+		// }
+		//
+		// // populate the properties
+		// if (type.getProperties() != null) {
+		// for (final Property p : type.getProperties().getProperty()) {
+		// if (p.getDatatype() != null &&
+		// StringUtils.isNotBlank(p.getDatatype().getClazz())) {
+		// String propertyType = addImport(definitions, cls,
+		// p.getDatatype().getClazz());
+		//
+		// if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
+		// final List<String> args = new ArrayList<>();
+		//
+		// for (final GenericArgument genericArg : p.getDatatype().getGenericArgument())
+		// {
+		// String arg = addImport(definitions, cls, genericArg.getClazz());
+		//
+		// if (genericArg.isWildcard()) {
+		// arg = "? extends " + arg;
+		// }
+		//
+		// args.add(arg);
+		// }
+		//
+		// propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args,
+		// ", "));
+		// }
+		//
+		// final ClassType fieldType = vm.newType(propertyType);
+		// final ClassField property = createProperty(p, fieldType, cls, vm);
+		//
+		// populatePropertyAnnotation(property, p, fieldType, cls, vm);
+		// populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
+		// populatePropertyValidators(property, p, cls, vm);
+		// } else {
+		// throw new MojoExecutionException(String.format(
+		// "No datatype set for property %s on item type %s", p.getName(),
+		// type.getName()));
+		// }
+		// }
+		// }
+		//
+		// // Write the java file
+		// try {
+		// unit.encode();
+		// } catch (final Exception e) {
+		// getLog().error(String.format("Could not generate item type defintion %s: %n
+		// %s", type.getName(),
+		// unit.toString()));
+		// }
+		// }
 	}
 
-	protected void writeJavaTypes(final List<AbstractJavaType> types) throws IOException, MojoExecutionException {
-		for (final AbstractJavaType type : types) {
+	protected AbstractJavaType getDataType(TypeDefinitions definitions, Property property)
+			throws MojoExecutionException {
+
+		DataType dataType = property.getDatatype();
+		AbstractJavaType ret = null;
+
+		if (StringUtils.equals(Item.class.getSimpleName(), dataType.getClazz())) {
+			ret = new JavaClass(Item.class);
+		} else if (StringUtils.contains(dataType.getClazz(), ".")) {
+			Class<?> clazz;
+
+			try {
+				clazz = Class.forName(dataType.getClazz());
+				ret = new JavaClass(clazz);
+			} catch (ClassNotFoundException e) {
+				throw new MojoExecutionException(String.format("Could not resolve type %s for property %s",
+						dataType.getClazz(), property.getName()));
+			}
+		} else {
+			ItemType itemType = definitions.getItemTypes().get(dataType.getClazz());
+
+			if (itemType != null) {
+				ret = new JavaClass(itemType.getName(), itemType.getPackage());
+			} else {
+				EnumType enumType = definitions.getEnumTypes().get(dataType.getClazz());
+
+				if (enumType != null) {
+					ret = new JavaEnum(enumType.getName(), enumType.getPackage());
+				} else {
+					// throw new MojoExecutionException(String.format("Unable to resolve data type
+					// %s for field %s",
+					// dataType.getClazz(), property.getName()));
+					ret = new JavaPrimitiveType(dataType.getClazz());
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
+			throws IOException, MojoExecutionException {
+
+		for (final AbstractComplexJavaType type : types) {
 			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
 
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
@@ -584,18 +709,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 
 		final Template t = velocityEngine.getTemplate("templates/" + template.value());
-		final VelocityContext context = new VelocityContext(convertoObjectoToMap(type));
+		final Context context = VelocityUtil.createSingletonObjectContext(type);
 
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
 		return writer.toString();
-	}
-
-	protected Map<String, Object> convertoObjectoToMap(final AbstractJavaType type) {
-		final ObjectMapper mapper = new ObjectMapper();
-
-		return mapper.convertValue(type, Map.class);
 	}
 
 	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {

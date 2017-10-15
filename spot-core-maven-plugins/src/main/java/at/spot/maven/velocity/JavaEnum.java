@@ -10,6 +10,11 @@ public class JavaEnum extends JavaClass {
 
 	protected final List<JavaEnumValue> values = new ArrayList<>();
 
+	public JavaEnum(String name, String packagePath) {
+		setName(name);
+		setPackagePath(packagePath);
+	}
+
 	public JavaEnum() {
 		this.setSuperClass(Enum.class);
 	}

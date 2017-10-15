@@ -1,21 +1,24 @@
 /**
  * This file is auto-generated. All changes will be overwritten.
  */
-
-package _.$packagepath;
+package $packagePath;
 
 #foreach($i in $imports)
-import $i;
+	import $i;
 #end
 
 #if ( $!description )
-/**
- * $description
- */
+	/**
+	 * $description
+	 */
 #end
 @SuppressWarnings("unchecked")
 public enum $name {
 	#foreach($value in $values)
-	$value.value("$!value.code")
+		#if( "$!value.name" == "" )
+			$value.internalName,
+		#else
+			$value.name("$value.internalName")
+		#end
 	#end
 }
