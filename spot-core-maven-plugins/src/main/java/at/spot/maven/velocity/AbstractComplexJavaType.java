@@ -1,16 +1,16 @@
 package at.spot.maven.velocity;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	private static final long serialVersionUID = 1L;
 
-	protected final List<String> imports = new ArrayList<>();
-	protected final List<JavaInterface> interfaces = new ArrayList<>();
-	protected final List<JavaMethod> methods = new ArrayList<>();
+	protected final Set<String> imports = new HashSet<>();
+	protected final Set<JavaInterface> interfaces = new HashSet<>();
+	protected final Set<JavaMethod> methods = new HashSet<>();
 
 	protected String packagePath;
 	protected JavaInterface superClass;
@@ -40,12 +40,16 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 		this.imports.add(superClass.getName());
 	}
 
-	public List<JavaInterface> getInterfaces() {
-		return Collections.unmodifiableList(interfaces);
+	public Set<String> getImports() {
+		return Collections.unmodifiableSet(imports);
 	}
 
-	public List<JavaMethod> getMethods() {
-		return Collections.unmodifiableList(methods);
+	public Set<JavaInterface> getInterfaces() {
+		return Collections.unmodifiableSet(interfaces);
+	}
+
+	public Set<JavaMethod> getMethods() {
+		return Collections.unmodifiableSet(methods);
 	}
 
 	public void addInterface(JavaInterface iface) {
@@ -60,14 +64,15 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 			this.imports.add(entry.getValue().getName());
 		}
 
-		if (method.isComplexType()) {
-			this.imports.add(method.getComplexType().getName());
+		if (method.getType().isComplexType()) {
+			this.imports.add(method.getType().getFullyQualifiedName());
 		}
 	}
 
+	@Override
 	public void addAnnotation(JavaAnnotation annotation) {
-		this.annotations.add(annotation);
-		this.imports.add(annotation.getClass().getName());
+		super.addAnnotation(annotation);
+		this.imports.add(annotation.getType().getName());
 	}
 
 	public String getFullyQualifiedName() {

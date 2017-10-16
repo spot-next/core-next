@@ -23,4 +23,8 @@ public class JavaAnnotation {
 	public void setParameters(Map<String, Object> parameters) {
 		this.parameters = parameters;
 	}
+
+	public void addParameter(String key, Object value) {
+		this.parameters.put(key, value);
+	}
 }
