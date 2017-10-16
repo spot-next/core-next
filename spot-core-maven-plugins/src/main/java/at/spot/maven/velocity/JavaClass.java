@@ -30,8 +30,12 @@ public class JavaClass extends AbstractComplexJavaType {
 	public void addField(JavaField field) {
 		this.fields.add(field);
 
-		if (field.isComplexType()) {
-			this.imports.add(field.getComplexType().getName());
+		if (field.getType().isComplexType()) {
+			this.imports.add(field.getType().getFullyQualifiedName());
+		}
+
+		for (JavaAnnotation a : field.getAnnotations()) {
+			this.imports.add(a.getType().getName());
 		}
 	}
 }

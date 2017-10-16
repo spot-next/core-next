@@ -3,14 +3,9 @@
  */
 package $packagePath;
 
-#if( ! $superclassName)
-	import java.io.Serializable;
-#end
 #foreach($i in $imports)
 	import $i;
 #end
-import at.spot.core.infrastructure.annotation.ItemType;
-import at.spot.itemtype.core.UniqueIdItem;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 #if ( $!description )
@@ -33,7 +28,7 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 			 */
 		#end
 		@Property
-		protected $field.type.simpleName $field.name;
+		protected $field.type.name $field.name;
 	#end
 
 ##    @Property(isReference = true)
@@ -46,14 +41,13 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 			 * $method.description
 			 */
 		#end
-		@Property
-		public $method.type.simpleName $method.name (
+		public $method.type.name $method.name (
 			#foreach ( $arg in $method.arguments )
-				$arg.type.simpleName $arg.name
+				$arg.type.name $arg.name
 				#if( $foreach.hasNext ), #end
 			#end
 		) {
-			$method.codeBlock;
+			$method.codeBlock
 		}
 	#end
 	

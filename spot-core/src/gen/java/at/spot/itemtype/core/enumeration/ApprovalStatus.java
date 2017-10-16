@@ -3,6 +3,7 @@
  */
 package at.spot.itemtype.core.enumeration;
 
+	import java.lang.Enum;
 
 	/**
 	 * The approval status, eg. of products or CMS items.

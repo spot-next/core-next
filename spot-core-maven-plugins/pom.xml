@@ -79,16 +79,11 @@
 		<!-- </dependency> -->
 
 		<dependency>
-			<groupId>com.github.rotty3000</groupId>
-			<artifactId>jalopy</artifactId>
-			<version>3000.0.0</version>
+			<groupId>com.google.googlejavaformat</groupId>
+			<artifactId>google-java-format</artifactId>
+			<version>1.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.squareup</groupId>
-			<artifactId>javapoet</artifactId>
-			<version>1.8.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>

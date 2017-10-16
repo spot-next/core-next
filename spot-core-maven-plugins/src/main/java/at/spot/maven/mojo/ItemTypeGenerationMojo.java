@@ -40,6 +40,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
+import com.google.googlejavaformat.java.Formatter;
+
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
@@ -61,12 +63,14 @@ import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
 import at.spot.maven.velocity.AbstractComplexJavaType;
 import at.spot.maven.velocity.AbstractJavaType;
+import at.spot.maven.velocity.JavaAnnotation;
 import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
 import at.spot.maven.velocity.JavaEnumValue;
 import at.spot.maven.velocity.JavaField;
 import at.spot.maven.velocity.JavaInterface;
-import at.spot.maven.velocity.JavaPrimitiveType;
+import at.spot.maven.velocity.JavaMemberType;
+import at.spot.maven.velocity.JavaMethod;
 import at.spot.maven.velocity.TemplateFile;
 import at.spot.maven.velocity.Visibility;
 import at.spot.maven.velocity.util.VelocityUtil;
@@ -455,6 +459,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final JavaClass javaClass = new JavaClass();
 
+			JavaAnnotation typeAnnotation = new JavaAnnotation();
+			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
+			typeAnnotation.addParameter("typeCode", type.getTypeCode());
+			javaClass.addAnnotation(typeAnnotation);
+
 			javaClass.setPackagePath(type.getPackage());
 			javaClass.setName(type.getName());
 			javaClass.setDescription(type.getDescription());
@@ -476,21 +485,46 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			if (type.getProperties() != null) {
 				for (Property prop : type.getProperties().getProperty()) {
+					JavaMemberType propType = getMemberType(definitions, prop);
+
 					JavaField field = new JavaField();
 					field.setVisiblity(Visibility.PROTECTED);
-
-					AbstractJavaType propType = getDataType(definitions, prop);
-
-					if (propType instanceof AbstractComplexJavaType) {
-						field.setComplexType((AbstractComplexJavaType) propType);
-					} else if (propType instanceof JavaPrimitiveType) {
-						field.setPrimitiveType((JavaPrimitiveType) propType);
-					}
-
+					field.setType(propType);
 					field.setName(prop.getName());
 					field.setDescription(prop.getDescription());
 
+					JavaAnnotation propertyAnnotation = new JavaAnnotation();
+					propertyAnnotation.setType(at.spot.core.infrastructure.annotation.Property.class);
+					field.addAnnotation(propertyAnnotation);
+
 					javaClass.addField(field);
+
+					boolean isReadable = true;
+					boolean isWritable = true;
+
+					if (prop.getModifiers() != null) {
+						isReadable = prop.getModifiers().isReadable();
+						isWritable = prop.getModifiers().isWritable();
+					}
+
+					if (isReadable) {
+						JavaMethod getter = new JavaMethod();
+						getter.setName(generateMethodName("get", prop.getName()));
+						getter.setType(propType);
+						getter.setCodeBlock(String.format("return this.%s;", prop.getName()));
+
+						javaClass.addMethod(getter);
+					}
+
+					if (isWritable) {
+						JavaMethod setter = new JavaMethod();
+						setter.setName(generateMethodName("set", prop.getName()));
+						setter.setType(JavaMemberType.VOID);
+						setter.addArgument(prop.getName(), propType);
+						setter.setCodeBlock(String.format("this.%s = %s;", prop.getName(), prop.getName()));
+
+						javaClass.addMethod(setter);
+					}
 				}
 			}
 
@@ -634,20 +668,24 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		// }
 	}
 
-	protected AbstractJavaType getDataType(TypeDefinitions definitions, Property property)
+	private String generateMethodName(String prefix, String name) {
+		return prefix + StringUtils.capitalize(name);
+	}
+
+	protected JavaMemberType getMemberType(TypeDefinitions definitions, Property property)
 			throws MojoExecutionException {
 
 		DataType dataType = property.getDatatype();
-		AbstractJavaType ret = null;
+		JavaMemberType ret = null;
 
 		if (StringUtils.equals(Item.class.getSimpleName(), dataType.getClazz())) {
-			ret = new JavaClass(Item.class);
+			ret = new JavaMemberType(Item.class);
 		} else if (StringUtils.contains(dataType.getClazz(), ".")) {
 			Class<?> clazz;
 
 			try {
 				clazz = Class.forName(dataType.getClazz());
-				ret = new JavaClass(clazz);
+				ret = new JavaMemberType(clazz);
 			} catch (ClassNotFoundException e) {
 				throw new MojoExecutionException(String.format("Could not resolve type %s for property %s",
 						dataType.getClazz(), property.getName()));
@@ -656,17 +694,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			ItemType itemType = definitions.getItemTypes().get(dataType.getClazz());
 
 			if (itemType != null) {
-				ret = new JavaClass(itemType.getName(), itemType.getPackage());
+				ret = new JavaMemberType(itemType.getName(), itemType.getPackage());
 			} else {
 				EnumType enumType = definitions.getEnumTypes().get(dataType.getClazz());
 
 				if (enumType != null) {
-					ret = new JavaEnum(enumType.getName(), enumType.getPackage());
+					ret = new JavaMemberType(enumType.getName(), enumType.getPackage());
 				} else {
-					// throw new MojoExecutionException(String.format("Unable to resolve data type
-					// %s for field %s",
-					// dataType.getClazz(), property.getName()));
-					ret = new JavaPrimitiveType(dataType.getClazz());
+					ret = new JavaMemberType(dataType.getClazz());
 				}
 			}
 		}
@@ -677,6 +712,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
 			throws IOException, MojoExecutionException {
 
+		Formatter codeFormatter = new Formatter();
+
 		for (final AbstractComplexJavaType type : types) {
 			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
 
@@ -685,6 +722,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			if (Files.exists(filePath)) {
 				Files.delete(filePath);
+			} else {
+				if (!Files.exists(filePath.getParent())) {
+					Files.createDirectories(filePath.getParent());
+				}
 			}
 
 			Files.createFile(filePath);
@@ -693,7 +734,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			try {
 				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile())));
-				writer.write(encodeType(type));
+
+				String encodedType = encodeType(type);
+				// codeFormatter.formatSource
+				writer.write(encodedType);
+				// } catch (FormatterException e) {
+				// throw new MojoExecutionException(
+				// String.format("Could not format generated source code for itemtype %s",
+				// type.getName()), e);
 			} finally {
 				MiscUtil.closeQuietly(writer);
 			}

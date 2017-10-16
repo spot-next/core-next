@@ -1,7 +1,7 @@
 package at.spot.maven.velocity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -9,7 +9,7 @@ public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;
 
 	protected final Set<MethodModifier> modifiers = new TreeSet<>();
-	protected final Map<String, Class<?>> arguments = new HashMap<>();
+	protected final List<JavaMethodArgument> arguments = new ArrayList<>();
 
 	protected String codeBlock;
 
@@ -25,11 +25,11 @@ public class JavaMethod extends JavaMember {
 		return modifiers;
 	}
 
-	public Map<String, Class<?>> getArguments() {
-		return arguments;
+	public void addArgument(String name, JavaMemberType type) {
+		this.arguments.add(new JavaMethodArgument(type, name));
 	}
 
-	public void addArgument(String name, Class<?> type) {
-		this.arguments.put(name, type);
+	public List<JavaMethodArgument> getArguments() {
+		return arguments;
 	}
 }
