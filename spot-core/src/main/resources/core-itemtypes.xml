@@ -43,9 +43,6 @@
                     <genericArgument class="PrincipalGroup"/>
                 </datatype>
                 <description>The principal groups assigned to the user.</description>
-                <modifiers isReference="true" />
-                <relation type="ManyToMany" referencedType="PrincipalGroup"
-                          mappedTo="members" />
             </property>
         </properties>
     </type>
@@ -57,10 +54,7 @@
                 <datatype class="java.util.List">
                     <genericArgument class="Principal" />
                 </datatype>
-                <description>The members of the group.
-                </description>
-                <relation type="ManyToMany" referencedType="Principal"
-                          mappedTo="groups" />
+                <description>The members of the group.</description>
             </property>
         </properties>
     </type>
@@ -69,14 +63,6 @@
           package="at.spot.itemtype.core.user">
         <description>Represents a user.</description>
         <properties>
-            <property name="addresses">
-                <datatype class="java.util.List">
-                    <genericArgument class="Address" />
-                </datatype>
-                <description>The user's addresses.</description>
-                <relation type="OneToMany" referencedType="Address"
-                          mappedTo="owner" />
-            </property>
             <property name="emailAddress">
                 <datatype class="java.lang.String" />
                 <description>The main email address of the user.</description>
@@ -361,4 +347,15 @@
         </properties>
     </type>
 
+	<relation name="PrincipalGroupMembership" package="at.spot.itemtype.core.user">
+		<description>Defines a principal group membership.</description>
+		<source itemType="PrincipalGroup" propertyName="members" cardinality="many" />
+		<target itemType="Principal" propertyName="groups" cardinality="many" />
+	</relation>
+	
+	<relation name="UserAddress" package="at.spot.itemtype.core.user">
+		<description>Defines a address ownership relation.</description>
+		<source itemType="User" propertyName="addresses" cardinality="many" />
+		<target itemType="Address" propertyName="owner" cardinality="one" propertyType="Item" />
+	</relation>
 </types>
