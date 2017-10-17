@@ -29,7 +29,7 @@
             <value name="Address" package="at.spot.itemtype.core.user" typeCode="address">
                 <properties>
                     <property name="owner">
-                        <datatype class="Item"/>
+                        <datatype class="User"/>
                         <description>The owner of this address.</description>
                         <modifiers unique="true"/>
                         <validators>

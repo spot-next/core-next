@@ -96,7 +96,7 @@
     <type name="Address" typeCode="Address" package="at.spot.itemtype.core.user">
         <properties>
             <property name="owner">
-                <datatype class="Item" />
+                <datatype class="User" />
                 <description>The owner of this address.</description>
                 <modifiers unique="true" />
                 <validators>
@@ -113,7 +113,7 @@
             </property>
         </properties>
     </type>
-
+    
     <type name="AddressType" typeCode="AddressType" package="at.spot.itemtype.core.user"
           extends="UniqueIdItem">
         <properties>
