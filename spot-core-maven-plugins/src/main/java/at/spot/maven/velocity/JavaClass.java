@@ -9,6 +9,7 @@ public class JavaClass extends AbstractComplexJavaType {
 	private static final long serialVersionUID = 1L;
 
 	protected final List<JavaField> fields = new ArrayList<>();
+	protected boolean isAbstract;
 
 	public JavaClass() {
 	}
@@ -37,5 +38,13 @@ public class JavaClass extends AbstractComplexJavaType {
 		for (JavaAnnotation a : field.getAnnotations()) {
 			this.imports.add(a.getType().getFullyQualifiedName());
 		}
+	}
+
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
+	}
+
+	public boolean isAbstract() {
+		return isAbstract;
 	}
 }

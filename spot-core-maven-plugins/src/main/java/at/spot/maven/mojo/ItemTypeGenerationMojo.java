@@ -62,6 +62,7 @@ import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
 import at.spot.maven.velocity.AbstractComplexJavaType;
 import at.spot.maven.velocity.AbstractJavaType;
+import at.spot.maven.velocity.AnnotationValueType;
 import at.spot.maven.velocity.JavaAnnotation;
 import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
@@ -78,7 +79,6 @@ import de.hunsicker.jalopy.Jalopy;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
 import net.sourceforge.jenesis4java.Annotation;
-import net.sourceforge.jenesis4java.BooleanLiteral;
 import net.sourceforge.jenesis4java.ClassField;
 import net.sourceforge.jenesis4java.ClassMethod;
 import net.sourceforge.jenesis4java.ClassType;
@@ -463,15 +463,23 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			final JavaClass javaClass = new JavaClass();
-
-			JavaAnnotation typeAnnotation = new JavaAnnotation();
-			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
-			typeAnnotation.addParameter("typeCode", "\"" + type.getTypeCode() + "\"");
-			javaClass.addAnnotation(typeAnnotation);
-
 			javaClass.setPackagePath(type.getPackage());
 			javaClass.setName(type.getName());
 			javaClass.setDescription(type.getDescription());
+
+			JavaAnnotation typeAnnotation = new JavaAnnotation();
+			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
+
+			if (StringUtils.isBlank(type.getTypeCode())) {
+				throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
+			}
+
+			typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
+			javaClass.addAnnotation(typeAnnotation);
+
+			if (type.isAbstract() != null && type.isAbstract()) {
+				javaClass.setAbstract(true);
+			}
 
 			JavaInterface superClass = new JavaInterface();
 
@@ -498,9 +506,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					field.setName(prop.getName());
 					field.setDescription(prop.getDescription());
 
-					JavaAnnotation propertyAnnotation = new JavaAnnotation();
-					propertyAnnotation.setType(at.spot.core.infrastructure.annotation.Property.class);
-					field.addAnnotation(propertyAnnotation);
+					populatePropertyAnnotation(prop, field);
+					populatePropertyRelationAnnotation(prop, field);
+					// populatePropertyValidators(property, p, cls, vm);
 
 					javaClass.addField(field);
 
@@ -546,133 +554,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			throw new MojoExecutionException("Could not write item types.", e);
 		}
 
-		// for (final Map.Entry<String, ItemType> typeEntry :
-		// definitions.getItemTypes().entrySet()) {
-		// final ItemType type = typeEntry.getValue();
-		//
-		// // the Item type base class is hardcoded, so ignore it
-		// if (StringUtils.equals(type.getName(), Item.class.getSimpleName())) {
-		// continue;
-		// }
-		//
-		// final CompilationUnit unit =
-		// vm.newCompilationUnit(this.targetClassesDirectory.getAbsolutePath());
-		// unit.setNamespace(type.getPackage());
-		// unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All
-		// changes will be overwritten.");
-		//
-		// final PackageClass cls = unit.newPublicClass(type.getName());
-		//
-		// if (type.isAbstract() != null) {
-		// cls.isAbstract(type.isAbstract());
-		// }
-		//
-		// {// set private static final long serialVersionUID = 1L;
-		// final ClassField serialId = cls.newField(vm.newType("long"),
-		// "serialVersionUID");
-		// serialId.setAccess(AccessType.PRIVATE);
-		// serialId.isStatic(true);
-		// serialId.isFinal(true);
-		// serialId.setExpression(vm.newLong(-1));
-		// }
-		//
-		// { // add annotations
-		// addImport(definitions, cls, SuppressWarnings.class);
-		// Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(),
-		// "\"unchecked\"");
-		//
-		// addImport(definitions, cls,
-		// at.spot.core.infrastructure.annotation.ItemType.class);
-		//
-		// ann = cls.addAnnotation(ItemType.class.getSimpleName());
-		//
-		// if (StringUtils.isNotBlank(type.getTypeCode())) {
-		// ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
-		// } else { // add the type name as typecode as default
-		// throw new MojoExecutionException(String.format("No typecode set for type %s",
-		// type.getName()));
-		// }
-		//
-		// addImport(definitions, cls, SuppressFBWarnings.class);
-		//
-		// // add findbugs suppress warning annotation
-		//
-		// cls.addAnnotation(vm.newAnnotation(SuppressFBWarnings.class.getSimpleName(),
-		// "{ \"MF_CLASS_MASKS_FIELD\", \"EI_EXPOSE_REP\", \"EI_EXPOSE_REP2\" }"));
-		// }
-		//
-		// // set default
-		// cls.setExtends(Item.class.getName());
-		//
-		// if (StringUtils.isNotBlank(type.getExtends())) {
-		// final ItemType superType = definitions.getItemTypes().get(type.getExtends());
-		//
-		// if (superType != null) {
-		// cls.setExtends(superType.getName());
-		// addImport(definitions, cls, superType.getName());
-		// } else {
-		// throw new MojoExecutionException(
-		// String.format("Non-existing super type '%s' defined for item type %s",
-		// type.getExtends(),
-		// type.getName()));
-		// }
-		// } else {
-		// addImport(definitions, cls, Item.class);
-		// }
-		//
-		// if (StringUtils.isNotBlank(type.getDescription())) {
-		// cls.setComment(Comment.DOCUMENTATION, type.getDescription());
-		// }
-		//
-		// // populate the properties
-		// if (type.getProperties() != null) {
-		// for (final Property p : type.getProperties().getProperty()) {
-		// if (p.getDatatype() != null &&
-		// StringUtils.isNotBlank(p.getDatatype().getClazz())) {
-		// String propertyType = addImport(definitions, cls,
-		// p.getDatatype().getClazz());
-		//
-		// if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
-		// final List<String> args = new ArrayList<>();
-		//
-		// for (final GenericArgument genericArg : p.getDatatype().getGenericArgument())
-		// {
-		// String arg = addImport(definitions, cls, genericArg.getClazz());
-		//
-		// if (genericArg.isWildcard()) {
-		// arg = "? extends " + arg;
-		// }
-		//
-		// args.add(arg);
-		// }
-		//
-		// propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args,
-		// ", "));
-		// }
-		//
-		// final ClassType fieldType = vm.newType(propertyType);
-		// final ClassField property = createProperty(p, fieldType, cls, vm);
-		//
-		// populatePropertyAnnotation(property, p, fieldType, cls, vm);
-		// populatePropertyRelationAnnotation(property, p, fieldType, cls, vm);
-		// populatePropertyValidators(property, p, cls, vm);
-		// } else {
-		// throw new MojoExecutionException(String.format(
-		// "No datatype set for property %s on item type %s", p.getName(),
-		// type.getName()));
-		// }
-		// }
-		// }
-		//
-		// // Write the java file
-		// try {
-		// unit.encode();
-		// } catch (final Exception e) {
-		// getLog().error(String.format("Could not generate item type defintion %s: %n
-		// %s", type.getName(),
-		// unit.toString()));
-		// }
-		// }
 	}
 
 	protected String generateMethodName(String prefix, String name) {
@@ -897,74 +778,67 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return property;
 	}
 
-	protected void populatePropertyAnnotation(final ClassField property, final Property propertyDefinition,
-			final ClassType fieldType, final PackageClass cls, final VirtualMachine vm) {
+	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
 
-		cls.addImport(at.spot.core.infrastructure.annotation.Property.class.getName());
-
-		final Annotation ann = property
-				.addAnnotation(at.spot.core.infrastructure.annotation.Property.class.getSimpleName());
+		JavaAnnotation propertyAnnotation = new JavaAnnotation();
+		propertyAnnotation.setType(at.spot.core.infrastructure.annotation.Property.class);
+		field.addAnnotation(propertyAnnotation);
 
 		if (propertyDefinition.getModifiers() != null) {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
-				ann.addAnnotationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
+				propertyAnnotation.addParameter("unique", propertyDefinition.getModifiers().isUnique(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
 					.isInitial()) {
-				ann.addAnnotationAttribute("initial",
-						getBooleanValue(propertyDefinition.getModifiers().isInitial(), vm));
+				propertyAnnotation.addParameter("initial", propertyDefinition.getModifiers().isInitial(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE != propertyDefinition.getModifiers()
 					.isReadable()) {
-				ann.addAnnotationAttribute("readable",
-						getBooleanValue(propertyDefinition.getModifiers().isReadable(), vm));
+				propertyAnnotation.addParameter("readable", propertyDefinition.getModifiers().isReadable(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE != propertyDefinition.getModifiers()
 					.isWritable()) {
-				ann.addAnnotationAttribute("writable",
-						getBooleanValue(propertyDefinition.getModifiers().isWritable(), vm));
+				propertyAnnotation.addParameter("writable", propertyDefinition.getModifiers().isWritable(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_IS_REFERENCE != propertyDefinition
 					.getModifiers().isIsReference()) {
-				ann.addAnnotationAttribute("isReference",
-						getBooleanValue(propertyDefinition.getModifiers().isIsReference(), vm));
+				propertyAnnotation.addParameter("isReference", propertyDefinition.getModifiers().isIsReference(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (propertyDefinition.getAccessors() != null
 					&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
-				ann.addAnnotationAttribute("itemValueProvider",
-						vm.newString(propertyDefinition.getAccessors().getValueProvider()));
+				propertyAnnotation.addParameter("itemValueProvider",
+						propertyDefinition.getAccessors().getValueProvider(), AnnotationValueType.STRING);
 			}
 		}
 	}
 
-	protected BooleanLiteral getBooleanValue(final boolean val, final VirtualMachine vm) {
-		return val ? vm.newTrue() : vm.newFalse();
-	}
-
-	protected void populatePropertyRelationAnnotation(final ClassField property, final Property propertyDefinition,
-			final ClassType fieldType, final PackageClass cls, final VirtualMachine vm) {
-
+	protected void populatePropertyRelationAnnotation(final Property propertyDefinition, final JavaField field) {
 		if (propertyDefinition.getRelation() != null) {
-			cls.addImport(Relation.class.getName());
-			cls.addImport(RelationType.class.getName());
+			JavaAnnotation ann = new JavaAnnotation();
+			ann.setType(Relation.class);
+			field.addAnnotation(ann);
 
-			final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
-
-			ann.addAnnotationAttribute("type", vm.newFree(
-					RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
-			ann.addAnnotationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
-			ann.addAnnotationAttribute("referencedType",
-					vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
+			ann.addParameter("type",
+					RelationType.class.getName() + "." + propertyDefinition.getRelation().getType().value(),
+					AnnotationValueType.LITERAL);
+			ann.addParameter("mappedTo", propertyDefinition.getRelation().getMappedTo(), AnnotationValueType.STRING);
+			ann.addParameter("referencedType", propertyDefinition.getRelation().getReferencedType(),
+					AnnotationValueType.CLASS);
 
 			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
-				ann.addAnnotationAttribute("casacadeOnDelete",
-						getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
+				ann.addParameter("casacadeOnDelete", propertyDefinition.getRelation().isCasacadeOnDelete(),
+						AnnotationValueType.LITERAL);
 			}
 		}
 	}

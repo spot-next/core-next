@@ -64,7 +64,7 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 
 	#foreach ($field in $fields)
 		#javadoc($field.javadoc)
-		@Property
+		#annotations($field.annotations)
 		protected $field.type.name#genericTypeArguments($field.type.genericArguments) $field.name;
 	#end
 
@@ -74,6 +74,7 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
+		#annotations($field.annotations)
 		public $method.type.name#genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
 				$arg.type.name#genericTypeArguments($arg.type.genericArguments) $arg.name
