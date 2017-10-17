@@ -40,8 +40,6 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
-import com.google.googlejavaformat.java.Formatter;
-
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
@@ -49,6 +47,7 @@ import at.spot.core.infrastructure.constants.InfrastructureConstants;
 import at.spot.core.infrastructure.maven.xml.DataType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
+import at.spot.core.infrastructure.maven.xml.GenericArgument;
 import at.spot.core.infrastructure.maven.xml.ItemType;
 import at.spot.core.infrastructure.maven.xml.Property;
 import at.spot.core.infrastructure.maven.xml.TypeDefinitions;
@@ -68,12 +67,14 @@ import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
 import at.spot.maven.velocity.JavaEnumValue;
 import at.spot.maven.velocity.JavaField;
+import at.spot.maven.velocity.JavaGenericTypeArgument;
 import at.spot.maven.velocity.JavaInterface;
 import at.spot.maven.velocity.JavaMemberType;
 import at.spot.maven.velocity.JavaMethod;
 import at.spot.maven.velocity.TemplateFile;
 import at.spot.maven.velocity.Visibility;
 import at.spot.maven.velocity.util.VelocityUtil;
+import de.hunsicker.jalopy.Jalopy;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
 import net.sourceforge.jenesis4java.Annotation;
@@ -95,10 +96,14 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 @Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
+	protected Jalopy jalopy = new Jalopy();;
 	protected VelocityEngine velocityEngine = new VelocityEngine();
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
 	protected ArtifactRepository localRepository;
+
+	@Parameter(property = "formatSources")
+	protected boolean formatSource = true;
 
 	@Parameter(property = "project", defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
@@ -461,7 +466,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			JavaAnnotation typeAnnotation = new JavaAnnotation();
 			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
-			typeAnnotation.addParameter("typeCode", type.getTypeCode());
+			typeAnnotation.addParameter("typeCode", "\"" + type.getTypeCode() + "\"");
 			javaClass.addAnnotation(typeAnnotation);
 
 			javaClass.setPackagePath(type.getPackage());
@@ -511,6 +516,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						JavaMethod getter = new JavaMethod();
 						getter.setName(generateMethodName("get", prop.getName()));
 						getter.setType(propType);
+						getter.setDescription(prop.getDescription());
 						getter.setCodeBlock(String.format("return this.%s;", prop.getName()));
 
 						javaClass.addMethod(getter);
@@ -520,6 +526,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						JavaMethod setter = new JavaMethod();
 						setter.setName(generateMethodName("set", prop.getName()));
 						setter.setType(JavaMemberType.VOID);
+						setter.setDescription(prop.getDescription());
 						setter.addArgument(prop.getName(), propType);
 						setter.setCodeBlock(String.format("this.%s = %s;", prop.getName(), prop.getName()));
 
@@ -668,7 +675,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		// }
 	}
 
-	private String generateMethodName(String prefix, String name) {
+	protected String generateMethodName(String prefix, String name) {
 		return prefix + StringUtils.capitalize(name);
 	}
 
@@ -706,13 +713,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 		}
 
+		if (CollectionUtils.isNotEmpty(property.getDatatype().getGenericArgument())) {
+			for (final GenericArgument genericArg : property.getDatatype().getGenericArgument()) {
+				JavaMemberType argType = new JavaMemberType(genericArg.getClazz());
+				JavaGenericTypeArgument arg = new JavaGenericTypeArgument(argType, genericArg.isWildcard());
+				ret.addGenericArgument(arg);
+			}
+		}
+
 		return ret;
 	}
 
 	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
 			throws IOException, MojoExecutionException {
-
-		Formatter codeFormatter = new Formatter();
 
 		for (final AbstractComplexJavaType type : types) {
 			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
@@ -736,16 +749,22 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile())));
 
 				String encodedType = encodeType(type);
-				// codeFormatter.formatSource
 				writer.write(encodedType);
-				// } catch (FormatterException e) {
-				// throw new MojoExecutionException(
-				// String.format("Could not format generated source code for itemtype %s",
-				// type.getName()), e);
 			} finally {
 				MiscUtil.closeQuietly(writer);
 			}
+
+			// format code
+			if (formatSource) {
+				formatSourceCode(filePath.toFile());
+			}
 		}
+	}
+
+	protected void formatSourceCode(File sourceFile) throws FileNotFoundException {
+		jalopy.setInput(sourceFile);
+		jalopy.setOutput(sourceFile);
+		jalopy.format();
 	}
 
 	protected String encodeType(final AbstractJavaType type) throws MojoExecutionException {

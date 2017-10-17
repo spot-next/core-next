@@ -35,7 +35,7 @@ public class JavaClass extends AbstractComplexJavaType {
 		}
 
 		for (JavaAnnotation a : field.getAnnotations()) {
-			this.imports.add(a.getType().getName());
+			this.imports.add(a.getType().getFullyQualifiedName());
 		}
 	}
 }

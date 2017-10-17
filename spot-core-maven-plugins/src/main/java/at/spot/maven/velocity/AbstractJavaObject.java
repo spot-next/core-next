@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 public abstract class AbstractJavaObject extends AbstractJavaType {
 	private static final long serialVersionUID = 1L;
 
@@ -17,6 +19,10 @@ public abstract class AbstractJavaObject extends AbstractJavaType {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getJavadoc() {
+		return StringUtils.replace(description, "\n", "<br>");
 	}
 
 	public void setDescription(String description) {

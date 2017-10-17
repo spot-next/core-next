@@ -1,34 +1,71 @@
+#macro( genericTypeArguments $genericArguments )
+	#if ($genericArguments)
+		#set($generics = "<")
+		
+		#foreach ($genArg in $genericArguments)
+			#if ($genArg.isWildCard) 
+				#set($generics = $generics + "? extends ")
+			#end
+			
+			#set($generics = $generics + $genArg.type.name)
+			#if( $foreach.hasNext ) #set($generics = $generics + ", ") #end
+		#end
+		
+		#set ($generics = $generics + ">")
+		
+		$generics
+	#end
+#end
+
+#macro( javadoc $text )
+	#if ( $!text )
+		/**
+		 * $text
+		 */
+	#end
+#end
+
+#macro( annotations $annotations )
+	#if ( $annotations )
+		#foreach($ann in $annotations)
+			#set($annName = "@" + $ann.type.name)
+			$annName
+			#if($ann.parameters)
+				(
+				#foreach($entry in $ann.parameters.entrySet())
+					$entry.key = $entry.value
+					#if( $foreach.hasNext ), #end
+				#end
+				)
+			#end
+		#end
+	#end
+#end
+
+
 /**
  * This file is auto-generated. All changes will be overwritten.
  */
 package $packagePath;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 #foreach($i in $imports)
 	import $i;
 #end
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-#if ( $!description )
-	/**
-	 * $description
-	 */
-#end
+#javadoc($javadoc)
 @SuppressWarnings("unchecked")
-@ItemType(typeCode = "$typeCode")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
+#annotations($annotations)
 public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
  		private static final long serialVersionUID = 1L;
  	#end
 
 	#foreach ($field in $fields)
-		#if ( $field.description )
-			/**
-			 * $field.description
-			 */
-		#end
+		#javadoc($field.javadoc)
 		@Property
-		protected $field.type.name $field.name;
+		protected $field.type.name#genericTypeArguments($field.type.genericArguments) $field.name;
 	#end
 
 ##    @Property(isReference = true)
@@ -36,14 +73,10 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 ##    protected List<PrincipalGroup> groups;
 
 	#foreach ($method in $methods)
-		#if ( $!method.description )
-			/**
-			 * $method.description
-			 */
-		#end
-		public $method.type.name $method.name (
+		#javadoc($method.javadoc)
+		public $method.type.name#genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
-				$arg.type.name $arg.name
+				$arg.type.name#genericTypeArguments($arg.type.genericArguments) $arg.name
 				#if( $foreach.hasNext ), #end
 			#end
 		) {

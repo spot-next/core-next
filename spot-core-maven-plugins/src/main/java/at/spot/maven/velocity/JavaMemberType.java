@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class JavaMemberType extends AbstractJavaType {
 	private static final long serialVersionUID = 1L;
 
-	protected final List<AbstractComplexJavaType> genericArguments = new ArrayList<>();
+	protected final List<JavaGenericTypeArgument> genericArguments = new ArrayList<>();
 	protected String packagePath = null;;
 
 	public JavaMemberType() {
@@ -37,11 +37,11 @@ public class JavaMemberType extends AbstractJavaType {
 		this.packagePath = type.getPackage().getName();
 	}
 
-	public List<AbstractComplexJavaType> getGenericArguments() {
+	public List<JavaGenericTypeArgument> getGenericArguments() {
 		return Collections.unmodifiableList(genericArguments);
 	}
 
-	public void addGenericArgument(AbstractComplexJavaType argument) {
+	public void addGenericArgument(JavaGenericTypeArgument argument) {
 		this.genericArguments.add(argument);
 	}
 

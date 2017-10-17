@@ -5,15 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JavaAnnotation {
-	protected Class<? extends Annotation> type;
+	protected JavaMemberType type;
 	protected Map<String, Object> parameters = new HashMap<>();
 
-	public Class<? extends Annotation> getType() {
+	public JavaMemberType getType() {
 		return type;
 	}
 
 	public void setType(Class<? extends Annotation> type) {
-		this.type = type;
+		this.type = new JavaMemberType(type);
+	}
+
+	public void setType(String name, String packagePath) {
+		this.type = new JavaMemberType(name, packagePath);
 	}
 
 	public Map<String, Object> getParameters() {

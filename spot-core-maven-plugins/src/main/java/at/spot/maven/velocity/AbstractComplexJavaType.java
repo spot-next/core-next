@@ -73,10 +73,11 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	@Override
 	public void addAnnotation(JavaAnnotation annotation) {
 		super.addAnnotation(annotation);
-		this.imports.add(annotation.getType().getName());
+		this.imports.add(annotation.getType().getFullyQualifiedName());
 	}
 
 	public String getFullyQualifiedName() {
 		return this.packagePath + "." + this.getName();
 	}
+
 }
