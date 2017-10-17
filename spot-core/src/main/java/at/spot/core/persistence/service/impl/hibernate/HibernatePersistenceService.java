@@ -52,6 +52,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 				throw new ModelNotUniqueException(e);
 			} catch (final TransactionRequiredException | IllegalArgumentException e) {
 				throw new ModelSaveException(e);
+			} catch (PersistenceException e) {
+				throw new ModelSaveException(e);
 			}
 		}
 	}

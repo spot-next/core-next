@@ -23,6 +23,7 @@ import org.mapdb.DBMaker;
 import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -49,6 +50,7 @@ import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+@Service
 public class MapDBService extends AbstractService implements PersistenceService, SerialNumberGeneratorService {
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
@@ -115,8 +117,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to laod an item with the same unique properties. If there already is
-	 * one stored, the given item is not unique.
+	 * Try to load an item with the same unique properties. If there already is one
+	 * stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -215,6 +217,10 @@ public class MapDBService extends AbstractService implements PersistenceService,
 						// handle relation properties
 						if (value instanceof RelationProxyList) {
 							final RelationProxyList proxyList = ((RelationProxyList) value);
+
+							if (!item.isPersisted() && proxyList.getItemsToUpdate().size() > 0) {
+								throw new ModelSaveException("Cannot save relations when the parent item is unsafed.");
+							}
 
 							saveInternalCollection(proxyList.getItemsToUpdate(), commit, itemsToIgnore);
 							remove(MiscUtil.<Item>toArray(proxyList.getItemsToRemove(), Item.class));
@@ -435,11 +441,9 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 				proxyList = new RelationProxyList<Item>(rel, item,
 						typeService.isPropertyUnique(rel.referencedType(), rel.mappedTo()), p.name);
-			} else {
-				proxyList = new ArrayList<>();
-			}
 
-			ClassUtil.setField(item, p.name, proxyList);
+				ClassUtil.setField(item, p.name, proxyList);
+			}
 		}
 	}
 
@@ -578,6 +582,17 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	@Override
 	public <T extends Item> void reset(final String type) {
 		serialNumberSequences.remove(type);
+	}
+
+	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+		if (item.getPk() != null) {
+			final DataStorage storage = getDataStorageForType(typeService.getTypeCode(item.getClass()));
+			final Entity entity = storage.get(item.getPk());
+
+			return entity.getProperty(propertyName);
+		}
+
+		return null;
 	}
 
 	@Required

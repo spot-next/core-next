@@ -15,16 +15,17 @@
 
 	</xs:element>
 
-	<xs:complexType name="EnumType" >
+	<xs:complexType name="EnumType">
 		<xs:sequence>
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
-			<xs:element name="value" type="EnumValue" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="value" type="EnumValue" minOccurs="0"
+				maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
 		<xs:attribute name="package" type="xs:string" use="required" />
 	</xs:complexType>
-	
+
 	<xs:complexType name="EnumValue">
 		<xs:attribute name="code" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="optional" />
@@ -81,6 +82,15 @@
 				<xs:documentation>
 					The internal code of the item type, used for
 					storage and other internal functionality.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="separateDeployment" type="xs:boolean"
+			default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the persistence service should create a
+					separate deployment "table" for the given type.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

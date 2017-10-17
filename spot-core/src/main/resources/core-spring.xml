@@ -43,8 +43,11 @@
 		<property name="loggingService" ref="loggingService" />
 	</bean>
 
-	<bean class="at.spot.core.infrastructure.aspect.LogAspect"
-		factory-method="aspectOf" parent="abstractBaseAspect" />
+	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
+<!-- 	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
+<!-- 		<property name="modelService" ref="modelService" /> -->
+<!-- 		<property name="queryService" ref="queryService" /> -->
+<!-- 	</bean> -->
 
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
@@ -63,7 +66,6 @@
 		<!-- <ref bean="referenceValueProvider" /> -->
 		<!-- </entry> -->
 	</util:map>
-
 
 	<!-- spring beans -->
 	<!-- define properties based parent messagesource -->

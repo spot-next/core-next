@@ -444,9 +444,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			{ // add annotations
-				// spot item type definition
+				addImport(definitions, cls, SuppressWarnings.class);
+				Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(), "\"unchecked\"");
+
 				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
-				final Annotation ann = cls.addAnnotation(ItemType.class.getSimpleName());
+
+				ann = cls.addAnnotation(ItemType.class.getSimpleName());
 
 				// JPA settings
 
@@ -605,6 +608,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final PackageClass cls, final VirtualMachine vm) {
 
 		final ClassField property = cls.newField(fieldType, propertyDefinition.getName());
+		property.setAccess(AccessType.PROTECTED);
 
 		if (StringUtils.isNotBlank(propertyDefinition.getDescription())) {
 			property.setComment(Comment.DOCUMENTATION, propertyDefinition.getDescription());

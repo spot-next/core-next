@@ -47,6 +47,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 
+	protected final transient Map<String, Boolean> propertiesInitializationState = new HashMap<>();
+
 	@Transient
 	protected transient boolean forceDirty = false;
 	@Transient
@@ -224,5 +226,13 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		} else {
 			return 1;
 		}
+	}
+
+	public boolean isPropertyInitialized(String propertyName) {
+		return propertiesInitializationState.get(propertyName) != null;
+	}
+
+	public void setPropertyInitialized(String propertyName) {
+		propertiesInitializationState.put(propertyName, Boolean.TRUE);
 	}
 }

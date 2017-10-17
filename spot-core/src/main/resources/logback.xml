@@ -34,7 +34,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="ch.qos.logback" level="OFF" />
+	<logger name="ch.qos.logback" level="WARN" />
 
 	<logger name="org.springframework" level="INFO" />
 	<logger name="org.springframework.context.support" level="WARN" />
