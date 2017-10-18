@@ -47,7 +47,9 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		for (final T item : items) {
 			try {
-				em.persist(item);
+				Session session = em.unwrap(Session.class);
+
+				session.saveOrUpdate(item);
 			} catch (final ConstraintViolationException | EntityExistsException e) {
 				throw new ModelNotUniqueException(e);
 			} catch (final TransactionRequiredException | IllegalArgumentException e) {
@@ -60,7 +62,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		final String query = String.format("SELECT i FROM %s i WHERE pk = ?pk", type.getSimpleName());
+		final String query = String.format("SELECT i FROM %s i WHERE pk = :pk", type.getSimpleName());
 
 		return em.createQuery(query, type).setParameter("pk", pk).getSingleResult();
 	}

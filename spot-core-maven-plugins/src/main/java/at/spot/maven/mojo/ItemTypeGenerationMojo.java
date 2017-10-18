@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
@@ -74,7 +75,6 @@ import net.sourceforge.jenesis4java.ClassMethod;
 import net.sourceforge.jenesis4java.ClassType;
 import net.sourceforge.jenesis4java.Comment;
 import net.sourceforge.jenesis4java.CompilationUnit;
-import net.sourceforge.jenesis4java.Invoke;
 import net.sourceforge.jenesis4java.PackageClass;
 import net.sourceforge.jenesis4java.Variable;
 import net.sourceforge.jenesis4java.VirtualMachine;
@@ -630,9 +630,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			setterMethod.newStmt(vm.newAssign(thisVar, var));
 
 			{ // mark the updated field as dirty
-				final Invoke markDirtyCall = vm.newInvoke("markAsDirty");
-				markDirtyCall.addArg(propertyDefinition.getName());
-				setterMethod.newStmt(markDirtyCall);
+				// final Invoke markDirtyCall = vm.newInvoke("markAsDirty");
+				// markDirtyCall.addArg(propertyDefinition.getName());
+				// setterMethod.newStmt(markDirtyCall);
 			}
 
 			setterMethod.addAnnotation(SetProperty.class.getSimpleName());
@@ -739,12 +739,15 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						.equals(propertyDefinition.getRelation().getType())) {
 
 					cls.addImport(ManyToMany.class.getName());
+					cls.addImport(CascadeType.class.getName());
 					ann = property.addAnnotation(ManyToMany.class.getSimpleName());
+					ann.addAnnotationAttribute("cascade", vm.newFree("{CascadeType.ALL}"));
 
-					cls.addImport(Where.class.getName());
-					ann = property.addAnnotation(Where.class.getSimpleName());
-					ann.addAnnotationAttribute("clause",
-							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
+					// cls.addImport(Where.class.getName());
+					// ann = property.addAnnotation(Where.class.getSimpleName());
+					// ann.addAnnotationAttribute("clause",
+					// vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType()
+					// + "'"));
 				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY
 
 						.equals(propertyDefinition.getRelation().getType())) {
