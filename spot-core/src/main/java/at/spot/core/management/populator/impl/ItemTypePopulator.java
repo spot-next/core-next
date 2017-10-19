@@ -28,13 +28,13 @@ public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericIt
 
 	@Override
 	public void populate(final S source, final T target) {
-		target.typeCode = source.typeCode;
-		target.typeName = source.typeName;
-		target.typeClass = source.typeClass;
-		target.packageName = source.packageName;
+		target.setTypeCode(source.getTypeCode());
+		target.setTypeName(source.getTypeName());
+		target.setTypeClass(source.getTypeClass());
+		target.setPackageName(source.getPackageName());
 
 		try {
-			for (final ItemTypePropertyDefinition member : typeService.getItemTypeProperties(source.typeCode)
+			for (final ItemTypePropertyDefinition member : typeService.getItemTypeProperties(source.getTypeCode())
 					.values()) {
 				target.addProperty(member);
 			}

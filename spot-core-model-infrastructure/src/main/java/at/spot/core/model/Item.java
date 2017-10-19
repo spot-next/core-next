@@ -85,7 +85,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	public transient boolean isProxy;
 
 	public Item() {
-		this.createdAt = new Date();
 		this.isProxy = false;
 	}
 

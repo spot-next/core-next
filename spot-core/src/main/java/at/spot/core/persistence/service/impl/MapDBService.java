@@ -97,8 +97,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 				// .valueSerializer(new ItemSerializer<>()).createOrOpen();
 
 				for (final ItemTypeDefinition t : itemTypes.values()) {
-					dataStorage.put(t.typeCode,
-							new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
+					dataStorage.put(t.getTypeCode(),
+							new DataStorage(database, t, typeService.getItemTypeProperties(t.getTypeCode()).values()));
 				}
 			}
 

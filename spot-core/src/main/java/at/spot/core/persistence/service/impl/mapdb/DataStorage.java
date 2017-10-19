@@ -41,11 +41,11 @@ public class DataStorage {
 		this.database = database;
 		this.typeDefinition = itemTypeDefinition;
 
-		items = database.hashMap(itemTypeDefinition.typeClass).keySerializer(Serializer.LONG)
+		items = database.hashMap(itemTypeDefinition.getTypeClass()).keySerializer(Serializer.LONG)
 				.valueSerializer(Serializer.JAVA).createOrOpen();
 
-		uniqueIndex = database.hashMap(itemTypeDefinition.typeClass + "UniqueIndex").keySerializer(Serializer.INTEGER)
-				.valueSerializer(Serializer.LONG).createOrOpen();
+		uniqueIndex = database.hashMap(itemTypeDefinition.getTypeClass() + "UniqueIndex")
+				.keySerializer(Serializer.INTEGER).valueSerializer(Serializer.LONG).createOrOpen();
 	}
 
 	public synchronized Entity get(final Long key) {
@@ -69,7 +69,7 @@ public class DataStorage {
 	}
 
 	protected synchronized Index getIndex(final String property) {
-		final String indexName = typeDefinition.typeCode + "." + property;
+		final String indexName = typeDefinition.getTypeCode() + "." + property;
 
 		Index propertyIndex = indexes.get(indexName);
 

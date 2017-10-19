@@ -13,15 +13,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class GenericItemDefinitionData {
 
-	public String typeCode;
-	public String typeName;
-	public String typeClass;
-	public String packageName;
+	protected String typeCode;
+	protected String typeName;
+	protected String typeClass;
+	protected String packageName;
 
-	public List<Annotation> typeAnnotations = new ArrayList<>();
+	protected List<Annotation> typeAnnotations = new ArrayList<>();
 
-	public List<ItemTypePropertyDefinition> properties = new ArrayList<>();
-	public List<Annotation> propertyAnnotations = new ArrayList<>();
+	protected final List<ItemTypePropertyDefinition> properties = new ArrayList<>();
+	protected final List<Annotation> propertyAnnotations = new ArrayList<>();
 
 	public void addProperty(ItemTypePropertyDefinition prop) {
 		properties.add(prop);
@@ -35,4 +35,51 @@ public class GenericItemDefinitionData {
 		typeAnnotations.add(annotation);
 	}
 
+	public String getTypeCode() {
+		return typeCode;
+	}
+
+	public void setTypeCode(String typeCode) {
+		this.typeCode = typeCode;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+
+	public String getTypeClass() {
+		return typeClass;
+	}
+
+	public void setTypeClass(String typeClass) {
+		this.typeClass = typeClass;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public List<Annotation> getTypeAnnotations() {
+		return typeAnnotations;
+	}
+
+	public void setTypeAnnotations(List<Annotation> typeAnnotations) {
+		this.typeAnnotations = typeAnnotations;
+	}
+
+	public List<ItemTypePropertyDefinition> getProperties() {
+		return properties;
+	}
+
+	public List<Annotation> getPropertyAnnotations() {
+		return propertyAnnotations;
+	}
 }

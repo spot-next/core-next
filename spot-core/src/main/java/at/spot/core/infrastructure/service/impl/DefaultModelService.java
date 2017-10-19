@@ -1,20 +1,26 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
+import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.ValidationService;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
@@ -22,8 +28,11 @@ import at.spot.core.support.util.ClassUtil;
 @Service
 public class DefaultModelService extends AbstractModelService {
 
-	@Autowired
+	@Resource
 	protected ValidationService validationService;
+
+	@Resource
+	protected TypeService typeService;
 
 	@Override
 	public <T extends Item> void save(final T model)
@@ -51,8 +60,18 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> T get(Class<T> type, T example) throws ModelValidationException {
+		Map<String, Comparable<?>> map = convertItemToMap(example);
 
+		if (map.keySet().size() == 0) {
+			throw new ModelValidationException("Given example model has no properties set.");
+		}
+
+		return get(type, map);
+	}
+
+	@Override
+	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
 		// ignore empty search parameters
 		if (searchParameters == null || searchParameters.values().size() == 0) {
 			return null;
@@ -153,4 +172,28 @@ public class DefaultModelService extends AbstractModelService {
 		ClassUtil.setField(item, propertyName, propertyValue);
 	}
 
+	public <T extends Item> Map<String, Comparable<?>> convertItemToMap(T item) throws ModelValidationException {
+		Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeProperties(item.getClass());
+
+		final ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
+		});
+
+		Map<String, Comparable<?>> retMap = new HashMap<>();
+
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			if (properties.get(entry.getKey()) != null) {
+				if (entry.getValue() != null) {
+					if (!(entry.getValue() instanceof Comparable)) {
+						throw new ModelValidationException(
+								String.format("Item property '%s' value is not of type Comparable", entry.getKey()));
+					} else {
+						retMap.put(entry.getKey(), (Comparable<?>) entry.getValue());
+					}
+				}
+			}
+		}
+
+		return retMap;
+	}
 }

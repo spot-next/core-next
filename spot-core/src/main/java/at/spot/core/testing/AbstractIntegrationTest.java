@@ -14,11 +14,13 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.TransactionService;
 
 /**
  * This is the base class for all integration tasks..
@@ -27,12 +29,16 @@ import at.spot.core.persistence.service.PersistenceService;
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
+@Transactional
 public abstract class AbstractIntegrationTest {
 
 	public static final String MAPDB_FILE = "/var/tmp/spot-core.test.db";
 
 	@Resource
 	protected PersistenceService persistenceService;
+
+	@Resource
+	protected TransactionService transactionService;
 
 	@Resource
 	protected LoggingService loggingService;
@@ -53,7 +59,7 @@ public abstract class AbstractIntegrationTest {
 	}
 
 	/**
-	 * Calledn when all tests have been executed.
+	 * Called when all tests have been executed.
 	 */
 	@AfterClass
 	public static void shutdown() {
@@ -67,8 +73,8 @@ public abstract class AbstractIntegrationTest {
 	public void beforeTest() {
 		MockitoAnnotations.initMocks(this);
 
-		// TODO: start transaction
 		try {
+			transactionService.start();
 			prepareTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
@@ -81,6 +87,7 @@ public abstract class AbstractIntegrationTest {
 	@After
 	public void afterTest() {
 		try {
+			transactionService.rollback();
 			teardownTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);

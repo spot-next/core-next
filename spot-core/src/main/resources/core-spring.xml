@@ -43,7 +43,7 @@
 		<property name="loggingService" ref="loggingService" />
 	</bean>
 
-	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
+<!-- 	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
 <!-- 	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
 <!-- 		<property name="modelService" ref="modelService" /> -->
 <!-- 		<property name="queryService" ref="queryService" /> -->
@@ -109,6 +109,7 @@
 	<!-- ALIASES -->
 
 	<!-- services -->
+	<alias name="defaultTransactionService" alias="transactionService" />
 	<!-- <alias name="mapDBService" alias="persistenceService" /> -->
 	<alias name="mapDBService" alias="serialNumberGenerator" />
 	<alias name="hibernatePersistenceService" alias="persistenceService" />

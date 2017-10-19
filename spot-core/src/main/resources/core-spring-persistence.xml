@@ -14,70 +14,65 @@
 	<tx:annotation-driven />
 	<context:annotation-config />
 
-	<!-- service.persistence.hsql.filepath -->
-
-	<!-- <bean id="dataSource" -->
-	<!-- class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
-	<!-- <property name="driverClassName"> -->
-	<!-- <value>org.hsqldb.jdbcDriver</value> -->
-	<!-- </property> -->
-	<!-- <property name="url"> -->
-	<!-- <value>jdbc:hsqldb:file:${service.persistence.hsql.filepath}</value> -->
-	<!-- </property> -->
-	<!-- <property name="username"> -->
-	<!-- <value>sa</value> -->
-	<!-- </property> -->
-	<!-- <property name="password"> -->
-	<!-- <value></value> -->
-	<!-- </property> -->
-	<!-- </bean> -->
-
-	<bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName">
-			<value>com.mysql.jdbc.Driver</value>
-		</property>
-		<property name="url">
-			<value>jdbc:mysql://localhost/spot</value>
-		</property>
-		<property name="username">
-			<value>root</value>
-		</property>
-		<property name="password">
-			<value></value>
-		</property>
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${database.jdbc.driverClassName}" />
+		<property name="url" value="${database.jdbc.url}" />
+		<property name="username" value="${database.jdbc.username}" />
+		<property name="password" value="${database.jdbc.password}" />
+		<property name="initialSize" value="3" />
 	</bean>
 
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<!-- <property name="persistenceUnitName" value="jpaData" /> -->
-		<property name="packagesToScan" value="at.spot.itemtype" />
-		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
-		</property>
-		<property name="persistenceUnitPostProcessors">
-			<list>
-				<bean
-					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
-			</list>
-		</property>
+<!-- 	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+<!-- 		<property name="dataSource" ref="dataSource" /> -->
+<!-- 	</bean> -->
 
-		<property name="jpaProperties">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="at.spot.itemtype" />
+		<property name="hibernateProperties">
 			<props>
-<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop> -->
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
-				<prop key="hibernate.format_sql">true</prop>
-				<prop key="hibernate.hbm2ddl.auto">create</prop>
-				<prop key="hibernate.enable_lazy_load_no_trans">true</prop>
-				<prop key="hibernate.dialect.storage_engine">myisam</prop>
+				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${service.persistence.hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.enable_lazy_load_no_trans">${service.persistence.hibernate.enable_lazy_load_no_trans}</prop>
+				<prop key="hibernate.dialect.storage_engine">${service.persistence.hibernate.dialect.storage_engine}</prop>
 			</props>
 		</property>
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
+<!-- 	<bean id="entityManagerFactory" -->
+<!-- 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> -->
+<!-- 		<property name="dataSource" ref="dataSource" /> -->
+<!-- 		<property name="packagesToScan" value="at.spot.itemtype" /> -->
+<!-- 		<property name="jpaVendorAdapter"> -->
+<!-- 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" /> -->
+<!-- 		</property> -->
+<!-- 		<property name="persistenceUnitPostProcessors"> -->
+<!-- 			<list> -->
+<!-- 				<bean -->
+<!-- 					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" /> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+
+<!-- 		<property name="jpaProperties" ref="jpaProperties"> -->
+<!-- 			<props> -->
+<!-- 				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop> -->
+<!-- 				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop> -->
+<!-- 				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop> -->
+<!-- 				<prop key="hibernate.hbm2ddl.auto">${service.persistence.hibernate.hbm2ddl.auto}</prop> -->
+<!-- 				<prop key="hibernate.enable_lazy_load_no_trans">${service.persistence.hibernate.enable_lazy_load_no_trans}</prop> -->
+<!-- 				<prop key="hibernate.dialect.storage_engine">${service.persistence.hibernate.dialect.storage_engine}</prop> -->
+<!-- 			</props> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"> -->
+<!-- 		<property name="entityManagerFactory" ref="entityManagerFactory" /> -->
+<!-- 	</bean> -->
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<bean id="persistenceExceptionTranslationPostProcessor"

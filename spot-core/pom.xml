@@ -195,7 +195,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.7-dmr</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1.1</version>
+		</dependency>
 
 		<!-- validation -->
 		<dependency>
