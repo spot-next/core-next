@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,11 +185,14 @@ public class DefaultModelService extends AbstractModelService {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			if (properties.get(entry.getKey()) != null) {
 				if (entry.getValue() != null) {
-					if (!(entry.getValue() instanceof Comparable)) {
+					if (entry.getValue() instanceof Comparable) {
+						retMap.put(entry.getKey(), (Comparable<?>) entry.getValue());
+					} else if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
+						loggingService.warn(String.format(
+								"Item property '%s' is a list or collection - it will be ignored.", entry.getKey()));
+					} else {
 						throw new ModelValidationException(
 								String.format("Item property '%s' value is not of type Comparable", entry.getKey()));
-					} else {
-						retMap.put(entry.getKey(), (Comparable<?>) entry.getValue());
 					}
 				}
 			}

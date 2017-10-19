@@ -56,7 +56,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		for (final T item : items) {
 			try {
 				getSession().saveOrUpdate(item);
-				 getSession().flush();
+				getSession().flush();
 			} catch (final DataIntegrityViolationException | TransactionRequiredException
 					| IllegalArgumentException e) {
 
