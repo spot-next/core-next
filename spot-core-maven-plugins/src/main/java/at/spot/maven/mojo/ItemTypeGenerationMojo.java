@@ -7,7 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.lang.model.element.Modifier;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -42,15 +39,15 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.hibernate.annotations.Where;
-
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
+import org.apache.velocity.Template;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
 import at.spot.core.infrastructure.constants.InfrastructureConstants;
+import at.spot.core.infrastructure.maven.xml.DataType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
 import at.spot.core.infrastructure.maven.xml.GenericArgument;
@@ -62,19 +59,32 @@ import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import at.spot.maven.velocity.AbstractComplexJavaType;
+import at.spot.maven.velocity.AbstractJavaType;
+import at.spot.maven.velocity.AnnotationValueType;
+import at.spot.maven.velocity.JavaAnnotation;
+import at.spot.maven.velocity.JavaEnum;
+import at.spot.maven.velocity.JavaEnumValue;
+import at.spot.maven.velocity.JavaField;
+import at.spot.maven.velocity.JavaGenericTypeArgument;
+import at.spot.maven.velocity.JavaInterface;
+import at.spot.maven.velocity.JavaMemberType;
+import at.spot.maven.velocity.JavaMethod;
+import at.spot.maven.velocity.TemplateFile;
+import at.spot.maven.velocity.util.VelocityUtil;
+import de.hunsicker.jalopy.Jalopy;
 import net.sourceforge.jenesis4java.Access;
 import net.sourceforge.jenesis4java.Access.AccessType;
 import net.sourceforge.jenesis4java.Annotation;
-import net.sourceforge.jenesis4java.BooleanLiteral;
 import net.sourceforge.jenesis4java.ClassField;
 import net.sourceforge.jenesis4java.ClassMethod;
 import net.sourceforge.jenesis4java.ClassType;
 import net.sourceforge.jenesis4java.Comment;
-import net.sourceforge.jenesis4java.CompilationUnit;
+import net.sourceforge.jenesis4java.Invoke;
 import net.sourceforge.jenesis4java.PackageClass;
 import net.sourceforge.jenesis4java.Variable;
 import net.sourceforge.jenesis4java.VirtualMachine;
@@ -87,8 +97,14 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 @Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
+	protected Jalopy jalopy = new Jalopy();;
+	protected VelocityEngine velocityEngine = new VelocityEngine();
+
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
 	protected ArtifactRepository localRepository;
+
+	@Parameter(property = "formatSources")
+	protected boolean formatSource = true;
 
 	@Parameter(property = "project", defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
@@ -115,6 +131,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
+
+		initVelocity();
 
 		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
 		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
@@ -143,6 +161,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
+	protected void initVelocity() {
+		// Properties props = new Properties();
+		// props.put("file.resource.loader.path", "/");
+		// velocityEngine.init(props);
+		velocityEngine.setProperty("resource.loader", "class");
+		velocityEngine.setProperty("class.resource.loader.class",
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		velocityEngine.init();
+	}
+
 	protected void generateItemTypes() throws IOException, MojoExecutionException {
 		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
 		final TypeDefinitions itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
@@ -158,7 +186,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @return
 	 * @throws IOException
 	 * @throws MojoExecutionException
-	 * @throws DependencyResolutionException
+	 * @throws DependencyResolutionException1
 	 */
 	protected List<InputStream> findItemTypeDefinitions() throws MojoExecutionException {
 		final List<InputStream> definitions = new ArrayList<>();
@@ -392,173 +420,250 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void generateJavaCode(final TypeDefinitions definitions) throws IOException, MojoExecutionException {
+	protected void generateJavaCode(final TypeDefinitions definitions) throws MojoExecutionException {
 		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 
 		// Get the VirtualMachine implementation.
 		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
 
+		final List<AbstractComplexJavaType> types = new ArrayList<>();
+
 		for (final String enumName : definitions.getEnumTypes().keySet()) {
 			final EnumType enumType = definitions.getEnumTypes().get(enumName);
 
-			final TypeSpec.Builder enumBuilder = TypeSpec.enumBuilder(enumName).addModifiers(Modifier.PUBLIC);
+			final JavaEnum enumeration = new JavaEnum();
+			enumeration.setDescription(enumType.getDescription());
+			enumeration.setName(enumName);
+			enumeration.setPackagePath(enumType.getPackage());
 
-			if (StringUtils.isNotBlank(enumType.getDescription())) {
-				enumBuilder.addJavadoc(enumType.getDescription());
+			for (final EnumValue value : enumType.getValue()) {
+				final JavaEnumValue v = new JavaEnumValue();
+				v.setName(value.getValue());
+				v.setInternalName(value.getCode());
+
+				enumeration.addValue(v);
 			}
 
-			for (final EnumValue enumVal : enumType.getValue()) {
-				enumBuilder.addEnumConstant(enumVal.getCode());
-			}
+			types.add(enumeration);
+		}
 
-			final TypeSpec enumObj = enumBuilder.build();
-
-			final JavaFile javaFile = JavaFile.builder(enumType.getPackage(), enumObj).build();
-			javaFile.writeTo(targetClassesDirectory);
+		// write all enums
+		try {
+			writeJavaTypes(types);
+			types.clear();
+		} catch (final IOException e) {
+			throw new MojoExecutionException("Could not write enumerations.", e);
 		}
 
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
 
-			// the Item type base class is hardcoded, so ignore it
-			if (StringUtils.equals(type.getName(), Item.class.getSimpleName())) {
+			// ignore base item type
+			if (StringUtils.equals(Item.class.getSimpleName(), type.getName())) {
 				continue;
 			}
 
-			final CompilationUnit unit = vm.newCompilationUnit(this.targetClassesDirectory.getAbsolutePath());
-			unit.setNamespace(type.getPackage());
-			unit.setComment(Comment.DOCUMENTATION, "This file is auto-generated. All changes will be overwritten.");
+			final JavaClass javaClass = new JavaClass();
+			javaClass.setPackagePath(type.getPackage());
+			javaClass.setName(type.getName());
+			javaClass.setDescription(type.getDescription());
 
-			final PackageClass cls = unit.newPublicClass(type.getName());
+			final JavaAnnotation typeAnnotation = new JavaAnnotation();
+			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
 
-			if (type.isAbstract() != null) {
-				cls.isAbstract(type.isAbstract());
+			if (StringUtils.isBlank(type.getTypeCode())) {
+				throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
 			}
 
-			{// set private static final long serialVersionUID = 1L;
-				final ClassField serialId = cls.newField(vm.newType("long"), "serialVersionUID");
-				serialId.setAccess(AccessType.PRIVATE);
-				serialId.isStatic(true);
-				serialId.isFinal(true);
-				serialId.setExpression(vm.newLong(-1));
+			typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
+			javaClass.addAnnotation(typeAnnotation);
+
+			if (type.isAbstract() != null && type.isAbstract()) {
+				javaClass.setAbstract(true);
 			}
 
-			{ // add annotations
-				addImport(definitions, cls, SuppressWarnings.class);
-				Annotation ann = cls.addAnnotation(SuppressWarnings.class.getSimpleName(), "\"unchecked\"");
-
-				addImport(definitions, cls, at.spot.core.infrastructure.annotation.ItemType.class);
-
-				ann = cls.addAnnotation(ItemType.class.getSimpleName());
-
-				// JPA settings
-
-				// if the type is abstract we just don't make it a JPA entity
-				addImport(definitions, cls, Entity.class);
-				addImport(definitions, cls, DiscriminatorValue.class);
-				cls.addAnnotation(Entity.class.getSimpleName());
-				final Annotation discriminatorAnn = cls.addAnnotation(DiscriminatorValue.class.getSimpleName());
-				discriminatorAnn.addAnnotationAttribute("value", vm.newString(type.getName()));
-
-				// if (type.isAbstract() == null || !type.isAbstract()) {
-				// } else {
-				// // instead we just declare it a mapped superclass
-				// addImport(definitions, cls, MappedSuperclass.class);
-				// cls.addAnnotation(MappedSuperclass.class.getSimpleName());
-				// }
-
-				if (StringUtils.isNotBlank(type.getTypeCode())) {
-					ann.addAnnotationAttribute("typeCode", vm.newString(type.getTypeCode()));
-				} else { // add the type name as typecode as default
-					throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
-				}
-
-				addImport(definitions, cls, SuppressFBWarnings.class);
-
-				// add findbugs suppress warning annotation
-
-				cls.addAnnotation(vm.newAnnotation(SuppressFBWarnings.class.getSimpleName(),
-						"{ \"MF_CLASS_MASKS_FIELD\", \"EI_EXPOSE_REP\", \"EI_EXPOSE_REP2\" }"));
-			}
-
-			// set default
-			cls.setExtends(Item.class.getName());
+			final JavaInterface superClass = new JavaInterface();
 
 			if (StringUtils.isNotBlank(type.getExtends())) {
-				final ItemType superType = definitions.getItemTypes().get(type.getExtends());
+				final ItemType superItemType = definitions.getItemTypes().get(type.getExtends());
 
-				if (superType != null) {
-					cls.setExtends(superType.getName());
-					addImport(definitions, cls, superType.getName());
-				} else {
-					throw new MojoExecutionException(
-							String.format("Non-existing super type '%s' defined for item type %s", type.getExtends(),
-									type.getName()));
-				}
+				superClass.setName(superItemType.getName());
+				superClass.setPackagePath(superItemType.getPackage());
 			} else {
-				addImport(definitions, cls, Item.class);
+				superClass.setName("Item");
+				superClass.setPackagePath(Item.class.getPackage().getName());
 			}
 
-			if (StringUtils.isNotBlank(type.getDescription())) {
-				cls.setComment(Comment.DOCUMENTATION, type.getDescription());
-			}
+			javaClass.setSuperClass(superClass);
+			javaClass.setVisiblity(Visibility.PUBLIC);
 
-			// populate the properties
 			if (type.getProperties() != null) {
-				for (final Property p : type.getProperties().getProperty()) {
-					if (p.getDatatype() != null && StringUtils.isNotBlank(p.getDatatype().getClazz())) {
-						String propertyType = addImport(definitions, cls, p.getDatatype().getClazz());
+				for (final Property prop : type.getProperties().getProperty()) {
+					final JavaMemberType propType = getMemberType(definitions, prop);
 
-						// this property is some sort of collection
-						if (CollectionUtils.isNotEmpty(p.getDatatype().getGenericArgument())) {
-							final List<String> args = new ArrayList<>();
+					final JavaField field = new JavaField();
+					field.setVisiblity(Visibility.PROTECTED);
+					field.setType(propType);
+					field.setName(prop.getName());
+					field.setDescription(prop.getDescription());
 
-							for (final GenericArgument genericArg : p.getDatatype().getGenericArgument()) {
-								String arg = addImport(definitions, cls, genericArg.getClazz());
+					populatePropertyAnnotation(prop, field);
+					populatePropertyRelationAnnotation(prop, field, type);
+					// populatePropertyValidators(property, p, cls, vm);
 
-								if (genericArg.isWildcard()) {
-									arg = "? extends " + arg;
-								}
+					javaClass.addField(field);
 
-								args.add(arg);
-							}
+					boolean isReadable = true;
+					boolean isWritable = true;
 
-							propertyType = String.format("%s<%s>", propertyType, StringUtils.join(args, ", "));
-						}
+					if (prop.getModifiers() != null) {
+						isReadable = prop.getModifiers().isReadable();
+						isWritable = prop.getModifiers().isWritable();
+					}
 
-						final ClassType fieldType = vm.newType(propertyType);
-						final ClassField property = createProperty(p, fieldType, cls, vm);
+					if (isReadable) {
+						final JavaMethod getter = new JavaMethod();
+						getter.setName(generateMethodName("get", prop.getName()));
+						getter.setType(propType);
+						getter.setDescription(prop.getDescription());
+						getter.setCodeBlock(String.format("return this.%s;", prop.getName()));
 
-						populatePropertyAnnotation(property, p, definitions, fieldType, cls, vm);
-						populatePropertyRelationAnnotation(property, p, definitions, fieldType, cls, vm);
-						populatePropertyValidators(property, p, cls, vm);
-					} else {
-						throw new MojoExecutionException(String.format(
-								"No datatype set for property %s on item type %s", p.getName(), type.getName()));
+						javaClass.addMethod(getter);
+					}
+
+					if (isWritable) {
+						final JavaMethod setter = new JavaMethod();
+						setter.setName(generateMethodName("set", prop.getName()));
+						setter.setType(JavaMemberType.VOID);
+						setter.setDescription(prop.getDescription());
+						setter.addArgument(prop.getName(), propType);
+						setter.setCodeBlock(String.format("this.%s = %s;", prop.getName(), prop.getName()));
+
+						javaClass.addMethod(setter);
 					}
 				}
 			}
 
-			// Write the java file
+			types.add(javaClass);
+		}
+
+		// write all java classes
+		try {
+			writeJavaTypes(types);
+			types.clear();
+		} catch (final IOException e) {
+			throw new MojoExecutionException("Could not write item types.", e);
+		}
+
+	}
+
+	protected String generateMethodName(final String prefix, final String name) {
+		return prefix + StringUtils.capitalize(name);
+	}
+
+	protected JavaMemberType getMemberType(final TypeDefinitions definitions, final Property property)
+			throws MojoExecutionException {
+
+		final DataType dataType = property.getDatatype();
+		JavaMemberType ret = null;
+
+		if (StringUtils.equals(Item.class.getSimpleName(), dataType.getClazz())) {
+			ret = new JavaMemberType(Item.class);
+		} else if (StringUtils.contains(dataType.getClazz(), ".")) {
+			Class<?> clazz;
+
 			try {
-				unit.encode();
-			} catch (final Exception e) {
-				getLog().error(String.format("Could not generate item type defintion %s: %n %s", type.getName(),
-						unit.toString()));
+				clazz = Class.forName(dataType.getClazz());
+				ret = new JavaMemberType(clazz);
+			} catch (final ClassNotFoundException e) {
+				throw new MojoExecutionException(String.format("Could not resolve type %s for property %s",
+						dataType.getClazz(), property.getName()));
+			}
+		} else {
+			final ItemType itemType = definitions.getItemTypes().get(dataType.getClazz());
+
+			if (itemType != null) {
+				ret = new JavaMemberType(itemType.getName(), itemType.getPackage());
+			} else {
+				final EnumType enumType = definitions.getEnumTypes().get(dataType.getClazz());
+
+				if (enumType != null) {
+					ret = new JavaMemberType(enumType.getName(), enumType.getPackage());
+				} else {
+					ret = new JavaMemberType(dataType.getClazz());
+				}
+			}
+		}
+
+		if (CollectionUtils.isNotEmpty(property.getDatatype().getGenericArgument())) {
+			for (final GenericArgument genericArg : property.getDatatype().getGenericArgument()) {
+				final JavaMemberType argType = new JavaMemberType(genericArg.getClazz());
+				final JavaGenericTypeArgument arg = new JavaGenericTypeArgument(argType, genericArg.isWildcard());
+				ret.addGenericArgument(arg);
+			}
+		}
+
+		return ret;
+	}
+
+	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
+			throws IOException, MojoExecutionException {
+
+		for (final AbstractComplexJavaType type : types) {
+			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
+
+			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
+					type.getName() + ".java");
+
+			if (Files.exists(filePath)) {
+				Files.delete(filePath);
+			} else {
+				if (!Files.exists(filePath.getParent())) {
+					Files.createDirectories(filePath.getParent());
+				}
+			}
+
+			Files.createFile(filePath);
+
+			Writer writer = null;
+
+			try {
+				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile())));
+
+				final String encodedType = encodeType(type);
+				writer.write(encodedType);
+			} finally {
+				MiscUtil.closeQuietly(writer);
+			}
+
+			// format code
+			if (formatSource) {
+				formatSourceCode(filePath.toFile());
 			}
 		}
 	}
 
-	protected void writeFile(final String content, final String path, final String fileName) throws IOException {
-		Writer writer = null;
+	protected void formatSourceCode(final File sourceFile) throws FileNotFoundException {
+		jalopy.setInput(sourceFile);
+		jalopy.setOutput(sourceFile);
+		jalopy.format();
+	}
 
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(Paths.get(path, fileName).toFile().getAbsolutePath() + ".java"), "utf-8"));
-			writer.write(content);
-		} finally {
-			MiscUtil.closeQuietly(writer);
+	protected String encodeType(final AbstractJavaType type) throws MojoExecutionException {
+		final TemplateFile template = ClassUtil.getAnnotation(type.getClass(), TemplateFile.class);
+
+		if (StringUtils.isEmpty(template.value())) {
+			throw new MojoExecutionException(
+					String.format("No velocity template defined for type %s", type.getClass()));
 		}
+
+		final Template t = velocityEngine.getTemplate("templates/" + template.value());
+		final Context context = VelocityUtil.createSingletonObjectContext(type);
+
+		final StringWriter writer = new StringWriter();
+		t.merge(context, writer);
+
+		return writer.toString();
 	}
 
 	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {
@@ -625,28 +730,35 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			final ClassMethod setterMethod = cls.newMethod(vm.newType(net.sourceforge.jenesis4java.Type.VOID),
 					"set" + capitalize(propertyDefinition.getName()));
+			{// create setter
+				setterMethod.addParameter(fieldType, propertyDefinition.getName());
+				setterMethod.addAnnotation(SetProperty.class.getSimpleName());
+				addImport(null, cls, SetProperty.class);
 
-			setterMethod.addParameter(fieldType, propertyDefinition.getName());
-			setterMethod.newStmt(vm.newAssign(thisVar, var));
+				setterMethod.setAccess(Access.PUBLIC);
 
-			{ // mark the updated field as dirty
-				// final Invoke markDirtyCall = vm.newInvoke("markAsDirty");
-				// markDirtyCall.addArg(propertyDefinition.getName());
-				// setterMethod.newStmt(markDirtyCall);
+				// setter delegate
+				final Invoke setCall = vm.newInvoke("handler", "setProperty");
+				setCall.addArg(vm.newVar("this"));
+				setCall.addArg(propertyDefinition.getName());
+				setCall.addArg(vm.newVar(propertyDefinition.getName()));
+				setterMethod.newStmt(setCall);
 			}
 
-			setterMethod.addAnnotation(SetProperty.class.getSimpleName());
-			addImport(null, cls, SetProperty.class);
-
 			final ClassMethod getterMethod = cls.newMethod(fieldType, "get" + capitalize(propertyDefinition.getName()));
-			getterMethod.newReturn().setExpression(thisVar);
-			getterMethod.addAnnotation(GetProperty.class.getSimpleName());
-			addImport(null, cls, GetProperty.class);
+			{// create getter
+				getterMethod.addAnnotation(GetProperty.class.getSimpleName());
+				addImport(null, cls, GetProperty.class);
 
-			// default values
-			property.setAccess(AccessType.PROTECTED);
-			setterMethod.setAccess(Access.PUBLIC);
-			getterMethod.setAccess(Access.PUBLIC);
+				getterMethod.setAccess(Access.PUBLIC);
+
+				// getter delegate
+				final Invoke getCall = vm.newInvoke("handler", "getProperty");
+				getCall.addArg(vm.newVar("this"));
+				getCall.addArg(vm.newString(propertyDefinition.getName()));
+
+				getterMethod.newReturn().setExpression(vm.newCast(fieldType, getCall));
+			}
 
 			// override them
 			if (propertyDefinition.getAccessors() != null) {
@@ -667,150 +779,99 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return property;
 	}
 
-	protected void populatePropertyAnnotation(final ClassField property, final Property propertyDefinition,
-			final TypeDefinitions definitions, final ClassType fieldType, final PackageClass cls,
-			final VirtualMachine vm) {
+	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
 
-		cls.addImport(at.spot.core.infrastructure.annotation.Property.class.getName());
-
-		final Annotation ann = property
-				.addAnnotation(at.spot.core.infrastructure.annotation.Property.class.getSimpleName());
+		final JavaAnnotation propertyAnnotation = new JavaAnnotation();
+		propertyAnnotation.setType(at.spot.core.infrastructure.annotation.Property.class);
+		field.addAnnotation(propertyAnnotation);
 
 		if (propertyDefinition.getModifiers() != null) {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
-				ann.addAnnotationAttribute("unique", getBooleanValue(propertyDefinition.getModifiers().isUnique(), vm));
-
-				// JAP unique property
-				if (propertyDefinition.getRelation() == null
-						&& definitions.getItemTypes().get(propertyDefinition.getDatatype().getClazz()) == null) {
-					cls.addImport(Column.class.getName());
-
-					final Annotation jpaCollumnAnn = property.addAnnotation(Column.class.getSimpleName());
-					jpaCollumnAnn.addAnnotationAttribute("unique", getBooleanValue(Boolean.TRUE, vm));
-				}
+				propertyAnnotation.addParameter("unique", propertyDefinition.getModifiers().isUnique(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
 					.isInitial()) {
-				ann.addAnnotationAttribute("initial",
-						getBooleanValue(propertyDefinition.getModifiers().isInitial(), vm));
+				propertyAnnotation.addParameter("initial", propertyDefinition.getModifiers().isInitial(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE != propertyDefinition.getModifiers()
 					.isReadable()) {
-				ann.addAnnotationAttribute("readable",
-						getBooleanValue(propertyDefinition.getModifiers().isReadable(), vm));
+				propertyAnnotation.addParameter("readable", propertyDefinition.getModifiers().isReadable(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE != propertyDefinition.getModifiers()
 					.isWritable()) {
-				ann.addAnnotationAttribute("writable",
-						getBooleanValue(propertyDefinition.getModifiers().isWritable(), vm));
+				propertyAnnotation.addParameter("writable", propertyDefinition.getModifiers().isWritable(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_IS_REFERENCE != propertyDefinition
 					.getModifiers().isIsReference()) {
-				ann.addAnnotationAttribute("isReference",
-						getBooleanValue(propertyDefinition.getModifiers().isIsReference(), vm));
+				propertyAnnotation.addParameter("isReference", propertyDefinition.getModifiers().isIsReference(),
+						AnnotationValueType.LITERAL);
 			}
 
 			if (propertyDefinition.getAccessors() != null
 					&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
-				ann.addAnnotationAttribute("itemValueProvider",
-						vm.newString(propertyDefinition.getAccessors().getValueProvider()));
+				propertyAnnotation.addParameter("itemValueProvider",
+						propertyDefinition.getAccessors().getValueProvider(), AnnotationValueType.STRING);
 			}
 		}
 	}
 
-	protected BooleanLiteral getBooleanValue(final boolean val, final VirtualMachine vm) {
-		return val ? vm.newTrue() : vm.newFalse();
+	protected void populatePropertyRelationAnnotation(final Property property, final JavaField field,
+			final ItemType type) {
+		final at.spot.core.infrastructure.maven.xml.Relation rel = property.getRelation();
+
+		if (rel != null) {
+			final JavaAnnotation ann = new JavaAnnotation();
+			ann.setType(Relation.class);
+			field.addAnnotation(ann);
+
+			ann.addParameter("type", RelationType.class.getName() + "." + property.getRelation().getType().value(),
+					AnnotationValueType.LITERAL);
+			ann.addParameter("mappedTo", property.getRelation().getMappedTo(), AnnotationValueType.STRING);
+			ann.addParameter("referencedType", property.getRelation().getReferencedType(), AnnotationValueType.CLASS);
+
+			if (Relation.DEFAULT_CASCADE_ON_DELETE != property.getRelation().isCasacadeOnDelete()) {
+				ann.addParameter("casacadeOnDelete", property.getRelation().isCasacadeOnDelete(),
+						AnnotationValueType.LITERAL);
+			}
+
+			// JPA annotations
+			if (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY.equals(rel.getType())) {
+				final JavaAnnotation jpaManyToManyAnn = new JavaAnnotation();
+				jpaManyToManyAnn.setType(ManyToMany.class);
+				jpaManyToManyAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
+
+				final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation();
+				jpaJoinTalbeAnn.setType(JoinTable.class);
+				jpaJoinTalbeAnn.addParameter("name", generateJoinTableName(type, property), AnnotationValueType.STRING);
+
+				field.addAnnotation(jpaManyToManyAnn);
+				field.addAnnotation(jpaJoinTalbeAnn);
+			} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY.equals(rel.getType())) {
+
+			} else {
+
+			}
+		}
+
 	}
 
-	protected void populatePropertyRelationAnnotation(final ClassField property, final Property propertyDefinition,
-			final TypeDefinitions definitions, final ClassType fieldType, final PackageClass cls,
-			final VirtualMachine vm) {
+	protected String generateJoinTableName(final ItemType type, final Property property) {
+		final at.spot.core.infrastructure.maven.xml.Relation rel = property.getRelation();
+		final boolean isReference = property.getModifiers() != null ? property.getModifiers().isIsReference() : false;
 
-		if (propertyDefinition.getRelation() != null) {
-			{// JPA settings
-				Annotation ann = null;
-
-				if (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY
-						.equals(propertyDefinition.getRelation().getType())) {
-
-					cls.addImport(ManyToMany.class.getName());
-					cls.addImport(CascadeType.class.getName());
-					ann = property.addAnnotation(ManyToMany.class.getSimpleName());
-					ann.addAnnotationAttribute("cascade", vm.newFree("{CascadeType.ALL}"));
-
-					// cls.addImport(Where.class.getName());
-					// ann = property.addAnnotation(Where.class.getSimpleName());
-					// ann.addAnnotationAttribute("clause",
-					// vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType()
-					// + "'"));
-				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY
-
-						.equals(propertyDefinition.getRelation().getType())) {
-					cls.addImport(OneToMany.class.getName());
-					ann = property.addAnnotation(OneToMany.class.getSimpleName());
-
-					cls.addImport(Where.class.getName());
-					ann = property.addAnnotation(Where.class.getSimpleName());
-					ann.addAnnotationAttribute("clause",
-							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
-				} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE
-						.equals(propertyDefinition.getRelation().getType())) {
-
-					cls.addImport(OneToOne.class.getName());
-					ann = property.addAnnotation(OneToOne.class.getSimpleName());
-
-					cls.addImport(Where.class.getName());
-					ann = property.addAnnotation(Where.class.getSimpleName());
-					ann.addAnnotationAttribute("clause",
-							vm.newString("DTYPE='" + propertyDefinition.getRelation().getReferencedType() + "'"));
-				}
-
-				// ann.addAnnotationAttribute("fetch", vm.newFree(
-				// RelationType.class.getSimpleName() + "." +
-				// propertyDefinition.getRelation().getType().value()));
-				// ann.addAnnotationAttribute("mappedBy",
-				// vm.newString(propertyDefinition.getRelation().getMappedTo()));
-				// ann.addAnnotationAttribute("targetEntity",
-				// vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
-			}
-
-			{// spot settings
-				cls.addImport(Relation.class.getName());
-				cls.addImport(RelationType.class.getName());
-
-				final Annotation ann = property.addAnnotation(Relation.class.getSimpleName());
-
-				ann.addAnnotationAttribute("type", vm.newFree(
-						RelationType.class.getSimpleName() + "." + propertyDefinition.getRelation().getType().value()));
-				ann.addAnnotationAttribute("mappedTo", vm.newString(propertyDefinition.getRelation().getMappedTo()));
-				ann.addAnnotationAttribute("referencedType",
-						vm.newClassLiteral(vm.newType(propertyDefinition.getRelation().getReferencedType())));
-
-				if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
-					ann.addAnnotationAttribute("casacadeOnDelete",
-							getBooleanValue(propertyDefinition.getRelation().isCasacadeOnDelete(), vm));
-				}
-			}
+		if (isReference) {
+			return rel.getReferencedType() + "2" + type.getName();
 		} else {
-			final String propertyType = propertyDefinition.getDatatype().getClazz();
-
-			// check if the property type is an Item, if yes add the OneToOne
-			// annotation
-			if (definitions.getItemTypes().get(propertyType) != null) {
-				cls.addImport(OneToOne.class.getName());
-				property.addAnnotation(OneToOne.class.getSimpleName());
-			} else { // or check if it's some kind of collection
-				if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
-					// and add the element collection annotation
-					cls.addImport(ElementCollection.class.getName());
-					final Annotation ann = property.addAnnotation(ElementCollection.class.getSimpleName());
-				}
-			}
+			return type.getName() + "2" + rel.getReferencedType();
 		}
 	}
 

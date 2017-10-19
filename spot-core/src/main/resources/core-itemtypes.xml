@@ -4,11 +4,11 @@
 
 	<!-- enums -->
 
-	<enum name="ApprovalStatus" package="at.spot.itemtype.core.enumeration">
-		<description>The approval status, eg of products or cms items.</description>
-		<value code="APPROVED" />
-		<value code="UNAPPROVED" />
-	</enum>
+    <enum name="ApprovalStatus" package="at.spot.itemtype.core.enumeration">
+        <description>The approval status, eg. of products or CMS items.</description>
+        <value code="APPROVED" />
+        <value code="UNAPPROVED" />
+    </enum>
 
 	<!-- users and groups -->
 

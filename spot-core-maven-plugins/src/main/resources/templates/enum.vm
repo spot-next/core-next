@@ -1,0 +1,24 @@
+/**
+ * This file is auto-generated. All changes will be overwritten.
+ */
+package $packagePath;
+
+#foreach($i in $imports)
+	import $i;
+#end
+
+#if ( $!description )
+	/**
+	 * $description
+	 */
+#end
+@SuppressWarnings("unchecked")
+public enum $name {
+	#foreach($value in $values)
+		#if( "$!value.name" == "" )
+			$value.internalName,
+		#else
+			$value.name("$value.internalName")
+		#end
+	#end
+}
