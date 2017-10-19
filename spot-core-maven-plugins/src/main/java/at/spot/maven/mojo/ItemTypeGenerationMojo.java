@@ -67,6 +67,7 @@ import at.spot.maven.velocity.AbstractComplexJavaType;
 import at.spot.maven.velocity.AbstractJavaType;
 import at.spot.maven.velocity.AnnotationValueType;
 import at.spot.maven.velocity.JavaAnnotation;
+import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
 import at.spot.maven.velocity.JavaEnumValue;
 import at.spot.maven.velocity.JavaField;
@@ -75,6 +76,7 @@ import at.spot.maven.velocity.JavaInterface;
 import at.spot.maven.velocity.JavaMemberType;
 import at.spot.maven.velocity.JavaMethod;
 import at.spot.maven.velocity.TemplateFile;
+import at.spot.maven.velocity.Visibility;
 import at.spot.maven.velocity.util.VelocityUtil;
 import de.hunsicker.jalopy.Jalopy;
 import net.sourceforge.jenesis4java.Access;
@@ -826,7 +828,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	protected void populatePropertyRelationAnnotation(final Property property, final JavaField field,
 			final ItemType type) {
+
 		final at.spot.core.infrastructure.maven.xml.Relation rel = property.getRelation();
+
+		final boolean isReference = property.getModifiers() != null ? property.getModifiers().isIsReference() : false;
 
 		if (rel != null) {
 			final JavaAnnotation ann = new JavaAnnotation();
@@ -852,6 +857,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation();
 				jpaJoinTalbeAnn.setType(JoinTable.class);
 				jpaJoinTalbeAnn.addParameter("name", generateJoinTableName(type, property), AnnotationValueType.STRING);
+
+				// TODO: refactor
+				// add join columns
+				final String joinColumnSource = "{ @javax.persistence.JoinColumn(name = \"source_pk\", referencedColumnName = \"pk\") }";
+				final String joinColumnTarget = "{ @javax.persistence.JoinColumn(name = \"target_pk\", referencedColumnName = \"pk\") }";
+
+				jpaJoinTalbeAnn.addParameter("joinColumns", isReference ? joinColumnTarget : joinColumnSource,
+						AnnotationValueType.LITERAL);
+				jpaJoinTalbeAnn.addParameter("inverseJoinColumns", isReference ? joinColumnSource : joinColumnTarget,
+						AnnotationValueType.LITERAL);
 
 				field.addAnnotation(jpaManyToManyAnn);
 				field.addAnnotation(jpaJoinTalbeAnn);
