@@ -1,7 +1,5 @@
 package at.spot.test.persistence;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +29,7 @@ public class PersistenceIntegrationTest extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		user.setGroups(Arrays.asList(group));
+		user.getGroups().add(group);
 		// group.getMembers().add(user);
 
 		modelService.save(group);
@@ -39,10 +37,10 @@ public class PersistenceIntegrationTest extends AbstractIntegrationTest {
 		User loadedUser = modelService.get(User.class, user.getPk());
 		UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
 
-		Assert.assertEquals(user.getGroups().get(0).getPk(), loadedGroup.getPk());
-		Assert.assertEquals(user.getPk(), loadedGroup.getMembers().get(0).getPk());
+		Assert.assertEquals(loadedUser.getGroups().get(0).getPk(), loadedGroup.getPk());
+		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().get(0).getPk());
 		Assert.assertEquals(user.getId(), loadedUser.getId());
-		Assert.assertEquals(group.getPk(), loadedUser.getGroups().get(0).getPk());
+		Assert.assertEquals(group.getPk(), loadedGroup.getPk());
 	}
 
 	@Test
