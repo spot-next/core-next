@@ -52,7 +52,7 @@
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.9.0.pr3/jackson-datatype-jsr310-2.9.0.pr3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/module/jackson-module-parameter-names/2.9.0.pr3/jackson-module-parameter-names-2.9.0.pr3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/boot/spring-boot-starter-tomcat/2.0.0.M2/spring-boot-starter-tomcat-2.0.0.M2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/embed/tomcat-embed-core/8.5.16/tomcat-embed-core-8.5.16.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/embed/tomcat-embed-core/8.5.16/tomcat-embed-core-8.5.16.jar" sourcepath="SOURCE_ATTACHER/tomcat-embed-core-8.5.16-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/embed/tomcat-embed-el/8.5.16/tomcat-embed-el-8.5.16.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/embed/tomcat-embed-websocket/8.5.15/tomcat-embed-websocket-8.5.15.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hibernate/hibernate-validator/5.3.5.Final/hibernate-validator-5.3.5.Final.jar"/>

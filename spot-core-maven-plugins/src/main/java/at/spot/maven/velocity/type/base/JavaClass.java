@@ -1,8 +1,15 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type.base;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import at.spot.maven.velocity.TemplateFile;
+import at.spot.maven.velocity.type.AbstractComplexJavaType;
+import at.spot.maven.velocity.type.annotation.JavaAnnotation;
+import at.spot.maven.velocity.type.parts.JavaField;
 
 @TemplateFile("class.vm")
 public class JavaClass extends AbstractComplexJavaType {
@@ -15,13 +22,11 @@ public class JavaClass extends AbstractComplexJavaType {
 	}
 
 	public JavaClass(String name, String packagePath) {
-		setName(name);
-		setPackagePath(packagePath);
+		super(name, packagePath);
 	}
 
 	public JavaClass(Class<?> clazz) {
-		setName(clazz.getSimpleName());
-		setPackagePath(clazz.getPackage().getName());
+		super(clazz);
 	}
 
 	public List<JavaField> getFields() {
@@ -46,5 +51,14 @@ public class JavaClass extends AbstractComplexJavaType {
 
 	public boolean isAbstract() {
 		return isAbstract;
+	}
+
+	@Override
+	public Set<String> getImports() {
+		final Set<String> allImports = super.getImports();
+
+		allImports.addAll(fields.stream().flatMap(f -> f.getImports().stream()).collect(Collectors.toSet()));
+
+		return allImports;
 	}
 }

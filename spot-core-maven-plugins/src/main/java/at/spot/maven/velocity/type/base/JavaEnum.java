@@ -1,8 +1,11 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type.base;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import at.spot.maven.velocity.TemplateFile;
+import at.spot.maven.velocity.type.parts.JavaEnumValue;
 
 @TemplateFile("enum.vm")
 public class JavaEnum extends JavaClass {
@@ -11,12 +14,7 @@ public class JavaEnum extends JavaClass {
 	protected final List<JavaEnumValue> values = new ArrayList<>();
 
 	public JavaEnum(String name, String packagePath) {
-		setName(name);
-		setPackagePath(packagePath);
-	}
-
-	public JavaEnum() {
-		this.setSuperClass(Enum.class);
+		super(name, packagePath);
 	}
 
 	public List<JavaEnumValue> getValues() {
@@ -29,6 +27,6 @@ public class JavaEnum extends JavaClass {
 
 	@Override
 	public void setSuperClass(JavaInterface superClass) {
-		// ignore, as we always have to use Enum.class
+		// ignore, as superclass is always Enum
 	}
 }

@@ -1,18 +1,35 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import at.spot.maven.velocity.type.annotation.JavaAnnotation;
+import at.spot.maven.velocity.type.base.JavaInterface;
+import at.spot.maven.velocity.type.parts.JavaMethod;
+import at.spot.maven.velocity.type.parts.JavaMethodArgument;
 
 public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	private static final long serialVersionUID = 1L;
 
-	protected final Set<String> imports = new HashSet<>();
 	protected final Set<JavaInterface> interfaces = new HashSet<>();
 	protected final Set<JavaMethod> methods = new HashSet<>();
 
 	protected String packagePath;
 	protected JavaInterface superClass;
+
+	public AbstractComplexJavaType() {
+	}
+
+	public AbstractComplexJavaType(String name, String packagePath) {
+		setName(name);
+		setPackagePath(packagePath);
+	}
+
+	public AbstractComplexJavaType(Class<?> clazz) {
+		this(clazz.getSimpleName(), clazz.getPackage().getName());
+	}
 
 	public String getPackagePath() {
 		return packagePath;
@@ -22,7 +39,7 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 		this.packagePath = packagePath;
 	}
 
-	public JavaInterface getSuperClass() {
+	public AbstractComplexJavaType getSuperClass() {
 		return superClass;
 	}
 
@@ -32,15 +49,7 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	public void setSuperClass(Class<?> superClass) {
-		JavaClass javaSuperClass = new JavaClass();
-		javaSuperClass.setPackagePath(superClass.getPackage().getName());
-		javaSuperClass.setName(superClass.getSimpleName());
-
-		this.imports.add(superClass.getName());
-	}
-
-	public Set<String> getImports() {
-		return Collections.unmodifiableSet(imports);
+		setSuperClass(new JavaInterface(superClass.getPackage().getName(), superClass.getSimpleName()));
 	}
 
 	public Set<JavaInterface> getInterfaces() {
@@ -80,4 +89,16 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 		return this.packagePath + "." + this.getName();
 	}
 
+	@Override
+	public Set<String> getImports() {
+		final Set<String> allImports = super.getImports();
+		allImports.addAll(interfaces.stream().flatMap(i -> i.getImports().stream()).collect(Collectors.toSet()));
+		allImports.addAll(methods.stream().flatMap(i -> i.getImports().stream()).collect(Collectors.toSet()));
+
+		if (superClass != null) {
+			allImports.addAll(superClass.getImports());
+		}
+
+		return allImports;
+	}
 }

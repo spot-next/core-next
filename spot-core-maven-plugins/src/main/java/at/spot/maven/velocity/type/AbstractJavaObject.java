@@ -1,12 +1,16 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class AbstractJavaObject extends AbstractJavaType {
+import at.spot.maven.velocity.Visibility;
+import at.spot.maven.velocity.type.annotation.JavaAnnotation;
+
+public abstract class AbstractJavaObject extends AbstractObject {
 	private static final long serialVersionUID = 1L;
 
 	protected String description;
@@ -39,5 +43,13 @@ public abstract class AbstractJavaObject extends AbstractJavaType {
 
 	public void setVisiblity(Visibility visiblity) {
 		this.visiblity = visiblity;
+	}
+
+	@Override
+	public Set<String> getImports() {
+		final Set<String> allImports = super.getImports();
+		allImports.addAll(annotations.stream().flatMap(i -> i.getImports().stream()).collect(Collectors.toSet()));
+
+		return allImports;
 	}
 }

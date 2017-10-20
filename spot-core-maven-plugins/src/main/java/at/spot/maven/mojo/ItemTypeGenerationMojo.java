@@ -19,9 +19,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -64,20 +67,20 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.util.MavenUtil;
-import at.spot.maven.velocity.AbstractComplexJavaType;
-import at.spot.maven.velocity.AbstractJavaType;
-import at.spot.maven.velocity.AnnotationValueType;
-import at.spot.maven.velocity.JavaAnnotation;
-import at.spot.maven.velocity.JavaClass;
-import at.spot.maven.velocity.JavaEnum;
-import at.spot.maven.velocity.JavaEnumValue;
-import at.spot.maven.velocity.JavaField;
-import at.spot.maven.velocity.JavaGenericTypeArgument;
-import at.spot.maven.velocity.JavaInterface;
-import at.spot.maven.velocity.JavaMemberType;
-import at.spot.maven.velocity.JavaMethod;
 import at.spot.maven.velocity.TemplateFile;
 import at.spot.maven.velocity.Visibility;
+import at.spot.maven.velocity.type.AbstractComplexJavaType;
+import at.spot.maven.velocity.type.AbstractJavaObject;
+import at.spot.maven.velocity.type.annotation.AnnotationValueType;
+import at.spot.maven.velocity.type.annotation.JavaAnnotation;
+import at.spot.maven.velocity.type.base.JavaClass;
+import at.spot.maven.velocity.type.base.JavaEnum;
+import at.spot.maven.velocity.type.base.JavaInterface;
+import at.spot.maven.velocity.type.parts.JavaEnumValue;
+import at.spot.maven.velocity.type.parts.JavaField;
+import at.spot.maven.velocity.type.parts.JavaGenericTypeArgument;
+import at.spot.maven.velocity.type.parts.JavaMemberType;
+import at.spot.maven.velocity.type.parts.JavaMethod;
 import at.spot.maven.velocity.util.VelocityUtil;
 import de.hunsicker.jalopy.Jalopy;
 import net.sourceforge.jenesis4java.Access;
@@ -434,10 +437,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		for (final String enumName : definitions.getEnumTypes().keySet()) {
 			final EnumType enumType = definitions.getEnumTypes().get(enumName);
 
-			final JavaEnum enumeration = new JavaEnum();
+			final JavaEnum enumeration = new JavaEnum(enumName, enumType.getPackage());
 			enumeration.setDescription(enumType.getDescription());
-			enumeration.setName(enumName);
-			enumeration.setPackagePath(enumType.getPackage());
 
 			for (final EnumValue value : enumType.getValue()) {
 				final JavaEnumValue v = new JavaEnumValue();
@@ -465,15 +466,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				continue;
 			}
 
-			final JavaClass javaClass = new JavaClass();
-			javaClass.setPackagePath(type.getPackage());
-			javaClass.setName(type.getName());
+			final JavaClass javaClass = new JavaClass(type.getName(), type.getPackage());
 			javaClass.setDescription(type.getDescription());
 
 			{ // add itemtype annotation
 				// ignore base item type
-				final JavaAnnotation typeAnnotation = new JavaAnnotation();
-				typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
+				final JavaAnnotation typeAnnotation = new JavaAnnotation(
+						at.spot.core.infrastructure.annotation.ItemType.class);
 
 				if (StringUtils.isBlank(type.getTypeCode())) {
 					throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
@@ -484,8 +483,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			{// add JPA annotation
-				final JavaAnnotation jpaAnnotation = new JavaAnnotation();
-				jpaAnnotation.setType(Entity.class);
+				final JavaAnnotation jpaAnnotation = new JavaAnnotation(Entity.class);
 				javaClass.addAnnotation(jpaAnnotation);
 			}
 
@@ -519,7 +517,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					field.setDescription(prop.getDescription());
 
 					populatePropertyAnnotation(prop, field);
-					populatePropertyRelationAnnotation(prop, field, type);
+					populatePropertyRelationAnnotation(prop, field, type, definitions);
 					// populatePropertyValidators(property, p, cls, vm);
 
 					javaClass.addField(field);
@@ -580,12 +578,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		if (StringUtils.equals(Item.class.getSimpleName(), dataType.getClazz())) {
 			ret = new JavaMemberType(Item.class);
+
 		} else if (StringUtils.contains(dataType.getClazz(), ".")) {
 			Class<?> clazz;
 
 			try {
 				clazz = Class.forName(dataType.getClazz());
 				ret = new JavaMemberType(clazz);
+
 			} catch (final ClassNotFoundException e) {
 				throw new MojoExecutionException(String.format("Could not resolve type %s for property %s",
 						dataType.getClazz(), property.getName()));
@@ -608,7 +608,21 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		if (CollectionUtils.isNotEmpty(property.getDatatype().getGenericArgument())) {
 			for (final GenericArgument genericArg : property.getDatatype().getGenericArgument()) {
-				final JavaMemberType argType = new JavaMemberType(genericArg.getClazz());
+				ItemType genType = definitions.getItemTypes().get(genericArg.getClazz());
+
+				JavaMemberType argType = null;
+
+				if (genType != null) {
+					argType = new JavaMemberType(genType.getName(), genType.getPackage());
+				} else {
+					try {
+						argType = new JavaMemberType(Class.forName(genericArg.getClazz()));
+					} catch (ClassNotFoundException e) {
+						throw new MojoExecutionException(String.format("Unknown type %s for property %s",
+								genericArg.getClazz(), property.getName()), e);
+					}
+				}
+
 				final JavaGenericTypeArgument arg = new JavaGenericTypeArgument(argType, genericArg.isWildcard());
 				ret.addGenericArgument(arg);
 			}
@@ -660,7 +674,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		jalopy.format();
 	}
 
-	protected String encodeType(final AbstractJavaType type) throws MojoExecutionException {
+	protected String encodeType(final AbstractJavaObject type) throws MojoExecutionException {
 		final TemplateFile template = ClassUtil.getAnnotation(type.getClass(), TemplateFile.class);
 
 		if (StringUtils.isEmpty(template.value())) {
@@ -792,8 +806,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
 
-		final JavaAnnotation propertyAnnotation = new JavaAnnotation();
-		propertyAnnotation.setType(at.spot.core.infrastructure.annotation.Property.class);
+		final JavaAnnotation propertyAnnotation = new JavaAnnotation(
+				at.spot.core.infrastructure.annotation.Property.class);
 		field.addAnnotation(propertyAnnotation);
 
 		if (propertyDefinition.getModifiers() != null) {
@@ -801,6 +815,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					.isUnique()) {
 				propertyAnnotation.addParameter("unique", propertyDefinition.getModifiers().isUnique(),
 						AnnotationValueType.LITERAL);
+
+				// JAP unique property
+				if (propertyDefinition.getRelation() == null) {
+					final JavaAnnotation jpaColumnAnn = new JavaAnnotation(Column.class);
+					jpaColumnAnn.addParameter("unique", Boolean.TRUE, AnnotationValueType.BOOLEAN);
+					field.addAnnotation(jpaColumnAnn);
+				}
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
@@ -836,15 +857,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void populatePropertyRelationAnnotation(final Property property, final JavaField field,
-			final ItemType type) {
+			final ItemType type, TypeDefinitions definitions) {
 
 		final at.spot.core.infrastructure.maven.xml.Relation rel = property.getRelation();
 
 		final boolean isReference = property.getModifiers() != null ? property.getModifiers().isIsReference() : false;
 
 		if (rel != null) {
-			final JavaAnnotation ann = new JavaAnnotation();
-			ann.setType(Relation.class);
+			final JavaAnnotation ann = new JavaAnnotation(Relation.class);
 			field.addAnnotation(ann);
 
 			ann.addParameter("type", RelationType.class.getName() + "." + property.getRelation().getType().value(),
@@ -859,12 +879,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			// JPA annotations
 			if (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY.equals(rel.getType())) {
-				final JavaAnnotation jpaManyToManyAnn = new JavaAnnotation();
-				jpaManyToManyAnn.setType(ManyToMany.class);
-				jpaManyToManyAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
+				final JavaAnnotation jpaRelAnn = new JavaAnnotation(ManyToMany.class);
+				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
 
-				final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation();
-				jpaJoinTalbeAnn.setType(JoinTable.class);
+				final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation(JoinTable.class);
 				jpaJoinTalbeAnn.addParameter("name", generateJoinTableName(type, property), AnnotationValueType.STRING);
 
 				// TODO: refactor
@@ -877,15 +895,37 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				jpaJoinTalbeAnn.addParameter("inverseJoinColumns", isReference ? joinColumnSource : joinColumnTarget,
 						AnnotationValueType.LITERAL);
 
-				field.addAnnotation(jpaManyToManyAnn);
+				field.addAnnotation(jpaRelAnn);
 				field.addAnnotation(jpaJoinTalbeAnn);
 			} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY.equals(rel.getType())) {
+				final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToMany.class);
+				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
 
-			} else {
+				field.addAnnotation(jpaRelAnn);
+			}
+		} else {
+			final String propertyType = property.getDatatype().getClazz();
 
+			JavaAnnotation jpaAnn = null;
+
+			// check if the property type is an Item, if yes add the OneToOne
+			// annotation
+			if (definitions.getItemTypes().get(propertyType) != null) {
+				// jpaAnn = new JavaAnnotation(OneToOne.class);
+				// jpaAnn.addParameter("cascade", CascadeType.ALL,
+				// AnnotationValueType.ENUM_VALUE);
+			} else { // or check if it's some kind of collection
+				if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
+					// and add the element collection annotation
+					// and add the element collection annotation
+					jpaAnn = new JavaAnnotation(ElementCollection.class);
+				}
+			}
+
+			if (jpaAnn != null) {
+				field.addAnnotation(jpaAnn);
 			}
 		}
-
 	}
 
 	protected String generateJoinTableName(final ItemType type, final Property property) {

@@ -1,4 +1,4 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type.parts;
 
 import java.io.Serializable;
 

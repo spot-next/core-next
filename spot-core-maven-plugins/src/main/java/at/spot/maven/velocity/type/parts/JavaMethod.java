@@ -1,9 +1,12 @@
-package at.spot.maven.velocity;
+package at.spot.maven.velocity.type.parts;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import at.spot.maven.velocity.MethodModifier;
 
 public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;
@@ -31,5 +34,13 @@ public class JavaMethod extends JavaMember {
 
 	public List<JavaMethodArgument> getArguments() {
 		return arguments;
+	}
+
+	@Override
+	public Set<String> getImports() {
+		final Set<String> allImports = super.getImports();
+		allImports.addAll(arguments.stream().flatMap(a -> a.getImports().stream()).collect(Collectors.toSet()));
+
+		return allImports;
 	}
 }
