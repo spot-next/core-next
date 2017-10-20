@@ -22,14 +22,8 @@
 		<property name="initialSize" value="3" />
 	</bean>
 
-<!-- 	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
-<!-- 		<property name="dataSource" ref="dataSource" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="sessionFactory" class="at.spot.core.persistence.service.impl.hibernate.HibernateSessionFactoryBean"> -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="at.spot.core.persistence.service.impl.hibernate.HibernateSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="at.spot.itemtype" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
@@ -72,12 +66,15 @@
 <!-- 		<property name="entityManagerFactory" ref="entityManagerFactory" /> -->
 <!-- 	</bean> -->
 
+	<!-- 	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+	<!-- 		<property name="dataSource" ref="dataSource" /> -->
+	<!-- 	</bean> -->
+
 	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<bean id="persistenceExceptionTranslationPostProcessor"
-		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
-
+<!-- 	<bean id="persistenceExceptionTranslationPostProcessor" -->
+<!-- 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" /> -->
 
 </beans>

@@ -1,5 +1,7 @@
 package at.spot.test.persistence;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,8 +31,8 @@ public class PersistenceIntegrationTest extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		// user.setGroups(Arrays.asList(group));
-		group.getMembers().add(user);
+		user.setGroups(Arrays.asList(group));
+		// group.getMembers().add(user);
 
 		modelService.save(group);
 
