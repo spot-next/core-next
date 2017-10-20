@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.xml.bind.JAXBContext;
@@ -460,7 +461,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
 
-			// ignore base item type
 			if (StringUtils.equals(Item.class.getSimpleName(), type.getName())) {
 				continue;
 			}
@@ -470,15 +470,24 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			javaClass.setName(type.getName());
 			javaClass.setDescription(type.getDescription());
 
-			final JavaAnnotation typeAnnotation = new JavaAnnotation();
-			typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
+			{ // add itemtype annotation
+				// ignore base item type
+				final JavaAnnotation typeAnnotation = new JavaAnnotation();
+				typeAnnotation.setType(at.spot.core.infrastructure.annotation.ItemType.class);
 
-			if (StringUtils.isBlank(type.getTypeCode())) {
-				throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
+				if (StringUtils.isBlank(type.getTypeCode())) {
+					throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
+				}
+
+				typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
+				javaClass.addAnnotation(typeAnnotation);
 			}
 
-			typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
-			javaClass.addAnnotation(typeAnnotation);
+			{// add JPA annotation
+				final JavaAnnotation jpaAnnotation = new JavaAnnotation();
+				jpaAnnotation.setType(Entity.class);
+				javaClass.addAnnotation(jpaAnnotation);
+			}
 
 			if (type.isAbstract() != null && type.isAbstract()) {
 				javaClass.setAbstract(true);
