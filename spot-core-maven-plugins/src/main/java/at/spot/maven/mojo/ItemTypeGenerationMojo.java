@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -608,7 +609,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		if (CollectionUtils.isNotEmpty(property.getDatatype().getGenericArgument())) {
 			for (final GenericArgument genericArg : property.getDatatype().getGenericArgument()) {
-				ItemType genType = definitions.getItemTypes().get(genericArg.getClazz());
+				final ItemType genType = definitions.getItemTypes().get(genericArg.getClazz());
 
 				JavaMemberType argType = null;
 
@@ -617,7 +618,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				} else {
 					try {
 						argType = new JavaMemberType(Class.forName(genericArg.getClazz()));
-					} catch (ClassNotFoundException e) {
+					} catch (final ClassNotFoundException e) {
 						throw new MojoExecutionException(String.format("Unknown type %s for property %s",
 								genericArg.getClazz(), property.getName()), e);
 					}
@@ -857,7 +858,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void populatePropertyRelationAnnotation(final Property property, final JavaField field,
-			final ItemType type, TypeDefinitions definitions) {
+			final ItemType type, final TypeDefinitions definitions) {
 
 		final at.spot.core.infrastructure.maven.xml.Relation rel = property.getRelation();
 
@@ -902,6 +903,15 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
 
 				field.addAnnotation(jpaRelAnn);
+			} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE.equals(rel.getType())) {
+				final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToOne.class);
+				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
+
+				if (StringUtils.isNotBlank(rel.getMappedTo())) {
+					jpaRelAnn.addParameter("mappedBy", rel.getMappedTo(), AnnotationValueType.STRING);
+				}
+
+				field.addAnnotation(jpaRelAnn);
 			}
 		} else {
 			final String propertyType = property.getDatatype().getClazz();
@@ -911,9 +921,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			// check if the property type is an Item, if yes add the OneToOne
 			// annotation
 			if (definitions.getItemTypes().get(propertyType) != null) {
-				// jpaAnn = new JavaAnnotation(OneToOne.class);
-				// jpaAnn.addParameter("cascade", CascadeType.ALL,
-				// AnnotationValueType.ENUM_VALUE);
+				jpaAnn = new JavaAnnotation(OneToOne.class);
+				jpaAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
 			} else { // or check if it's some kind of collection
 				if (StringUtils.endsWith(propertyType, "List") || StringUtils.endsWith(propertyType, "Map")) {
 					// and add the element collection annotation
