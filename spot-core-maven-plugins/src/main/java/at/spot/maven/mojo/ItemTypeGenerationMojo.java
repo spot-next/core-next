@@ -442,8 +442,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			for (final EnumValue value : enumType.getValue()) {
 				final JavaEnumValue v = new JavaEnumValue();
-				v.setName(value.getValue());
-				v.setInternalName(value.getCode());
+				v.setName(value.getCode());
+				v.setInternalName(value.getValue());
 
 				enumeration.addValue(v);
 			}
