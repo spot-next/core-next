@@ -71,7 +71,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 				throw new ModelSaveException("Could not save given items", e);
 
 			} catch (final PersistenceException e) {
-				Throwable rootCause = ExceptionUtils.getRootCause(e);
+				final Throwable rootCause = ExceptionUtils.getRootCause(e);
 
 				throw new ModelSaveException(rootCause.getMessage(), e);
 			}
@@ -183,9 +183,9 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			final EntityType<T> et = mm.entity(type);
 
 			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
-				if (entry.getValue() instanceof Item && !getSession().contains(entry.getValue())) {
-					throw new PersistenceException(String
-							.format("Passing non-persisted item as search param %s is not supported.", entry.getKey()));
+				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
+					throw new PersistenceException(String.format(
+							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
 				}
 
 				p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
@@ -256,7 +256,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 		// em.createQuery(query, type).setParameter("pk", pk);
 
-		T item = getSession().find(type, pk);
+		final T item = getSession().find(type, pk);
 		getSession().remove(item);
 	}
 
@@ -273,7 +273,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void initItem(final T item) {
-		for (Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
+		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
 			if (field.getType().isAssignableFrom(List.class)) {
 				ClassUtil.setField(item, field.getName(), new ArrayList());
 			} else if (field.getType().isAssignableFrom(Set.class)) {
