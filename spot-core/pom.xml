@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.8.3</version>
+			<version>2.9.2</version>
 		</dependency>
 
 		<!-- storage -->
@@ -102,12 +102,12 @@
 		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
-			<version>1.3.1</version>
+			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-jexl3</artifactId>
-			<version>3.0</version>
+			<version>3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>
@@ -130,11 +130,11 @@
 		<!-- <artifactId>javax.el-api</artifactId> -->
 		<!-- <version>3.0.1-b04</version> -->
 		<!-- </dependency> -->
-		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>antlr</artifactId>
-			<version>2.7.7</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>antlr</groupId> -->
+		<!-- <artifactId>antlr</artifactId> -->
+		<!-- <version>2.7.7</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
@@ -143,12 +143,7 @@
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
+			<version>1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -158,7 +153,7 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.7</version>
+			<version>2.8.2</version>
 		</dependency>
 
 		<!-- spring -->
@@ -181,7 +176,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>5.0.0.RC3</version>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<!-- persistence -->
@@ -193,7 +188,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.7-dmr</version>
+			<version>8.0.8-dmr</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -205,12 +200,12 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>1.1.0.Final</version>
+			<version>2.0.0.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>5.4.1.Final</version>
+			<version>6.0.3.Final</version>
 		</dependency>
 
 		<!-- <dependency> -->
