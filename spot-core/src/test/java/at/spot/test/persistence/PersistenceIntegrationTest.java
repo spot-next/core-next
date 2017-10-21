@@ -46,12 +46,12 @@ public class PersistenceIntegrationTest extends AbstractIntegrationTest {
 	@Test
 	public void testQueryByExample() throws Exception {
 		User user = modelService.create(User.class);
-		user.setId("testUser1");
+		user.setId("testUser");
 
 		modelService.save(user);
 
 		User exampleUser = new User();
-		exampleUser.setId("testUser1");
+		exampleUser.setId("testUser");
 
 		User loadedUser = modelService.get(User.class, exampleUser);
 

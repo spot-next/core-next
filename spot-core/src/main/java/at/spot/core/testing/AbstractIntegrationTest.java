@@ -23,7 +23,8 @@ import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
 
 /**
- * This is the base class for all integration tasks..
+ * This is the base class for all integration tasks. Database access will be
+ * reverted after the each test using a transaction rollback.
  */
 @TestPropertySource(properties = { "service.persistence.mapdb.filepath=" + AbstractIntegrationTest.MAPDB_FILE })
 @RunWith(SpotJunitRunner.class)
@@ -74,7 +75,6 @@ public abstract class AbstractIntegrationTest {
 		MockitoAnnotations.initMocks(this);
 
 		try {
-			transactionService.start();
 			prepareTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
@@ -87,13 +87,10 @@ public abstract class AbstractIntegrationTest {
 	@After
 	public void afterTest() {
 		try {
-			transactionService.rollback();
 			teardownTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
 		}
-
-		// TODO: revert transaction
 	}
 
 	/**
