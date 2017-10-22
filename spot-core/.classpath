@@ -34,7 +34,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-jcl/5.0.0.RC2/spring-jcl-5.0.0.RC2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-context/5.0.0.RC2/spring-context-5.0.0.RC2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-aop/5.0.0.RC2/spring-aop-5.0.0.RC2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/5.0.0.RC2/spring-beans-5.0.0.RC2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/5.0.0.RC2/spring-beans-5.0.0.RC2.jar" sourcepath="SOURCE_ATTACHER/spring-beans-5.0.0.RC2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-expression/5.0.0.RC2/spring-expression-5.0.0.RC2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/boot/spring-boot-autoconfigure/2.0.0.M2/spring-boot-autoconfigure-2.0.0.M2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/boot/spring-boot-starter-logging/2.0.0.M2/spring-boot-starter-logging-2.0.0.M2.jar"/>
@@ -78,7 +78,7 @@
 	<classpathentry kind="src" path="/spot-core-base-models"/>
 	<classpathentry kind="var" path="M2_REPO/org/mapdb/mapdb/3.0.2/mapdb-3.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/jetbrains/kotlin/kotlin-stdlib/1.0.2/kotlin-stdlib-1.0.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jetbrains/kotlin/kotlin-runtime/1.0.2/kotlin-runtime-1.0.2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/jetbrains/kotlin/kotlin-runtime/1.0.2/kotlin-runtime-1.0.2.jar" sourcepath="SOURCE_ATTACHER/kotlin-runtime-1.0.2-sources-1508660522205.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/eclipse/collections/eclipse-collections-api/7.1.1/eclipse-collections-api-7.1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/eclipse/collections/eclipse-collections/7.1.1/eclipse-collections-7.1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/eclipse/collections/eclipse-collections-forkjoin/7.1.1/eclipse-collections-forkjoin-7.1.1.jar"/>
