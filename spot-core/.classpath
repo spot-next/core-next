@@ -32,7 +32,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/springframework/boot/spring-boot/2.0.0.M2/spring-boot-2.0.0.M2.jar" sourcepath="M2_REPO/org/springframework/boot/spring-boot/2.0.0.M2/spring-boot-2.0.0.M2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-core/5.0.0.RC2/spring-core-5.0.0.RC2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-jcl/5.0.0.RC2/spring-jcl-5.0.0.RC2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-context/5.0.0.RC2/spring-context-5.0.0.RC2.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-context/5.0.0.RC2/spring-context-5.0.0.RC2.jar" sourcepath="SOURCE_ATTACHER/spring-context-5.0.0.RC2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-aop/5.0.0.RC2/spring-aop-5.0.0.RC2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-beans/5.0.0.RC2/spring-beans-5.0.0.RC2.jar" sourcepath="SOURCE_ATTACHER/spring-beans-5.0.0.RC2-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/spring-expression/5.0.0.RC2/spring-expression-5.0.0.RC2.jar"/>

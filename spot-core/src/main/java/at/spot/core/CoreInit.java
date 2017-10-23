@@ -1,6 +1,8 @@
 package at.spot.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableLoadTimeWeaving;
+import org.springframework.context.annotation.EnableLoadTimeWeaving.AspectJWeaving;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -36,6 +38,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @EnableAsync
 @EnableTransactionManagement
 @EnableScheduling
+@EnableLoadTimeWeaving(aspectjWeaving = AspectJWeaving.AUTODETECT)
 public class CoreInit extends ModuleInit {
 
 	@Autowired
