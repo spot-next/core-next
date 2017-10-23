@@ -45,15 +45,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class Bootstrap extends SpringApplicationBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
+	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	static {
-		// dynamically attach java agent to jvm if not already present
-		DynamicInstrumentationLoader.waitForInitialized();
-		// weave all classes before they are loaded as beans
-		DynamicInstrumentationLoader.initLoadTimeWeavingContext();
+		DynamicInstrumentationLoader.initialize();
 	}
-
-	// public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	private Bootstrap() {
 		Registry.setMainThread(Thread.currentThread());
@@ -151,8 +147,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with the
-	 * parent context.
+	 * necessary, so that the spring context of this module can be merged with
+	 * the parent context.
 	 * 
 	 * @param parentContext
 	 */
@@ -227,8 +223,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths. This
-	 * causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths.
+	 * This causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

@@ -102,7 +102,7 @@ public abstract class AbstractIntegrationTest {
 	protected static void removeMapDbFile() {
 		try {
 			Files.deleteIfExists(Paths.get(MAPDB_FILE));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			System.out.println("Could not remove temporary MapDB storage file.");
 		}
 	}
