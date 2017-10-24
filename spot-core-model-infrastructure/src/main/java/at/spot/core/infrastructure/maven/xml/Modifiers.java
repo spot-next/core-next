@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="unique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="readable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *       &lt;attribute name="writable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *       &lt;attribute name="isReference" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="initial" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -45,8 +44,6 @@ public class Modifiers {
     protected Boolean readable;
     @XmlAttribute(name = "writable")
     protected Boolean writable;
-    @XmlAttribute(name = "isReference")
-    protected Boolean isReference;
     @XmlAttribute(name = "initial")
     protected Boolean initial;
 
@@ -132,34 +129,6 @@ public class Modifiers {
      */
     public void setWritable(Boolean value) {
         this.writable = value;
-    }
-
-    /**
-     * Ruft den Wert der isReference-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isIsReference() {
-        if (isReference == null) {
-            return false;
-        } else {
-            return isReference;
-        }
-    }
-
-    /**
-     * Legt den Wert der isReference-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setIsReference(Boolean value) {
-        this.isReference = value;
     }
 
     /**

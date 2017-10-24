@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="valueProvider" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="getter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *       &lt;attribute name="setter" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *       &lt;attribute name="field" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -44,8 +43,6 @@ public class Accessors {
     protected Boolean getter;
     @XmlAttribute(name = "setter")
     protected Boolean setter;
-    @XmlAttribute(name = "field")
-    protected Boolean field;
 
     /**
      * Ruft den Wert der valueProvider-Eigenschaft ab.
@@ -125,34 +122,6 @@ public class Accessors {
      */
     public void setSetter(Boolean value) {
         this.setter = value;
-    }
-
-    /**
-     * Ruft den Wert der field-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isField() {
-        if (field == null) {
-            return false;
-        } else {
-            return field;
-        }
-    }
-
-    /**
-     * Legt den Wert der field-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setField(Boolean value) {
-        this.field = value;
     }
 
 }

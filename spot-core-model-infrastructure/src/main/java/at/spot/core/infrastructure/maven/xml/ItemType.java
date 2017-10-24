@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -24,9 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="ItemType">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{}BaseComplexType">
  *       &lt;sequence>
- *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="properties" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
@@ -39,12 +38,10 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;/complexType>
  *         &lt;/element>
  *       &lt;/sequence>
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="package" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="extends" type="{http://www.w3.org/2001/XMLSchema}string" default="Item" />
  *       &lt;attribute name="abstract" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="typeCode" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -53,47 +50,19 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ItemType", propOrder = {
-    "description",
     "properties"
 })
-public class ItemType {
+public class ItemType
+    extends BaseComplexType
+{
 
-    protected String description;
     protected ItemType.Properties properties;
-    @XmlAttribute(name = "name", required = true)
-    protected String name;
-    @XmlAttribute(name = "package", required = true)
-    protected String _package;
     @XmlAttribute(name = "extends")
     protected String _extends;
     @XmlAttribute(name = "abstract")
     protected Boolean _abstract;
     @XmlAttribute(name = "typeCode")
     protected String typeCode;
-
-    /**
-     * Ruft den Wert der description-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Legt den Wert der description-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDescription(String value) {
-        this.description = value;
-    }
 
     /**
      * Ruft den Wert der properties-Eigenschaft ab.
@@ -117,54 +86,6 @@ public class ItemType {
      */
     public void setProperties(ItemType.Properties value) {
         this.properties = value;
-    }
-
-    /**
-     * Ruft den Wert der name-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Legt den Wert der name-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Ruft den Wert der package-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPackage() {
-        return _package;
-    }
-
-    /**
-     * Legt den Wert der package-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPackage(String value) {
-        this._package = value;
     }
 
     /**

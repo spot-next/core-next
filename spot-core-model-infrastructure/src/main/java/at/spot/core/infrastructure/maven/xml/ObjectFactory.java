@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -53,11 +53,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AtomicType }
+     * 
+     */
+    public AtomicType createAtomicType() {
+        return new AtomicType();
+    }
+
+    /**
      * Create an instance of {@link EnumType }
      * 
      */
     public EnumType createEnumType() {
         return new EnumType();
+    }
+
+    /**
+     * Create an instance of {@link RelationType }
+     * 
+     */
+    public RelationType createRelationType() {
+        return new RelationType();
+    }
+
+    /**
+     * Create an instance of {@link RelationNode }
+     * 
+     */
+    public RelationNode createRelationNode() {
+        return new RelationNode();
     }
 
     /**
@@ -85,27 +109,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ElementCollectionType }
+     * 
+     */
+    public ElementCollectionType createElementCollectionType() {
+        return new ElementCollectionType();
+    }
+
+    /**
      * Create an instance of {@link DefaultValue }
      * 
      */
     public DefaultValue createDefaultValue() {
         return new DefaultValue();
-    }
-
-    /**
-     * Create an instance of {@link GenericArgument }
-     * 
-     */
-    public GenericArgument createGenericArgument() {
-        return new GenericArgument();
-    }
-
-    /**
-     * Create an instance of {@link Relation }
-     * 
-     */
-    public Relation createRelation() {
-        return new Relation();
     }
 
     /**
@@ -117,11 +133,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DataType }
+     * Create an instance of {@link ElementMapType }
      * 
      */
-    public DataType createDataType() {
-        return new DataType();
+    public ElementMapType createElementMapType() {
+        return new ElementMapType();
     }
 
     /**

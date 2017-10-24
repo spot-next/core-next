@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -11,20 +11,23 @@ package at.spot.core.infrastructure.maven.xml;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für GenericArgument complex type.
+ * <p>Java-Klasse für BaseType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="GenericArgument">
+ * &lt;complexType name="BaseType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="class" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="wildcard" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;sequence>
+ *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,64 +36,67 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GenericArgument")
-public class GenericArgument {
+@XmlType(name = "BaseType", propOrder = {
+    "description"
+})
+@XmlSeeAlso({
+    AtomicType.class,
+    ElementCollectionType.class,
+    ElementMapType.class,
+    BaseComplexType.class
+})
+public abstract class BaseType {
 
-    @XmlAttribute(name = "class", required = true)
-    protected String clazz;
-    @XmlAttribute(name = "wildcard")
-    protected Boolean wildcard;
+    protected String description;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
 
     /**
-     * Ruft den Wert der clazz-Eigenschaft ab.
+     * Ruft den Wert der description-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getClazz() {
-        return clazz;
+    public String getDescription() {
+        return description;
     }
 
     /**
-     * Legt den Wert der clazz-Eigenschaft fest.
+     * Legt den Wert der description-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setClazz(String value) {
-        this.clazz = value;
+    public void setDescription(String value) {
+        this.description = value;
     }
 
     /**
-     * Ruft den Wert der wildcard-Eigenschaft ab.
+     * Ruft den Wert der name-Eigenschaft ab.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public boolean isWildcard() {
-        if (wildcard == null) {
-            return false;
-        } else {
-            return wildcard;
-        }
+    public String getName() {
+        return name;
     }
 
     /**
-     * Legt den Wert der wildcard-Eigenschaft fest.
+     * Legt den Wert der name-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public void setWildcard(Boolean value) {
-        this.wildcard = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

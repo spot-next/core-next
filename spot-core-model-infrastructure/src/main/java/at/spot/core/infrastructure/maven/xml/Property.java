@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.03.28 um 02:38:38 PM CEST 
+// Generiert: 2017.10.24 um 08:58:46 PM CEST 
 //
 
 
@@ -11,7 +11,6 @@ package at.spot.core.infrastructure.maven.xml;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -25,15 +24,14 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="datatype" type="{}DataType"/>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="modifiers" type="{}Modifiers" minOccurs="0"/>
  *         &lt;element name="accessors" type="{}Accessors" minOccurs="0"/>
- *         &lt;element name="relation" type="{}Relation" minOccurs="0"/>
  *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
  *         &lt;element name="defaultValue" type="{}DefaultValue" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -43,50 +41,23 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Property", propOrder = {
-    "datatype",
     "description",
     "modifiers",
     "accessors",
-    "relation",
     "validators",
     "defaultValue"
 })
 public class Property {
 
-    @XmlElement(required = true)
-    protected DataType datatype;
     protected String description;
     protected Modifiers modifiers;
     protected Accessors accessors;
-    protected Relation relation;
     protected Validators validators;
     protected DefaultValue defaultValue;
     @XmlAttribute(name = "name", required = true)
     protected String name;
-
-    /**
-     * Ruft den Wert der datatype-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DataType }
-     *     
-     */
-    public DataType getDatatype() {
-        return datatype;
-    }
-
-    /**
-     * Legt den Wert der datatype-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DataType }
-     *     
-     */
-    public void setDatatype(DataType value) {
-        this.datatype = value;
-    }
+    @XmlAttribute(name = "type", required = true)
+    protected String type;
 
     /**
      * Ruft den Wert der description-Eigenschaft ab.
@@ -161,30 +132,6 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der relation-Eigenschaft ab.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Relation }
-     *     
-     */
-    public Relation getRelation() {
-        return relation;
-    }
-
-    /**
-     * Legt den Wert der relation-Eigenschaft fest.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Relation }
-     *     
-     */
-    public void setRelation(Relation value) {
-        this.relation = value;
-    }
-
-    /**
      * Ruft den Wert der validators-Eigenschaft ab.
      * 
      * @return
@@ -254,6 +201,30 @@ public class Property {
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Ruft den Wert der type-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Legt den Wert der type-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 
 }

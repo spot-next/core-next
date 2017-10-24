@@ -6,47 +6,22 @@
 	<xs:element name="types">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="atomic" type="AtomicType" minOccurs="0"
+					maxOccurs="unbounded" />
 				<xs:element name="enum" type="EnumType" minOccurs="0"
 					maxOccurs="unbounded" />
 				<xs:element name="type" type="ItemType" minOccurs="0"
 					maxOccurs="unbounded" />
+				<xs:element name="relation" type="RelationType"
+					minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
-
 	</xs:element>
 
-	<xs:complexType name="EnumType" >
+	<xs:complexType name="BaseType" abstract="true">
 		<xs:sequence>
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
-			<xs:element name="value" type="EnumValue" minOccurs="0" maxOccurs="unbounded" />
-		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required" />
-		<xs:attribute name="package" type="xs:string" use="required" />
-	</xs:complexType>
-	
-	<xs:complexType name="EnumValue">
-		<xs:attribute name="code" type="xs:string" use="required" />
-		<xs:attribute name="value" type="xs:string" use="optional" />
-	</xs:complexType>
-
-	<xs:complexType name="ItemType">
-		<xs:sequence>
-			<xs:element name="description" type="xs:string" minOccurs="0"
-				maxOccurs="1" />
-			<xs:element name="properties" minOccurs="0" maxOccurs="1">
-				<xs:annotation>
-					<xs:documentation>
-						Defines the list of item attributes.
-					</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="property" type="Property" minOccurs="0"
-							maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required">
 			<xs:annotation>
@@ -55,35 +30,108 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="package" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>
-					Defines the java package of the item type.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="extends" type="xs:string" default="Item">
-			<xs:annotation>
-				<xs:documentation>
-					Defines the super class of the given type
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="abstract" type="xs:boolean">
-			<xs:annotation>
-				<xs:documentation>
-					Defines if the item type is abstract.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="typeCode" type="xs:string" use="optional">
-			<xs:annotation>
-				<xs:documentation>
-					The internal code of the item type, used for
-					storage and other internal functionality.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BaseComplexType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="package" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the java package of the item type.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ElementCollectionType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="elementType" type="xs:string" use="required" />
+				<xs:attribute name="collectionType" type="CollectionType"
+					use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ElementMapType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="keyType" type="xs:string" use="required" />
+				<xs:attribute name="valueType" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AtomicType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="className" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EnumType">
+		<xs:complexContent>
+			<xs:extension base="BaseComplexType">
+				<xs:sequence>
+					<xs:element name="value" type="EnumValue" minOccurs="0"
+						maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EnumValue">
+		<xs:attribute name="code" type="xs:string" use="required" />
+		<xs:attribute name="value" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="ItemType">
+		<xs:complexContent>
+			<xs:extension base="BaseComplexType">
+				<xs:sequence>
+					<xs:element name="properties" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>
+								Defines the list of item attributes.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="property" type="Property"
+									minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+
+				<xs:attribute name="extends" type="xs:string" default="Item">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the super class of the given type
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="abstract" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>
+							Defines if the item type is abstract.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="typeCode" type="xs:string" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							The internal code of the item type, used for
+							storage and other internal functionality.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="DefaultValue" mixed="true">
@@ -92,15 +140,11 @@
 
 	<xs:complexType name="Property">
 		<xs:sequence>
-			<xs:element name="datatype" type="DataType" minOccurs="1"
-				maxOccurs="1" />
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
 			<xs:element name="modifiers" type="Modifiers" minOccurs="0"
 				maxOccurs="1" />
 			<xs:element name="accessors" type="Accessors" minOccurs="0"
-				maxOccurs="1" />
-			<xs:element name="relation" type="Relation" minOccurs="0"
 				maxOccurs="1" />
 			<xs:element name="validators" type="Validators" minOccurs="0"
 				maxOccurs="1" />
@@ -114,36 +158,10 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-	</xs:complexType>
-
-	<xs:complexType name="DataType">
-		<xs:sequence>
-			<xs:element name="genericArgument" type="GenericArgument"
-				minOccurs="0" maxOccurs="unbounded" />
-		</xs:sequence>
-		<xs:attribute name="class" type="xs:string" use="required">
+		<xs:attribute name="type" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					Defines the java class of the data type.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
-
-	<xs:complexType name="GenericArgument">
-		<xs:attribute name="class" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>
-					Defines the java class of the generic argument.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="wildcard" type="xs:boolean" use="optional"
-			default="false">
-			<xs:annotation>
-				<xs:documentation>
-					If true the resulting generic type will be of
-					&gt;? extends Type>
+					Defines the type of the property
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -192,15 +210,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="isReference" type="xs:boolean"
-			default="false">
-			<xs:annotation>
-				<xs:documentation>
-					Defines if the property is referenced from other
-					types.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="initial" type="xs:boolean" default="false">
 			<xs:annotation>
 				<xs:documentation>
@@ -238,44 +247,81 @@
 		</xs:attribute>
 	</xs:complexType>
 
-	<xs:complexType name="Relation">
-		<xs:annotation>
-			<xs:documentation>
-				Defines the relation settings of the property.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:attribute name="type" type="RelationType" default="OneToMany">
+	<xs:complexType name="RelationType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="source" type="RelationNode" minOccurs="1"
+				maxOccurs="1" />
+			<xs:element name="target" type="RelationNode" minOccurs="1"
+				maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
 			<xs:annotation>
-				<xs:documentation>Defines the type of relation.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="referencedType" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>Defines the referenced type's class.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="mappedTo" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>Defines the referenced property name.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="casacadeOnDelete" type="xs:boolean"
-			default="false">
-			<xs:annotation>
-				<xs:documentation>Defines if deletion is cascaded for all referenced
-					items.
+				<xs:documentation>
+					Defines the name of the item type.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
 
-	<xs:simpleType name="RelationType">
+	<xs:complexType name="RelationNode">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="itemType" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Defines the itemtype of the relation endpoint.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="mappedBy" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the name of the property that references
+					this endpoint item type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="cardinality" type="RelationshipCardinality"
+			use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the cardinality of the relation
+					endpoint.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="collectionType" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the collection type of the property
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:simpleType name="RelationshipCardinality">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="one" />
+			<xs:enumeration value="many" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="RelationshipType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="OneToMany" />
 			<xs:enumeration value="OneToOne" />
 			<xs:enumeration value="ManyToMany" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CollectionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="List" />
+			<xs:enumeration value="Set" />
+			<xs:enumeration value="Collection" />
 		</xs:restriction>
 	</xs:simpleType>
 

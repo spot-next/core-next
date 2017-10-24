@@ -12,20 +12,20 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für DefaultValue complex type.
+ * <p>Java-Klasse für ElementMapType complex type.
  * 
  * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="DefaultValue">
+ * &lt;complexType name="ElementMapType">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
+ *     &lt;extension base="{}BaseType">
+ *       &lt;attribute name="keyType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="valueType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -33,62 +33,62 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DefaultValue", propOrder = {
-    "content"
-})
-public class DefaultValue {
+@XmlType(name = "ElementMapType")
+public class ElementMapType
+    extends BaseType
+{
 
-    @XmlValue
-    protected String content;
-    @XmlAttribute(name = "value")
-    protected String value;
+    @XmlAttribute(name = "keyType", required = true)
+    protected String keyType;
+    @XmlAttribute(name = "valueType", required = true)
+    protected String valueType;
 
     /**
-     * Ruft den Wert der content-Eigenschaft ab.
+     * Ruft den Wert der keyType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getKeyType() {
+        return keyType;
     }
 
     /**
-     * Legt den Wert der content-Eigenschaft fest.
+     * Legt den Wert der keyType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
+    public void setKeyType(String value) {
+        this.keyType = value;
     }
 
     /**
-     * Ruft den Wert der value-Eigenschaft ab.
+     * Ruft den Wert der valueType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getValueType() {
+        return valueType;
     }
 
     /**
-     * Legt den Wert der value-Eigenschaft fest.
+     * Legt den Wert der valueType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setValueType(String value) {
+        this.valueType = value;
     }
 
 }
