@@ -31,7 +31,6 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
-import javassist.bytecode.annotation.AnnotationImpl;
 
 /**
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
@@ -95,21 +94,14 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 * @return
 	 */
-	protected List<AnnotationImpl> getAnnotations(CtClass clazz) {
-		List<AnnotationImpl> annotations = new ArrayList<>();
+	protected List<Annotation> getAnnotations(CtClass clazz) {
+		List<Annotation> annotations = new ArrayList<>();
 
-		try {
-			Object[] anns = clazz.getAnnotations();
+		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazz.getClassFile()
+				.getAttribute(AnnotationsAttribute.visibleTag);
 
-			if (anns != null) {
-				for (Object a : anns) {
-					if (a instanceof AnnotationImpl) {
-						annotations.add((AnnotationImpl) a);
-					}
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			// ignore
+		if (attInfo != null) {
+			annotations.addAll(Arrays.asList(attInfo.getAnnotations()));
 		}
 
 		return annotations;
@@ -122,7 +114,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 * @return
 	 */
-	protected Optional<AnnotationImpl> getAnnotation(CtClass clazz, Class<ItemType> annotation) {
+	protected Optional<Annotation> getAnnotation(CtClass clazz, Class<ItemType> annotation) {
 		return getAnnotations(clazz).stream().filter(a -> StringUtils.equals(a.getTypeName(), annotation.getName()))
 				.findFirst();
 	}
@@ -211,7 +203,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected Annotation createAnnotation(final CtClass clazz,
 			final Class<? extends java.lang.annotation.Annotation> type) {
 
-		final ConstPool cpool = getConstPool(clazz);
+		return createAnnotation(clazz, type);
+	}
+
+	protected Annotation createAnnotation(final ConstPool cpool,
+			final Class<? extends java.lang.annotation.Annotation> type) {
+
 		final Annotation annotation = new Annotation(type.getName(), cpool);
 
 		return annotation;
@@ -225,15 +222,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 */
 	protected void addAnnotations(final CtClass clazz, final CtField field, final List<Annotation> annotations) {
-
-		final AnnotationsAttribute attr = new AnnotationsAttribute(getConstPool(clazz),
-				AnnotationsAttribute.visibleTag);
-
 		for (final Annotation a : annotations) {
+			final AnnotationsAttribute attr = (AnnotationsAttribute) field.getFieldInfo()
+					.getAttribute(AnnotationsAttribute.visibleTag);
 			attr.addAnnotation(a);
+			field.getFieldInfo().addAttribute(attr);
 		}
-
-		field.getFieldInfo().addAttribute(attr);
 	}
 
 	protected ConstPool getConstPool(final CtClass clazz) {
@@ -297,5 +291,15 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		} finally {
 			CloseUtil.closeQuietly(out);
 		}
+	}
+
+	protected boolean hasInterface(CtClass clazz, Object interfaceType) {
+		for (String i : clazz.getClassFile().getInterfaces()) {
+			if (StringUtils.equals(interfaceType.getClass().getName(), i)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
