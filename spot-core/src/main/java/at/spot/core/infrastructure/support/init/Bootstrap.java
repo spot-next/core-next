@@ -33,6 +33,7 @@ import at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
+import de.invesdwin.instrument.DynamicInstrumentationLoader;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -44,8 +45,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class Bootstrap extends SpringApplicationBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
+	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
-	// public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
+	static {
+		DynamicInstrumentationLoader.initialize();
+	}
 
 	private Bootstrap() {
 		Registry.setMainThread(Thread.currentThread());

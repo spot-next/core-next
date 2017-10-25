@@ -8,6 +8,10 @@
 			<xs:sequence>
 				<xs:element name="atomic" type="AtomicType" minOccurs="0"
 					maxOccurs="unbounded" />
+				<xs:element name="collection" type="CollectionType"
+					minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="map" type="MapType" minOccurs="0"
+					maxOccurs="unbounded" />
 				<xs:element name="enum" type="EnumType" minOccurs="0"
 					maxOccurs="unbounded" />
 				<xs:element name="type" type="ItemType" minOccurs="0"
@@ -46,17 +50,17 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ElementCollectionType">
+	<xs:complexType name="CollectionType">
 		<xs:complexContent>
 			<xs:extension base="BaseType">
 				<xs:attribute name="elementType" type="xs:string" use="required" />
-				<xs:attribute name="collectionType" type="CollectionType"
+				<xs:attribute name="collectionType" type="CollectionsType"
 					use="required" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ElementMapType">
+	<xs:complexType name="MapType">
 		<xs:complexContent>
 			<xs:extension base="BaseType">
 				<xs:attribute name="keyType" type="xs:string" use="required" />
@@ -248,21 +252,16 @@
 	</xs:complexType>
 
 	<xs:complexType name="RelationType">
-		<xs:sequence>
-			<xs:element name="description" type="xs:string" minOccurs="0"
-				maxOccurs="1" />
-			<xs:element name="source" type="RelationNode" minOccurs="1"
-				maxOccurs="1" />
-			<xs:element name="target" type="RelationNode" minOccurs="1"
-				maxOccurs="1" />
-		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>
-					Defines the name of the item type.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:sequence>
+					<xs:element name="source" type="RelationNode" minOccurs="1"
+						maxOccurs="1" />
+					<xs:element name="target" type="RelationNode" minOccurs="1"
+						maxOccurs="1" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="RelationNode">
@@ -317,7 +316,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="CollectionType">
+	<xs:simpleType name="CollectionsType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="List" />
 			<xs:enumeration value="Set" />

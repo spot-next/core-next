@@ -80,8 +80,8 @@
 					<genericArgument class="Product" />
 				</datatype>
 				<description>The products in this catalog.</description>
-				<relation type="ManyToMany" referencedType="Product"
-					mappedTo="categories" />
+<!-- 				<relation type="ManyToMany" referencedType="Product" -->
+<!-- 					mappedTo="categories" /> -->
 			</property>
 		</properties>
 	</type>

@@ -4,40 +4,79 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Resource;
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.IdGeneratorStrategy;
+import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.VersionStrategy;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
+import org.datanucleus.api.jdo.annotations.CreateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.infrastructure.handler.ItemPropertyHandler;
 import at.spot.core.support.util.ClassUtil;
 
+//JDO
+@PersistenceCapable
+@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.NEW_TABLE)
+@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
+@javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
+// JPA
+@MappedSuperclass
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 
-	@Resource
-	protected transient ItemPropertyHandler handler;
-
-	protected transient boolean forceDirty = false;
 	protected final transient Map<String, Boolean> propertiesInitializationState = new HashMap<>();
+
+	@Transient
+	protected transient boolean forceDirty = false;
+	@Transient
 	protected final List<String> dirtyAttributes = new ArrayList<>();
 
+	// JDO
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
+	// JPA
+	@Id
+	@GeneratedValue
 	protected Long pk;
+
+	@Transient
 	protected String typeCode;
 
 	@Property
-	protected DateTime lastModifiedAt;
+	@org.datanucleus.api.jdo.annotations.UpdateTimestamp
+	@UpdateTimestamp
+	protected Date lastModifiedAt;
 
 	@Property
-	protected DateTime createdAt;
+	@CreateTimestamp
+	@CreationTimestamp
+	protected Date createdAt;
+
+	@Version
+	protected long version;
 
 	/**
 	 * If this object is used as a proxy, eg. in a collection or relation, this is
@@ -46,7 +85,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	public transient boolean isProxy;
 
 	public Item() {
-		this.createdAt = new DateTime();
 		this.isProxy = false;
 	}
 
@@ -62,11 +100,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return pk;
 	}
 
-	public DateTime getLastModifiedAt() {
+	public Date getLastModifiedAt() {
 		return lastModifiedAt;
 	}
 
-	public DateTime getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
 
@@ -97,7 +135,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	public void markAsDirty(final String propertyName) {
 		this.dirtyAttributes.add(propertyName);
-		this.lastModifiedAt = new DateTime();
+		this.lastModifiedAt = new Date();
 	}
 
 	/**

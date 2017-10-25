@@ -1,10 +1,13 @@
 package at.spot.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableLoadTimeWeaving;
+import org.springframework.context.annotation.EnableLoadTimeWeaving.AspectJWeaving;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.annotation.logging.Log;
@@ -33,7 +36,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource("classpath:/core.properties")
 @EnableAsync
+@EnableTransactionManagement
 @EnableScheduling
+@EnableLoadTimeWeaving(aspectjWeaving = AspectJWeaving.AUTODETECT)
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -224,6 +229,8 @@ public class CoreInit extends ModuleInit {
 
 			try {
 				modelService.save(admin);
+
+				loggingService.debug("Created admin user.");
 			} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
 				throw new ModuleInitializationException("Couln't create admin user account.", e);
 			}

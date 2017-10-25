@@ -242,7 +242,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				.entrySet()) {
 
 			final ItemTypeDefinition def = getItemTypeDefinition(typeDef.getValue().getTypeCode());
-			alltypes.put(def.typeCode, def);
+			alltypes.put(def.getTypeCode(), def);
 		}
 
 		return alltypes;

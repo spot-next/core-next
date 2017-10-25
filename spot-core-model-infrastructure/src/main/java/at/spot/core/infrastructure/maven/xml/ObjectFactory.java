@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.10.24 um 08:58:46 PM CEST 
-//
-
 
 package at.spot.core.infrastructure.maven.xml;
 
@@ -61,6 +54,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CollectionType }
+     * 
+     */
+    public CollectionType createCollectionType() {
+        return new CollectionType();
+    }
+
+    /**
+     * Create an instance of {@link MapType }
+     * 
+     */
+    public MapType createMapType() {
+        return new MapType();
+    }
+
+    /**
      * Create an instance of {@link EnumType }
      * 
      */
@@ -109,14 +118,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ElementCollectionType }
-     * 
-     */
-    public ElementCollectionType createElementCollectionType() {
-        return new ElementCollectionType();
-    }
-
-    /**
      * Create an instance of {@link DefaultValue }
      * 
      */
@@ -130,14 +131,6 @@ public class ObjectFactory {
      */
     public Validators createValidators() {
         return new Validators();
-    }
-
-    /**
-     * Create an instance of {@link ElementMapType }
-     * 
-     */
-    public ElementMapType createElementMapType() {
-        return new ElementMapType();
     }
 
     /**

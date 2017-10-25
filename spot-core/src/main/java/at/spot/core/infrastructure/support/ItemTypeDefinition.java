@@ -5,10 +5,10 @@ package at.spot.core.infrastructure.support;
  */
 public class ItemTypeDefinition {
 
-	public final String typeCode;
-	public final String typeClass;
-	public final String typeName;
-	public final String packageName;
+	protected final String typeCode;
+	protected final String typeClass;
+	protected final String typeName;
+	protected final String packageName;
 
 	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName) {
 		this.typeName = typeName;
@@ -16,4 +16,21 @@ public class ItemTypeDefinition {
 		this.typeCode = typeCode;
 		this.packageName = packageName;
 	}
+
+	public String getTypeCode() {
+		return typeCode;
+	}
+
+	public String getTypeClass() {
+		return typeClass;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
 }

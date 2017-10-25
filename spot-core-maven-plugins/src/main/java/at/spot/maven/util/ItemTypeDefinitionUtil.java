@@ -24,16 +24,17 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
-import com.fasterxml.jackson.databind.type.MapType;
-
 import at.spot.core.infrastructure.constants.InfrastructureConstants;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
-import at.spot.core.infrastructure.maven.xml.ElementCollectionType;
+import at.spot.core.infrastructure.maven.xml.BaseType;
+import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
 import at.spot.core.infrastructure.maven.xml.ItemType;
+import at.spot.core.infrastructure.maven.xml.MapType;
 import at.spot.core.infrastructure.maven.xml.Property;
+import at.spot.core.infrastructure.maven.xml.RelationType;
 import at.spot.core.infrastructure.maven.xml.Types;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.FileUtils;
@@ -134,6 +135,24 @@ public class ItemTypeDefinitionUtil {
 		return definitions;
 	}
 
+	protected <T extends BaseType> void populateTypeDefinition(List<T> source, Map<String, T> target,
+			boolean mergeTypes) throws IllegalItemTypeDefinitionException {
+
+		for (final T def : source) {
+			final T existing = target.get(def.getName());
+
+			if (existing == null) {
+				target.put(def.getName(), def);
+			} else {
+				if (mergeTypes) {
+				} else {
+					throw new IllegalItemTypeDefinitionException(
+							String.format("Duplicate type definition '%s'", def.getName()));
+				}
+			}
+		}
+	}
+
 	/**
 	 * Aggregate all item type definitions of all definition files.
 	 *
@@ -146,54 +165,32 @@ public class ItemTypeDefinitionUtil {
 
 		final TypeDefinitions typeDefinitions = new TypeDefinitions();
 
-		final Map<String, ItemType> defs = typeDefinitions.getItemTypes();
+		final Map<String, ItemType> itemDefs = typeDefinitions.getItemTypes();
 		final Map<String, EnumType> enumsDefs = typeDefinitions.getEnumTypes();
 		final Map<String, AtomicType> atomicDefs = typeDefinitions.getAtomicTypes();
-		final Map<String, ElementCollectionType> collectionDefs = typeDefinitions.getCollectionTypes();
+		final Map<String, CollectionType> collectionDefs = typeDefinitions.getCollectionTypes();
 		final Map<String, MapType> mapDefs = typeDefinitions.getMapTypes();
+		final Map<String, RelationType> relationDefs = typeDefinitions.getRelationTypes();
 
-		// add base item type, just to make it referencable
-		final ItemType itemType = new ItemType();
-		itemType.setName(Item.class.getSimpleName());
-		itemType.setPackage(Item.class.getPackage().getName());
-		itemType.setAbstract(true);
-		itemType.setTypeCode(StringUtils.lowerCase(itemType.getName()));
+		{// add base item type, just to make it referenceable
+			final ItemType itemType = new ItemType();
+			itemType.setName(Item.class.getSimpleName());
+			itemType.setPackage(Item.class.getPackage().getName());
+			itemType.setAbstract(true);
+			itemType.setTypeCode(StringUtils.lowerCase(itemType.getName()));
 
-		defs.put(itemType.getName(), itemType);
+			itemDefs.put(itemType.getName(), itemType);
+		}
 
+		// iterate over all itemtypes.xml files
 		for (final InputStream defFile : definitions) {
 			final Types typesDefs = loadTypeDefinition(defFile);
 
-			// handle atomic types
-			for (final AtomicType def : typesDefs.getAtomic()) {
-				final AtomicType existing = atomicDefs.get(def.getName());
-
-				if (existing == null) {
-					atomicDefs.put(def.getName(), def);
-				} else {
-					throw new IllegalItemTypeDefinitionException(
-							String.format("Duplicate atomic type definition '%s'", def.getName()));
-				}
-			}
-
-			// handle collections
-			// for (final ElementCollectionType enumDef : typesDefs.get()) {
-			// final EnumType existingEnum = enumsDefs.get(enumDef.getName());
-			//
-			// if (existingEnum != null) {
-			// for (final EnumValue v : enumDef.getValue()) {
-			// final boolean exists = existingEnum.getValue().stream()
-			// .filter((i) -> StringUtils.equals(i.getCode(),
-			// v.getCode())).findAny().isPresent();
-			//
-			// if (!exists) {
-			// existingEnum.getValue().add(v);
-			// }
-			// }
-			// } else {
-			// enumsDefs.put(enumDef.getName(), enumDef);
-			// }
-			// }
+			// these types are only allowed to be defined once
+			populateTypeDefinition(typesDefs.getAtomic(), atomicDefs, false);
+			populateTypeDefinition(typesDefs.getCollection(), collectionDefs, false);
+			populateTypeDefinition(typesDefs.getMap(), mapDefs, false);
+			populateTypeDefinition(typesDefs.getRelation(), relationDefs, false);
 
 			// handle enums
 			for (final EnumType enumDef : typesDefs.getEnum()) {
@@ -215,11 +212,11 @@ public class ItemTypeDefinitionUtil {
 
 			// handle types
 			for (final ItemType typeDef : typesDefs.getType()) {
-				ItemType existingType = defs.get(typeDef.getName());
+				ItemType existingType = itemDefs.get(typeDef.getName());
 
 				if (existingType == null) {
 					existingType = typeDef;
-					defs.put(existingType.getName(), existingType);
+					itemDefs.put(existingType.getName(), existingType);
 				} else {
 					// if (existingType.isAbstract() == null) {
 					// existingType.setAbstract(typeDef.isAbstract());
@@ -261,7 +258,6 @@ public class ItemTypeDefinitionUtil {
 		});
 
 		return typeDefinitions;
-
 	}
 
 	/**

@@ -8,6 +8,7 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.service.PersistenceService;
 
 public interface ModelService {
 
@@ -44,8 +45,7 @@ public interface ModelService {
 	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Saves all the given Item models. Referenced Item models will not be
-	 * saved.
+	 * Saves all the given Item models. Referenced Item models will not be saved.
 	 * 
 	 * @param type
 	 * @return
@@ -55,8 +55,7 @@ public interface ModelService {
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Saves all the given Item models. Referenced Item models will not be
-	 * saved.
+	 * Saves all the given Item models. Referenced Item models will not be saved.
 	 * 
 	 * @param type
 	 * @return
@@ -73,13 +72,22 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns the first {@link Item} based on the given search parameters (key
-	 * = property name, value = property value).
+	 * Returns the first {@link Item} based on the given search parameters (key =
+	 * property name, value = property value).
 	 * 
-	 * @param pk
+	 * @param searchParameters
 	 * @return
 	 */
 	<T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters);
+
+	/**
+	 * Returns the first {@link Item} based on the given example item.
+	 * 
+	 * @param example
+	 *            the example item instance.
+	 * @return
+	 */
+	<T extends Item> T get(Class<T> type, T example) throws ModelValidationException;
 
 	/**
 	 * Removes the given item.
@@ -113,25 +121,23 @@ public interface ModelService {
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
 	/**
-	 * Returns an object based on the given search parameters (key = property
-	 * name, value = property value).
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
 	 * 
 	 * @param type
 	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be
-	 *            returned.
+	 *            if empty or null, all items of the given type will be returned.
 	 * @return
 	 */
 	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters);
 
 	/**
-	 * Returns an object based on the given search parameters (key = property
-	 * name, value = property value).
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
 	 * 
 	 * @param type
 	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be
-	 *            returned.
+	 *            if empty or null, all items of the given type will be returned.
 	 * @param start
 	 *            defines the amount of items that are being skipped.
 	 * @param amount
@@ -153,8 +159,8 @@ public interface ModelService {
 	<T extends Item> List<T> getAll(Class<T> type);
 
 	/**
-	 * If the given model is a proxy item (=only the pk is filled) then all of
-	 * it's properties are filled.
+	 * If the given model is a proxy item (=only the pk is filled) then all of it's
+	 * properties are filled.
 	 * 
 	 * @param item
 	 */
@@ -188,4 +194,19 @@ public interface ModelService {
 	 */
 	<T extends Item> void setPropertyValue(T item, String propertyName, Object propertyValue);
 
+	/**
+	 * Detaches the given item models from the persistence context.
+	 * 
+	 * @see {@link PersistenceService#detach(Item...)}
+	 * 
+	 * @param items
+	 */
+	<T extends Item> void detach(T... items);
+
+	/**
+	 * @see {@link ModelService#detach(Item...)}
+	 * 
+	 * @param items
+	 */
+	<T extends Item> void detach(List<T> items);
 }

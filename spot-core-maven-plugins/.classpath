@@ -44,7 +44,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/slf4j/log4j-over-slf4j/1.7.25/log4j-over-slf4j-1.7.25.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/yaml/snakeyaml/1.18/snakeyaml-1.18.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/springframework/boot/spring-boot-starter-json/2.0.0.M2/spring-boot-starter-json-2.0.0.M2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.0.pr3/jackson-databind-2.9.0.pr3.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.0.pr3/jackson-databind-2.9.0.pr3.jar" sourcepath="SOURCE_ATTACHER/jackson-databind-2.9.0.pr3-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.0.pr3/jackson-annotations-2.9.0.pr3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.0.pr3/jackson-core-2.9.0.pr3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.9.0.pr3/jackson-datatype-jdk8-2.9.0.pr3.jar"/>

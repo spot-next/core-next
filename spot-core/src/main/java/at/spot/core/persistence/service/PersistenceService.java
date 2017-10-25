@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.support.RelationProxyList;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -119,19 +118,20 @@ public interface PersistenceService {
 	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
-	 * Removes the given items.
-	 * 
-	 * @param item
-	 */
-	void remove(PK... pks);
-
-	/**
 	 * Removes the given item.
 	 * 
 	 * @param item
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends Item> void remove(T... items);
+
+	/**
+	 * Removes the item of the given type with the given PK.
+	 * 
+	 * @param type
+	 * @param pk
+	 */
+	<T extends Item> void remove(Class<T> type, long pk);
 
 	/**
 	 * Saves the database to disk. This has to be done before the application quits
@@ -155,12 +155,12 @@ public interface PersistenceService {
 	<T extends Item> void initItem(T item);
 
 	/**
-	 * Returns the item's value of the given property.
+	 * Detaches a given item model from the underlying persistence implementation.
+	 * This is useful if serializing the item causes problems. The effect can be
+	 * different depending on the persistence service implementation, but in general
+	 * lazy-loading properties will not work anymore afterwards.
 	 * 
-	 * @param item
-	 * @param propertyName
-	 * @return
+	 * @param items
 	 */
-	<T extends Item> Object getPropertyValue(T item, String propertyName);
-
+	<T extends Item> void detach(T... items);
 }

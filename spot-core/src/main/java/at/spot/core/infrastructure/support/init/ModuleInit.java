@@ -2,6 +2,8 @@ package at.spot.core.infrastructure.support.init;
 
 import javax.annotation.Priority;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
@@ -10,6 +12,8 @@ import at.spot.core.infrastructure.exception.ModuleInitializationException;
 
 @Configuration
 @Priority(value = -1)
+// needed to avoid some spring/hibernate problems
+@EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class })
 public abstract class ModuleInit {
 
 	boolean alreadyInitializied = false;

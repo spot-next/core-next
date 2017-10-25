@@ -22,6 +22,7 @@ import org.mapdb.DBException;
 import org.mapdb.DBMaker;
 import org.mapdb.Serializer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.Relation;
@@ -36,7 +37,6 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.infrastructure.support.RelationProxyList;
-import at.spot.core.infrastructure.type.PK;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -60,6 +60,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 
 	public static final String PK_PROPERTY_NAME = "pk";
 
+	protected boolean initializeTypeSystem = false;
+
 	protected DB database;
 	protected final Map<String, DataStorage> dataStorage = new HashMap<>();
 
@@ -82,20 +84,22 @@ public class MapDBService extends AbstractService implements PersistenceService,
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()
 					.allocateStartSize(50 * 1024 * 1024).allocateIncrement(50 * 1024 * 1024).make();
 
-			// database =
-			// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
-			// DEFAULT_DB_FILEPATH))
-			// .transactionEnable().make();
+			if (initializeTypeSystem) {
+				// database =
+				// DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE,
+				// DEFAULT_DB_FILEPATH))
+				// .transactionEnable().make();
 
-			final Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
+				final Map<String, ItemTypeDefinition> itemTypes = typeService.getItemTypeDefinitions();
 
-			// dataStorage =
-			// database.hashMap("items").keySerializer(Serializer.LONG)
-			// .valueSerializer(new ItemSerializer<>()).createOrOpen();
+				// dataStorage =
+				// database.hashMap("items").keySerializer(Serializer.LONG)
+				// .valueSerializer(new ItemSerializer<>()).createOrOpen();
 
-			for (final ItemTypeDefinition t : itemTypes.values()) {
-				dataStorage.put(t.typeCode,
-						new DataStorage(database, t, typeService.getItemTypeProperties(t.typeCode).values()));
+				for (final ItemTypeDefinition t : itemTypes.values()) {
+					dataStorage.put(t.getTypeCode(),
+							new DataStorage(database, t, typeService.getItemTypeProperties(t.getTypeCode()).values()));
+				}
 			}
 
 			serialNumberSequences = database.hashMap("serialNumbers").keySerializer(Serializer.STRING)
@@ -113,8 +117,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	/**
-	 * Try to load an item with the same unique properties. If there already is
-	 * one stored, the given item is not unique.
+	 * Try to load an item with the same unique properties. If there already is one
+	 * stored, the given item is not unique.
 	 * 
 	 * @param model
 	 * @return
@@ -444,12 +448,8 @@ public class MapDBService extends AbstractService implements PersistenceService,
 	}
 
 	@Override
-	public void remove(final PK... pks) {
-		for (final PK pk : pks) {
-			if (pk != null) {
-				getDataStorageForType(typeService.getTypeCode(pk.getType())).remove(pk.longValue());
-			}
-		}
+	public <T extends Item> void remove(final Class<T> type, final long pk) {
+		getDataStorageForType(typeService.getTypeCode(type)).remove(pk);
 
 		saveDataStorage();
 	}
@@ -584,7 +584,6 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		serialNumberSequences.remove(type);
 	}
 
-	@Override
 	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
 		if (item.getPk() != null) {
 			final DataStorage storage = getDataStorageForType(typeService.getTypeCode(item.getClass()));
@@ -594,5 +593,15 @@ public class MapDBService extends AbstractService implements PersistenceService,
 		}
 
 		return null;
+	}
+
+	@Required
+	public void setInitializeTypeSystem(final boolean initializeTypeSystem) {
+		this.initializeTypeSystem = initializeTypeSystem;
+	}
+
+	@Override
+	public <T extends Item> void detach(final T... items) {
+		// not needed
 	}
 }

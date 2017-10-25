@@ -1,10 +1,3 @@
-//
-// Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
-// Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2017.10.24 um 08:58:46 PM CEST 
-//
-
 
 package at.spot.core.infrastructure.maven.xml;
 
@@ -28,6 +21,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="atomic" type="{}AtomicType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="collection" type="{}CollectionType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="map" type="{}MapType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="enum" type="{}EnumType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="type" type="{}ItemType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="relation" type="{}RelationType" maxOccurs="unbounded" minOccurs="0"/>
@@ -42,6 +37,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "atomic",
+    "collection",
+    "map",
     "_enum",
     "type",
     "relation"
@@ -50,6 +47,8 @@ import javax.xml.bind.annotation.XmlType;
 public class Types {
 
     protected List<AtomicType> atomic;
+    protected List<CollectionType> collection;
+    protected List<MapType> map;
     @XmlElement(name = "enum")
     protected List<EnumType> _enum;
     protected List<ItemType> type;
@@ -82,6 +81,64 @@ public class Types {
             atomic = new ArrayList<AtomicType>();
         }
         return this.atomic;
+    }
+
+    /**
+     * Gets the value of the collection property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the collection property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCollection().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CollectionType }
+     * 
+     * 
+     */
+    public List<CollectionType> getCollection() {
+        if (collection == null) {
+            collection = new ArrayList<CollectionType>();
+        }
+        return this.collection;
+    }
+
+    /**
+     * Gets the value of the map property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the map property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getMap().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link MapType }
+     * 
+     * 
+     */
+    public List<MapType> getMap() {
+        if (map == null) {
+            map = new ArrayList<MapType>();
+        }
+        return this.map;
     }
 
     /**

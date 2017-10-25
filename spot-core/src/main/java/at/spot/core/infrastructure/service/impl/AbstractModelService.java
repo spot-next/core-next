@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +56,15 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 				item.getPk());
 
 		return createProxyModel((Class<T>) item.getClass(), item.getPk());
+	}
+
+	@Override
+	public <T extends Item> void detach(final T... items) {
+		persistenceService.detach(items);
+	}
+
+	@Override
+	public <T extends Item> void detach(final List<T> items) {
+		detach(items.toArray(new Item[0]));
 	}
 }

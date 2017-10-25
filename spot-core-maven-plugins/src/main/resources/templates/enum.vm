@@ -14,11 +14,22 @@ package $packagePath;
 #end
 @SuppressWarnings("unchecked")
 public enum $name {
+
 	#foreach($value in $values)
-		#if( "$!value.name" == "" )
-			$value.internalName,
-		#else
-			$value.name("$value.internalName")
-		#end
-	#end
+		$value.name ( #if($value.internalName ) "$value.internalName" #else "$value.name"  #end )
+		#if( $foreach.hasNext ), #end
+	#end ;
+	
+	private String internalValue;
+	
+	private $name(String internalValue) {
+		this.internalValue = internalValue; 
+	};
+	
+	/**
+	 * Returns the internal value of the current enum.
+	 */
+	public String getInternalName() {
+		return this.internalValue;
+	}
 }

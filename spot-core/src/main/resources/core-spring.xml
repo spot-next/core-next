@@ -4,18 +4,20 @@
 	xmlns:lang="http://www.springframework.org/schema/lang" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.2.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
 	<context:spring-configured />
 	<context:annotation-config />
-	
+
+	<import resource="core-spring-persistence.xml" />
+
 	<!-- enable @Value property resolution -->
-	<context:property-placeholder  />
+	<context:property-placeholder />
 
 	<context:component-scan base-package="at.spot.core.infrastructure.support.spring" />
 	<context:component-scan base-package="at.spot.core.infrastructure.service" />
@@ -24,22 +26,25 @@
 	<context:component-scan base-package="at.spot.core.management.converter" />
 	<context:component-scan base-package="at.spot.core.management.populator" />
 	<context:component-scan base-package="at.spot.core.management.transformer" />
+	<context:component-scan base-package="at.spot.core.persistence.instrumentation.transformers" />
 	<context:component-scan base-package="at.spot.core.persistence.service" />
 	<context:component-scan base-package="at.spot.core.persistence.valueprovider" />
 	<context:component-scan base-package="at.spot.core.security.service" />
 	<context:component-scan base-package="at.spot.core.security.strategy" />
 	<context:component-scan base-package="at.spot.core.infrastructure.spring" />
-	
+
 	<context:component-scan base-package="at.spot.itemtype" />
 
 
-	<bean id="itemTypeAnnotationProcessor" class="at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
+	<bean id="itemTypeAnnotationProcessor"
+		class="at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
 
-	<bean id="abstractBaseAspect" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect" abstract="true">
+	<bean id="abstractBaseAspect" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect"
+		abstract="true">
 		<property name="loggingService" ref="loggingService" />
 	</bean>
 
-	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
+<!-- 	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
 <!-- 	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
 <!-- 		<property name="modelService" ref="modelService" /> -->
 <!-- 		<property name="queryService" ref="queryService" /> -->
@@ -62,9 +67,6 @@
 		<!-- <ref bean="referenceValueProvider" /> -->
 		<!-- </entry> -->
 	</util:map>
-
-	<alias name="mapDbItemPropertyHandler" alias="itemPropertyHandler"/>
-	<bean id="mapDbItemPropertyHandler" class="at.spot.core.persistence.handler.MapDbItemPropertyHandler" />
 
 	<!-- spring beans -->
 	<!-- define properties based parent messagesource -->
@@ -96,11 +98,22 @@
 		<property name="messageInterpolator" ref="l10nService" />
 	</bean>
 
+	<!-- SERVICES -->
+	<bean id="mapDBService" class="at.spot.core.persistence.service.impl.MapDBService">
+		<!-- if you want to use it as persistence service, set this value to "true" -->
+		<property name="initializeTypeSystem" value="false" />
+	</bean>
+
+	<bean id="hibernatePersistenceService"
+		class="at.spot.core.persistence.service.impl.hibernate.HibernatePersistenceService" />
+
 	<!-- ALIASES -->
 
 	<!-- services -->
+	<alias name="defaultTransactionService" alias="transactionService" />
+	<!-- <alias name="mapDBService" alias="persistenceService" /> -->
 	<alias name="mapDBService" alias="serialNumberGenerator" />
-	<alias name="mapDBService" alias="persistenceService" />
+	<alias name="hibernatePersistenceService" alias="persistenceService" />
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="defaultQueryService" alias="queryService" />
@@ -121,8 +134,10 @@
 
 
 	<!-- converters -->
-	<bean id="abstractPopulatingConverter" class="at.spot.core.management.converter.impl.AbstractPopulatingConverter" abstract="true"/>
-	
+	<bean id="abstractPopulatingConverter"
+		class="at.spot.core.management.converter.impl.AbstractPopulatingConverter"
+		abstract="true" />
+
 	<bean id="itemTypeConverter" parent="abstractPopulatingConverter">
 		<property name="targetClass"
 			value="at.spot.core.management.support.data.GenericItemDefinitionData" />

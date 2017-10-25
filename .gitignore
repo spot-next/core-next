@@ -20,7 +20,6 @@ hs_err_pid*
 
 spot-core/log
 Servers
-test
 spot-management-console/gwt-unitCache
 spot-core/gensrc
 /spot/build-tools/target/

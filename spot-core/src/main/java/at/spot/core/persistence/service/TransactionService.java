@@ -1,6 +1,7 @@
 package at.spot.core.persistence.service;
 
-import java.util.concurrent.Callable;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.TransactionCallback;
 
 public interface TransactionService {
 	/**
@@ -10,24 +11,24 @@ public interface TransactionService {
 	 * 
 	 * @param body
 	 */
-	<R> R execute(Callable<R> body);
+	<R> R execute(TransactionCallback<R> body) throws TransactionException;
 
 	/**
 	 * Starts a transaction in the given thread context. After the work has been
 	 * done, either {@link #rollback()} or {@link #commit()} have to be invoked.
 	 * Otherwise data might not be persisted.
 	 */
-	void start();
+	void start() throws TransactionException;
 
 	/**
 	 * Persists the data changes after {@link #start()} has been invoked. Nothing
 	 * happens, if there is no active transaction.
 	 */
-	void commit();
+	void commit() throws TransactionException;
 
 	/**
 	 * Discards all data changes that in the current thread since the invocation of
 	 * {@link #start()}. Nothing happens, if there is no active transaction.
 	 */
-	void rollback();
+	void rollback() throws TransactionException;
 }
