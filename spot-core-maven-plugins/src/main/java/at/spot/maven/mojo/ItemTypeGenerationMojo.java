@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -13,19 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -41,23 +33,19 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
 import at.spot.core.infrastructure.annotation.GetProperty;
-import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.annotation.SetProperty;
-import at.spot.core.infrastructure.constants.InfrastructureConstants;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
 import at.spot.core.infrastructure.maven.xml.ItemType;
 import at.spot.core.infrastructure.maven.xml.Property;
-import at.spot.core.infrastructure.maven.xml.Types;
 import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
-import at.spot.core.infrastructure.type.RelationType;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
-import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
-import at.spot.maven.util.MavenUtil;
+import at.spot.maven.exception.IllegalItemTypeDefinitionException;
+import at.spot.maven.util.ItemTypeDefinitionUtil;
 import at.spot.maven.velocity.AbstractComplexJavaType;
 import at.spot.maven.velocity.AbstractJavaType;
 import at.spot.maven.velocity.AnnotationValueType;
@@ -66,7 +54,6 @@ import at.spot.maven.velocity.JavaClass;
 import at.spot.maven.velocity.JavaEnum;
 import at.spot.maven.velocity.JavaEnumValue;
 import at.spot.maven.velocity.JavaField;
-import at.spot.maven.velocity.JavaGenericTypeArgument;
 import at.spot.maven.velocity.JavaInterface;
 import at.spot.maven.velocity.JavaMemberType;
 import at.spot.maven.velocity.JavaMethod;
@@ -94,7 +81,7 @@ import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 @Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
-	protected Jalopy jalopy = new Jalopy();;
+	protected Jalopy jalopy = new Jalopy();
 	protected VelocityEngine velocityEngine = new VelocityEngine();
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
@@ -115,21 +102,20 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	@Parameter(property = "resourceDirectory", defaultValue = "src/gen/resources", readonly = true)
 	protected String resourceDirectory;
 
-	// @Parameter(property = "targetDirectory", defaultValue =
-	// "${project.build.directory}/classes/", readonly = true)
-	// protected File targetDirectory;
-
 	protected File targetClassesDirectory = null;
 	protected File targetResourcesDirectory = null;
 
 	@Parameter(property = "title")
 	protected String title;
 
+	protected ItemTypeDefinitionUtil loader;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		getLog().info("Generting item types from XML.");
 
-		initVelocity();
+		initTemplateEngine();
+		loader = new ItemTypeDefinitionUtil(project, localRepository, getLog());
 
 		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
 		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
@@ -148,289 +134,49 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			if (!targetClassesDirectory.delete()) {
 				getLog().warn("Could not delete target dir.");
 			}
-			;
 		}
 
+		// do the actual work
 		try {
-			generateItemTypes();
-		} catch (final IOException e) {
+			TypeDefinitions itemTypesDefinitions = loader.fetchItemTypeDefinitions();
+			loader.saveTypeDefinitions(itemTypesDefinitions, targetClassesDirectory);
+			generateJavaCode(itemTypesDefinitions);
+		} catch (final IllegalItemTypeDefinitionException | IOException e) {
 			throw new MojoExecutionException("Could not generate Java source code!", e);
 		}
 	}
 
-	protected void initVelocity() {
-		// Properties props = new Properties();
-		// props.put("file.resource.loader.path", "/");
-		// velocityEngine.init(props);
+	protected void initTemplateEngine() {
 		velocityEngine.setProperty("resource.loader", "class");
 		velocityEngine.setProperty("class.resource.loader.class",
 				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 		velocityEngine.init();
-	}
 
-	protected void generateItemTypes() throws IOException, MojoExecutionException {
-		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
-		final TypeDefinitions itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
-
-		saveTypeDefinitions(itemTypesDefinitions);
-		generateJavaCode(itemTypesDefinitions);
-	}
-
-	/**
-	 * Search all dependencies and the current project's resource folders to get
-	 * item type definition files.
-	 *
-	 * @return
-	 * @throws IOException
-	 * @throws MojoExecutionException
-	 * @throws DependencyResolutionException1
-	 */
-	protected List<InputStream> findItemTypeDefinitions() throws MojoExecutionException {
-		final List<InputStream> definitions = new ArrayList<>();
-		final List<String> definitionFiles = new ArrayList<>();
-
-		// get all dependencies and iterate over the target/classes folder
-		final Set<Artifact> files = project.getDependencyArtifacts();
-
-		for (final Artifact a : files) {
-			getLog().info(String.format("Scanning %s for item types ...", a));
-
-			try {
-				final File file = MavenUtil.getArtiactFile(localRepository, a);
-
-				// final File file = deps.get(0).getFile();
-				getLog().info(String.format("Resolved artfact %s: %s", a.getArtifactId(), file.getAbsolutePath()));
-
-				for (final File f : FileUtils.getFiles(file.getAbsolutePath())) {
-					if (f.getName().endsWith(".jar")) {
-						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
-						for (final String c : jarContent) {
-							if (isItemTypeDefinitionFile(c)) {
-								definitions.add(FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
-								definitionFiles.add(f.getName() + "/" + c);
-							}
-						}
-					} else {
-						if (isItemTypeDefinitionFile(f.getName())) {
-							definitions.add(FileUtils.readFile(f));
-							definitionFiles.add(f.getName());
-						}
-					}
-				}
-			} catch (final IOException e) {
-				throw new MojoExecutionException(String.format("Can't read artifact file for artifact %s.", a), e);
-			}
-		}
-
-		// get all resource files in the current project
-		for (final Resource r : (List<Resource>) project.getResources()) {
-			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory());
-
-			for (final File f : projectFiles) {
-				if (isItemTypeDefinitionFile(f.getName())) {
-					try {
-						definitions.add(FileUtils.readFile(f));
-						definitionFiles.add(f.getName());
-					} catch (final FileNotFoundException e) {
-						throw new MojoExecutionException("Could not scan for item types.", e);
-					}
-				}
-			}
-		}
-
-		getLog().info(String.format("Found XML definitions: %s", StringUtils.join(definitionFiles, ", ")));
-
-		return definitions;
-	}
-
-	/**
-	 * Aggregate all item type definitions of all definition files.
-	 *
-	 * @param definitions
-	 * @return
-	 */
-	protected TypeDefinitions aggregateTypeDefninitions(final List<InputStream> definitions) {
-		final TypeDefinitions typeDefinitions = new TypeDefinitions();
-
-		final Map<String, ItemType> defs = typeDefinitions.getItemTypes();
-		final Map<String, EnumType> enumsDefs = typeDefinitions.getEnumTypes();
-
-		// add base item type, just to make it referencable
-		final ItemType itemType = new ItemType();
-		itemType.setName(Item.class.getSimpleName());
-		itemType.setPackage(Item.class.getPackage().getName());
-		itemType.setAbstract(true);
-		itemType.setTypeCode(StringUtils.lowerCase(itemType.getName()));
-
-		defs.put(itemType.getName(), itemType);
-
-		for (final InputStream defFile : definitions) {
-			final Types typesDefs = loadTypeDefinition(defFile);
-
-			// handle enums
-			for (final EnumType enumDef : typesDefs.getEnum()) {
-				final EnumType existingEnum = enumsDefs.get(enumDef.getName());
-
-				if (existingEnum != null) {
-					for (final EnumValue v : enumDef.getValue()) {
-						final boolean exists = existingEnum.getValue().stream()
-								.filter((i) -> StringUtils.equals(i.getCode(), v.getCode())).findAny().isPresent();
-
-						if (!exists) {
-							existingEnum.getValue().add(v);
-						}
-					}
-				} else {
-					enumsDefs.put(enumDef.getName(), enumDef);
-				}
-			}
-
-			// handle types
-			for (final ItemType typeDef : typesDefs.getType()) {
-				ItemType existingType = defs.get(typeDef.getName());
-
-				if (existingType == null) {
-					existingType = typeDef;
-					defs.put(existingType.getName(), existingType);
-				} else {
-					// if (existingType.isAbstract() == null) {
-					// existingType.setAbstract(typeDef.isAbstract());
-					// }
-
-					// if (StringUtils.isBlank(existingType.getPackage())) {
-					// existingType.setPackage(typeDef.getPackage());
-					// }
-					// if (StringUtils.isBlank(existingType.getTypeCode())) {
-					// existingType.setPackage(typeDef.getTypeCode());
-					// }
-					//
-					// if (StringUtils.isBlank(existingType.getExtends())) {
-					// existingType.setExtends(typeDef.getExtends());
-					// }
-					if (typeDef.getProperties() != null
-							&& CollectionUtils.isNotEmpty(typeDef.getProperties().getProperty())) {
-						for (final Property p : typeDef.getProperties().getProperty()) {
-							final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
-									.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
-
-							if (!existingProp.isPresent()) {
-								existingType.getProperties().getProperty().add(p);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// sanitize type codes so there are no nulls -> just use the lowercase
-		// type name as fallback
-		typeDefinitions.getItemTypes().values().stream().forEach(i -> {
-			if (StringUtils.isBlank(i.getTypeCode())) {
-				i.setTypeCode(StringUtils.lowerCase(i.getName()));
-			} else {
-				i.setTypeCode(StringUtils.lowerCase(i.getTypeCode()));
-			}
-		});
-
-		return typeDefinitions;
-
-	}
-
-	/**
-	 * Parses a given xml item type definition file and unmarshals it to a
-	 * {@link Types} object.
-	 *
-	 * @param file
-	 * @return
-	 */
-	protected Types loadTypeDefinition(final InputStream file) {
-		Types typeDef = null;
-
-		try {
-			final JAXBContext context = JAXBContext.newInstance(Types.class);
-			final Unmarshaller jaxb = context.createUnmarshaller();
-			// jaxb.setProperty(Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION,
-			// "itemtypes.xsd");
-
-			typeDef = (Types) jaxb.unmarshal(file);
-		} catch (final JAXBException e) {
-			getLog().error(e);
-		}
-
-		return typeDef;
-	}
-
-	/**
-	 * Checks if the given file's name matches the item type definition filename
-	 * pattern.
-	 *
-	 * @param file
-	 * @return
-	 */
-	protected boolean isItemTypeDefinitionFile(final String fileName) {
-		// ignore merged itemtypes files.
-		if (StringUtils.equals(InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME, fileName)
-				|| StringUtils.equals(InfrastructureConstants.MERGED_ITEMTYPES_FILENAME, fileName)) {
-
-			return false;
-		}
-
-		return StringUtils.endsWith(fileName, "-itemtypes.xml");
-	}
-
-	/**
-	 * Store merged item type definitions in the build folder.
-	 * 
-	 * @param itemTypesDefinitions
-	 */
-	protected void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions) {
-		if (!targetResourcesDirectory.exists() && !targetResourcesDirectory.mkdir()) {
-			getLog().error("Could not create target output directory for merged item types file.");
-		}
-
-		// map-like indexed merged output file
-		try {
-			final JAXBContext context = JAXBContext.newInstance(TypeDefinitions.class);
-			final Marshaller jaxb = context.createMarshaller();
-			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-			jaxb.marshal(itemTypesDefinitions,
-					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME));
-		} catch (final JAXBException e) {
-			getLog().error(e);
-		}
-
-		// merged original output file
-		final Types outputTypes = new Types();
-		outputTypes.getEnum().addAll(itemTypesDefinitions.getEnumTypes().values());
-		outputTypes.getType().addAll(itemTypesDefinitions.getItemTypes().values());
-
-		try {
-			final JAXBContext context = JAXBContext.newInstance(Types.class);
-			final Marshaller jaxb = context.createMarshaller();
-			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-			jaxb.marshal(outputTypes,
-					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
-		} catch (final JAXBException e) {
-			getLog().error(e);
-		}
+		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 	}
 
 	protected void generateJavaCode(final TypeDefinitions definitions) throws MojoExecutionException {
-		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
-
-		// Get the VirtualMachine implementation.
-		final VirtualMachine vm = VirtualMachine.getVirtualMachine();
-
 		final List<AbstractComplexJavaType> types = new ArrayList<>();
 
-		for (final String enumName : definitions.getEnumTypes().keySet()) {
-			final EnumType enumType = definitions.getEnumTypes().get(enumName);
+		types.addAll(generateEnums(definitions.getEnumTypes().values()));
+		types.addAll(generateItemTypes(definitions));
 
+		// write all java classes
+		try {
+			writeJavaTypes(types);
+			types.clear();
+		} catch (IOException e) {
+			throw new MojoExecutionException("Could not write item types.", e);
+		}
+	}
+
+	protected List<JavaEnum> generateEnums(Collection<EnumType> types) {
+		List<JavaEnum> ret = new ArrayList<>();
+
+		for (final EnumType enumType : types) {
 			final JavaEnum enumeration = new JavaEnum();
 			enumeration.setDescription(enumType.getDescription());
-			enumeration.setName(enumName);
+			enumeration.setName(enumType.getName());
 			enumeration.setPackagePath(enumType.getPackage());
 
 			for (final EnumValue value : enumType.getValue()) {
@@ -441,16 +187,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				enumeration.addValue(v);
 			}
 
-			types.add(enumeration);
+			ret.add(enumeration);
 		}
 
-		// write all enums
-		try {
-			writeJavaTypes(types);
-			types.clear();
-		} catch (IOException e) {
-			throw new MojoExecutionException("Could not write enumerations.", e);
-		}
+		return ret;
+	}
+
+	protected List<JavaClass> generateItemTypes(TypeDefinitions definitions) throws MojoExecutionException {
+		List<JavaClass> ret = new ArrayList<>();
 
 		for (final Map.Entry<String, ItemType> typeEntry : definitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
@@ -505,7 +249,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					field.setDescription(prop.getDescription());
 
 					populatePropertyAnnotation(prop, field);
-					populatePropertyRelationAnnotation(prop, field);
+					// populatePropertyRelationAnnotation(prop, field);
 					// populatePropertyValidators(property, p, cls, vm);
 
 					javaClass.addField(field);
@@ -541,17 +285,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 			}
 
-			types.add(javaClass);
+			ret.add(javaClass);
 		}
 
-		// write all java classes
-		try {
-			writeJavaTypes(types);
-			types.clear();
-		} catch (IOException e) {
-			throw new MojoExecutionException("Could not write item types.", e);
-		}
-
+		return ret;
 	}
 
 	protected String generateMethodName(String prefix, String name) {
@@ -561,44 +298,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected JavaMemberType getMemberType(TypeDefinitions definitions, Property property)
 			throws MojoExecutionException {
 
-		DataType dataType = property.getDatatype();
 		JavaMemberType ret = null;
-
-		if (StringUtils.equals(Item.class.getSimpleName(), dataType.getClazz())) {
-			ret = new JavaMemberType(Item.class);
-		} else if (StringUtils.contains(dataType.getClazz(), ".")) {
-			Class<?> clazz;
-
-			try {
-				clazz = Class.forName(dataType.getClazz());
-				ret = new JavaMemberType(clazz);
-			} catch (ClassNotFoundException e) {
-				throw new MojoExecutionException(String.format("Could not resolve type %s for property %s",
-						dataType.getClazz(), property.getName()));
-			}
-		} else {
-			ItemType itemType = definitions.getItemTypes().get(dataType.getClazz());
-
-			if (itemType != null) {
-				ret = new JavaMemberType(itemType.getName(), itemType.getPackage());
-			} else {
-				EnumType enumType = definitions.getEnumTypes().get(dataType.getClazz());
-
-				if (enumType != null) {
-					ret = new JavaMemberType(enumType.getName(), enumType.getPackage());
-				} else {
-					ret = new JavaMemberType(dataType.getClazz());
-				}
-			}
-		}
-
-		if (CollectionUtils.isNotEmpty(property.getDatatype().getGenericArgument())) {
-			for (final GenericArgument genericArg : property.getDatatype().getGenericArgument()) {
-				JavaMemberType argType = new JavaMemberType(genericArg.getClazz());
-				JavaGenericTypeArgument arg = new JavaGenericTypeArgument(argType, genericArg.isWildcard());
-				ret.addGenericArgument(arg);
-			}
-		}
 
 		return ret;
 	}
@@ -759,10 +459,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			// override them
 			if (propertyDefinition.getAccessors() != null) {
-				if (propertyDefinition.getAccessors().isField()) {
-					property.setAccess(AccessType.PUBLIC);
-				}
-
 				if (!propertyDefinition.getAccessors().isSetter()) {
 					setterMethod.setAccess(Access.PROTECTED);
 				}
@@ -807,12 +503,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						AnnotationValueType.LITERAL);
 			}
 
-			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_IS_REFERENCE != propertyDefinition
-					.getModifiers().isIsReference()) {
-				propertyAnnotation.addParameter("isReference", propertyDefinition.getModifiers().isIsReference(),
-						AnnotationValueType.LITERAL);
-			}
-
 			if (propertyDefinition.getAccessors() != null
 					&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
 				propertyAnnotation.addParameter("itemValueProvider",
@@ -821,25 +511,31 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void populatePropertyRelationAnnotation(final Property propertyDefinition, final JavaField field) {
-		if (propertyDefinition.getRelation() != null) {
-			JavaAnnotation ann = new JavaAnnotation();
-			ann.setType(Relation.class);
-			field.addAnnotation(ann);
-
-			ann.addParameter("type",
-					RelationType.class.getName() + "." + propertyDefinition.getRelation().getType().value(),
-					AnnotationValueType.LITERAL);
-			ann.addParameter("mappedTo", propertyDefinition.getRelation().getMappedTo(), AnnotationValueType.STRING);
-			ann.addParameter("referencedType", propertyDefinition.getRelation().getReferencedType(),
-					AnnotationValueType.CLASS);
-
-			if (Relation.DEFAULT_CASCADE_ON_DELETE != propertyDefinition.getRelation().isCasacadeOnDelete()) {
-				ann.addParameter("casacadeOnDelete", propertyDefinition.getRelation().isCasacadeOnDelete(),
-						AnnotationValueType.LITERAL);
-			}
-		}
-	}
+	// protected void populatePropertyRelationAnnotation(final Property
+	// propertyDefinition, final JavaField field) {
+	// if (propertyDefinition.getRelation() != null) {
+	// JavaAnnotation ann = new JavaAnnotation();
+	// ann.setType(Relation.class);
+	// field.addAnnotation(ann);
+	//
+	// ann.addParameter("type",
+	// RelationType.class.getName() + "." +
+	// propertyDefinition.getRelation().getType().value(),
+	// AnnotationValueType.LITERAL);
+	// ann.addParameter("mappedTo", propertyDefinition.getRelation().getMappedTo(),
+	// AnnotationValueType.STRING);
+	// ann.addParameter("referencedType",
+	// propertyDefinition.getRelation().getReferencedType(),
+	// AnnotationValueType.CLASS);
+	//
+	// if (Relation.DEFAULT_CASCADE_ON_DELETE !=
+	// propertyDefinition.getRelation().isCasacadeOnDelete()) {
+	// ann.addParameter("casacadeOnDelete",
+	// propertyDefinition.getRelation().isCasacadeOnDelete(),
+	// AnnotationValueType.LITERAL);
+	// }
+	// }
+	// }
 
 	/**
 	 * Adds JSR-303 validators to the property.
