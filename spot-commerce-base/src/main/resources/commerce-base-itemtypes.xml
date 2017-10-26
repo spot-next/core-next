@@ -6,33 +6,27 @@
 
 	<enum name="OrderStatus" package="at.spot.itemtype.commerce.enumeration">
 		<description>The render engine used to render cms items.</description>
-		<value code="OPEN"/>
-		<value code="APPROVAL_PENDING"/>
-		<value code="APPROVED"/>
-		<value code="APPROVAL_REJECTED"/>
-		<value code="CANCELLED"/>
-		<value code="UNKNOWN"/>
+		<value code="OPEN" />
+		<value code="APPROVAL_PENDING" />
+		<value code="APPROVED" />
+		<value code="APPROVAL_REJECTED" />
+		<value code="CANCELLED" />
+		<value code="UNKNOWN" />
 	</enum>
 
 	<!-- base configuration -->
 
-	<type name="BaseStore" typeCode="BaseStore" package="at.spot.itemtype.commerce.store" extends="UniqueIdItem">
+	<type name="BaseStore" typeCode="BaseStore" package="at.spot.itemtype.commerce.store"
+		extends="UniqueIdItem">
 		<description>This holds the base configuration for a store.</description>
 		<properties>
-			<property name="name">
-				<datatype class="java.lang.String" />
+			<property name="name" type="String">
 				<description>The name of the base store.</description>
 			</property>
-			<property name="urlMatchers">
-				<datatype class="java.util.List">
-					<genericArgument class="java.lang.String" />
-				</datatype>
+			<property name="urlMatchers" type="StringList">
 				<description>These regex strings are used to match browser url to the base store.</description>
 			</property>
-			<property name="countries">
-				<datatype class="java.util.List">
-					<genericArgument class="Country" />
-				</datatype>
+			<property name="countries" type="CountryList">
 				<description>The countries that are assigned to this base store.</description>
 			</property>
 		</properties>
@@ -40,53 +34,36 @@
 
 	<!-- product related types -->
 
-	<type name="Product" typeCode="Product" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
+	<type name="Product" typeCode="Product" package="at.spot.itemtype.commerce.catalog"
+		extends="UniqueIdItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
-			<property name="name">
-				<datatype class="java.lang.String" />
+			<property name="name" type="String">
 				<description>The name of the product.</description>
 			</property>
-			<property name="description">
-				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			<property name="description"
+				type="LocalizedString">
 				<description>The localized description of the product.</description>
 			</property>
-			<property name="ean">
-				<datatype class="java.lang.String" />
+			<property name="ean" type="String">
 				<description>The EAN product code.</description>
 			</property>
-			<property name="categories">
-				<datatype class="java.util.List">
-					<genericArgument class="Category" />
-				</datatype>
-				<description>The categories the product is referenced by.</description>
-				<relation type="ManyToMany" referencedType="Category"
-					mappedTo="products" />
-			</property>
 		</properties>
 	</type>
 
-	<type name="Category" typeCode="Category" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
+	<type name="Category" typeCode="Category" package="at.spot.itemtype.commerce.catalog"
+		extends="UniqueIdItem">
 		<description>Categories are used to group products.</description>
 		<properties>
-			<property name="name">
-				<datatype class="java.lang.String" />
+			<property name="name" type="String">
 			</property>
-			<property name="description">
-				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
-			</property>
-			<property name="products">
-				<datatype class="java.util.List">
-					<genericArgument class="Product" />
-				</datatype>
-				<description>The products in this catalog.</description>
-<!-- 				<relation type="ManyToMany" referencedType="Product" -->
-<!-- 					mappedTo="categories" /> -->
+			<property name="description" type="LocalizedString">
 			</property>
 		</properties>
 	</type>
 
-	<type name="PriceGroup" typeCode="PriceGroup" package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
+	<type name="PriceGroup" typeCode="PriceGroup"
+		package="at.spot.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 		</properties>
@@ -95,78 +72,66 @@
 	<type name="Price" typeCode="Price" package="at.spot.itemtype.commerce.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
-			<property name="productId">
-				<datatype class="java.lang.String" />
+			<property name="productId" type="String">
 				<description>The product id the price is used for.</description>
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="userGroup">
-				<datatype class="UserGroup" />
+			<property name="userGroup" type="UserGroup">
 				<description>The assigned user group.</description>
 			</property>
-			<property name="user">
-				<datatype class="User" />
+			<property name="user" type="User">
 				<description>The assigned user.</description>
 			</property>
-			<property name="price">
-				<datatype class="java.math.BigDecimal" />
+			<property name="price" type="BigDecimal">
 				<description>The price value.</description>
 			</property>
-			<property name="currency">
-				<datatype class="Currency" />
+			<property name="currency" type="Currency">
 				<description>The currency of the price.</description>
 			</property>
-			<property name="net">
-				<datatype class="boolean" />
+			<property name="net" type="Boolean">
 				<description>Defines if the price is net or gross.</description>
 				<defaultValue>true</defaultValue>
 			</property>
 		</properties>
 	</type>
-	
-	<type name="Tax" package="at.spot.itemtype.commerce.store" extends="UniqueIdItem">
+
+	<type name="Tax" package="at.spot.itemtype.commerce.store"
+		extends="UniqueIdItem">
 		<properties>
-			<property name="value">
-				<datatype class="java.math.BigDecimal" />
+			<property name="value" type="BigDecimal">
 			</property>
-			<property name="description">
-				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			<property name="description" type="LocalizedString">
 			</property>
-			<property name="country">
-				<datatype class="Country" />
+			<property name="country" type="Country">
 			</property>
 		</properties>
 	</type>
 
 	<type name="Stock" package="at.spot.itemtype.commerce.store">
 		<properties>
-			<property name="productId">
-				<datatype class="java.lang.String" />
+			<property name="productId" type="String">
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="value">
-				<datatype class="int" />
+			<property name="value" type="Integer">
 				<description>The actual stock level.</description>
 				<defaultValue>0</defaultValue>
 			</property>
-			<property name="reserved">
-				<datatype class="int" />
+			<property name="reserved" type="Integer">
 				<description>The reserved amount of stock.</description>
 				<defaultValue>0</defaultValue>
 			</property>
 		</properties>
 	</type>
-	
+
 	<type name="FutureStock" extends="Stock" package="at.spot.itemtype.commerce.store">
 		<properties>
-			<property name="availableAt">
-				<datatype class="java.lang.String" />
+			<property name="availableAt" type="String">
 				<description>Defines a future stock and when it will be available.</description>
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
@@ -177,20 +142,15 @@
 
 	<!-- cart and orders -->
 
-	<type name="AbstractOrder" abstract="true" package="at.spot.itemtype.commerce.order" extends="UniqueIdItem">
+	<type name="AbstractOrder" abstract="true"
+		package="at.spot.itemtype.commerce.order" extends="UniqueIdItem">
 		<description>The abstract base type for orders and carts.</description>
 		<properties>
-			<property name="customer">
-				<datatype class="Customer" />
+			<property name="customer" type="Customer">
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
-			</property>
-			<property name="entries">
-				<datatype class="java.util.List">
-					<genericArgument class="AbstractOrderEntry" />
-				</datatype>
 			</property>
 		</properties>
 	</type>
@@ -198,15 +158,7 @@
 	<type name="AbstractOrderEntry" abstract="true"
 		package="at.spot.itemtype.commerce.order">
 		<properties>
-			<property name="order">
-				<datatype class="AbstractOrder" />
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
-			<property name="product">
-				<datatype class="Product" />
+			<property name="product" type="Product">
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
@@ -233,15 +185,28 @@
 
 	<type name="Customer" extends="User" package="at.spot.itemtype.commerce.customer">
 		<properties>
-			<property name="firstName">
-				<datatype class="java.lang.String" />
+			<property name="firstName" type="String">
 			</property>
-			<property name="lastName">
-				<datatype class="java.lang.String" />
+			<property name="lastName" type="String">
 			</property>
-			<property name="birthDay">
-				<datatype class="java.util.Date" />
+			<property name="birthDay" type="Date">
 			</property>
 		</properties>
 	</type>
+
+	<relation name="Category2Product">
+		<description>The categories the product is referenced by.</description>
+		<source cardinality="many" itemType="Category" mappedBy="categories"></source>
+		<target cardinality="many" itemType="Product" mappedBy="products">
+			<description>The products in this catalog.</description>
+		</target>
+	</relation>
+	
+	<relation name="AbstractOrder2AbstractOrderEntry">
+		<description>The categories the product is referenced by.</description>
+		<source cardinality="one" itemType="AbstractOrder" mappedBy="order"></source>
+		<target cardinality="many" itemType="AbstractOrderEntry" mappedBy="entries">
+			<description>The order entries.</description>
+		</target>
+	</relation>
 </types>

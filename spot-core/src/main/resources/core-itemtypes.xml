@@ -4,16 +4,20 @@
 
 	<!-- atomic java types -->
 	<atomic name="String" className="java.lang.String" />
+	<atomic name="Boolean" className="java.lang.Boolean" />
 	<atomic name="Integer" className="java.lang.Integer" />
 	<atomic name="Long" className="java.lang.Long" />
 	<atomic name="Double" className="java.lang.Double" />
 	<atomic name="Float" className="java.lang.Float" />
-	<atomic name="BigDecimal" className="java.lang.BigDecimal" />
+	<atomic name="BigDecimal" className="java.math.BigDecimal" />
 	<atomic name="Date" className="java.util.Date" />
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
 	<atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" />
+
+	<collection name="StringList" elementType="String" />
+	<collection name="CountryList" elementType="Country" />
 
 	<!-- enums -->
 
