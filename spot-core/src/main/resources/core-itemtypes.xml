@@ -11,9 +11,9 @@
 	<atomic name="BigDecimal" className="java.lang.BigDecimal" />
 	<atomic name="Date" className="java.util.Date" />
 	<atomic name="LocalDate" className="java.time.LocalDate" />
-	<atomic name="ByteArray" className="java.lang.Byte[]" />
+	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
-
+	<atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" />
 
 	<!-- enums -->
 

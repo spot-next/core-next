@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für RelationNode complex type.
+ * <p>Java class for RelationNode complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="RelationNode">
@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="itemType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="itemType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="mappedBy" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="cardinality" use="required" type="{}RelationshipCardinality" />
- *       &lt;attribute name="collectionType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="collectionType" type="{}CollectionsType" default="Set" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,17 +37,17 @@ import javax.xml.bind.annotation.XmlType;
 public class RelationNode {
 
     protected String description;
-    @XmlAttribute(name = "itemType")
+    @XmlAttribute(name = "itemType", required = true)
     protected String itemType;
     @XmlAttribute(name = "mappedBy")
     protected String mappedBy;
     @XmlAttribute(name = "cardinality", required = true)
     protected RelationshipCardinality cardinality;
     @XmlAttribute(name = "collectionType")
-    protected String collectionType;
+    protected CollectionsType collectionType;
 
     /**
-     * Ruft den Wert der description-Eigenschaft ab.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -59,7 +59,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der description-Eigenschaft fest.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
@@ -71,7 +71,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der itemType-Eigenschaft ab.
+     * Gets the value of the itemType property.
      * 
      * @return
      *     possible object is
@@ -83,7 +83,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der itemType-Eigenschaft fest.
+     * Sets the value of the itemType property.
      * 
      * @param value
      *     allowed object is
@@ -95,7 +95,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der mappedBy-Eigenschaft ab.
+     * Gets the value of the mappedBy property.
      * 
      * @return
      *     possible object is
@@ -107,7 +107,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der mappedBy-Eigenschaft fest.
+     * Sets the value of the mappedBy property.
      * 
      * @param value
      *     allowed object is
@@ -119,7 +119,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der cardinality-Eigenschaft ab.
+     * Gets the value of the cardinality property.
      * 
      * @return
      *     possible object is
@@ -131,7 +131,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der cardinality-Eigenschaft fest.
+     * Sets the value of the cardinality property.
      * 
      * @param value
      *     allowed object is
@@ -143,26 +143,30 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der collectionType-Eigenschaft ab.
+     * Gets the value of the collectionType property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link CollectionsType }
      *     
      */
-    public String getCollectionType() {
-        return collectionType;
+    public CollectionsType getCollectionType() {
+        if (collectionType == null) {
+            return CollectionsType.SET;
+        } else {
+            return collectionType;
+        }
     }
 
     /**
-     * Legt den Wert der collectionType-Eigenschaft fest.
+     * Sets the value of the collectionType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link CollectionsType }
      *     
      */
-    public void setCollectionType(String value) {
+    public void setCollectionType(CollectionsType value) {
         this.collectionType = value;
     }
 

@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für CollectionType complex type.
+ * <p>Java class for CollectionType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="CollectionType">
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseType">
  *       &lt;attribute name="elementType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="collectionType" use="required" type="{}CollectionsType" />
+ *       &lt;attribute name="collectionType" type="{}CollectionsType" default="List" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,11 +33,11 @@ public class CollectionType
 
     @XmlAttribute(name = "elementType", required = true)
     protected String elementType;
-    @XmlAttribute(name = "collectionType", required = true)
+    @XmlAttribute(name = "collectionType")
     protected CollectionsType collectionType;
 
     /**
-     * Ruft den Wert der elementType-Eigenschaft ab.
+     * Gets the value of the elementType property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class CollectionType
     }
 
     /**
-     * Legt den Wert der elementType-Eigenschaft fest.
+     * Sets the value of the elementType property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class CollectionType
     }
 
     /**
-     * Ruft den Wert der collectionType-Eigenschaft ab.
+     * Gets the value of the collectionType property.
      * 
      * @return
      *     possible object is
@@ -69,11 +69,15 @@ public class CollectionType
      *     
      */
     public CollectionsType getCollectionType() {
-        return collectionType;
+        if (collectionType == null) {
+            return CollectionsType.LIST;
+        } else {
+            return collectionType;
+        }
     }
 
     /**
-     * Legt den Wert der collectionType-Eigenschaft fest.
+     * Sets the value of the collectionType property.
      * 
      * @param value
      *     allowed object is

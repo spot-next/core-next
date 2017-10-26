@@ -65,7 +65,7 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 	#foreach ($field in $fields)
 		#javadoc($field.javadoc)
 		#annotations($field.annotations)
-		protected $field.type.name#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
+		protected $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
 	#end
 
 ##    @Property(isReference = true)
@@ -75,9 +75,9 @@ public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
 		#annotations($field.annotations)
-		public $method.type.name#genericTypeArguments($method.type.genericArguments) $method.name (
+		public $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
-				$arg.type.name#genericTypeArguments($arg.type.genericArguments) $arg.name
+				$arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
 				#if( $foreach.hasNext ), #end
 			#end
 		) {

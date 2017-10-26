@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
@@ -45,6 +46,7 @@ import at.spot.core.infrastructure.maven.xml.MapType;
 import at.spot.core.infrastructure.maven.xml.Property;
 import at.spot.core.infrastructure.maven.xml.RelationNode;
 import at.spot.core.infrastructure.maven.xml.RelationType;
+import at.spot.core.infrastructure.maven.xml.RelationshipCardinality;
 import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
 import at.spot.core.model.Item;
@@ -68,8 +70,6 @@ import at.spot.maven.velocity.type.parts.JavaMemberType;
 import at.spot.maven.velocity.type.parts.JavaMethod;
 import at.spot.maven.velocity.util.VelocityUtil;
 import de.hunsicker.jalopy.Jalopy;
-import net.sourceforge.jenesis4java.PackageClass;
-import net.sourceforge.jenesis4java.jaloppy.JenesisJalopyEncoder;
 
 /**
  * @description Generates the java source code for the defined item types.
@@ -154,8 +154,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		velocityEngine.setProperty("class.resource.loader.class",
 				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 		velocityEngine.init();
-
-		System.setProperty("jenesis.encoder", JenesisJalopyEncoder.class.getName());
 	}
 
 	protected void generateTypes() throws MojoExecutionException {
@@ -166,13 +164,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		try {// write all java classes
 			writeJavaTypes(types);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new MojoExecutionException("Could not write item types.", e);
 		}
 	}
 
 	protected List<JavaEnum> generateEnums() {
-		List<JavaEnum> ret = new ArrayList<>();
+		final List<JavaEnum> ret = new ArrayList<>();
 
 		for (final EnumType enumType : typeDefinitions.getEnumTypes().values()) {
 			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
@@ -193,7 +191,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected List<JavaClass> generateItemTypes() throws MojoExecutionException {
-		List<JavaClass> ret = new ArrayList<>();
+		final List<JavaClass> ret = new ArrayList<>();
 
 		for (final Map.Entry<String, ItemType> typeEntry : typeDefinitions.getItemTypes().entrySet()) {
 			final ItemType type = typeEntry.getValue();
@@ -214,10 +212,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return ret;
 	}
 
-	protected void populateProperties(ItemType type, JavaClass javaClass) throws MojoExecutionException {
+	protected void populateProperties(final ItemType type, final JavaClass javaClass) throws MojoExecutionException {
 		if (type.getProperties() != null) {
 			for (final Property prop : type.getProperties().getProperty()) {
-				final JavaMemberType propType = getMemberType(prop.getType());
+				final JavaMemberType propType = createMemberType(prop.getType());
 
 				final JavaField field = new JavaField();
 				field.setVisiblity(Visibility.PROTECTED);
@@ -239,31 +237,39 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 
 				if (isReadable) {
-					final JavaMethod getter = new JavaMethod();
-					getter.setName(generateMethodName("get", prop.getName()));
-					getter.setType(propType);
-					getter.setDescription(prop.getDescription());
-					getter.setCodeBlock(String.format("return this.%s;", prop.getName()));
-
-					javaClass.addMethod(getter);
+					addGetter(field, javaClass);
 				}
 
 				if (isWritable) {
-					final JavaMethod setter = new JavaMethod();
-					setter.setName(generateMethodName("set", prop.getName()));
-					setter.setType(JavaMemberType.VOID);
-					setter.setDescription(prop.getDescription());
-					setter.addArgument(prop.getName(), propType);
-					setter.setCodeBlock(String.format("this.%s = %s;", prop.getName(), prop.getName()));
-
-					javaClass.addMethod(setter);
+					addSetter(field, javaClass);
 				}
 			}
 		}
 	}
 
-	protected JavaClass createItemTypeClass(ItemType type) throws MojoExecutionException {
-		JavaClass javaClass = new JavaClass(type.getName(), type.getPackage());
+	protected void addGetter(final JavaField field, final JavaClass javaClass) {
+		final JavaMethod getter = new JavaMethod();
+		getter.setName(generateMethodName("get", field.getName()));
+		getter.setType(field.getType());
+		getter.setDescription(field.getDescription());
+		getter.setCodeBlock(String.format("return this.%s;", field.getName()));
+
+		javaClass.addMethod(getter);
+	}
+
+	protected void addSetter(final JavaField field, final JavaClass javaClass) {
+		final JavaMethod setter = new JavaMethod();
+		setter.setName(generateMethodName("set", field.getName()));
+		setter.setType(JavaMemberType.VOID);
+		setter.setDescription(field.getDescription());
+		setter.addArgument(field.getName(), field.getType());
+		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
+
+		javaClass.addMethod(setter);
+	}
+
+	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
+		final JavaClass javaClass = new JavaClass(type.getName(), type.getPackage());
 		javaClass.setDescription(type.getDescription());
 
 		// add itemtype annotation
@@ -284,7 +290,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return javaClass;
 	}
 
-	protected void populateSuperType(ItemType type, JavaClass javaClass) {
+	protected void populateSuperType(final ItemType type, final JavaClass javaClass) {
 		final JavaInterface superClass = new JavaInterface();
 
 		if (StringUtils.isNotBlank(type.getExtends())) {
@@ -305,46 +311,71 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return prefix + StringUtils.capitalize(name);
 	}
 
-	protected JavaMemberType getMemberType(final String typeName) throws MojoExecutionException {
-		BaseType propType = typeDefinitions.getType(typeName);
+	protected JavaMemberType createMemberType(final String typeName) throws MojoExecutionException {
+		final BaseType propType = typeDefinitions.getType(typeName);
 
 		JavaMemberType ret = null;
 
 		if (propType instanceof AtomicType) {
 			ret = new JavaMemberType(((AtomicType) propType).getClassName());
-		} else if (propType instanceof CollectionType) {
-			CollectionType t = (CollectionType) propType;
 
-			if (CollectionsType.COLLECTION.equals(t.getCollectionType())) {
-				ret = new JavaMemberType(Collection.class);
-
-			} else if (CollectionsType.SET.equals(t.getCollectionType())) {
-				ret = new JavaMemberType(Set.class);
-			} else {
-				ret = new JavaMemberType(List.class);
+			if (BooleanUtils.isTrue(((AtomicType) propType).isArray())) {
+				ret.setArray(true);
 			}
+		} else if (propType instanceof CollectionType) {
+			final CollectionType t = (CollectionType) propType;
+			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType());
 
-			// add generic collection type
-			JavaMemberType genType = getMemberType(t.getElementType());
-			JavaGenericTypeArgument arg = new JavaGenericTypeArgument(genType, false);
-			ret.addGenericArgument(arg);
 		} else if (propType instanceof MapType) {
-			MapType t = (MapType) propType;
+			final MapType t = (MapType) propType;
+			ret = createMapMemberType(t.getKeyType(), t.getValueType());
 
-			ret = new JavaMemberType(Map.class);
-
-			// add generic key type
-			JavaMemberType keyType = getMemberType(t.getKeyType());
-			JavaGenericTypeArgument keyArg = new JavaGenericTypeArgument(keyType, false);
-			ret.addGenericArgument(keyArg);
-
-			// add generic value type
-			JavaMemberType valType = getMemberType(t.getValueType());
-			JavaGenericTypeArgument valArg = new JavaGenericTypeArgument(valType, false);
-			ret.addGenericArgument(valArg);
 		} else if (propType instanceof ItemType) {
 			ret = new JavaMemberType(((ItemType) propType).getName(), ((ItemType) propType).getPackage());
 		}
+
+		if (ret == null) {
+			throw new MojoExecutionException(String.format("Could not resolve type '%s'", typeName));
+		}
+
+		return ret;
+	}
+
+	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType)
+			throws MojoExecutionException {
+
+		JavaMemberType ret = null;
+
+		if (CollectionsType.COLLECTION.equals(collectionType)) {
+			ret = new JavaMemberType(Collection.class);
+		} else if (CollectionsType.SET.equals(collectionType)) {
+			ret = new JavaMemberType(Set.class);
+		} else {
+			ret = new JavaMemberType(List.class);
+		}
+
+		// add generic collection type
+		final JavaMemberType genType = createMemberType(elementType);
+		final JavaGenericTypeArgument arg = new JavaGenericTypeArgument(genType, false);
+		ret.addGenericArgument(arg);
+
+		return ret;
+	}
+
+	protected JavaMemberType createMapMemberType(final String keyTypeName, final String valueTypeName)
+			throws MojoExecutionException {
+
+		final JavaMemberType ret = new JavaMemberType(Map.class);
+
+		// add generic key type
+		final JavaMemberType keyType = createMemberType(keyTypeName);
+		final JavaGenericTypeArgument keyArg = new JavaGenericTypeArgument(keyType, false);
+		ret.addGenericArgument(keyArg);
+
+		// add generic value type
+		final JavaMemberType valType = createMemberType(valueTypeName);
+		final JavaGenericTypeArgument valArg = new JavaGenericTypeArgument(valType, false);
+		ret.addGenericArgument(valArg);
 
 		return ret;
 	}
@@ -409,49 +440,6 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return writer.toString();
 	}
 
-	protected void addImport(final TypeDefinitions definitions, final PackageClass cls, final Class<?> type) {
-		addImport(definitions, cls, type.getName());
-	}
-
-	/**
-	 * Returns the {@link Class#getSimpleName()}
-	 *
-	 * @param definitions
-	 * @param cls
-	 * @param type
-	 * @return
-	 */
-	protected String addImport(final TypeDefinitions definitions, final PackageClass cls, final String type) {
-		final String importType = StringUtils.replace(type, "[]", "");
-
-		final String clsPkg = cls.getUnit().getNamespace().getName();
-
-		if (StringUtils.contains(importType, ".")) {
-			final String typePkg = StringUtils.substring(type, 0, StringUtils.lastIndexOf(type, "."));
-
-			if (!type.startsWith("java.lang") && !StringUtils.equalsIgnoreCase(clsPkg, typePkg)) {
-				cls.addImport(type);
-			}
-		} else {
-			final ItemType itemDef = definitions.getItemTypes().get(importType);
-			final EnumType enumDef = definitions.getEnumTypes().get(importType);
-
-			if (itemDef != null) {
-				if (!StringUtils.equalsIgnoreCase(clsPkg, itemDef.getPackage())) {
-					cls.addImport(String.format("%s.%s", itemDef.getPackage(), itemDef.getName()));
-				}
-			} else if (enumDef != null) {
-				if (!StringUtils.equalsIgnoreCase(clsPkg, enumDef.getPackage())) {
-					cls.addImport(String.format("%s.%s", enumDef.getPackage(), enumDef.getName()));
-				}
-			} else {
-				getLog().debug(String.format("Can't add import %s to type %S", importType, cls.getName()));
-			}
-		}
-
-		return getSimpleClassName(type);
-	}
-
 	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
 		final JavaAnnotation propAnn = new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class);
 		field.addAnnotation(propAnn);
@@ -489,32 +477,80 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void populateRelationProperties(final ItemType type, final JavaClass javaClass) {
+	protected void populateRelationProperties(final ItemType type, final JavaClass javaClass)
+			throws MojoExecutionException {
 
 		RelationNode sourceNode = null;
 		RelationNode targetNode = null;
 		RelationType rel = null;
 
-		for (RelationType r : typeDefinitions.getRelationTypes().values()) {
+		for (final RelationType r : typeDefinitions.getRelationTypes().values()) {
 			if (type.getName().equals(r.getSource().getItemType())) {
+				// this means that the current type is on the "source side" of
+				// the relation
 				sourceNode = r.getSource();
 			}
 
 			if (type.getName().equals(r.getTarget().getItemType())) {
+				// this means that the current type is on the "target side" of
+				// the relation
 				targetNode = r.getTarget();
 			}
 
-			if (sourceNode != null && targetNode != null) {
+			if (sourceNode != null || targetNode != null) {
 				rel = r;
 				break;
 			}
 		}
 
-		JavaField property = new JavaField();
-		property.setDescription(rel.getDescription());
-		property.setName(targetNode.getMappedBy());
-		// property.setType(getMemberType(selfNode.getItemType()));
+		// only create relation properties if an actual relation exists
+		if (rel != null) {
+			final JavaField property = new JavaField();
+			property.setDescription(rel.getDescription());
 
+			// use the mappedBy value of the other node as the property name
+			if (sourceNode != null) {
+				final String propertyName = rel.getTarget().getMappedBy();
+
+				if (StringUtils.isNotBlank(propertyName)) {
+					property.setName(propertyName);
+
+					final JavaMemberType propType = createRelationPropertyMemberType(rel.getTarget().getCardinality(),
+							rel.getTarget().getItemType());
+
+					property.setType(propType);
+				}
+			} else if (targetNode != null) {
+				final String propertyName = rel.getSource().getMappedBy();
+
+				if (StringUtils.isNotBlank(propertyName)) {
+					property.setName(propertyName);
+
+					final JavaMemberType propType = createRelationPropertyMemberType(rel.getSource().getCardinality(),
+							rel.getSource().getItemType());
+
+					property.setType(propType);
+				}
+			}
+
+			javaClass.addField(property);
+			addGetter(property, javaClass);
+			addSetter(property, javaClass);
+		}
+	}
+
+	protected JavaMemberType createRelationPropertyMemberType(final RelationshipCardinality cardinality,
+			final String elementType) throws MojoExecutionException {
+
+		JavaMemberType type = null;
+
+		if (RelationshipCardinality.MANY.equals(cardinality)) {
+			type = createCollectionMemberType(CollectionsType.LIST, elementType);
+		} else {
+			type = createMemberType(elementType);
+		}
+
+		return type;
 	}
 
 	/**
@@ -529,7 +565,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		if (property.getValidators() != null) {
 			for (final Validator v : property.getValidators().getValidator()) {
-				JavaAnnotation ann = new JavaAnnotation(new JavaMemberType(v.getJavaClass()));
+				final JavaAnnotation ann = new JavaAnnotation(new JavaMemberType(v.getJavaClass()));
 
 				if (CollectionUtils.isNotEmpty(v.getArgument())) {
 					for (final ValidatorArgument a : v.getArgument()) {

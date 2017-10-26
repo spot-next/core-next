@@ -13,8 +13,6 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.EnableLoadTimeWeaving;
-import org.springframework.context.annotation.EnableLoadTimeWeaving.AspectJWeaving;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +30,6 @@ import at.spot.core.persistence.service.TransactionService;
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
-@EnableLoadTimeWeaving(aspectjWeaving = AspectJWeaving.AUTODETECT)
 @Transactional
 public abstract class AbstractIntegrationTest {
 

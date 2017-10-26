@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Accessors complex type.
+ * <p>Java class for Accessors complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Accessors">
@@ -38,7 +38,7 @@ public class Accessors {
     protected Boolean setter;
 
     /**
-     * Ruft den Wert der valueProvider-Eigenschaft ab.
+     * Gets the value of the valueProvider property.
      * 
      * @return
      *     possible object is
@@ -50,7 +50,7 @@ public class Accessors {
     }
 
     /**
-     * Legt den Wert der valueProvider-Eigenschaft fest.
+     * Sets the value of the valueProvider property.
      * 
      * @param value
      *     allowed object is
@@ -62,7 +62,7 @@ public class Accessors {
     }
 
     /**
-     * Ruft den Wert der getter-Eigenschaft ab.
+     * Gets the value of the getter property.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class Accessors {
     }
 
     /**
-     * Legt den Wert der getter-Eigenschaft fest.
+     * Sets the value of the getter property.
      * 
      * @param value
      *     allowed object is
@@ -90,7 +90,7 @@ public class Accessors {
     }
 
     /**
-     * Ruft den Wert der setter-Eigenschaft ab.
+     * Gets the value of the setter property.
      * 
      * @return
      *     possible object is
@@ -106,7 +106,7 @@ public class Accessors {
     }
 
     /**
-     * Legt den Wert der setter-Eigenschaft fest.
+     * Sets the value of the setter property.
      * 
      * @param value
      *     allowed object is

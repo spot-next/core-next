@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import at.spot.maven.util.MiscUtil;
 import at.spot.maven.velocity.type.AbstractObject;
 
 public class JavaMemberType extends AbstractObject {
@@ -15,6 +16,7 @@ public class JavaMemberType extends AbstractObject {
 
 	protected final List<JavaGenericTypeArgument> genericArguments = new ArrayList<>();
 	protected String packagePath = null;
+	protected boolean isArray = false;
 
 	public JavaMemberType() {
 	}
@@ -25,17 +27,16 @@ public class JavaMemberType extends AbstractObject {
 	 * 
 	 * @param name
 	 */
-	public JavaMemberType(String name) {
+	public JavaMemberType(final String name) {
 		if (name.contains(".")) {
-			int nameStart = name.lastIndexOf(".");
-			this.name = name.substring(nameStart);
-			this.packagePath = name.substring(0, nameStart);
+			this.name = MiscUtil.getClassName(name);
+			this.packagePath = MiscUtil.getClassPackage(name);
 		} else {
 			this.name = name;
 		}
 	}
 
-	public JavaMemberType(String name, String packagePath) {
+	public JavaMemberType(final String name, final String packagePath) {
 		this(name);
 		this.packagePath = packagePath;
 	}
@@ -44,11 +45,11 @@ public class JavaMemberType extends AbstractObject {
 		return packagePath;
 	}
 
-	public void setPackagePath(String packagePath) {
+	public void setPackagePath(final String packagePath) {
 		this.packagePath = packagePath;
 	}
 
-	public JavaMemberType(Class<?> type) {
+	public JavaMemberType(final Class<?> type) {
 		this(type.getSimpleName());
 		this.packagePath = type.getPackage().getName();
 	}
@@ -57,7 +58,7 @@ public class JavaMemberType extends AbstractObject {
 		return Collections.unmodifiableList(genericArguments);
 	}
 
-	public void addGenericArgument(JavaGenericTypeArgument argument) {
+	public void addGenericArgument(final JavaGenericTypeArgument argument) {
 		this.genericArguments.add(argument);
 	}
 
@@ -80,6 +81,14 @@ public class JavaMemberType extends AbstractObject {
 		}
 
 		return allImports;
+	}
+
+	public boolean isArray() {
+		return isArray;
+	}
+
+	public void setArray(final boolean isArray) {
+		this.isArray = isArray;
 	}
 
 	/*****************************************************************************************

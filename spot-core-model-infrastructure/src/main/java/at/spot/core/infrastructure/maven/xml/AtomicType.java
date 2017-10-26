@@ -8,15 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für AtomicType complex type.
+ * <p>Java class for AtomicType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="AtomicType">
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseType">
  *       &lt;attribute name="className" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="array" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,9 +33,11 @@ public class AtomicType
 
     @XmlAttribute(name = "className", required = true)
     protected String className;
+    @XmlAttribute(name = "array")
+    protected Boolean array;
 
     /**
-     * Ruft den Wert der className-Eigenschaft ab.
+     * Gets the value of the className property.
      * 
      * @return
      *     possible object is
@@ -46,7 +49,7 @@ public class AtomicType
     }
 
     /**
-     * Legt den Wert der className-Eigenschaft fest.
+     * Sets the value of the className property.
      * 
      * @param value
      *     allowed object is
@@ -55,6 +58,34 @@ public class AtomicType
      */
     public void setClassName(String value) {
         this.className = value;
+    }
+
+    /**
+     * Gets the value of the array property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isArray() {
+        if (array == null) {
+            return false;
+        } else {
+            return array;
+        }
+    }
+
+    /**
+     * Sets the value of the array property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setArray(Boolean value) {
+        this.array = value;
     }
 
 }

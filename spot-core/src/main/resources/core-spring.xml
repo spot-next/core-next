@@ -99,10 +99,7 @@
 	</bean>
 
 	<!-- SERVICES -->
-	<bean id="mapDBService" class="at.spot.core.persistence.service.impl.MapDBService">
-		<!-- if you want to use it as persistence service, set this value to "true" -->
-		<property name="initializeTypeSystem" value="false" />
-	</bean>
+	<bean id="mapDBService" class="at.spot.core.persistence.service.impl.MapDBService" />
 
 	<bean id="hibernatePersistenceService"
 		class="at.spot.core.persistence.service.impl.hibernate.HibernatePersistenceService" />

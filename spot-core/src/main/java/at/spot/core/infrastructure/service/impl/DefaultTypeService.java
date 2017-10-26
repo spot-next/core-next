@@ -321,7 +321,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		ItemTypePropertyRelationDefinition def = null;
 
 		if (r != null) {
-			def = new ItemTypePropertyRelationDefinition(r.type(), r.referencedType(), r.mappedTo());
+			def = new ItemTypePropertyRelationDefinition(r.type(), r.mappedTo());
 		}
 
 		return def;

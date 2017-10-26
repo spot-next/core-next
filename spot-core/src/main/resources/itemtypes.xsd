@@ -55,7 +55,7 @@
 			<xs:extension base="BaseType">
 				<xs:attribute name="elementType" type="xs:string" use="required" />
 				<xs:attribute name="collectionType" type="CollectionsType"
-					use="required" />
+					default="List" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -73,6 +73,7 @@
 		<xs:complexContent>
 			<xs:extension base="BaseType">
 				<xs:attribute name="className" type="xs:string" use="required" />
+				<xs:attribute name="array" type="xs:boolean" default="false" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -269,7 +270,7 @@
 			<xs:element name="description" type="xs:string" minOccurs="0"
 				maxOccurs="1" />
 		</xs:sequence>
-		<xs:attribute name="itemType" type="xs:string">
+		<xs:attribute name="itemType" type="xs:string" use="required">
 			<xs:annotation>
 				<xs:documentation>Defines the itemtype of the relation endpoint.
 				</xs:documentation>
@@ -292,7 +293,8 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="collectionType" type="xs:string">
+		<xs:attribute name="collectionType" type="CollectionsType"
+			default="Set">
 			<xs:annotation>
 				<xs:documentation>
 					Defines the collection type of the property
