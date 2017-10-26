@@ -322,6 +322,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			if (BooleanUtils.isTrue(((AtomicType) propType).isArray())) {
 				ret.setArray(true);
 			}
+		} else if (propType instanceof EnumType) {
+			ret = new JavaMemberType(((EnumType) propType).getName(), ((EnumType) propType).getPackage());
 		} else if (propType instanceof CollectionType) {
 			final CollectionType t = (CollectionType) propType;
 			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType());

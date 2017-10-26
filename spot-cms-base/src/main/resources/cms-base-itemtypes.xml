@@ -38,22 +38,14 @@
 	<type name="AbstractCmsItem" abstract="true" package="at.spot.itemtype.cms.model"
 		extends="UniqueIdItem">
 		<properties>
-			<property name="catalog">
-				<datatype class="Catalog" />
+			<property name="catalog" type="Catalog">
 				<description>The content catalog of the item.</description>
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="restrictions">
-				<datatype class="java.util.List">
-					<genericArgument class="CmsRestriction" />
-				</datatype>
-				<description>The restrictions evaluate if the current cms item should be rendered.</description>
-			</property>
-			<property name="onlyOneRestrictionMustApply">
-				<datatype class="boolean" />
+			<property name="onlyOneRestrictionMustApply" type="Boolean">
 				<description>
 					f set to true, only one restriction must evaluate to "show cms item" 
 					for the item to be visible.
@@ -64,12 +56,10 @@
 
 	<type name="CmsRestriction" extends="AbstractCmsItem" package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="evaluator">
-				<datatype class="java.lang.String" />
+			<property name="evaluator" type="String">
 				<description>The spring bean id of the corresponding evaluator implementation.</description>
 			</property>
-			<property name="evaluatorScript">
-				<datatype class="java.lang.String" />
+			<property name="evaluatorScript" type="String">
 				<description>The beanshell script that evaluates the cms item visibility.</description>
 			</property>
 		</properties>
@@ -78,24 +68,20 @@
 	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem"
 		package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="renderContextProvider">
-				<datatype class="java.lang.String" />
+			<property name="renderContextProvider" type="String">
 				<description>
 					The spring bean id of the context provider implementation.
 				</description>
 			</property>
-			<property name="renderContextPreparationScript">
-				<datatype class="java.lang.String" />
+			<property name="renderContextPreparationScript" type="String">
 				<description>
-					Beanshell code that is executed before the page rendering.
-					It can be used to prepare the render context variables.
-				</description>
+				Beanshell code that is executed before the page rendering.
+				It can be used to prepare the render context variables.
+			</description>
 			</property>
-			<property name="content">
-				<datatype class="java.lang.String" />
+			<property name="content" type="String">
 			</property>
-			<property name="renderEngine">
-				<datatype class="TemplateRenderEngine" />
+			<property name="renderEngine" type="TemplateRenderEngine">
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
@@ -106,11 +92,6 @@
 	<type name="AbstractCmsContainerComponent" abstract="true"
 		extends="AbstractCmsComponent" package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="contentSlots">
-				<datatype class="java.util.List">
-					<genericArgument class="ContentSlot" />
-				</datatype>
-			</property>
 		</properties>
 	</type>
 
@@ -121,11 +102,6 @@
 
 	<type name="ContentSlot" extends="AbstractCmsItem" package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="cmsComponents">
-				<datatype class="java.util.List">
-					<genericArgument class="CmsComponent" />
-				</datatype>
-			</property>
 		</properties>
 	</type>
 
@@ -135,35 +111,23 @@
 	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
 		package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="title">
-				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			<property name="title" type="LocalizedString">
 			</property>
-			<property name="favIconPath">
-				<datatype class="at.spot.core.infrastructure.type.LocalizedString" />
+			<property name="favIconPath" type="LocalizedString">
 			</property>
-			<property name="favIcon">
-				<datatype class="ImageMedia" />
+			<property name="favIcon" type="ImageMedia">
 			</property>
-			<property name="metaTags">
-				<datatype class="java.util.List">
-					<genericArgument class="MetaTag" />
-				</datatype>
-<!-- 				<relation type="OneToMany" referencedType="MetaTag" /> -->
-			</property>
+			<property name="metaTags" type="StringList" />
 		</properties>
 	</type>
 
 	<type name="CmsPage" extends="CmsPageTemplate" package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="urlMatches">
-				<datatype class="java.util.List">
-					<genericArgument class="java.lang.String" />
-				</datatype>
+			<property name="urlMatches" type="StringList">
 				<description>Holds the regex string to determine which URL should
 						be handler by this page.</description>
 			</property>
-			<property name="template">
-				<datatype class="CmsPageTemplate" />
+			<property name="template" type="CmsPageTemplate">
 			</property>
 		</properties>
 	</type>
@@ -173,8 +137,7 @@
 	<type name="AbstractNavigationEntry" abstract="true" extends="CmsComponent"
 		package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="name">
-				<datatype class="java.lang.String" />
+			<property name="name" type="String">
 				<description>The navigation entry name.</description>
 			</property>
 		</properties>
@@ -183,26 +146,18 @@
 	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry"
 		package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="href">
-				<datatype class="java.lang.String" />
+			<property name="href" type="String">
 				<description>The href of the link.</description>
 			</property>
-			<property name="target">
-				<datatype class="HtmlLinkTarget" />
+			<property name="target" type="HtmlLinkTarget">
 				<description>The HTML link target.</description>
 			</property>
 		</properties>
 	</type>
 
-	<type name="AbstractNavigationContainer" abstract="true"
+	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent" abstract="true"
 		package="at.spot.itemtype.cms.model">
 		<properties>
-			<property name="entries">
-				<datatype class="java.util.List">
-					<genericArgument class="NavigationLinkEntry" />
-				</datatype>
-				<description>A list of all navigation link.</description>
-			</property>
 		</properties>
 	</type>
 
@@ -210,5 +165,25 @@
 		package="at.spot.itemtype.cms.model" />
 
 	<type name="Footer" extends="AbstractNavigationContainer" package="at.spot.itemtype.cms.model" />
+
+
+	<relation name="AbstractCmsItem2CmsRestriction">
+		<source itemType="AbstractCmsItem" cardinality="one" mappedBy="cmsItem" />
+		<target itemType="CmsRestriction" cardinality="many" mappedBy="cmsRestrictions">
+			<description>The restrictions evaluate if the current cms item should be rendered.</description>
+		</target>
+	</relation>
+
+	<relation name="AbstractCmsContainerComponent2AbstractCmsComponent">
+		<source itemType="AbstractCmsContainerComponent" cardinality="many"
+			mappedBy="container" />
+		<target itemType="AbstractCmsComponent" cardinality="many"
+			mappedBy="components" />
+	</relation>
+
+	<relation name="ContentSlot2CmsComponent">
+		<source itemType="ContentSlot" cardinality="many" mappedBy="contentSlot" />
+		<target itemType="CmsComponent" cardinality="many" mappedBy="components" />
+	</relation>
 
 </types>
