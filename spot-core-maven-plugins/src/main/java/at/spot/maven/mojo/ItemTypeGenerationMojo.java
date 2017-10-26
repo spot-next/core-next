@@ -19,12 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -483,10 +478,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				javaClass.addAnnotation(typeAnnotation);
 			}
 
-			{// add JPA annotation
-				final JavaAnnotation jpaAnnotation = new JavaAnnotation(Entity.class);
-				javaClass.addAnnotation(jpaAnnotation);
-			}
+			// {// add JPA annotation
+			// final JavaAnnotation jpaAnnotation = new JavaAnnotation(Entity.class);
+			// javaClass.addAnnotation(jpaAnnotation);
+			// }
 
 			if (type.isAbstract() != null && type.isAbstract()) {
 				javaClass.setAbstract(true);
@@ -818,11 +813,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						AnnotationValueType.LITERAL);
 
 				// JAP unique property
-				if (propertyDefinition.getRelation() == null) {
-					final JavaAnnotation jpaColumnAnn = new JavaAnnotation(Column.class);
-					jpaColumnAnn.addParameter("unique", Boolean.TRUE, AnnotationValueType.BOOLEAN);
-					field.addAnnotation(jpaColumnAnn);
-				}
+				// if (propertyDefinition.getRelation() == null) {
+				// final JavaAnnotation jpaColumnAnn = new JavaAnnotation(Column.class);
+				// jpaColumnAnn.addParameter("unique", Boolean.TRUE,
+				// AnnotationValueType.BOOLEAN);
+				// field.addAnnotation(jpaColumnAnn);
+				// }
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
@@ -879,41 +875,57 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			// JPA annotations
-			if (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY.equals(rel.getType())) {
-				final JavaAnnotation jpaRelAnn = new JavaAnnotation(ManyToMany.class);
-				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
-
-				final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation(JoinTable.class);
-				jpaJoinTalbeAnn.addParameter("name", generateJoinTableName(type, property), AnnotationValueType.STRING);
-
-				// TODO: refactor
-				// add join columns
-				final String joinColumnSource = "{ @javax.persistence.JoinColumn(name = \"source_pk\", referencedColumnName = \"pk\") }";
-				final String joinColumnTarget = "{ @javax.persistence.JoinColumn(name = \"target_pk\", referencedColumnName = \"pk\") }";
-
-				jpaJoinTalbeAnn.addParameter("joinColumns", isReference ? joinColumnTarget : joinColumnSource,
-						AnnotationValueType.LITERAL);
-				jpaJoinTalbeAnn.addParameter("inverseJoinColumns", isReference ? joinColumnSource : joinColumnTarget,
-						AnnotationValueType.LITERAL);
-
-				field.addAnnotation(jpaRelAnn);
-				field.addAnnotation(jpaJoinTalbeAnn);
-			} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY.equals(rel.getType())) {
-				final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToMany.class);
-				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
-
-				field.addAnnotation(jpaRelAnn);
-			} else if (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE.equals(rel.getType())) {
-				final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToOne.class);
-				jpaRelAnn.addParameter("cascade", CascadeType.ALL, AnnotationValueType.ENUM_VALUE);
-
-				if (StringUtils.isNotBlank(rel.getMappedTo())) {
-					jpaRelAnn.addParameter("mappedBy", rel.getMappedTo(), AnnotationValueType.STRING);
-				}
-
-				field.addAnnotation(jpaRelAnn);
-			}
+			// if
+			// (at.spot.core.infrastructure.maven.xml.RelationType.MANY_TO_MANY.equals(rel.getType()))
+			// {
+			// final JavaAnnotation jpaRelAnn = new JavaAnnotation(ManyToMany.class);
+			// jpaRelAnn.addParameter("cascade", CascadeType.ALL,
+			// AnnotationValueType.ENUM_VALUE);
+			//
+			// final JavaAnnotation jpaJoinTalbeAnn = new JavaAnnotation(JoinTable.class);
+			// jpaJoinTalbeAnn.addParameter("name", generateJoinTableName(type, property),
+			// AnnotationValueType.STRING);
+			//
+			// // TODO: refactor
+			// // add join columns
+			// final String joinColumnSource = "{ @javax.persistence.JoinColumn(name =
+			// \"source_pk\", referencedColumnName = \"pk\") }";
+			// final String joinColumnTarget = "{ @javax.persistence.JoinColumn(name =
+			// \"target_pk\", referencedColumnName = \"pk\") }";
+			//
+			// jpaJoinTalbeAnn.addParameter("joinColumns", isReference ? joinColumnTarget :
+			// joinColumnSource,
+			// AnnotationValueType.LITERAL);
+			// jpaJoinTalbeAnn.addParameter("inverseJoinColumns", isReference ?
+			// joinColumnSource : joinColumnTarget,
+			// AnnotationValueType.LITERAL);
+			//
+			// field.addAnnotation(jpaRelAnn);
+			// field.addAnnotation(jpaJoinTalbeAnn);
+			// } else if
+			// (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_MANY.equals(rel.getType()))
+			// {
+			// final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToMany.class);
+			// jpaRelAnn.addParameter("cascade", CascadeType.ALL,
+			// AnnotationValueType.ENUM_VALUE);
+			//
+			// field.addAnnotation(jpaRelAnn);
+			// } else if
+			// (at.spot.core.infrastructure.maven.xml.RelationType.ONE_TO_ONE.equals(rel.getType()))
+			// {
+			// final JavaAnnotation jpaRelAnn = new JavaAnnotation(OneToOne.class);
+			// jpaRelAnn.addParameter("cascade", CascadeType.ALL,
+			// AnnotationValueType.ENUM_VALUE);
+			//
+			// if (StringUtils.isNotBlank(rel.getMappedTo())) {
+			// jpaRelAnn.addParameter("mappedBy", rel.getMappedTo(),
+			// AnnotationValueType.STRING);
+			// }
+			//
+			// field.addAnnotation(jpaRelAnn);
+			// }
 		} else {
+			// JPA collection annotation
 			final String propertyType = property.getDatatype().getClazz();
 
 			JavaAnnotation jpaAnn = null;
@@ -931,9 +943,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				}
 			}
 
-			if (jpaAnn != null) {
-				field.addAnnotation(jpaAnn);
-			}
+			// if (jpaAnn != null) {
+			// field.addAnnotation(jpaAnn);
+			// }
 		}
 	}
 

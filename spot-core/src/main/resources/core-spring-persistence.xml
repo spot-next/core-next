@@ -46,7 +46,6 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="at.spot.itemtype" />
-<!-- 		<property name="loadTimeWeaver" ref="loadTimeWeaver" /> -->
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
 		</property>
@@ -59,15 +58,6 @@
 		<property name="jpaProperties" ref="jpaProperties" />
 	</bean>
 	
-<!-- 	<bean id="jpaClassTransformer" class="at.spot.core.persistence.instrumentation.transformers.JpaEntityClassTransformer" /> -->
-	
-<!-- 	<alias name="instrumentationLoadTimeWeaver" alias="loadTimeWeaver" /> -->
-<!-- 	<bean id="instrumentationLoadTimeWeaver" class="at.spot.core.persistence.instrumentation.InstrumentationLoadTimeWeaver"> -->
-<!-- 		<property name="transformers"> -->
-<!-- 			<list><ref bean="jpaClassTransformer" /></list> -->
-<!-- 		</property> -->
-<!-- 	</bean> -->
-
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
