@@ -5,7 +5,6 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.core.util.UuidUtil;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.http.Session;
@@ -25,7 +24,7 @@ public class DefaultSessionService implements SessionService {
 		}
 
 		// generate a new unique id as session id
-		final UUID sessionId = UuidUtil.getTimeBasedUuid();
+		final UUID sessionId = UUID.randomUUID();
 
 		// create the session object
 		final Session session = new Session(sessionId.toString(), null);

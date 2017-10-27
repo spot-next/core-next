@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+
+	<logger name="at.spot" level="DEBUG" />
+	
+	<!-- framework logs -->
+	<logger name="org.springframework" level="WARN" />
+	<logger name="org.springframework.context.support" level="WARN" />
+	<logger name="org.springframework.beans.factory" level="WARN" />
+	<logger name="ch.qos.logback" level="WARN" />
+	<logger name="org.reflections.Reflections" level="WARN" />
+	<logger name="org.apache.catalina.core" level="WARN" />
+
+</configuration>

@@ -26,6 +26,13 @@
 			<artifactId>gson-jodatime-serialisers</artifactId>
 			<version>1.6.0</version>
 		</dependency>
+		
+		<!-- spring -->
+		 <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-jpa</artifactId>
+		    <version>${spring.boot.version}</version>
+	    </dependency>	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -45,7 +52,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+<!-- 			<scope>test</scope> -->
 			<version>${spring.boot.version}</version>
 		</dependency>
 
@@ -72,11 +79,11 @@
 		</dependency>
 
 		<!-- JPA / hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>5.2.12.Final</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.hibernate</groupId> -->
+<!-- 			<artifactId>hibernate-entitymanager</artifactId> -->
+<!-- 			<version>5.2.12.Final</version> -->
+<!-- 		</dependency> -->
 
 		<!-- JDO / datanucleus -->
 		<dependency>
@@ -91,10 +98,10 @@
 		</dependency>
 
 		<!-- logging -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.logging.log4j</groupId> -->
+<!-- 			<artifactId>log4j-core</artifactId> -->
+<!-- 		</dependency> -->
 
 	</dependencies>
 </project>

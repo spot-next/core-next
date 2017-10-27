@@ -36,7 +36,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @EnableAsync
 @EnableTransactionManagement
 @EnableScheduling
-// @EnableLoadTimeWeaving(aspectjWeaving = AspectJWeaving.AUTODETECT)
 public class CoreInit extends ModuleInit {
 
 	@Autowired

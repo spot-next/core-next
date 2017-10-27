@@ -11,7 +11,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
@@ -25,7 +27,6 @@ import javax.persistence.metamodel.Metamodel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +44,11 @@ import at.spot.core.support.util.ClassUtil;
 @Transactional
 public class HibernatePersistenceService extends AbstractService implements PersistenceService {
 
-	// @PersistenceContext
-	// protected EntityManager em;
+	@PersistenceContext
+	protected EntityManager em;
 
-	@Resource
-	protected SessionFactory sessionFactory;
+	// @Resource
+	// protected SessionFactory sessionFactory;
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
@@ -309,8 +310,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	protected Session getSession() {
-		// return em.unwrap(Session.class);
-		return sessionFactory.getCurrentSession();
+		return em.unwrap(Session.class);
+		// return sessionFactory.getCurrentSession();
 	}
 
 }

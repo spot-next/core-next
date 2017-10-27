@@ -358,14 +358,6 @@
 			<version>4.1</version>
 		</dependency>
 
-		<!-- junit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<!-- <scope>test</scope> -->
-		</dependency>
-
 	</dependencies>
 
 	<dependencyManagement>

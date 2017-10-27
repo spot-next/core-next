@@ -187,11 +187,6 @@
 
 		<!-- spring -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springmodules</groupId>
 			<artifactId>spring-modules-validation</artifactId>
 			<version>0.8</version>
@@ -220,9 +215,9 @@
 			<version>8.0.8-dmr</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<version>2.1.1</version>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>2.7.2</version>
 		</dependency>
 
 		<!-- validation -->
@@ -261,5 +256,6 @@
 			<artifactId>javassist</artifactId>
 			<version>3.22.0-GA</version>
 		</dependency>
+
 	</dependencies>
 </project>
