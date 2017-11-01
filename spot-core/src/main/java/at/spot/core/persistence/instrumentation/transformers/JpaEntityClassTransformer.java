@@ -110,7 +110,11 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected boolean isItemType(final CtClass clazz) {
-		return getItemTypeAnnotation(clazz).isPresent();
+		if (!clazz.isFrozen()) {
+			return getItemTypeAnnotation(clazz).isPresent();
+		}
+
+		return false;
 	}
 
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz) {

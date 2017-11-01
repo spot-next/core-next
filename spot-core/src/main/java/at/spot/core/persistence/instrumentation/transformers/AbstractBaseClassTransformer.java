@@ -114,7 +114,13 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected List<Annotation> getAnnotations(final CtClass clazz) {
 		final List<Annotation> annotations = new ArrayList<>();
 
-		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazz.getClassFile()
+		ClassFile clazzFile = clazz.getClassFile2();
+
+		if (clazzFile == null && !clazz.isFrozen()) {
+			clazzFile = clazz.getClassFile();
+		}
+
+		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazzFile
 				.getAttribute(AnnotationsAttribute.visibleTag);
 
 		if (attInfo != null) {
