@@ -285,11 +285,11 @@
 
 	<relation name="PrincipalGroup2Principal">
 		<description>The relation between principal groups and principals</description>
-		<source itemType="PrincipalGroup" mappedBy="groups"
+		<source itemType="PrincipalGroup" mappedBy="groups" collectionType="List"
 			cardinality="many">
 			<description>The principal groups assigned to the principal.</description>
 		</source>
-		<target itemType="Principal" mappedBy="members" cardinality="many">
+		<target itemType="Principal" mappedBy="members" cardinality="many" collectionType="List">
 			<description>The members of the group.</description>
 		</target>
 	</relation>

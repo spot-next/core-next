@@ -485,6 +485,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected void populateRelationProperties(final ItemType type, final JavaClass javaClass)
 			throws MojoExecutionException {
 
+		// TODO: needs refactoring
+
 		RelationNode sourceNode = null;
 		RelationNode targetNode = null;
 		RelationType rel = null;
@@ -517,64 +519,45 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
 
-			RelationNodeType nodeType = null;
-			RelationCollectionType collectionType = null;
-			String mappedTo = null;
-
 			// use the mappedBy value of the other node as the property name
 			if (sourceNode != null) {
-				final String propertyName = rel.getTarget().getMappedBy();
-				collectionType = getCollectionType(sourceNode.getCollectionType());
-				nodeType = RelationNodeType.SOURCE;
-				mappedTo = propertyName;
-
-				if (StringUtils.isNotBlank(propertyName)) {
-					property.setName(propertyName);
-
-					final JavaMemberType propType = createRelationPropertyMemberType(rel.getTarget().getCardinality(),
-							rel.getTarget().getItemType());
-
-					property.setType(propType);
-				}
-
-				relationAnn.addParameter("type", getRelationType(sourceNode, rel.getTarget()),
-						AnnotationValueType.ENUM_VALUE);
+				populateRelationProperty(sourceNode, rel.getTarget(), javaClass, property, relationAnn);
 			} else if (targetNode != null) {
-				final String propertyName = rel.getSource().getMappedBy();
-				collectionType = getCollectionType(targetNode.getCollectionType());
-				nodeType = RelationNodeType.TARGET;
-				mappedTo = propertyName;
-
-				if (StringUtils.isNotBlank(propertyName)) {
-					property.setName(propertyName);
-
-					final JavaMemberType propType = createRelationPropertyMemberType(rel.getSource().getCardinality(),
-							rel.getSource().getItemType());
-
-					property.setType(propType);
-
-					relationAnn.addParameter("mappedTo", propertyName, AnnotationValueType.STRING);
-				}
-
-				relationAnn.addParameter("type", getRelationType(targetNode, rel.getSource()),
-						AnnotationValueType.ENUM_VALUE);
+				populateRelationProperty(targetNode, rel.getSource(), javaClass, property, relationAnn);
 			}
 
-			if (StringUtils.isNotBlank(mappedTo)) {
-				relationAnn.addParameter("mappedTo", mappedTo, AnnotationValueType.STRING);
-				relationAnn.addParameter("nodeType", nodeType, AnnotationValueType.ENUM_VALUE);
+		}
+	}
 
-				if (targetNode.getCardinality().equals(RelationshipCardinality.MANY)) {
-					collectionType = getCollectionType(targetNode.getCollectionType());
-					relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
-				}
-				property.addAnnotation(relationAnn);
-				property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
-				javaClass.addField(property);
+	protected void populateRelationProperty(RelationNode from, RelationNode to, JavaClass javaClass, JavaField property,
+			JavaAnnotation relationAnn) throws MojoExecutionException {
 
-				addGetter(property, javaClass);
-				addSetter(property, javaClass);
+		String mappedTo = to.getMappedBy();
+		RelationNodeType nodeType = RelationNodeType.SOURCE;
+		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
+
+		if (StringUtils.isNotBlank(mappedTo)) {
+			property.setName(mappedTo);
+
+			relationAnn.addParameter("type", getRelationType(from, to), AnnotationValueType.ENUM_VALUE);
+			relationAnn.addParameter("mappedTo", mappedTo, AnnotationValueType.STRING);
+			relationAnn.addParameter("nodeType", nodeType, AnnotationValueType.ENUM_VALUE);
+
+			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
+				collectionType = getCollectionType(to.getCollectionType());
+				relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
 			}
+
+			final JavaMemberType propType = createRelationPropertyMemberType(from.getCardinality(), to.getItemType(),
+					collectionType);
+			property.setType(propType);
+
+			property.addAnnotation(relationAnn);
+			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
+			javaClass.addField(property);
+
+			addGetter(property, javaClass);
+			addSetter(property, javaClass);
 		}
 	}
 
@@ -608,12 +591,18 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected JavaMemberType createRelationPropertyMemberType(final RelationshipCardinality cardinality,
-			final String elementType) throws MojoExecutionException {
+			final String elementType, RelationCollectionType collectionType) throws MojoExecutionException {
 
 		JavaMemberType type = null;
 
 		if (RelationshipCardinality.MANY.equals(cardinality)) {
-			type = createCollectionMemberType(CollectionsType.LIST, elementType);
+			CollectionsType colType = CollectionsType.LIST;
+
+			if (RelationCollectionType.Set.equals(collectionType)) {
+				colType = CollectionsType.SET;
+			}
+
+			type = createCollectionMemberType(colType, elementType);
 		} else {
 			type = createMemberType(elementType);
 		}
