@@ -521,26 +521,27 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			// use the mappedBy value of the other node as the property name
 			if (sourceNode != null) {
-				populateRelationProperty(sourceNode, rel.getTarget(), javaClass, property, relationAnn);
+				populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, property,
+						relationAnn);
 			} else if (targetNode != null) {
-				populateRelationProperty(targetNode, rel.getSource(), javaClass, property, relationAnn);
+				populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, property,
+						relationAnn);
 			}
 
 		}
 	}
 
-	protected void populateRelationProperty(RelationNode from, RelationNode to, JavaClass javaClass, JavaField property,
-			JavaAnnotation relationAnn) throws MojoExecutionException {
+	protected void populateRelationProperty(RelationNode from, RelationNode to, RelationNodeType nodeType,
+			JavaClass javaClass, JavaField property, JavaAnnotation relationAnn) throws MojoExecutionException {
 
 		String mappedTo = to.getMappedBy();
-		RelationNodeType nodeType = RelationNodeType.SOURCE;
 		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
 
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
 			relationAnn.addParameter("type", getRelationType(from, to), AnnotationValueType.ENUM_VALUE);
-			relationAnn.addParameter("mappedTo", mappedTo, AnnotationValueType.STRING);
+			relationAnn.addParameter("mappedTo", from.getMappedBy(), AnnotationValueType.STRING);
 			relationAnn.addParameter("nodeType", nodeType, AnnotationValueType.ENUM_VALUE);
 
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
@@ -548,7 +549,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
 			}
 
-			final JavaMemberType propType = createRelationPropertyMemberType(from.getCardinality(), to.getItemType(),
+			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
 			property.setType(propType);
 
@@ -563,6 +564,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	protected at.spot.core.infrastructure.type.RelationType getRelationType(final RelationNode thisNode,
 			final RelationNode otherNode) {
+
 		if (RelationshipCardinality.ONE.equals(thisNode.getCardinality())
 				&& RelationshipCardinality.ONE.equals(otherNode.getCardinality())) {
 			return at.spot.core.infrastructure.type.RelationType.OneToOne;

@@ -88,18 +88,17 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * 
 	 * 
 	 * @param loader
-	 *            the defining loader of the class to be transformed, may be
-	 *            null if the bootstrap loader
+	 *            the defining loader of the class to be transformed, may be null if
+	 *            the bootstrap loader
 	 * @param clazz
 	 *            the class in the internal form of the JVM.
 	 * @param classBeingRedefined
-	 *            if this is triggered by a redefine or retransform, the class
-	 *            being redefined or retransformed; if this is a class load,
-	 *            null
+	 *            if this is triggered by a redefine or retransform, the class being
+	 *            redefined or retransformed; if this is a class load, null
 	 * @param protectionDomain
 	 *            the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed,
-	 *         return null instead.
+	 * @return the transformed class object. If the class was not changed, return
+	 *         null instead.
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -132,7 +131,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 * @return
 	 */
-	protected Optional<Annotation> getAnnotation(final CtClass clazz, final Class<ItemType> annotation) {
+	protected Optional<Annotation> getAnnotation(final CtClass clazz,
+			final Class<? extends java.lang.annotation.Annotation> annotation) {
 		return getAnnotations(clazz).stream().filter(a -> StringUtils.equals(a.getTypeName(), annotation.getName()))
 				.findFirst();
 	}
@@ -266,8 +266,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible fields (even from super classes) for the given
-	 * class.
+	 * Returns all accessible fields (even from super classes) for the given class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -289,8 +288,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible methods (even from super classes) for the given
-	 * class.
+	 * Returns all accessible methods (even from super classes) for the given class.
 	 * 
 	 * @param clazz
 	 * @return

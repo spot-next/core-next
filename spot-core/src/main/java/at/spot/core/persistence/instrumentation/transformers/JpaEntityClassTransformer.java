@@ -60,6 +60,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// process item properties
 			for (final CtField field : getDeclaredFields(clazz)) {
+				if (!clazz.equals(field.getDeclaringClass())) {
+					continue;
+				}
+
 				final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 				// process item type property annotation
@@ -75,7 +79,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 						// and add them to the clazz
 						addAnnotations(clazz, field, jpaAnnotations);
-					} catch (final NotFoundException e) {
+					} catch (Exception e) {
 						throw new IllegalClassTransformationException(
 								String.format("Unable process JPA annotations for class file %s", clazz.getName()), e);
 					}
