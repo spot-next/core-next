@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,34 +50,43 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 		String classId = className;
 
-		if (StringUtils.isBlank(classId)) {
-			classId = UUID.randomUUID().toString();
-		}
+		if (StringUtils.isNotBlank(classId)) {
+			classId = classId.replaceAll("/", ".");
 
-		pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
+			pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 
-		CtClass clazz;
+			CtClass clazz = null;
 
-		try {
-			clazz = pool.get(className.replaceAll("/", "."));
+			if (!classId.contains("$Proxy") && !classId.contains("sun/reflect")) {
+				try {
+					clazz = pool.get(classId);
 
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(String.format("Processing class '%s'", clazz.getName()));
+				} catch (final NotFoundException e) {
+					LOG.warn(String.format("Could not process class '%s'", classId));
+					throw new IllegalClassTransformationException(String.format("Could not load class %s", classId), e);
+				}
+
+				if (clazz != null) {
+					if (LOG.isDebugEnabled()) {
+						LOG.debug(String.format("Processing class '%s'", clazz.getName()));
+					}
+					final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined,
+							protectionDomain);
+
+					if (transformedClass.isPresent()) {
+						try {
+							return transformedClass.get().toBytecode();
+						} catch (IOException | CannotCompileException e) {
+							throw new IllegalClassTransformationException(
+									String.format("Could not compile transformed class %s", classId), e);
+						}
+					}
+				}
+			} else {
+				LOG.debug(String.format("Ignoring proxy class %s", classId));
 			}
-		} catch (final NotFoundException e) {
-			LOG.warn(String.format("Processing class '%s'", className));
-			throw new IllegalClassTransformationException(String.format("Could not load class %s", className), e);
-		}
-
-		final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined, protectionDomain);
-
-		if (transformedClass.isPresent()) {
-			try {
-				return transformedClass.get().toBytecode();
-			} catch (IOException | CannotCompileException e) {
-				throw new IllegalClassTransformationException(
-						String.format("Could not compile transformed class %s", className), e);
-			}
+		} else {
+			LOG.debug("Ignoring class with empty name");
 		}
 
 		return null;
