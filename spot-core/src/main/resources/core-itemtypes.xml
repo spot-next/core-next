@@ -85,13 +85,6 @@
 
 	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user">
 		<properties>
-			<property name="type" type="AddressType">
-				<description>The address type of this address.</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
 		</properties>
 	</type>
 
@@ -306,6 +299,20 @@
 		<source itemType="User" mappedBy="owner" cardinality="one" />
 		<target itemType="Address" mappedBy="addresses" cardinality="many" />
 	</relation>
+	
+	<relation name="Address2AddressType">
+		<description>Defines a address ownership relation.</description>
+		<source itemType="Address" cardinality="many" />
+		<target itemType="AddressType" mappedBy="type" cardinality="one" />
+	</relation>
+
+<!-- <property name="type" type="AddressType"> -->
+<!-- 				<description>The address type of this address.</description> -->
+<!-- 				<modifiers unique="true" /> -->
+<!-- 				<validators> -->
+<!-- 					<validator javaClass="javax.validation.constraints.NotNull" /> -->
+<!-- 				</validators> -->
+<!-- 			</property> -->
 
 	<relation name="MediaContainer2Media">
 		<source itemType="MediaContainer" mappedBy="container"
@@ -327,3 +334,4 @@
 	</relation>
 
 </types>
+

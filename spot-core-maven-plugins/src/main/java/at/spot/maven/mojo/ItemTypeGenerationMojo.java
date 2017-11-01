@@ -34,6 +34,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.hibernate.mapping.Collection;
 
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
 import at.spot.core.infrastructure.maven.xml.BaseType;
@@ -49,6 +50,8 @@ import at.spot.core.infrastructure.maven.xml.RelationType;
 import at.spot.core.infrastructure.maven.xml.RelationshipCardinality;
 import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
+import at.spot.core.infrastructure.type.RelationCollectionType;
+import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
@@ -505,14 +508,25 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 		}
 
+		final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
+
 		// only create relation properties if an actual relation exists
 		if (rel != null) {
 			final JavaField property = new JavaField();
 			property.setDescription(rel.getDescription());
 
+			relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
+
+			RelationNodeType nodeType = null;
+			RelationCollectionType collectionType = null;
+			String mappedTo = null;
+
 			// use the mappedBy value of the other node as the property name
 			if (sourceNode != null) {
 				final String propertyName = rel.getTarget().getMappedBy();
+				collectionType = getCollectionType(sourceNode.getCollectionType());
+				nodeType = RelationNodeType.SOURCE;
+				mappedTo = propertyName;
 
 				if (StringUtils.isNotBlank(propertyName)) {
 					property.setName(propertyName);
@@ -522,8 +536,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 					property.setType(propType);
 				}
+
+				relationAnn.addParameter("type", getRelationType(sourceNode, rel.getTarget()),
+						AnnotationValueType.ENUM_VALUE);
 			} else if (targetNode != null) {
 				final String propertyName = rel.getSource().getMappedBy();
+				collectionType = getCollectionType(targetNode.getCollectionType());
+				nodeType = RelationNodeType.TARGET;
+				mappedTo = propertyName;
 
 				if (StringUtils.isNotBlank(propertyName)) {
 					property.setName(propertyName);
@@ -532,13 +552,59 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 							rel.getSource().getItemType());
 
 					property.setType(propType);
+
+					relationAnn.addParameter("mappedTo", propertyName, AnnotationValueType.STRING);
 				}
+
+				relationAnn.addParameter("type", getRelationType(targetNode, rel.getSource()),
+						AnnotationValueType.ENUM_VALUE);
 			}
 
-			javaClass.addField(property);
-			addGetter(property, javaClass);
-			addSetter(property, javaClass);
+			if (StringUtils.isNotBlank(mappedTo)) {
+				relationAnn.addParameter("mappedTo", mappedTo, AnnotationValueType.STRING);
+				relationAnn.addParameter("nodeType", nodeType, AnnotationValueType.ENUM_VALUE);
+
+				if (targetNode.getCardinality().equals(RelationshipCardinality.MANY)) {
+					collectionType = getCollectionType(targetNode.getCollectionType());
+					relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
+				}
+				property.addAnnotation(relationAnn);
+				property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
+				javaClass.addField(property);
+
+				addGetter(property, javaClass);
+				addSetter(property, javaClass);
+			}
 		}
+	}
+
+	protected at.spot.core.infrastructure.type.RelationType getRelationType(final RelationNode thisNode,
+			final RelationNode otherNode) {
+		if (RelationshipCardinality.ONE.equals(thisNode.getCardinality())
+				&& RelationshipCardinality.ONE.equals(otherNode.getCardinality())) {
+			return at.spot.core.infrastructure.type.RelationType.OneToOne;
+		} else if (RelationshipCardinality.MANY.equals(thisNode.getCardinality())
+				&& RelationshipCardinality.ONE.equals(otherNode.getCardinality())) {
+			return at.spot.core.infrastructure.type.RelationType.ManyToOne;
+		} else if (RelationshipCardinality.ONE.equals(thisNode.getCardinality())
+				&& RelationshipCardinality.MANY.equals(otherNode.getCardinality())) {
+			return at.spot.core.infrastructure.type.RelationType.OneToMany;
+		} else if (RelationshipCardinality.MANY.equals(thisNode.getCardinality())
+				&& RelationshipCardinality.MANY.equals(otherNode.getCardinality())) {
+			return at.spot.core.infrastructure.type.RelationType.ManyToMany;
+		}
+
+		return null;
+	}
+
+	protected RelationCollectionType getCollectionType(final CollectionsType collectionType) {
+		if (CollectionsType.SET.equals(collectionType)) {
+			return RelationCollectionType.Set;
+		} else if (CollectionsType.COLLECTION.equals(collectionType)) {
+			return RelationCollectionType.Collection;
+		}
+
+		return RelationCollectionType.List;
 	}
 
 	protected JavaMemberType createRelationPropertyMemberType(final RelationshipCardinality cardinality,

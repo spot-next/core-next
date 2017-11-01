@@ -12,8 +12,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import ch.qos.logback.core.util.CloseUtil;
@@ -31,29 +34,43 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ArrayMemberValue;
+import javassist.bytecode.annotation.MemberValue;
 
 /**
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
  */
 public abstract class AbstractBaseClassTransformer implements ClassFileTransformer {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
 	protected ClassPool pool = ClassPool.getDefault();
 
 	@Override
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
-		pool.insertClassPath(new ByteArrayClassPath(className, classfileBuffer));
+		String classId = className;
+
+		if (StringUtils.isBlank(classId)) {
+			classId = UUID.randomUUID().toString();
+		}
+
+		pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 
 		CtClass clazz;
 
 		try {
 			clazz = pool.get(className.replaceAll("/", "."));
-		} catch (NotFoundException e) {
+
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(String.format("Processing class '%s'", clazz.getName()));
+			}
+		} catch (final NotFoundException e) {
+			LOG.warn(String.format("Processing class '%s'", className));
 			throw new IllegalClassTransformationException(String.format("Could not load class %s", className), e);
 		}
 
-		Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined, protectionDomain);
+		final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined, protectionDomain);
 
 		if (transformedClass.isPresent()) {
 			try {
@@ -71,17 +88,18 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * 
 	 * 
 	 * @param loader
-	 *            the defining loader of the class to be transformed, may be null if
-	 *            the bootstrap loader
+	 *            the defining loader of the class to be transformed, may be
+	 *            null if the bootstrap loader
 	 * @param clazz
 	 *            the class in the internal form of the JVM.
 	 * @param classBeingRedefined
-	 *            if this is triggered by a redefine or retransform, the class being
-	 *            redefined or retransformed; if this is a class load, null
+	 *            if this is triggered by a redefine or retransform, the class
+	 *            being redefined or retransformed; if this is a class load,
+	 *            null
 	 * @param protectionDomain
 	 *            the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed, return
-	 *         null instead.
+	 * @return the transformed class object. If the class was not changed,
+	 *         return null instead.
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -94,8 +112,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 * @return
 	 */
-	protected List<Annotation> getAnnotations(CtClass clazz) {
-		List<Annotation> annotations = new ArrayList<>();
+	protected List<Annotation> getAnnotations(final CtClass clazz) {
+		final List<Annotation> annotations = new ArrayList<>();
 
 		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazz.getClassFile()
 				.getAttribute(AnnotationsAttribute.visibleTag);
@@ -114,7 +132,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param annotation
 	 * @return
 	 */
-	protected Optional<Annotation> getAnnotation(CtClass clazz, Class<ItemType> annotation) {
+	protected Optional<Annotation> getAnnotation(final CtClass clazz, final Class<ItemType> annotation) {
 		return getAnnotations(clazz).stream().filter(a -> StringUtils.equals(a.getTypeName(), annotation.getName()))
 				.findFirst();
 	}
@@ -203,7 +221,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected Annotation createAnnotation(final CtClass clazz,
 			final Class<? extends java.lang.annotation.Annotation> type) {
 
-		return createAnnotation(clazz, type);
+		return createAnnotation(clazz.getClassFile2().getConstPool(), type);
 	}
 
 	protected Annotation createAnnotation(final ConstPool cpool,
@@ -230,6 +248,16 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
+	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations) {
+		final List<Annotation> allAnnotations = getAnnotations(clazz);
+		allAnnotations.addAll(annotations);
+
+		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazz.getClassFile()
+				.getAttribute(AnnotationsAttribute.visibleTag);
+
+		attInfo.setAnnotations(allAnnotations.toArray(new Annotation[0]));
+	}
+
 	protected ConstPool getConstPool(final CtClass clazz) {
 		final ClassFile cfile = clazz.getClassFile();
 		final ConstPool cpool = cfile.getConstPool();
@@ -238,7 +266,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible fields (even from super classes) for the given class.
+	 * Returns all accessible fields (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -260,7 +289,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible methods (even from super classes) for the given class.
+	 * Returns all accessible methods (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -281,8 +311,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return methods;
 	}
 
-	protected void writeClass(CtClass clazz, File file) throws IOException {
-		DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+	protected void writeClass(final CtClass clazz, final File file) throws IOException {
+		final DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
 
 		try {
 			clazz.toBytecode(out);
@@ -293,13 +323,23 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
-	protected boolean hasInterface(CtClass clazz, Object interfaceType) {
-		for (String i : clazz.getClassFile().getInterfaces()) {
+	protected boolean hasInterface(final CtClass clazz, final Object interfaceType) {
+		for (final String i : clazz.getClassFile().getInterfaces()) {
 			if (StringUtils.equals(interfaceType.getClass().getName(), i)) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	protected ArrayMemberValue createAnnotationMemberValueArray(final ConstPool constPool,
+			final MemberValue... values) {
+
+		final ArrayMemberValue array = new ArrayMemberValue(constPool);
+		// array.setType(CascadeType.class.getName());
+		array.setValue(values);
+
+		return array;
 	}
 }
