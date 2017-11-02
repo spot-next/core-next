@@ -27,4 +27,10 @@ public @interface ItemType {
 	 * This is the bean name of the item.
 	 */
 	String typeCode();
+
+	/**
+	 * Specifies that the underlying persistence service should handle this type as
+	 * separate entity.
+	 */
+	boolean separateDeployment() default false;
 }

@@ -135,6 +135,16 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="separateDeployment" type="xs:boolean"
+					default="false">
+					<xs:annotation>
+						<xs:documentation>
+							Indicates that this item type is handled as
+							separate entity. The underlying persistence layer might handle
+							this as new table.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
