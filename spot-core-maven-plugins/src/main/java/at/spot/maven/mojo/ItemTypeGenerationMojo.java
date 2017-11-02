@@ -100,7 +100,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected String sourceDirectory;
 
 	@Parameter(property = "resourceDirectory", defaultValue = "src/gen/resources", readonly = true)
-	protected String resourceDirectory;
+	protected String generatedResourcesDirectory;
 
 	protected File targetClassesDirectory = null;
 	protected File targetResourcesDirectory = null;
@@ -124,16 +124,20 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		try {
 			loader = new ItemTypeDefinitionUtil(project, localRepository, getLog());
 			typeDefinitions = loader.fetchItemTypeDefinitions();
-			loader.saveTypeDefinitions(typeDefinitions, targetClassesDirectory);
+			loader.saveTypeDefinitions(typeDefinitions, getGeneratedResourcesFolder());
 			generateTypes();
 		} catch (final IllegalItemTypeDefinitionException | IOException e) {
 			throw new MojoExecutionException("Could not generate Java source code!", e);
 		}
 	}
 
+	protected File getGeneratedResourcesFolder() {
+		return new File(projectBaseDir + "/" + generatedResourcesDirectory);
+	}
+
 	protected void createPaths() {
 		targetClassesDirectory = new File(projectBaseDir + "/" + sourceDirectory);
-		targetResourcesDirectory = new File(projectBaseDir + "/" + resourceDirectory);
+		targetResourcesDirectory = new File(projectBaseDir + "/" + generatedResourcesDirectory);
 
 		if (this.project != null) {
 			// add generated sources

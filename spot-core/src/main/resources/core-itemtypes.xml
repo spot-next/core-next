@@ -83,9 +83,19 @@
 
 	<!-- addresses -->
 
-	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user">
+	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user" abstract="true">
 		<properties>
+			<property name="street" type="String" />
+			<property name="streetNumber" type="String" />
+			<property name="city" type="String" />
+			<property name="postalCode" type="String" />
+			<property name="state" type="String" />
+			<property name="country" type="Country" />
 		</properties>
+	</type>
+	
+	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user" extends="Address">
+		<properties></properties>
 	</type>
 
 	<type name="AddressType" typeCode="AddressType" package="at.spot.itemtype.core.user"
@@ -297,7 +307,7 @@
 	<relation name="User2Address">
 		<description>Defines a address ownership relation.</description>
 		<source itemType="User" mappedBy="owner" cardinality="one" />
-		<target itemType="Address" mappedBy="addresses" cardinality="many" />
+		<target itemType="UserAddress" mappedBy="addresses" cardinality="many" />
 	</relation>
 	
 	<relation name="Address2AddressType">
@@ -305,14 +315,6 @@
 		<source itemType="Address" cardinality="many" />
 		<target itemType="AddressType" mappedBy="type" cardinality="one" />
 	</relation>
-
-<!-- <property name="type" type="AddressType"> -->
-<!-- 				<description>The address type of this address.</description> -->
-<!-- 				<modifiers unique="true" /> -->
-<!-- 				<validators> -->
-<!-- 					<validator javaClass="javax.validation.constraints.NotNull" /> -->
-<!-- 				</validators> -->
-<!-- 			</property> -->
 
 	<relation name="MediaContainer2Media">
 		<source itemType="MediaContainer" mappedBy="container"

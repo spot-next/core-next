@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -142,8 +143,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		if (relationAnnotation != null) {
 			final EnumMemberValue relType = (EnumMemberValue) relationAnnotation.getMemberValue("type");
 
+			// JPA Relation annotations
 			if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
-				// JPA Relation annotation
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToMany.class));
 
 				// JoinTable annotation for bi-directional m-to-n relation table
@@ -151,13 +152,16 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						.add(createJoinTableAnnotation(entityClass, field, propertyAnnotation, relationAnnotation));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.OneToMany.toString())) {
-				// JPA Relation annotation
-				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToMany.class));
+				Annotation o2mAnn = createJpaRelationAnnotation(entityClass, field, OneToMany.class);
+				addMappedByAnnotationValue(o2mAnn, entityClass, relationAnnotation);
+				jpaAnnotations.add(o2mAnn);
+
+			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
+				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
 			} else {
 				// one to one in case the field type is a subtype of Item
 
-				// JPA Relation annotation
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
 			}
 
@@ -174,6 +178,15 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		return ann;
+	}
+
+	protected void addMappedByAnnotationValue(Annotation annotation, CtClass entityClass, Annotation relation) {
+		StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
+
+		if (relation != null) {
+			annotation.addMemberValue("mappedBy",
+					createAnnotationStringValue(getConstPool(entityClass), mappedTo.getValue()));
+		}
 	}
 
 	protected Annotation createJpaRelationAnnotation(final CtClass clazz, final CtField field,
@@ -230,7 +243,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final AnnotationMemberValue val = new AnnotationMemberValue(field.getFieldInfo2().getConstPool());
 		val.setValue(joinColumnAnn);
 
-		return createAnnotationMemberValueArray(field.getFieldInfo2().getConstPool(), val);
+		return createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val);
 	}
 
 	protected RelationNodeType getRelationNodeType(final Annotation relationAnnotation) {
@@ -243,8 +256,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		val.setType(CascadeType.class.getName());
 		val.setValue(CascadeType.ALL.toString());
 
-		annotation.addMemberValue("cascade",
-				createAnnotationMemberValueArray(field.getFieldInfo2().getConstPool(), val));
+		annotation.addMemberValue("cascade", createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
 	}
 
 }

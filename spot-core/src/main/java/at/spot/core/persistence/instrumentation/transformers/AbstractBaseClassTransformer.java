@@ -35,6 +35,7 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.MemberValue;
+import javassist.bytecode.annotation.StringMemberValue;
 
 /**
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
@@ -345,13 +346,19 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return false;
 	}
 
-	protected ArrayMemberValue createAnnotationMemberValueArray(final ConstPool constPool,
-			final MemberValue... values) {
+	protected ArrayMemberValue createAnnotationArrayValue(final ConstPool constPool, final MemberValue... values) {
 
 		final ArrayMemberValue array = new ArrayMemberValue(constPool);
 		// array.setType(CascadeType.class.getName());
 		array.setValue(values);
 
 		return array;
+	}
+
+	protected StringMemberValue createAnnotationStringValue(final ConstPool constPool, String value) {
+		StringMemberValue val = new StringMemberValue(constPool);
+		val.setValue(value);
+
+		return val;
 	}
 }
