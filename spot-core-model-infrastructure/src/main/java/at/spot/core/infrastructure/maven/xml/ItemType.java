@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ItemType complex type.
+ * <p>Java-Klasse für ItemType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="ItemType">
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="extends" type="{http://www.w3.org/2001/XMLSchema}string" default="Item" />
  *       &lt;attribute name="abstract" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="typeCode" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="separateDeployment" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -56,9 +57,11 @@ public class ItemType
     protected Boolean _abstract;
     @XmlAttribute(name = "typeCode")
     protected String typeCode;
+    @XmlAttribute(name = "separateDeployment")
+    protected Boolean separateDeployment;
 
     /**
-     * Gets the value of the properties property.
+     * Ruft den Wert der properties-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -70,7 +73,7 @@ public class ItemType
     }
 
     /**
-     * Sets the value of the properties property.
+     * Legt den Wert der properties-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -82,7 +85,7 @@ public class ItemType
     }
 
     /**
-     * Gets the value of the extends property.
+     * Ruft den Wert der extends-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -98,7 +101,7 @@ public class ItemType
     }
 
     /**
-     * Sets the value of the extends property.
+     * Legt den Wert der extends-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -110,7 +113,7 @@ public class ItemType
     }
 
     /**
-     * Gets the value of the abstract property.
+     * Ruft den Wert der abstract-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -122,7 +125,7 @@ public class ItemType
     }
 
     /**
-     * Sets the value of the abstract property.
+     * Legt den Wert der abstract-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -134,7 +137,7 @@ public class ItemType
     }
 
     /**
-     * Gets the value of the typeCode property.
+     * Ruft den Wert der typeCode-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -146,7 +149,7 @@ public class ItemType
     }
 
     /**
-     * Sets the value of the typeCode property.
+     * Legt den Wert der typeCode-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -157,11 +160,39 @@ public class ItemType
         this.typeCode = value;
     }
 
+    /**
+     * Ruft den Wert der separateDeployment-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isSeparateDeployment() {
+        if (separateDeployment == null) {
+            return false;
+        } else {
+            return separateDeployment;
+        }
+    }
 
     /**
-     * <p>Java class for anonymous complex type.
+     * Legt den Wert der separateDeployment-Eigenschaft fest.
      * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setSeparateDeployment(Boolean value) {
+        this.separateDeployment = value;
+    }
+
+
+    /**
+     * <p>Java-Klasse für anonymous complex type.
+     * 
+     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
      * 
      * <pre>
      * &lt;complexType>

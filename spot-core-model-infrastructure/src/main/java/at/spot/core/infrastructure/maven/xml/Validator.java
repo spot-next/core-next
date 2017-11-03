@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Validator complex type.
+ * <p>Java-Klasse für Validator complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="Validator">
@@ -69,7 +69,7 @@ public class Validator {
     }
 
     /**
-     * Gets the value of the javaClass property.
+     * Ruft den Wert der javaClass-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class Validator {
     }
 
     /**
-     * Sets the value of the javaClass property.
+     * Legt den Wert der javaClass-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

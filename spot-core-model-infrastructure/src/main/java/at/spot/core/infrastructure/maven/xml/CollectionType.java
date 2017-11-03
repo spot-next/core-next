@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for CollectionType complex type.
+ * <p>Java-Klasse für CollectionType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="CollectionType">
@@ -37,7 +37,7 @@ public class CollectionType
     protected CollectionsType collectionType;
 
     /**
-     * Gets the value of the elementType property.
+     * Ruft den Wert der elementType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class CollectionType
     }
 
     /**
-     * Sets the value of the elementType property.
+     * Legt den Wert der elementType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class CollectionType
     }
 
     /**
-     * Gets the value of the collectionType property.
+     * Ruft den Wert der collectionType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -77,7 +77,7 @@ public class CollectionType
     }
 
     /**
-     * Sets the value of the collectionType property.
+     * Legt den Wert der collectionType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

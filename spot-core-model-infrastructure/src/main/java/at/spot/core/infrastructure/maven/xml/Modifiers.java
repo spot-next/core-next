@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Modifiers complex type.
+ * <p>Java-Klasse für Modifiers complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="Modifiers">
@@ -41,7 +41,7 @@ public class Modifiers {
     protected Boolean initial;
 
     /**
-     * Gets the value of the unique property.
+     * Ruft den Wert der unique-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -57,7 +57,7 @@ public class Modifiers {
     }
 
     /**
-     * Sets the value of the unique property.
+     * Legt den Wert der unique-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -69,7 +69,7 @@ public class Modifiers {
     }
 
     /**
-     * Gets the value of the readable property.
+     * Ruft den Wert der readable-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -85,7 +85,7 @@ public class Modifiers {
     }
 
     /**
-     * Sets the value of the readable property.
+     * Legt den Wert der readable-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -97,7 +97,7 @@ public class Modifiers {
     }
 
     /**
-     * Gets the value of the writable property.
+     * Ruft den Wert der writable-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -113,7 +113,7 @@ public class Modifiers {
     }
 
     /**
-     * Sets the value of the writable property.
+     * Legt den Wert der writable-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class Modifiers {
     }
 
     /**
-     * Gets the value of the initial property.
+     * Ruft den Wert der initial-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -141,7 +141,7 @@ public class Modifiers {
     }
 
     /**
-     * Sets the value of the initial property.
+     * Legt den Wert der initial-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

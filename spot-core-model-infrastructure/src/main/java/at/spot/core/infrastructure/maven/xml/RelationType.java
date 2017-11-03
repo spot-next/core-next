@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for RelationType complex type.
+ * <p>Java-Klasse für RelationType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="RelationType">
@@ -42,7 +42,7 @@ public class RelationType
     protected RelationNode target;
 
     /**
-     * Gets the value of the source property.
+     * Ruft den Wert der source-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -54,7 +54,7 @@ public class RelationType
     }
 
     /**
-     * Sets the value of the source property.
+     * Legt den Wert der source-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -66,7 +66,7 @@ public class RelationType
     }
 
     /**
-     * Gets the value of the target property.
+     * Ruft den Wert der target-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class RelationType
     }
 
     /**
-     * Sets the value of the target property.
+     * Legt den Wert der target-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

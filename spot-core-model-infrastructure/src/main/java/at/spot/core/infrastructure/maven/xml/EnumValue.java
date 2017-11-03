@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for EnumValue complex type.
+ * <p>Java-Klasse für EnumValue complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="EnumValue">
@@ -35,7 +35,7 @@ public class EnumValue {
     protected String value;
 
     /**
-     * Gets the value of the code property.
+     * Ruft den Wert der code-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -47,7 +47,7 @@ public class EnumValue {
     }
 
     /**
-     * Sets the value of the code property.
+     * Legt den Wert der code-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -59,7 +59,7 @@ public class EnumValue {
     }
 
     /**
-     * Gets the value of the value property.
+     * Ruft den Wert der value-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -71,7 +71,7 @@ public class EnumValue {
     }
 
     /**
-     * Sets the value of the value property.
+     * Legt den Wert der value-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

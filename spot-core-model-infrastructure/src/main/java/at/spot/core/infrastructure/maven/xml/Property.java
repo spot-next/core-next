@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Property complex type.
+ * <p>Java-Klasse für Property complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="Property">
@@ -53,7 +53,7 @@ public class Property {
     protected String type;
 
     /**
-     * Gets the value of the description property.
+     * Ruft den Wert der description-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -65,7 +65,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the description property.
+     * Legt den Wert der description-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -77,7 +77,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the modifiers property.
+     * Ruft den Wert der modifiers-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -89,7 +89,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the modifiers property.
+     * Legt den Wert der modifiers-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +101,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the accessors property.
+     * Ruft den Wert der accessors-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -113,7 +113,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the accessors property.
+     * Legt den Wert der accessors-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the validators property.
+     * Ruft den Wert der validators-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -137,7 +137,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the validators property.
+     * Legt den Wert der validators-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -149,7 +149,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the defaultValue property.
+     * Ruft den Wert der defaultValue-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -161,7 +161,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the defaultValue property.
+     * Legt den Wert der defaultValue-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -173,7 +173,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the name property.
+     * Ruft den Wert der name-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -185,7 +185,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the name property.
+     * Legt den Wert der name-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -197,7 +197,7 @@ public class Property {
     }
 
     /**
-     * Gets the value of the type property.
+     * Ruft den Wert der type-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -209,7 +209,7 @@ public class Property {
     }
 
     /**
-     * Sets the value of the type property.
+     * Legt den Wert der type-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

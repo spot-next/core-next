@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for BaseComplexType complex type.
+ * <p>Java-Klasse für BaseComplexType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="BaseComplexType">
@@ -39,7 +39,7 @@ public abstract class BaseComplexType
     protected String _package;
 
     /**
-     * Gets the value of the package property.
+     * Ruft den Wert der package-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -51,7 +51,7 @@ public abstract class BaseComplexType
     }
 
     /**
-     * Sets the value of the package property.
+     * Legt den Wert der package-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

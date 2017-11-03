@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for MapType complex type.
+ * <p>Java-Klasse für MapType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
  * &lt;complexType name="MapType">
@@ -37,7 +37,7 @@ public class MapType
     protected String valueType;
 
     /**
-     * Gets the value of the keyType property.
+     * Ruft den Wert der keyType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class MapType
     }
 
     /**
-     * Sets the value of the keyType property.
+     * Legt den Wert der keyType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class MapType
     }
 
     /**
-     * Gets the value of the valueType property.
+     * Ruft den Wert der valueType-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class MapType
     }
 
     /**
-     * Sets the value of the valueType property.
+     * Legt den Wert der valueType-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
