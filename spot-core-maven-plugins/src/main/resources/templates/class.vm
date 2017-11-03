@@ -57,7 +57,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressWarnings("unchecked")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 #annotations($annotations)
-public #if ($isAbstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
+public #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
  		private static final long serialVersionUID = 1L;
  	#end
