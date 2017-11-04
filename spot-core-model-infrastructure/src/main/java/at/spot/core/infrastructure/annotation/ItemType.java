@@ -29,8 +29,8 @@ public @interface ItemType {
 	String typeCode();
 
 	/**
-	 * Specifies that the underlying persistence service should handle this type as
-	 * separate entity.
+	 * Determines if the annotated item type can be persisted by the persistence
+	 * framework.
 	 */
-	boolean separateDeployment() default false;
+	boolean persistable() default true;
 }

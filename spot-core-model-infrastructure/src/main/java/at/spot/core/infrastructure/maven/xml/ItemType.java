@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="extends" type="{http://www.w3.org/2001/XMLSchema}string" default="Item" />
  *       &lt;attribute name="abstract" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *       &lt;attribute name="typeCode" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="separateDeployment" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="persistable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -57,8 +57,8 @@ public class ItemType
     protected Boolean _abstract;
     @XmlAttribute(name = "typeCode")
     protected String typeCode;
-    @XmlAttribute(name = "separateDeployment")
-    protected Boolean separateDeployment;
+    @XmlAttribute(name = "persistable")
+    protected Boolean persistable;
 
     /**
      * Ruft den Wert der properties-Eigenschaft ab.
@@ -161,31 +161,31 @@ public class ItemType
     }
 
     /**
-     * Ruft den Wert der separateDeployment-Eigenschaft ab.
+     * Ruft den Wert der persistable-Eigenschaft ab.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isSeparateDeployment() {
-        if (separateDeployment == null) {
-            return false;
+    public boolean isPersistable() {
+        if (persistable == null) {
+            return true;
         } else {
-            return separateDeployment;
+            return persistable;
         }
     }
 
     /**
-     * Legt den Wert der separateDeployment-Eigenschaft fest.
+     * Legt den Wert der persistable-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setSeparateDeployment(Boolean value) {
-        this.separateDeployment = value;
+    public void setPersistable(Boolean value) {
+        this.persistable = value;
     }
 
 

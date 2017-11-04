@@ -290,9 +290,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
 		javaClass.addAnnotation(typeAnnotation);
 
-		if (type.isSeparateDeployment()) {
-			typeAnnotation.addParameter("separateDeployment", true, AnnotationValueType.BOOLEAN);
-		}
+		typeAnnotation.addParameter("persistable", type.isPersistable(), AnnotationValueType.BOOLEAN);
 
 		if (type.isAbstract() != null && type.isAbstract()) {
 			javaClass.setAbstract(true);

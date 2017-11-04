@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -36,6 +37,7 @@ import javassist.NotFoundException;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
+import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
@@ -107,7 +109,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected void addEntityAnnotation(final CtClass clazz) {
-		addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, Entity.class)));
+		Optional<Annotation> itemTypeAnn = getItemTypeAnnotation(clazz);
+
+		if (itemTypeAnn.isPresent()) {
+			BooleanMemberValue val = (BooleanMemberValue) itemTypeAnn.get().getMemberValue("persistable");
+
+			if (val != null && val.getValue()) {
+				// this type needs a separate deployment table
+				addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, Entity.class)));
+			} else {
+				// this type is not an persistable entity
+				addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, MappedSuperclass.class)));
+			}
+		}
 	}
 
 	protected boolean isItemType(final CtClass clazz) {
