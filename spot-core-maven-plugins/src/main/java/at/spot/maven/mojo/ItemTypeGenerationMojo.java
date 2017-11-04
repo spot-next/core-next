@@ -493,47 +493,43 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		// TODO: needs refactoring
 
-		RelationNode sourceNode = null;
-		RelationNode targetNode = null;
-		RelationType rel = null;
+		for (final RelationType rel : typeDefinitions.getRelationTypes().values()) {
+			RelationNode sourceNode = null;
+			RelationNode targetNode = null;
 
-		for (final RelationType r : typeDefinitions.getRelationTypes().values()) {
-			if (type.getName().equals(r.getSource().getItemType())) {
+			if (type.getName().equals(rel.getSource().getItemType())) {
 				// this means that the current type is on the "source side" of
 				// the relation
-				sourceNode = r.getSource();
+				sourceNode = rel.getSource();
 			}
 
-			if (type.getName().equals(r.getTarget().getItemType())) {
+			if (type.getName().equals(rel.getTarget().getItemType())) {
 				// this means that the current type is on the "target side" of
 				// the relation
-				targetNode = r.getTarget();
+				targetNode = rel.getTarget();
 			}
 
 			if (sourceNode != null || targetNode != null) {
-				rel = r;
-				break;
+				final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
+
+				// only create relation properties if an actual relation exists
+				if (rel != null) {
+					final JavaField property = new JavaField();
+					property.setDescription(rel.getDescription());
+
+					relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
+
+					// use the mappedBy value of the other node as the property name
+					if (sourceNode != null) {
+						populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass,
+								property, relationAnn);
+					} else if (targetNode != null) {
+						populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass,
+								property, relationAnn);
+					}
+
+				}
 			}
-		}
-
-		final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
-
-		// only create relation properties if an actual relation exists
-		if (rel != null) {
-			final JavaField property = new JavaField();
-			property.setDescription(rel.getDescription());
-
-			relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
-
-			// use the mappedBy value of the other node as the property name
-			if (sourceNode != null) {
-				populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, property,
-						relationAnn);
-			} else if (targetNode != null) {
-				populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, property,
-						relationAnn);
-			}
-
 		}
 	}
 

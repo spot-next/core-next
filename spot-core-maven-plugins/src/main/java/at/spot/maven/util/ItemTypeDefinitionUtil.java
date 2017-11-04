@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,8 +78,7 @@ public class ItemTypeDefinitionUtil {
 	 * @throws DependencyResolutionException1
 	 */
 	protected List<InputStream> findItemTypeDefinitions() throws IllegalItemTypeDefinitionException {
-		final List<InputStream> definitions = new ArrayList<>();
-		final List<String> definitionFiles = new ArrayList<>();
+		final Map<String, InputStream> definitionFiles = new LinkedHashMap<>();
 
 		// get all dependencies and iterate over the target/classes folder
 		final Set<Artifact> files = project.getDependencyArtifacts();
@@ -97,14 +97,19 @@ public class ItemTypeDefinitionUtil {
 						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 						for (final String c : jarContent) {
 							if (isItemTypeDefinitionFile(c)) {
-								definitions.add(FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
-								definitionFiles.add(f.getName() + "/" + c);
+								String fileName = f.getAbsolutePath() + "/" + c;
+
+								if (definitionFiles.get(fileName) == null) {
+									definitionFiles.put(fileName,
+											FileUtils.readFileFromZipFile(f.getAbsolutePath(), c));
+								}
 							}
 						}
 					} else {
 						if (isItemTypeDefinitionFile(f.getName())) {
-							definitions.add(FileUtils.readFile(f));
-							definitionFiles.add(f.getName());
+							if (definitionFiles.get(f.getAbsolutePath()) == null) {
+								definitionFiles.put(file.getAbsolutePath(), FileUtils.readFile(f));
+							}
 						}
 					}
 				}
@@ -121,8 +126,9 @@ public class ItemTypeDefinitionUtil {
 			for (final File f : projectFiles) {
 				if (isItemTypeDefinitionFile(f.getName())) {
 					try {
-						definitions.add(FileUtils.readFile(f));
-						definitionFiles.add(f.getName());
+						if (definitionFiles.get(f.getAbsolutePath()) == null) {
+							definitionFiles.put(f.getAbsolutePath(), FileUtils.readFile(f));
+						}
 					} catch (final FileNotFoundException e) {
 						throw new IllegalItemTypeDefinitionException("Could not scan for item types.", e);
 					}
@@ -132,7 +138,7 @@ public class ItemTypeDefinitionUtil {
 
 		log.info(String.format("Found XML definitions: %s", StringUtils.join(definitionFiles, ", ")));
 
-		return definitions;
+		return new ArrayList<>(definitionFiles.values());
 	}
 
 	protected <T extends BaseType> void populateTypeDefinition(List<T> source, Map<String, T> target,
