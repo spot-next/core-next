@@ -7,7 +7,7 @@ import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
 
-public class PersistenceIntegrationTest extends AbstractIntegrationTest {
+public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {

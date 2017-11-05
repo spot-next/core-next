@@ -15,6 +15,9 @@ public class SpotJunitRunListener extends RunListener {
 
 	protected IntegrationTest testAnnotation;
 
+	// public SpotJunitRunListener() {
+	// }
+
 	@Override
 	public void testRunStarted(final Description description) throws Exception {
 		testAnnotation = ClassUtil.getAnnotation(description.getTestClass(), IntegrationTest.class);
