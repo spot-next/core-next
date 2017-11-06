@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Resource;
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -30,7 +29,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.datanucleus.api.jdo.annotations.CreateTimestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.auditing.AuditingHandler;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
@@ -48,8 +46,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 
-	@Resource
-	protected AuditingHandler auditingHandler;
+	// @Resource
+	// protected AuditingHandler auditingHandler;
 
 	// JDO
 	@PrimaryKey
@@ -104,7 +102,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * Mark the object as dirty, even though it might no be.
 	 */
 	public void markAsDirty() {
-		auditingHandler.markModified(this);
+		// auditingHandler.markModified(this);
+		this.lastModifiedAt = new Date();
 	}
 
 	/**
