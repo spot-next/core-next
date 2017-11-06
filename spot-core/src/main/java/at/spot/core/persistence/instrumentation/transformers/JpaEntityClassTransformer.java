@@ -31,6 +31,7 @@ import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
 import de.invesdwin.instrument.ClassTransformer;
 import de.invesdwin.instrument.transformer.IllegalClassTransformationException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
@@ -50,6 +51,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
 	protected static final String RELATION_TARGET_COLUMN = "target_pk";
 
+	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	@Override
 	protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -195,9 +197,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected void addMappedByAnnotationValue(Annotation annotation, CtClass entityClass, Annotation relation) {
-		StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
-
 		if (relation != null) {
+			StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
+
 			annotation.addMemberValue("mappedBy",
 					createAnnotationStringValue(getConstPool(entityClass), mappedTo.getValue()));
 		}

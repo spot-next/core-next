@@ -21,6 +21,7 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the base class for all integration tasks. Database access will be
@@ -31,7 +32,12 @@ import at.spot.core.persistence.service.TransactionService;
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
 @Transactional
+@SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest {
+
+	// static {
+	// DynamicInstrumentationLoader.initialize();
+	// }
 
 	public static final String MAPDB_FILE = "/var/tmp/spot-core.test.db";
 
@@ -46,6 +52,12 @@ public abstract class AbstractIntegrationTest {
 
 	@Resource
 	protected ModelService modelService;
+
+	// protected AbstractIntegrationTest() {
+	// final IntegrationTest testAnnotation =
+	// ClassUtil.getAnnotation(this.getClass(), IntegrationTest.class);
+	// Registry.setMainClass(testAnnotation.initClass());
+	// }
 
 	protected String getTestPackagePath() {
 		return this.getClass().getPackage().getName();

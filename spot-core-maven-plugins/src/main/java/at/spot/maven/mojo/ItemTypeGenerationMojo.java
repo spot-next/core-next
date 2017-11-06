@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,6 +74,7 @@ import at.spot.maven.velocity.type.parts.JavaMemberType;
 import at.spot.maven.velocity.type.parts.JavaMethod;
 import at.spot.maven.velocity.util.VelocityUtil;
 import de.hunsicker.jalopy.Jalopy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @description Generates the java source code for the defined item types.
@@ -391,6 +393,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return ret;
 	}
 
+	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
 			throws IOException, MojoExecutionException {
 
@@ -400,10 +403,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
 					type.getName() + ".java");
 
+			if (filePath == null) {
+				throw new IOException("Could not read access target file path");
+			}
+
 			if (Files.exists(filePath)) {
 				Files.delete(filePath);
 			} else {
-				if (!Files.exists(filePath.getParent())) {
+				if (filePath.getParent() != null && !Files.exists(filePath.getParent())) {
 					Files.createDirectories(filePath.getParent());
 				}
 			}
@@ -413,7 +420,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			Writer writer = null;
 
 			try {
-				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile())));
+				writer = new BufferedWriter(
+						new OutputStreamWriter(new FileOutputStream(filePath.toFile()), StandardCharsets.UTF_8));
 
 				final String encodedType = encodeType(type);
 				writer.write(encodedType);
@@ -497,13 +505,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			RelationNode sourceNode = null;
 			RelationNode targetNode = null;
 
-			if (type.getName().equals(rel.getSource().getItemType())) {
+			if (rel.getSource() != null && type.getName().equals(rel.getSource().getItemType())) {
 				// this means that the current type is on the "source side" of
 				// the relation
 				sourceNode = rel.getSource();
 			}
 
-			if (type.getName().equals(rel.getTarget().getItemType())) {
+			if (rel.getTarget() != null && type.getName().equals(rel.getTarget().getItemType())) {
 				// this means that the current type is on the "target side" of
 				// the relation
 				targetNode = rel.getTarget();
@@ -513,21 +521,18 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
 
 				// only create relation properties if an actual relation exists
-				if (rel != null) {
-					final JavaField property = new JavaField();
-					property.setDescription(rel.getDescription());
+				final JavaField property = new JavaField();
+				property.setDescription(rel.getDescription());
 
-					relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
+				relationAnn.addParameter("relationName", rel.getName(), AnnotationValueType.STRING);
 
-					// use the mappedBy value of the other node as the property name
-					if (sourceNode != null) {
-						populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass,
-								property, relationAnn);
-					} else if (targetNode != null) {
-						populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass,
-								property, relationAnn);
-					}
-
+				// use the mappedBy value of the other node as the property name
+				if (sourceNode != null) {
+					populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, property,
+							relationAnn);
+				} else if (targetNode != null) {
+					populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, property,
+							relationAnn);
 				}
 			}
 		}

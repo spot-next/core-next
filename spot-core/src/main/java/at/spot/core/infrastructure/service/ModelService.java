@@ -18,7 +18,7 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T createProxyModel(Class<T> itemType, long pk);
+	// <T extends Item> T createProxyModel(Class<T> itemType, long pk);
 
 	/**
 	 * Creates a new proxy item that references the given item.
@@ -26,7 +26,7 @@ public interface ModelService {
 	 * @param pk
 	 * @return
 	 */
-	<T extends Item> T createProxyModel(T item);
+	// <T extends Item> T createProxyModel(T item);
 
 	/**
 	 * Creates an unsaved instance of the given type.

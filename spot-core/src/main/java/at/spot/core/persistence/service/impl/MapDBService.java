@@ -2,7 +2,6 @@ package at.spot.core.persistence.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,14 +30,11 @@ public class MapDBService extends AbstractService implements SerialNumberGenerat
 	@Autowired
 	protected TypeService typeService;
 
-	protected ForkJoinPool threadPool;
 	protected DB database;
 	protected Map<String, Long> serialNumberSequences;
 
 	@PostConstruct
 	protected void init() throws PersistenceStorageException {
-		this.threadPool = new ForkJoinPool(10);
-
 		try {
 			database = DBMaker.fileDB(configurationService.getString(CONFIG_KEY_STORAGE_FILE, DEFAULT_DB_FILEPATH))
 					.fileMmapEnable().fileMmapPreclearDisable().cleanerHackEnable().transactionEnable()

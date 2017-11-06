@@ -21,7 +21,9 @@ public abstract class JavaMember extends AbstractJavaObject {
 	public Set<String> getImports() {
 		final Set<String> allImports = super.getImports();
 
-		allImports.addAll(type.getImports());
+		if (type != null) {
+			allImports.addAll(type.getImports());
+		}
 
 		return allImports;
 	}

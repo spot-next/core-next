@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import at.spot.core.infrastructure.annotation.ItemType;
 import ch.qos.logback.core.util.CloseUtil;
 import de.invesdwin.instrument.transformer.IllegalClassTransformationException;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -28,6 +29,7 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.FieldInfo;
@@ -45,6 +47,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
 	protected ClassPool pool = ClassPool.getDefault();
 
+	@SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Return value of null is necessary by specifications.")
 	@Override
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
@@ -129,14 +132,17 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 			clazzFile = clazz.getClassFile();
 		}
 
-		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazzFile
-				.getAttribute(AnnotationsAttribute.visibleTag);
+		if (clazzFile != null) {
+			final AttributeInfo attInfo = clazzFile.getAttribute(AnnotationsAttribute.visibleTag);
 
-		if (attInfo != null) {
-			annotations.addAll(Arrays.asList(attInfo.getAnnotations()));
+			if (attInfo != null && attInfo instanceof AnnotationsAttribute) {
+				annotations.addAll(Arrays.asList(((AnnotationsAttribute) attInfo).getAnnotations()));
+			}
+
+			return annotations;
 		}
 
-		return annotations;
+		return Collections.emptyList();
 	}
 
 	/**
@@ -161,10 +167,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected List<Annotation> getAnnotations(final CtField field) {
 		final FieldInfo info = field.getFieldInfo();
 
-		final AnnotationsAttribute attInfo = (AnnotationsAttribute) info.getAttribute(AnnotationsAttribute.visibleTag);
+		final AttributeInfo attInfo = info.getAttribute(AnnotationsAttribute.visibleTag);
 
-		if (attInfo != null) {
-			return Arrays.asList(attInfo.getAnnotations());
+		if (attInfo != null && attInfo instanceof AnnotationsAttribute) {
+			return Arrays.asList(((AnnotationsAttribute) attInfo).getAnnotations());
 		}
 
 		return Collections.emptyList();
@@ -193,10 +199,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected List<Annotation> getAnnotations(final CtMethod method) {
 		final MethodInfo info = method.getMethodInfo();
 
-		final AnnotationsAttribute attInfo = (AnnotationsAttribute) info.getAttribute(AnnotationsAttribute.visibleTag);
+		final AttributeInfo attInfo = info.getAttribute(AnnotationsAttribute.visibleTag);
 
-		if (attInfo != null) {
-			return Arrays.asList(attInfo.getAnnotations());
+		if (attInfo != null && attInfo instanceof AnnotationsAttribute) {
+			return Arrays.asList(((AnnotationsAttribute) attInfo).getAnnotations());
 		}
 
 		return Collections.emptyList();
@@ -256,10 +262,13 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 */
 	protected void addAnnotations(final CtClass clazz, final CtField field, final List<Annotation> annotations) {
 		for (final Annotation a : annotations) {
-			final AnnotationsAttribute attr = (AnnotationsAttribute) field.getFieldInfo()
-					.getAttribute(AnnotationsAttribute.visibleTag);
-			attr.addAnnotation(a);
-			field.getFieldInfo().addAttribute(attr);
+			AttributeInfo info = field.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag);
+
+			if (info != null && info instanceof AnnotationsAttribute) {
+				final AnnotationsAttribute attr = (AnnotationsAttribute) info;
+				attr.addAnnotation(a);
+				field.getFieldInfo().addAttribute(attr);
+			}
 		}
 	}
 
@@ -267,10 +276,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		final List<Annotation> allAnnotations = getAnnotations(clazz);
 		allAnnotations.addAll(annotations);
 
-		final AnnotationsAttribute attInfo = (AnnotationsAttribute) clazz.getClassFile()
-				.getAttribute(AnnotationsAttribute.visibleTag);
+		AttributeInfo info = clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
 
-		attInfo.setAnnotations(allAnnotations.toArray(new Annotation[0]));
+		if (info != null && info instanceof AnnotationsAttribute) {
+			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;
+			attInfo.setAnnotations(allAnnotations.toArray(new Annotation[0]));
+		}
 	}
 
 	protected ConstPool getConstPool(final CtClass clazz) {

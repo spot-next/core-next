@@ -2,14 +2,12 @@ package at.spot.core.model;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Resource;
 import javax.jdo.annotations.Discriminator;
 import javax.jdo.annotations.DiscriminatorStrategy;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -32,6 +30,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.datanucleus.api.jdo.annotations.CreateTimestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.auditing.AuditingHandler;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
@@ -43,19 +42,14 @@ import at.spot.core.support.util.ClassUtil;
 @javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
 // JPA
 @MappedSuperclass
-// @Entity
 @DiscriminatorColumn(name = "type")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected final transient Map<String, Boolean> propertiesInitializationState = new HashMap<>();
-
-	@Transient
-	protected transient boolean forceDirty = false;
-	@Transient
-	protected final List<String> dirtyAttributes = new ArrayList<>();
+	@Resource
+	protected AuditingHandler auditingHandler;
 
 	// JDO
 	@PrimaryKey
@@ -81,20 +75,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Version
 	protected long version;
 
-	/**
-	 * If this object is used as a proxy, eg. in a collection or relation, this is
-	 * true. The item property handler then knows it has to load it on the fly.
-	 */
-	public transient boolean isProxy;
-
-	public Item() {
-		this.isProxy = false;
-	}
-
-	public Item(final boolean isProxy) {
-		this.isProxy = isProxy;
-	}
-
 	public void setPk(final Long pk) {
 		this.pk = pk;
 	}
@@ -104,19 +84,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	public Date getLastModifiedAt() {
-		return lastModifiedAt;
+		return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) : null;
 	}
 
 	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public boolean isProxy() {
-		return isProxy;
-	}
-
-	public void setIsProxy(final boolean isProxy) {
-		this.isProxy = isProxy;
+		return createdAt != null ? new Date(createdAt.getTime()) : null;
 	}
 
 	/**
@@ -128,28 +100,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return pk != null;
 	}
 
-	public List<String> getDirtyAttributes() {
-		return Collections.unmodifiableList(dirtyAttributes);
-	}
-
-	public boolean isDirty() {
-		return forceDirty | dirtyAttributes.size() > 0;
-	}
-
-	public void markAsDirty(final String propertyName) {
-		this.dirtyAttributes.add(propertyName);
-		this.lastModifiedAt = new Date();
-	}
-
 	/**
 	 * Mark the object as dirty, even though it might no be.
 	 */
 	public void markAsDirty() {
-		this.forceDirty = true;
-	}
-
-	protected void clearDirtyFlag() {
-		this.dirtyAttributes.clear();
+		auditingHandler.markModified(this);
 	}
 
 	/**
@@ -228,13 +183,5 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		} else {
 			return 1;
 		}
-	}
-
-	public boolean isPropertyInitialized(String propertyName) {
-		return propertiesInitializationState.get(propertyName) != null;
-	}
-
-	public void setPropertyInitialized(String propertyName) {
-		propertiesInitializationState.put(propertyName, Boolean.TRUE);
 	}
 }

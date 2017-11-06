@@ -19,21 +19,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
 public class DefaultModelService extends AbstractModelService {
 
 	@Resource
 	protected ValidationService validationService;
-
-	@Resource
-	protected TypeService typeService;
 
 	@Override
 	public <T extends Item> void save(final T model)

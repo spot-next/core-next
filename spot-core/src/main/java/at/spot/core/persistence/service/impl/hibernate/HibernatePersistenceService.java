@@ -21,8 +21,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.LockMode;
@@ -81,7 +79,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		final String query = String.format("SELECT i FROM %s i WHERE pk = :pk", type.getSimpleName());
+		// final String query = String.format("SELECT i FROM %s i WHERE pk = :pk",
+		// type.getSimpleName());
 
 		return getSession().find(type, pk);
 
@@ -181,8 +180,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		if (searchParameters != null) {
 			Predicate p = cb.conjunction();
 
-			final Metamodel mm = getSession().getMetamodel();
-			final EntityType<T> et = mm.entity(type);
+			// final Metamodel mm = getSession().getMetamodel();
+			// final EntityType<T> et = mm.entity(type);
 
 			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
 				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
@@ -254,7 +253,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		final String query = String.format("DELETE FROM %s WHERE pk IN (?pk)", type.getSimpleName());
+		// final String query = String.format("DELETE FROM %s WHERE pk IN (?pk)",
+		// type.getSimpleName());
 
 		// em.createQuery(query, type).setParameter("pk", pk);
 

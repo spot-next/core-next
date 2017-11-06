@@ -17,7 +17,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.persistence.service.TransactionService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Initialized by spring post construct")
 @Service
 public class DefaultTransactionService extends AbstractService implements TransactionService {
 
