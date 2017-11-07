@@ -66,8 +66,9 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					clazz = pool.get(classId);
 
 				} catch (final NotFoundException e) {
-					LOG.warn(String.format("Could not process class '%s'", classId));
-					throw new IllegalClassTransformationException(String.format("Could not load class %s", classId), e);
+					String message = String.format("Could not process class '%s'", classId);
+					LOG.error(message, e);
+					throw new IllegalClassTransformationException(message, e);
 				}
 
 				if (clazz != null) {
@@ -80,9 +81,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					if (transformedClass.isPresent()) {
 						try {
 							return transformedClass.get().toBytecode();
-						} catch (IOException | CannotCompileException e) {
-							throw new IllegalClassTransformationException(
-									String.format("Could not compile transformed class %s", classId), e);
+						} catch (Exception e) {
+							String message = String.format("Could not compile transformed class %s", classId);
+							LOG.error(message, e);
+							throw new IllegalClassTransformationException(message, e);
 						}
 					}
 				}
@@ -100,18 +102,17 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * 
 	 * 
 	 * @param loader
-	 *            the defining loader of the class to be transformed, may be
-	 *            null if the bootstrap loader
+	 *            the defining loader of the class to be transformed, may be null if
+	 *            the bootstrap loader
 	 * @param clazz
 	 *            the class in the internal form of the JVM.
 	 * @param classBeingRedefined
-	 *            if this is triggered by a redefine or retransform, the class
-	 *            being redefined or retransformed; if this is a class load,
-	 *            null
+	 *            if this is triggered by a redefine or retransform, the class being
+	 *            redefined or retransformed; if this is a class load, null
 	 * @param protectionDomain
 	 *            the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed,
-	 *         return null instead.
+	 * @return the transformed class object. If the class was not changed, return
+	 *         null instead.
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -166,7 +167,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @return
 	 */
 	protected List<Annotation> getAnnotations(final CtField field) {
-		final FieldInfo info = field.getFieldInfo();
+		final FieldInfo info = field.getFieldInfo2();
 
 		final AttributeInfo attInfo = info.getAttribute(AnnotationsAttribute.visibleTag);
 
@@ -198,7 +199,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @return
 	 */
 	protected List<Annotation> getAnnotations(final CtMethod method) {
-		final MethodInfo info = method.getMethodInfo();
+		final MethodInfo info = method.getMethodInfo2();
 
 		final AttributeInfo attInfo = info.getAttribute(AnnotationsAttribute.visibleTag);
 
@@ -263,12 +264,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 */
 	protected void addAnnotations(final CtClass clazz, final CtField field, final List<Annotation> annotations) {
 		for (final Annotation a : annotations) {
-			final AttributeInfo info = field.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag);
+			final AttributeInfo info = field.getFieldInfo2().getAttribute(AnnotationsAttribute.visibleTag);
 
 			if (info != null && info instanceof AnnotationsAttribute) {
 				final AnnotationsAttribute attr = (AnnotationsAttribute) info;
 				attr.addAnnotation(a);
-				field.getFieldInfo().addAttribute(attr);
+				field.getFieldInfo2().addAttribute(attr);
 			}
 		}
 	}
@@ -293,8 +294,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible fields (even from super classes) for the given
-	 * class.
+	 * Returns all accessible fields (even from super classes) for the given class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -316,8 +316,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible methods (even from super classes) for the given
-	 * class.
+	 * Returns all accessible methods (even from super classes) for the given class.
 	 * 
 	 * @param clazz
 	 * @return
