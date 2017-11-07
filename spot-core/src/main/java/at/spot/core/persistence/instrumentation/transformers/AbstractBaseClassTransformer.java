@@ -224,16 +224,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 				.findFirst();
 	}
 
-	// protected ArrayMemberValue createArrayMemberValue( final
-	// List<MemberValue> values) {
-	// final ArrayMemberValue val = new ArrayMemberValue(getConstPool());
-	//
-	// val.getType()
-	// val.setValue(elements);
-	//
-	// return val;
-	// }
-
 	/**
 	 * Creates a new javassist annotation for the given class.
 	 * 
@@ -362,7 +352,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected ArrayMemberValue createAnnotationArrayValue(final ConstPool constPool, final MemberValue... values) {
 
 		final ArrayMemberValue array = new ArrayMemberValue(constPool);
-		// array.setType(CascadeType.class.getName());
 		array.setValue(values);
 
 		return array;

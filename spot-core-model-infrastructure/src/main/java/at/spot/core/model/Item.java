@@ -15,7 +15,6 @@ import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.VersionStrategy;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -37,12 +36,11 @@ import at.spot.core.support.util.ClassUtil;
 
 //JDO
 @PersistenceCapable
-@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.NEW_TABLE)
+@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
 // JPA
 @MappedSuperclass
-@DiscriminatorColumn(name = "type")
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
 public abstract class Item implements Serializable, Comparable<Item> {
@@ -96,8 +94,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing
-	 *         item with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing item
+	 *         with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -112,8 +110,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated
-	 * with @Unique.
+	 * Returns the names and the values of all properties annotated with @Unique.
 	 *
 	 * @return
 	 */
@@ -138,8 +135,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as
-	 * unique (with the {@link Property} annotation).
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation).
 	 *
 	 * @return
 	 */
@@ -152,8 +149,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current
-	 * object, both are equal.
+	 * If the type and the pk of the given object is the same as the current object,
+	 * both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

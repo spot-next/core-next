@@ -53,6 +53,23 @@ import javassist.bytecode.annotation.StringMemberValue;
 @ClassTransformer
 public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
+	protected static final String MV_CASCADE = "cascade";
+	protected static final String MV_NODE_TYPE = "nodeType";
+	protected static final String MV_REFERENCED_COLUMN_NAME = "referencedColumnName";
+	protected static final String MV_PK = "pk";
+	protected static final String MV_INVERSE_JOIN_COLUMNS = "inverseJoinColumns";
+	protected static final String MV_JOIN_COLUMNS = "joinColumns";
+	protected static final String MV_NAME = "name";
+	protected static final String MV_RELATION_NAME = "relationName";
+	protected static final String MV_PERSISTABLE = "persistable";
+	protected static final String CLASS_FILE_SUFFIX = ".class";
+	protected static final String MV_MAPPED_BY = "mappedBy";
+	protected static final String MV_MAPPED_TO = "mappedTo";
+	protected static final String MV_TYPE = "type";
+	protected static final String MV_TYPE_CODE = "typeCode";
+	protected static final String MV_UNIQUE = "unique";
+	protected static final String MV_COLUMN_NAMES = "columnNames";
+	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
 	protected static final String RELATION_TARGET_COLUMN = "target_pk";
 
@@ -98,7 +115,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			}
 
 			try {
-				final File file = new File("/var/tmp/" + clazz.getName() + ".class");
+				final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
 
 				if (file.exists()) {
 					file.delete();
@@ -120,7 +137,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final Optional<Annotation> itemTypeAnn = getItemTypeAnnotation(clazz);
 
 		if (itemTypeAnn.isPresent()) {
-			final BooleanMemberValue val = (BooleanMemberValue) itemTypeAnn.get().getMemberValue("persistable");
+			final BooleanMemberValue val = (BooleanMemberValue) itemTypeAnn.get().getMemberValue(MV_PERSISTABLE);
 
 			if (val != null && val.getValue()) {
 				// this type needs a separate deployment table
@@ -139,7 +156,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 			if (propertyAnn.isPresent()) {
-				final BooleanMemberValue val = (BooleanMemberValue) propertyAnn.get().getMemberValue("unique");
+				final BooleanMemberValue val = (BooleanMemberValue) propertyAnn.get().getMemberValue(MV_UNIQUE);
 
 				if (val != null && val.getValue()) {
 					uniqueFields.put(field.getName(), field);
@@ -151,7 +168,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			final Annotation tableAnn = createAnnotation(getConstPool(clazz), Table.class);
 
 			final ArrayMemberValue constraints = new ArrayMemberValue(getConstPool(clazz));
-			tableAnn.addMemberValue("uniqueConstraints", constraints);
+			tableAnn.addMemberValue(MV_UNIQUE_CONSTRAINTS, constraints);
 
 			final Annotation constraintAnnotation = createAnnotation(getConstPool(clazz), UniqueConstraint.class);
 			final AnnotationMemberValue constraint = new AnnotationMemberValue(getConstPool(clazz));
@@ -159,14 +176,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			constraints.setValue(new MemberValue[] { constraint });
 
 			final ArrayMemberValue columnNames = new ArrayMemberValue(getConstPool(clazz));
-			constraintAnnotation.addMemberValue("columnNames", columnNames);
+			constraintAnnotation.addMemberValue(MV_COLUMN_NAMES, columnNames);
 
 			final List<StringMemberValue> columnNameValues = new ArrayList<>();
 
-			for (final Map.Entry<String, CtField> uniqueField : uniqueFields.entrySet()) {
+			StringMemberValue cv = null;
 
-				// constraint.addMemberValue("uniqueConstraints", constraints);
-				final StringMemberValue cv = new StringMemberValue(getConstPool(clazz));
+			for (final Map.Entry<String, CtField> uniqueField : uniqueFields.entrySet()) {
+				cv = new StringMemberValue(getConstPool(clazz));
 				cv.setValue(uniqueField.getKey());
 				columnNameValues.add(cv);
 			}
@@ -196,7 +213,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final Optional<Annotation> ann = getItemTypeAnnotation(clazz);
 
 		if (ann.isPresent()) {
-			final StringMemberValue typeCode = (StringMemberValue) ann.get().getMemberValue("typeCode");
+			final StringMemberValue typeCode = (StringMemberValue) ann.get().getMemberValue(MV_TYPE_CODE);
 
 			return typeCode.getValue();
 		}
@@ -211,7 +228,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final List<Annotation> jpaAnnotations = new ArrayList<>();
 
 		if (relationAnnotation != null) {
-			final EnumMemberValue relType = (EnumMemberValue) relationAnnotation.getMemberValue("type");
+			final EnumMemberValue relType = (EnumMemberValue) relationAnnotation.getMemberValue(MV_TYPE);
 
 			// JPA Relation annotations
 			if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
@@ -253,9 +270,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected void addMappedByAnnotationValue(final Annotation annotation, final CtClass entityClass,
 			final Annotation relation) {
 		if (relation != null) {
-			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
+			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 
-			annotation.addMemberValue("mappedBy",
+			annotation.addMemberValue(MV_MAPPED_BY,
 					createAnnotationStringValue(getConstPool(entityClass), mappedTo.getValue()));
 		}
 	}
@@ -272,7 +289,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			final Annotation propertyAnnotation, final Annotation relationAnnotation) {
 
 		final StringMemberValue relationNameValue = (StringMemberValue) relationAnnotation
-				.getMemberValue("relationName");
+				.getMemberValue(MV_RELATION_NAME);
 
 		// @JoinTable
 		final Annotation joinTableAnn = createAnnotation(field.getFieldInfo2().getConstPool(), JoinTable.class);
@@ -280,7 +297,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		// generate relation table name
 		tableName.setValue(relationNameValue.getValue());
-		joinTableAnn.addMemberValue("name", tableName);
+		joinTableAnn.addMemberValue(MV_NAME, tableName);
 
 		{// swap relationnode types according to the relation setting
 			String joinColumnName = RELATION_SOURCE_COLUMN;
@@ -293,8 +310,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				inverseJoinColumnName = RELATION_SOURCE_COLUMN;
 			}
 
-			joinTableAnn.addMemberValue("joinColumns", createJoinColumn(field, joinColumnName));
-			joinTableAnn.addMemberValue("inverseJoinColumns", createJoinColumn(field, inverseJoinColumnName));
+			joinTableAnn.addMemberValue(MV_JOIN_COLUMNS, createJoinColumn(field, joinColumnName));
+			joinTableAnn.addMemberValue(MV_INVERSE_JOIN_COLUMNS, createJoinColumn(field, inverseJoinColumnName));
 		}
 
 		return joinTableAnn;
@@ -304,12 +321,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final Annotation joinColumnAnn = createAnnotation(field.getFieldInfo2().getConstPool(), JoinColumn.class);
 
 		final StringMemberValue column = new StringMemberValue(field.getFieldInfo2().getConstPool());
-		column.setValue("pk");
-		joinColumnAnn.addMemberValue("referencedColumnName", column);
+		column.setValue(MV_PK);
+		joinColumnAnn.addMemberValue(MV_REFERENCED_COLUMN_NAME, column);
 
 		final StringMemberValue name = new StringMemberValue(field.getFieldInfo2().getConstPool());
 		name.setValue(columnName);
-		joinColumnAnn.addMemberValue("name", name);
+		joinColumnAnn.addMemberValue(MV_NAME, name);
 
 		final AnnotationMemberValue val = new AnnotationMemberValue(field.getFieldInfo2().getConstPool());
 		val.setValue(joinColumnAnn);
@@ -318,7 +335,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected RelationNodeType getRelationNodeType(final Annotation relationAnnotation) {
-		final EnumMemberValue nodeType = (EnumMemberValue) relationAnnotation.getMemberValue("nodeType");
+		final EnumMemberValue nodeType = (EnumMemberValue) relationAnnotation.getMemberValue(MV_NODE_TYPE);
 		return RelationNodeType.valueOf(nodeType.getValue());
 	}
 
@@ -327,7 +344,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		val.setType(CascadeType.class.getName());
 		val.setValue(CascadeType.ALL.toString());
 
-		annotation.addMemberValue("cascade", createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
+		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
 	}
 
 }
