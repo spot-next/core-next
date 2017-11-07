@@ -6,6 +6,8 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +22,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,8 +33,8 @@ import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
-import de.invesdwin.instrument.ClassTransformer;
-import de.invesdwin.instrument.transformer.IllegalClassTransformationException;
+import at.spot.instrumentation.ClassTransformer;
+import at.spot.instrumentation.transformer.IllegalClassTransformationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CtClass;
 import javassist.CtField;
@@ -40,6 +44,7 @@ import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
+import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 /**
@@ -62,6 +67,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// add JPA entity annotation
 			addEntityAnnotation(clazz);
+			addUniqueConstraints(clazz);
 
 			// process item properties
 			for (final CtField field : getDeclaredFields(clazz)) {
@@ -84,7 +90,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 						// and add them to the clazz
 						addAnnotations(clazz, field, jpaAnnotations);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						throw new IllegalClassTransformationException(
 								String.format("Unable process JPA annotations for class file %s", clazz.getName()), e);
 					}
@@ -111,10 +117,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected void addEntityAnnotation(final CtClass clazz) {
-		Optional<Annotation> itemTypeAnn = getItemTypeAnnotation(clazz);
+		final Optional<Annotation> itemTypeAnn = getItemTypeAnnotation(clazz);
 
 		if (itemTypeAnn.isPresent()) {
-			BooleanMemberValue val = (BooleanMemberValue) itemTypeAnn.get().getMemberValue("persistable");
+			final BooleanMemberValue val = (BooleanMemberValue) itemTypeAnn.get().getMemberValue("persistable");
 
 			if (val != null && val.getValue()) {
 				// this type needs a separate deployment table
@@ -124,6 +130,54 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, MappedSuperclass.class)));
 			}
 		}
+	}
+
+	protected void addUniqueConstraints(final CtClass clazz) {
+		final Map<String, CtField> uniqueFields = new HashMap<>();
+
+		for (final CtField field : clazz.getFields()) {
+			final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
+
+			if (propertyAnn.isPresent()) {
+				final BooleanMemberValue val = (BooleanMemberValue) propertyAnn.get().getMemberValue("unique");
+
+				if (val != null && val.getValue()) {
+					uniqueFields.put(field.getName(), field);
+				}
+			}
+		}
+
+		if (!uniqueFields.isEmpty()) {
+			final Annotation tableAnn = createAnnotation(getConstPool(clazz), Table.class);
+
+			final ArrayMemberValue constraints = new ArrayMemberValue(getConstPool(clazz));
+			tableAnn.addMemberValue("uniqueConstraints", constraints);
+
+			final Annotation constraintAnnotation = createAnnotation(getConstPool(clazz), UniqueConstraint.class);
+			final AnnotationMemberValue constraint = new AnnotationMemberValue(getConstPool(clazz));
+			constraint.setValue(constraintAnnotation);
+			constraints.setValue(new MemberValue[] { constraint });
+
+			final ArrayMemberValue columnNames = new ArrayMemberValue(getConstPool(clazz));
+			constraintAnnotation.addMemberValue("columnNames", columnNames);
+
+			final List<StringMemberValue> columnNameValues = new ArrayList<>();
+
+			for (final Map.Entry<String, CtField> uniqueField : uniqueFields.entrySet()) {
+
+				// constraint.addMemberValue("uniqueConstraints", constraints);
+				final StringMemberValue cv = new StringMemberValue(getConstPool(clazz));
+				cv.setValue(uniqueField.getKey());
+				columnNameValues.add(cv);
+			}
+
+			if (CollectionUtils.isNotEmpty(columnNameValues)) {
+				columnNames.setValue(columnNameValues.toArray(new MemberValue[0]));
+
+				addAnnotations(clazz, Collections.singletonList(tableAnn));
+			}
+		}
+
 	}
 
 	protected boolean isItemType(final CtClass clazz) {
@@ -168,7 +222,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						.add(createJoinTableAnnotation(entityClass, field, propertyAnnotation, relationAnnotation));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.OneToMany.toString())) {
-				Annotation o2mAnn = createJpaRelationAnnotation(entityClass, field, OneToMany.class);
+				final Annotation o2mAnn = createJpaRelationAnnotation(entityClass, field, OneToMany.class);
 				addMappedByAnnotationValue(o2mAnn, entityClass, relationAnnotation);
 				jpaAnnotations.add(o2mAnn);
 
@@ -196,9 +250,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return ann;
 	}
 
-	protected void addMappedByAnnotationValue(Annotation annotation, CtClass entityClass, Annotation relation) {
+	protected void addMappedByAnnotationValue(final Annotation annotation, final CtClass entityClass,
+			final Annotation relation) {
 		if (relation != null) {
-			StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
+			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue("mappedTo");
 
 			annotation.addMemberValue("mappedBy",
 					createAnnotationStringValue(getConstPool(entityClass), mappedTo.getValue()));

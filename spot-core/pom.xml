@@ -222,8 +222,8 @@
 
 		<!-- dynamic load time weaving support -->
 		<dependency>
-			<groupId>de.invesdwin</groupId>
-			<artifactId>invesdwin-instrument</artifactId>
+			<groupId>at.spot</groupId>
+			<artifactId>spot-instrumentation</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

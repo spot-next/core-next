@@ -6,7 +6,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
-import de.invesdwin.instrument.DynamicInstrumentationLoader;
+import at.spot.instrumentation.DynamicInstrumentationLoader;
 
 public class SpotJunitRunner extends SpringJUnit4ClassRunner {
 
@@ -25,7 +25,7 @@ public class SpotJunitRunner extends SpringJUnit4ClassRunner {
 	}
 
 	@Override
-	public void run(RunNotifier notifier) {
+	public void run(final RunNotifier notifier) {
 		notifier.addListener(new SpotJunitRunListener());
 		notifier.fireTestRunStarted(getDescription());
 		super.run(notifier);

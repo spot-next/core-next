@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.instrumentation.transformer.IllegalClassTransformationException;
 import ch.qos.logback.core.util.CloseUtil;
-import de.invesdwin.instrument.transformer.IllegalClassTransformationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
@@ -100,17 +100,18 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * 
 	 * 
 	 * @param loader
-	 *            the defining loader of the class to be transformed, may be null if
-	 *            the bootstrap loader
+	 *            the defining loader of the class to be transformed, may be
+	 *            null if the bootstrap loader
 	 * @param clazz
 	 *            the class in the internal form of the JVM.
 	 * @param classBeingRedefined
-	 *            if this is triggered by a redefine or retransform, the class being
-	 *            redefined or retransformed; if this is a class load, null
+	 *            if this is triggered by a redefine or retransform, the class
+	 *            being redefined or retransformed; if this is a class load,
+	 *            null
 	 * @param protectionDomain
 	 *            the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed, return
-	 *         null instead.
+	 * @return the transformed class object. If the class was not changed,
+	 *         return null instead.
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -262,7 +263,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 */
 	protected void addAnnotations(final CtClass clazz, final CtField field, final List<Annotation> annotations) {
 		for (final Annotation a : annotations) {
-			AttributeInfo info = field.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag);
+			final AttributeInfo info = field.getFieldInfo().getAttribute(AnnotationsAttribute.visibleTag);
 
 			if (info != null && info instanceof AnnotationsAttribute) {
 				final AnnotationsAttribute attr = (AnnotationsAttribute) info;
@@ -276,7 +277,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		final List<Annotation> allAnnotations = getAnnotations(clazz);
 		allAnnotations.addAll(annotations);
 
-		AttributeInfo info = clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
+		final AttributeInfo info = clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
 
 		if (info != null && info instanceof AnnotationsAttribute) {
 			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;
@@ -292,7 +293,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible fields (even from super classes) for the given class.
+	 * Returns all accessible fields (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -314,7 +316,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible methods (even from super classes) for the given class.
+	 * Returns all accessible methods (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -366,8 +369,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return array;
 	}
 
-	protected StringMemberValue createAnnotationStringValue(final ConstPool constPool, String value) {
-		StringMemberValue val = new StringMemberValue(constPool);
+	protected StringMemberValue createAnnotationStringValue(final ConstPool constPool, final String value) {
+		final StringMemberValue val = new StringMemberValue(constPool);
 		val.setValue(value);
 
 		return val;

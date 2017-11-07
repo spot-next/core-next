@@ -33,7 +33,7 @@ import at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
-import de.invesdwin.instrument.DynamicInstrumentationLoader;
+import at.spot.instrumentation.DynamicInstrumentationLoader;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
