@@ -71,8 +71,9 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 			} catch (final PersistenceException e) {
 				final Throwable rootCause = ExceptionUtils.getRootCause(e);
+				String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
 
-				throw new ModelSaveException(rootCause.getMessage(), e);
+				throw new ModelSaveException(rootCauseMessage, e);
 			}
 		}
 	}
