@@ -61,7 +61,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 			CtClass clazz = null;
 
-			if (!classId.contains("$Proxy") && !classId.contains("sun/reflect")) {
+			if (isValidClass(classId)) {
 				try {
 					clazz = pool.get(classId);
 
@@ -98,6 +98,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return null;
 	}
 
+	protected boolean isValidClass(String className) {
+		return !className.contains("$Proxy") && !className.contains("sun/reflect") && !className.contains("java.lang");
+	}
+
 	/**
 	 * 
 	 * 
@@ -124,27 +128,43 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param clazz
 	 * @param annotation
 	 * @return
+	 * @throws IllegalClassTransformationException
 	 */
-	protected List<Annotation> getAnnotations(final CtClass clazz) {
+	protected List<Annotation> getAnnotations(final CtClass clazz) throws IllegalClassTransformationException {
 		final List<Annotation> annotations = new ArrayList<>();
 
+		ClassFile clazzFile = getClassFile(clazz, true);
+
+		final AttributeInfo attInfo = clazzFile.getAttribute(AnnotationsAttribute.visibleTag);
+
+		if (attInfo != null && attInfo instanceof AnnotationsAttribute) {
+			annotations.addAll(Arrays.asList(((AnnotationsAttribute) attInfo).getAnnotations()));
+		}
+
+		return annotations;
+	}
+
+	/**
+	 * Returns the {@link ClassFile} of the given class. If defrost = true, and the
+	 * {@link CtClass#getClassFile2()} is null, the class is defrosted and
+	 * {@link CtClass#getClassFile()} is returned instead.
+	 * 
+	 * @throws IllegalClassTransformationException
+	 */
+	protected ClassFile getClassFile(CtClass clazz, boolean defrost) throws IllegalClassTransformationException {
 		ClassFile clazzFile = clazz.getClassFile2();
 
-		if (clazzFile == null && !clazz.isFrozen()) {
+		if (clazzFile == null && clazz.isFrozen() && defrost) {
+			clazz.defrost();
 			clazzFile = clazz.getClassFile();
 		}
 
-		if (clazzFile != null) {
-			final AttributeInfo attInfo = clazzFile.getAttribute(AnnotationsAttribute.visibleTag);
-
-			if (attInfo != null && attInfo instanceof AnnotationsAttribute) {
-				annotations.addAll(Arrays.asList(((AnnotationsAttribute) attInfo).getAnnotations()));
-			}
-
-			return annotations;
+		if (clazzFile == null) {
+			throw new IllegalClassTransformationException(
+					String.format("Could not get ConstPool of class %s", clazz.getName()));
 		}
 
-		return Collections.emptyList();
+		return clazzFile;
 	}
 
 	/**
@@ -153,9 +173,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param clazz
 	 * @param annotation
 	 * @return
+	 * @throws IllegalClassTransformationException
 	 */
 	protected Optional<Annotation> getAnnotation(final CtClass clazz,
-			final Class<? extends java.lang.annotation.Annotation> annotation) {
+			final Class<? extends java.lang.annotation.Annotation> annotation)
+			throws IllegalClassTransformationException {
+
 		return getAnnotations(clazz).stream().filter(a -> StringUtils.equals(a.getTypeName(), annotation.getName()))
 				.findFirst();
 	}
@@ -230,11 +253,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @param clazz
 	 * @param type
 	 * @return
+	 * @throws IllegalClassTransformationException
 	 */
 	protected Annotation createAnnotation(final CtClass clazz,
-			final Class<? extends java.lang.annotation.Annotation> type) {
+			final Class<? extends java.lang.annotation.Annotation> type) throws IllegalClassTransformationException {
 
-		return createAnnotation(clazz.getClassFile2().getConstPool(), type);
+		return createAnnotation(getClassFile(clazz, true).getConstPool(), type);
 	}
 
 	protected Annotation createAnnotation(final ConstPool cpool,
@@ -264,7 +288,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
-	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations) {
+	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations)
+			throws IllegalClassTransformationException {
 		final List<Annotation> allAnnotations = getAnnotations(clazz);
 		allAnnotations.addAll(annotations);
 
@@ -276,11 +301,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
-	protected ConstPool getConstPool(final CtClass clazz) {
-		final ClassFile cfile = clazz.getClassFile();
-		final ConstPool cpool = cfile.getConstPool();
+	protected ConstPool getConstPool(final CtClass clazz) throws IllegalClassTransformationException {
+		final ClassFile cfile = getClassFile(clazz, false);
 
-		return cpool;
+		return cfile.getConstPool();
 	}
 
 	/**
@@ -339,14 +363,32 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
-	protected boolean hasInterface(final CtClass clazz, final Object interfaceType) {
-		for (final String i : clazz.getClassFile().getInterfaces()) {
-			if (StringUtils.equals(interfaceType.getClass().getName(), i)) {
+	protected boolean hasInterface(final CtClass clazz, final Class<?> interfaceType) {
+
+		if (!isValidClass(clazz.getName())) {
+			return false;
+		}
+
+		for (final CtClass i : getInterfaces(clazz)) {
+			if (StringUtils.equals(interfaceType.getName(), i.getName())) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	protected List<CtClass> getInterfaces(CtClass clazz) {
+		List<CtClass> interfaces;
+
+		try {
+			interfaces = Arrays.asList(clazz.getInterfaces());
+		} catch (NotFoundException e) {
+			// ignore
+			interfaces = Collections.emptyList();
+		}
+
+		return interfaces;
 	}
 
 	protected ArrayMemberValue createAnnotationArrayValue(final ConstPool constPool, final MemberValue... values) {
