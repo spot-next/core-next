@@ -54,7 +54,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
 	// JPA
 	@Id
-	protected Long pk = IdGenerator.createLongId();
+	final protected Long pk = IdGenerator.createLongId();
 
 	@Transient
 	protected String typeCode;
@@ -72,11 +72,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected Date createdAt;
 
 	@Version
-	protected long version;
-
-	public void setPk(final Long pk) {
-		this.pk = pk;
-	}
+	protected long version = -1;
 
 	public Long getPk() {
 		return pk;
@@ -92,8 +88,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing
-	 *         item with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing item
+	 *         with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -108,8 +104,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated
-	 * with @Unique.
+	 * Returns the names and the values of all properties annotated with @Unique.
 	 *
 	 * @return
 	 */
@@ -134,8 +129,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as
-	 * unique (with the {@link Property} annotation).
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation).
 	 *
 	 * @return
 	 */
@@ -148,8 +143,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current
-	 * object, both are equal.
+	 * If the type and the pk of the given object is the same as the current object,
+	 * both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

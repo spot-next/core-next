@@ -62,10 +62,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 		for (final T item : items) {
 			try {
-				// getSession().saveOrUpdate(item);
-				getSession().merge(item);
-				// getSession().flush();
-				// refresh(item);
+				getSession().saveOrUpdate(item);
+				// getSession().merge(item);
 			} catch (final DataIntegrityViolationException | TransactionRequiredException
 					| IllegalArgumentException e) {
 
@@ -77,6 +75,15 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 				throw new ModelSaveException(rootCauseMessage, e);
 			}
+		}
+
+		getSession().flush();
+		try {
+			for (T item : items) {
+				refresh(item);
+			}
+		} catch (ModelNotFoundException e) {
+			throw new ModelSaveException("Could not save given items", e);
 		}
 	}
 
@@ -98,7 +105,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			// em.refresh(item);
 
 			// ignore unpersisted items
-			if (item.getPk() == null || getSession().contains(item)) {
+			if (item.getPk() == null) {// | getSession().contains(item)) {
 				return;
 			}
 
