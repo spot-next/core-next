@@ -102,10 +102,25 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		try {
-			// em.refresh(item);
+			attach(item);
 
-			// ignore unpersisted items
-			if (item.getPk() == null) {// | getSession().contains(item)) {
+			getSession().refresh(item);
+		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
+				| EntityNotFoundException e) {
+			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+		}
+	}
+
+	/**
+	 * Attaches the given item in case it is detached.
+	 * 
+	 * @param item
+	 * @throws ModelNotFoundException
+	 */
+	protected <T extends Item> void attach(final T item) throws ModelNotFoundException {
+		try {
+			// ignore unpersisted or already attached items
+			if (item.getPk() == null | getSession().contains(item)) {
 				return;
 			}
 
@@ -114,9 +129,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 				getSession().evict(attached);
 				getSession().lock(item, LockMode.NONE);
 			}
-
-			getSession().refresh(item);
-		} catch (HibernateException | NullPointerException | TransactionRequiredException | IllegalArgumentException
+		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
 		}
