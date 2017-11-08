@@ -16,17 +16,15 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +46,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	// @Resource
 	// protected SessionFactory sessionFactory;
+
+	protected HibernateTemplate template;
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
@@ -77,34 +77,29 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			}
 		}
 
-		getSession().flush();
 		try {
+			getSession().flush();
+
 			for (T item : items) {
 				refresh(item);
 			}
-		} catch (ModelNotFoundException e) {
+		} catch (HibernateException | ModelNotFoundException e) {
 			throw new ModelSaveException("Could not save given items", e);
 		}
 	}
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		// final String query = String.format("SELECT i FROM %s i WHERE pk =
-		// :pk",
-		// type.getSimpleName());
-
-		return getSession().find(type, pk);
-
-		// return em.createQuery(query, type).setParameter("pk",
-		// pk).getSingleResult();
+		return getTemplate().get(type, pk);
 	}
 
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		try {
 			attach(item);
-
+			//
 			getSession().refresh(item);
+			// getTemplate().refresh(entity);
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
@@ -137,115 +132,18 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		// String queryString = String.format("FROM %s", type.getSimpleName());
-		// TypedQuery<T> query = null;
-		//
-		// if (searchParameters != null) {
-		// final List<String> params = new ArrayList<>();
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// params.add(e.getKey() + " = :" + e.getKey());
-		// }
-		//
-		// queryString += String.format(" WHERE %s", StringUtils.join(params, "
-		// AND "));
-		// }
-		//
-		// query = em.createQuery(queryString, type);
-		//
-		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// query.setParameter(e.getKey(), e.getValue());
-		// }
-		// }
-
-		// final CriteriaBuilder builder = em.getCriteriaBuilder();
-		//
-		// final CriteriaQuery<T> query =
-		// em.getCriteriaBuilder().createQuery(type);
-		//
-		// query.from(type);
-
-		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// if (e.getValue() instanceof Item) {
-		// query.where(builder.equal(builder.crea y));
-		// } else {
-		//
-		// }
-
-		// String key = e.getKey();
-		//
-		// if (e.getValue() instanceof Item) {
-		// key = key + ".pk";
-		// }
-		//
-		// params.add(e.getKey() + " = :" + e.getKey());
-		//// }
-		// }
-
-		// return query.getResultList().stream();
-
-		// // Query by example
-		// final Session session = getEntitySession();
-		// // create an example from our customer, exclude all zero valued
-		// numeric
-		// // properties
-		// final Example customerExample = Example.create().excludeZeroes();
-		// // create criteria based on the customer example
-		// final Criteria criteria =
-		// session.createCriteria(Customer.class).add(customerExample);
-		// // perform the query
-		// criteria.list();
-
-		TypedQuery<T> query = null;
-
-		final CriteriaBuilder cb = getSession().getCriteriaBuilder();
-		final CriteriaQuery<T> cq = cb.createQuery(type);
-		final Root<T> r = cq.from(type);
-
 		if (searchParameters != null) {
-			Predicate p = cb.conjunction();
+			DetachedCriteria criteria = DetachedCriteria.forClass(type);
 
-			// final Metamodel mm = getSession().getMetamodel();
-			// final EntityType<T> et = mm.entity(type);
-
-			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
-				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
-					throw new PersistenceException(String.format(
-							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
-				}
-
-				p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
+			for (Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
+				criteria = criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
 			}
 
-			// for (final Attribute<? super T, ?> attr : et.getAttributes()) {
-			// final String name = attr.getName();
-			// final String javaName = attr.getJavaMember().getName();
-			// final String getter = "get" + javaName.substring(0,
-			// 1).toUpperCase()
-			// + javaName.substring(1);
-			// final Method m = cl.getMethod(getter, (Class<?>[]) null);
-			//
-			// if (m.invoke(example, (Object[]) null) != null)
-			// p = cb.and(p, cb.equal(r.get(name), m.invoke(example, (Object[])
-			// null)));
-			// }
-
-			cq.select(r).where(p);
-			query = getSession().createQuery(cq);
+			return (Stream<T>) getTemplate().findByCriteria(criteria).stream();
 		} else {
-			query = getSession().createQuery(cq.select(r));
+			return Stream.empty();
 		}
-
-		return query.getResultList().stream();
 	}
-
-	// protected <T extends Item> boolean isPersisted(final T item) {
-	// return em.contains(item);
-	// }
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
@@ -275,21 +173,19 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	@Override
 	public <T extends Item> void remove(final T... items) {
 		for (final T item : items) {
-			// em.remove(item);
-			getSession().remove(item);
+			getTemplate().delete(item);
 		}
 	}
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		// final String query = String.format("DELETE FROM %s WHERE pk IN
-		// (?pk)",
-		// type.getSimpleName());
-
-		// em.createQuery(query, type).setParameter("pk", pk);
-
-		final T item = getSession().find(type, pk);
-		getSession().remove(item);
+		T item;
+		try {
+			item = load(type, pk);
+			getTemplate().delete(item);
+		} catch (ModelNotFoundException e) {
+			// ignore
+		}
 	}
 
 	@Override
@@ -314,19 +210,6 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 				ClassUtil.setField(item, field.getName(), new HashMap());
 			}
 		}
-
-		// if (item != null && item.getPk() != null) {
-		// try {
-		// refresh(item);
-		// } catch (ModelNotFoundException e) {
-		// loggingService.warn(String.format("Could not initialize item with
-		// pk=%s",
-		// item.getPk()));
-		// }
-		// } else {
-		// loggingService.warn("Could not initialize null item");
-		// }
-		// not needed
 	}
 
 	@Override
@@ -344,4 +227,11 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// return sessionFactory.getCurrentSession();
 	}
 
+	protected HibernateTemplate getTemplate() {
+		if (this.template == null) {
+			this.template = new HibernateTemplate(getSession().getSessionFactory());
+		}
+
+		return this.template;
+	}
 }

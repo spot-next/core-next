@@ -47,20 +47,50 @@
 <!-- 		<property name="hibernateProperties" ref="jpaProperties" /> -->
 <!-- 	</bean> -->
 
+<!-- 	<bean id="entityManagerFactory" -->
+<!-- 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> -->
+<!-- 		<property name="dataSource" ref="dataSource" /> -->
+<!-- 		<property name="packagesToScan" value="at.spot.itemtype" /> -->
+<!-- 		<property name="jpaVendorAdapter"> -->
+<!-- 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" /> -->
+<!-- 		</property> -->
+<!-- 		<property name="persistenceUnitPostProcessors"> -->
+<!-- 			<list> -->
+<!-- 				<bean -->
+<!-- 					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" /> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 		<property name="jpaProperties" ref="jpaProperties" /> -->
+<!-- 	</bean> -->
+	
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="at.spot.itemtype" />
-		<property name="jpaVendorAdapter">
-			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
-		</property>
+		<property name="persistenceProviderClass" value="org.datanucleus.api.jpa.PersistenceProviderImpl"/>
 		<property name="persistenceUnitPostProcessors">
 			<list>
 				<bean
 					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
 			</list>
 		</property>
-		<property name="jpaProperties" ref="jpaProperties" />
+		<property name="jpaProperties">
+            <props>
+                <prop key="datanucleus.rdbms.datastoreAdapterClassName">
+                org.datanucleus.store.rdbms.adapter.MySQLAdapter
+                </prop>
+                <prop key="datanucleus.jpa.addClassTransformer">false</prop>
+                <prop key="datanucleus.autoCreateColumns">false</prop>
+                <prop key="datanucleus.autoCreateConstraints">false</prop>
+                <prop key="datanucleus.autoCreateSchema">true</prop>
+                <prop key="datanucleus.autoCreateTables">true</prop>
+                <prop key="datanucleus.rdbms.omitDatabaseMetaDataGetColumns">true</prop>
+                <prop key="datanucleus.storeManagerType">rdbms</prop>
+                <prop key="datanucleus.validateConstraints">false</prop>
+                <prop key="datanucleus.validateTables">false</prop>
+                <prop key="datanucleus.validation.mode">none</prop>
+            </props>
+        </property>
 	</bean>
 	
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
