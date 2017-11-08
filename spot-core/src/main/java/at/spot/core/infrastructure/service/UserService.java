@@ -20,8 +20,8 @@ public interface UserService<U extends User, G extends UserGroup> {
 	U createUser(Class<U> type, String userId) throws CannotCreateUserException;
 
 	/**
-	 * Creates an {@link User} object, only setting the given userId and
-	 * password (using {@link AuthenticationService#setPassword(User, String)}).
+	 * Creates an {@link User} object, only setting the given userId and password
+	 * (using {@link AuthenticationService#setPassword(User, String)}).
 	 * 
 	 * @param userId
 	 * @return the newly created {@link User}.
@@ -60,8 +60,6 @@ public interface UserService<U extends User, G extends UserGroup> {
 
 	/**
 	 * Returns the current user in the session.
-	 * 
-	 * @return
 	 */
 	U getCurrentUser();
 
@@ -71,5 +69,10 @@ public interface UserService<U extends User, G extends UserGroup> {
 	 * @param user
 	 */
 	void setCurrentUser(U user);
+
+	/**
+	 * Returns true if there is no user registered in the current session.
+	 */
+	boolean isCurrentUserAnonymous();
 
 }

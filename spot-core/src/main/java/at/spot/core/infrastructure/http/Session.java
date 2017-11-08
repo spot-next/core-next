@@ -7,43 +7,31 @@ import java.util.Map;
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
 import org.joda.time.DateTime;
 
-import at.spot.itemtype.core.user.User;
-
 public class Session {
 
 	protected boolean isValid = true;
 
 	protected String id;
-	protected User user;
 	protected DateTime creationTime = new DateTime();
 	protected DateTime lastAccessedTime = new DateTime();
 	protected final Map<String, Object> attributes = new HashMap<>();
 
 	protected int maxInactiveInterval;
 
-	public Session(final String id, final User user) {
+	public Session(final String id) {
 		this.id = id;
-		this.user = user;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public User user() {
-		return user;
-	}
-
-	public void user(final User user) {
-		this.user = user;
-	}
-
-	public boolean isAnonymousUser() {
-		return user == null;
-	}
-
 	public Object getAttribute(final String name) {
 		return attributes.get(name);
+	}
+
+	public <T> T getAttribute(final String name, Class<T> type) {
+		return (T) getAttribute(name);
 	}
 
 	public void setAttribute(final String name, final Object value) {

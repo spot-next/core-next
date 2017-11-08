@@ -77,8 +77,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-
+		
 		<!-- JDO / datanucleus -->
 		<dependency>
 			<groupId>org.datanucleus</groupId>

@@ -327,7 +327,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			if (item.getPk() != null) {
 				body.getBody()
 						.addWarning(new Status("warning.general", "PK was reset, it may not be set for new items."));
-				item.setPk(null);
 			}
 
 			modelService.save(item);

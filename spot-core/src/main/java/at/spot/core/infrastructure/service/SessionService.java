@@ -2,6 +2,8 @@ package at.spot.core.infrastructure.service;
 
 import java.util.concurrent.Callable;
 
+import org.springframework.lang.NonNull;
+
 import at.spot.core.infrastructure.http.Session;
 
 /**
@@ -18,10 +20,12 @@ public interface SessionService {
 	Session createSession(boolean registerAsCurrentSession);
 
 	/**
-	 * Returns the {@link Session} associates with the current thread.
+	 * Returns the {@link Session} associates with the current thread. If the there
+	 * is no session registered, a new one is created and returned.
 	 * 
 	 * @return
 	 */
+	@NonNull
 	Session getCurrentSession();
 
 	/**
@@ -47,8 +51,8 @@ public interface SessionService {
 	void closeSession(String sessionID);
 
 	/**
-	 * Executes the given {@link Callable} in another thread setting the using
-	 * the session of the given id. This is useful to gain different privileges.
+	 * Executes the given {@link Callable} in another thread setting the using the
+	 * session of the given id. This is useful to gain different privileges.
 	 * 
 	 * @param sessionId
 	 * @param callable

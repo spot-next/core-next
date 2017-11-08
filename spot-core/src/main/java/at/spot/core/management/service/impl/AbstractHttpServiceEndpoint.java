@@ -29,6 +29,7 @@ import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
+import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.management.annotation.Handler;
@@ -38,6 +39,7 @@ import at.spot.core.management.support.HttpAuthorizationType;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
@@ -64,6 +66,9 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 	@Autowired
 	protected SessionService sessionService;
+
+	@Autowired
+	protected UserService<User, UserGroup> userService;
 
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@PostConstruct
@@ -181,12 +186,12 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
 
-		if (spotSession.isAnonymousUser()) {
+		if (userService.isCurrentUserAnonymous()) {
 			// authenticate
 			final User authenticatedUser = authenticate(request, response);
 
 			if (authenticatedUser != null) {
-				spotSession.user(authenticatedUser);
+				userService.setCurrentUser(authenticatedUser);
 			} else {
 				response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
 				Spark.halt(401);
@@ -195,8 +200,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	}
 
 	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a
-	 * basic authentication request header fields.
+	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
+	 * authentication request header fields.
 	 * 
 	 * @param request
 	 * @param response
@@ -215,9 +220,9 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 			if (credentials != null && credentials.length == 2) {
 				/*
-				 * the http authentication password is encoded in MD5, by
-				 * default we are also using the MD5 password strategy, so we
-				 * simply set {@link AuthenticationService#isEncrypted} to true
+				 * the http authentication password is encoded in MD5, by default we are also
+				 * using the MD5 password strategy, so we simply set {@link
+				 * AuthenticationService#isEncrypted} to true
 				 */
 				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
 			}
@@ -280,11 +285,10 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the
-		 * http status code is set according to
-		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
-		 * returned, not the wrapper object itself. In any other case the given
-		 * response body object is returned.
+		 * If the givn response body object is of type {@link HttpResponse} the http
+		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
+		 * the actual payload is returned, not the wrapper object itself. In any other
+		 * case the given response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody

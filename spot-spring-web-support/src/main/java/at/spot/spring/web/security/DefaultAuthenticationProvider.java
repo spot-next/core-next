@@ -13,9 +13,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import at.spot.core.infrastructure.service.ConfigurationService;
-import at.spot.core.infrastructure.service.SessionService;
+import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 import at.spot.spring.web.security.exception.AuthenticationException;
 
 /**
@@ -34,7 +35,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	protected ConfigurationService configurationService;
 
 	@Autowired
-	protected SessionService sessionService;
+	protected UserService<User, UserGroup> userService;
 
 	/**
 	 * Authenticates the given user and the credentials using the
@@ -49,7 +50,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
 		if (user != null) {
 			// set the authenticated user to the current session
-			sessionService.getCurrentSession().user(user);
+			userService.setCurrentUser(user);
 
 			final List<GrantedAuthority> grantedAuths = new ArrayList<>();
 

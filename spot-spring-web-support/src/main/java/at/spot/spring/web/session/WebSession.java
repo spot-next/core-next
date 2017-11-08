@@ -15,7 +15,7 @@ public class WebSession extends Session implements HttpSession {
 	protected HttpSessionContext sessionContext;
 
 	public WebSession(final String id, final User user) {
-		super(id, user);
+		super(id);
 	}
 
 	@Override
