@@ -16,14 +16,12 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.VersionStrategy;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.datanucleus.api.jdo.annotations.CreateTimestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,6 +29,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import at.spot.core.infrastructure.IdGenerator;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
 
@@ -55,8 +54,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
 	// JPA
 	@Id
-	@GeneratedValue
-	protected Long pk;
+	protected Long pk = IdGenerator.createLongId();
 
 	@Transient
 	protected String typeCode;
@@ -94,8 +92,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing item
-	 *         with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing
+	 *         item with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -110,7 +108,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated with @Unique.
+	 * Returns the names and the values of all properties annotated
+	 * with @Unique.
 	 *
 	 * @return
 	 */
@@ -135,8 +134,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation).
+	 * Returns a hash code calculated of all properties that are defined as
+	 * unique (with the {@link Property} annotation).
 	 *
 	 * @return
 	 */
@@ -149,29 +148,35 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current object,
-	 * both are equal.
+	 * If the type and the pk of the given object is the same as the current
+	 * object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null || !(obj.getClass().equals(this.getClass()))) {
-			return false;
-		}
-
 		if (this == obj) {
 			return true;
 		}
 
-		return this.pk != null ? this.pk.equals(((Item) obj).pk) : super.equals(obj);
+		if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+			return false;
+		}
+
+		if (pk == null) {
+			return false;
+		}
+
+		return this.pk.equals(((Item) obj).pk);
 	}
 
 	@Override
 	public int hashCode() {
-		final HashCodeBuilder hcb = new HashCodeBuilder();
-		hcb.append(this.pk);
-		return hcb.toHashCode();
+		if (pk != null) {
+			return pk.hashCode();
+		} else {
+			return super.hashCode();
+		}
 	}
 
 	@Override

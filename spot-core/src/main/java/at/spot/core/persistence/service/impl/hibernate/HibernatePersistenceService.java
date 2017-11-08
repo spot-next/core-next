@@ -23,6 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -61,9 +62,10 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 		for (final T item : items) {
 			try {
-				getSession().saveOrUpdate(item);
-				getSession().flush();
-				getSession().refresh(item);
+				// getSession().saveOrUpdate(item);
+				getSession().merge(item);
+				// getSession().flush();
+				// refresh(item);
 			} catch (final DataIntegrityViolationException | TransactionRequiredException
 					| IllegalArgumentException e) {
 
@@ -71,7 +73,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 			} catch (final PersistenceException e) {
 				final Throwable rootCause = ExceptionUtils.getRootCause(e);
-				String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
+				final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
 
 				throw new ModelSaveException(rootCauseMessage, e);
 			}
@@ -80,7 +82,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		// final String query = String.format("SELECT i FROM %s i WHERE pk = :pk",
+		// final String query = String.format("SELECT i FROM %s i WHERE pk =
+		// :pk",
 		// type.getSimpleName());
 
 		return getSession().find(type, pk);
@@ -94,14 +97,19 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		try {
 			// em.refresh(item);
 
+			// ignore unpersisted items
+			if (item.getPk() == null || getSession().contains(item)) {
+				return;
+			}
+
 			final T attached = (T) getSession().load(item.getClass(), item.getPk());
-			if (attached != item) {
+			if (attached != null) {
 				getSession().evict(attached);
 				getSession().lock(item, LockMode.NONE);
 			}
 
 			getSession().refresh(item);
-		} catch (NullPointerException | TransactionRequiredException | IllegalArgumentException
+		} catch (HibernateException | NullPointerException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
 		}
@@ -254,7 +262,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		// final String query = String.format("DELETE FROM %s WHERE pk IN (?pk)",
+		// final String query = String.format("DELETE FROM %s WHERE pk IN
+		// (?pk)",
 		// type.getSimpleName());
 
 		// em.createQuery(query, type).setParameter("pk", pk);
