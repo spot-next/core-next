@@ -101,16 +101,12 @@
 	<!-- SERVICES -->
 	<bean id="mapDBService" class="at.spot.core.persistence.service.impl.MapDBService" />
 
-	<bean id="hibernatePersistenceService"
-		class="at.spot.core.persistence.service.impl.hibernate.HibernatePersistenceService" />
-
 	<!-- ALIASES -->
 
 	<!-- services -->
 	<alias name="defaultTransactionService" alias="transactionService" />
 	<!-- <alias name="mapDBService" alias="persistenceService" /> -->
 	<alias name="mapDBService" alias="serialNumberGenerator" />
-	<alias name="hibernatePersistenceService" alias="persistenceService" />
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="defaultQueryService" alias="queryService" />

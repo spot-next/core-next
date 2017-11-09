@@ -14,6 +14,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -251,6 +252,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final Annotation ann = createAnnotation(clazz, annotationType);
 		addCascadeAnnotation(ann, field);
+
+		// add fetch type
+		final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
+		fetchType.setType(FetchType.class.getName());
+		fetchType.setValue(FetchType.LAZY.name());
+		ann.addMemberValue("fetch", fetchType);
 
 		return ann;
 	}

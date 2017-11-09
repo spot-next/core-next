@@ -18,7 +18,8 @@
 
 	<context:annotation-config />
 	<aop:aspectj-autoproxy proxy-target-class="true" />
-	<tx:annotation-driven mode="proxy" proxy-target-class="true" />
+	<tx:annotation-driven mode="proxy"
+		proxy-target-class="true" />
 
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="driverClassName" value="${database.jdbc.driverClassName}" />
@@ -27,81 +28,7 @@
 		<property name="password" value="${database.jdbc.password}" />
 	</bean>
 
-	<bean id="jpaProperties" class="java.util.Properties">
-		<constructor-arg>
-			<props>
-				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
-				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop>
-				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop>
-				<prop key="hibernate.hbm2ddl.auto">${service.persistence.hibernate.hbm2ddl.auto}</prop>
-				<prop key="hibernate.enable_lazy_load_no_trans">${service.persistence.hibernate.enable_lazy_load_no_trans}
-				</prop>
-				<prop key="hibernate.dialect.storage_engine">${service.persistence.hibernate.dialect.storage_engine}
-				</prop>
-			</props>
-		</constructor-arg>
-	</bean>
-
-<!-- 	<bean id="sessionFactory" class="at.spot.core.persistence.service.impl.hibernate.HibernateSessionFactoryBean"> -->
-<!-- 		<property name="dataSource" ref="dataSource" /> -->
-<!-- 		<property name="hibernateProperties" ref="jpaProperties" /> -->
-<!-- 	</bean> -->
-
-<!-- 	<bean id="entityManagerFactory" -->
-<!-- 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> -->
-<!-- 		<property name="dataSource" ref="dataSource" /> -->
-<!-- 		<property name="packagesToScan" value="at.spot.itemtype" /> -->
-<!-- 		<property name="jpaVendorAdapter"> -->
-<!-- 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" /> -->
-<!-- 		</property> -->
-<!-- 		<property name="persistenceUnitPostProcessors"> -->
-<!-- 			<list> -->
-<!-- 				<bean -->
-<!-- 					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" /> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 		<property name="jpaProperties" ref="jpaProperties" /> -->
-<!-- 	</bean> -->
+	<import resource="core-spring-persistence-hibernate.xml" />
+<!-- 	<import resource="core-spring-persistence-datanucleus.xml" /> -->
 	
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="at.spot.itemtype" />
-		<property name="persistenceProviderClass" value="org.datanucleus.api.jpa.PersistenceProviderImpl"/>
-		<property name="persistenceUnitPostProcessors">
-			<list>
-				<bean
-					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
-			</list>
-		</property>
-		<property name="jpaProperties">
-            <props>
-                <prop key="datanucleus.rdbms.datastoreAdapterClassName">
-                org.datanucleus.store.rdbms.adapter.MySQLAdapter
-                </prop>
-                <prop key="datanucleus.jpa.addClassTransformer">false</prop>
-                <prop key="datanucleus.autoCreateColumns">false</prop>
-                <prop key="datanucleus.autoCreateConstraints">false</prop>
-                <prop key="datanucleus.autoCreateSchema">true</prop>
-                <prop key="datanucleus.autoCreateTables">true</prop>
-                <prop key="datanucleus.rdbms.omitDatabaseMetaDataGetColumns">true</prop>
-                <prop key="datanucleus.storeManagerType">rdbms</prop>
-                <prop key="datanucleus.validateConstraints">false</prop>
-                <prop key="datanucleus.validateTables">false</prop>
-                <prop key="datanucleus.validation.mode">none</prop>
-            </props>
-        </property>
-	</bean>
-	
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
-	</bean>
-
-<!-- 	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"> -->
-<!-- 		<property name="sessionFactory" ref="sessionFactory" /> -->
-<!-- 	</bean> -->
-
-	<bean id="persistenceExceptionTranslationPostProcessor"
-		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
-
 </beans>

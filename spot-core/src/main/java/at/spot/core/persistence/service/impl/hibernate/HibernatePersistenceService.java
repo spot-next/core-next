@@ -1,13 +1,8 @@
 package at.spot.core.persistence.service.impl.hibernate;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -16,19 +11,21 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -36,7 +33,6 @@ import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
-import at.spot.core.support.util.ClassUtil;
 
 @Transactional
 public class HibernatePersistenceService extends AbstractService implements PersistenceService {
@@ -80,7 +76,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		try {
 			getSession().flush();
 
-			for (T item : items) {
+			for (final T item : items) {
 				refresh(item);
 			}
 		} catch (HibernateException | ModelNotFoundException e) {
@@ -90,7 +86,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		return getTemplate().get(type, pk);
+		return getSession().get(type, pk);
 	}
 
 	@Override
@@ -132,17 +128,31 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		if (searchParameters != null) {
-			DetachedCriteria criteria = DetachedCriteria.forClass(type);
+		TypedQuery<T> query = null;
 
-			for (Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
-				criteria = criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
+		final CriteriaBuilder cb = getSession().getCriteriaBuilder();
+		final CriteriaQuery<T> cq = cb.createQuery(type);
+		final Root<T> r = cq.from(type);
+
+		if (searchParameters != null) {
+			Predicate p = cb.conjunction();
+
+			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
+				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
+					throw new PersistenceException(String.format(
+							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
+				}
+
+				p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 			}
 
-			return (Stream<T>) getTemplate().findByCriteria(criteria).stream();
+			cq.select(r).where(p);
+			query = getSession().createQuery(cq);
 		} else {
-			return Stream.empty();
+			query = getSession().createQuery(cq.select(r));
 		}
+
+		return query.getResultList().stream();
 	}
 
 	@Override
@@ -183,7 +193,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		try {
 			item = load(type, pk);
 			getTemplate().delete(item);
-		} catch (ModelNotFoundException e) {
+		} catch (final ModelNotFoundException e) {
 			// ignore
 		}
 	}
@@ -201,15 +211,16 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void initItem(final T item) {
-		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			if (field.getType().isAssignableFrom(List.class)) {
-				ClassUtil.setField(item, field.getName(), new ArrayList());
-			} else if (field.getType().isAssignableFrom(Set.class)) {
-				ClassUtil.setField(item, field.getName(), new HashSet());
-			} else if (field.getType().isAssignableFrom(Map.class)) {
-				ClassUtil.setField(item, field.getName(), new HashMap());
-			}
-		}
+		// for (final Field field :
+		// ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
+		// if (field.getType().isAssignableFrom(List.class)) {
+		// ClassUtil.setField(item, field.getName(), new ArrayList());
+		// } else if (field.getType().isAssignableFrom(Set.class)) {
+		// ClassUtil.setField(item, field.getName(), new HashSet());
+		// } else if (field.getType().isAssignableFrom(Map.class)) {
+		// ClassUtil.setField(item, field.getName(), new HashMap());
+		// }
+		// }
 	}
 
 	@Override

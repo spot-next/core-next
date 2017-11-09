@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+        http://www.springframework.org/schema/jdbc
+        http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd">
+
+	<context:annotation-config />
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<tx:annotation-driven mode="proxy"
+		proxy-target-class="true" />
+
+	<bean id="datanucleusPersistenceService"
+		class="at.spot.core.persistence.service.impl.datanucleus.DatanucleusPersistenceService" />
+	<alias name="datanucleusPersistenceService" alias="persistenceService" />
+
+	<bean id="jpaProperties" class="java.util.Properties">
+		<constructor-arg>
+			<props>
+				<prop key="datanucleus.rdbms.datastoreAdapterClassName">
+					org.datanucleus.store.rdbms.adapter.MySQLAdapter
+				</prop>
+				<prop key="datanucleus.jpa.addClassTransformer">false</prop>
+				<prop key="datanucleus.autoCreateColumns">false</prop>
+				<prop key="datanucleus.autoCreateConstraints">false</prop>
+				<prop key="datanucleus.autoCreateSchema">true</prop>
+				<prop key="datanucleus.autoCreateTables">true</prop>
+				<prop key="datanucleus.rdbms.omitDatabaseMetaDataGetColumns">true</prop>
+				<prop key="datanucleus.storeManagerType">rdbms</prop>
+				<prop key="datanucleus.validateConstraints">false</prop>
+				<prop key="datanucleus.validateTables">false</prop>
+				<prop key="datanucleus.validation.mode">none</prop>
+			</props>
+		</constructor-arg>
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="at.spot.itemtype" />
+		<property name="persistenceProviderClass"
+			value="org.datanucleus.api.jpa.PersistenceProviderImpl" />
+		<property name="persistenceUnitPostProcessors">
+			<list>
+				<bean
+					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
+			</list>
+		</property>
+		<property name="jpaProperties" ref="jpaProperties" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="persistenceExceptionTranslationPostProcessor"
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+</beans>

@@ -35,7 +35,7 @@ import at.spot.core.support.util.ClassUtil;
 
 //JDO
 @PersistenceCapable
-@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
+@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.COMPLETE_TABLE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
 // JPA
