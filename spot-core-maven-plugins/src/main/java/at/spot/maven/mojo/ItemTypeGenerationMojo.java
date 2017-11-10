@@ -233,7 +233,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				field.setType(propType);
 				field.setName(prop.getName());
 				field.setDescription(prop.getDescription());
-				field.setAssignement(getDefaultFieldAssignment(javaClass, field, prop.getType()));
+				// field.setAssignement(getDefaultFieldAssignment(javaClass,
+				// field, prop.getType()));
 
 				populatePropertyAnnotation(prop, field);
 				populatePropertyValidators(prop, field);
@@ -259,14 +260,14 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected String getDefaultFieldAssignment(JavaClass type, JavaField field, String typeName) {
+	protected String getDefaultFieldAssignment(final JavaClass type, final JavaField field, final String typeName) {
 		final BaseType propType = typeDefinitions.getType(typeName);
 
 		String ret = null;
 
 		if (propType instanceof CollectionType) {
-			CollectionType attrType = (CollectionType) propType;
-			if (CollectionsType.SET.equals(attrType)) {
+			final CollectionType attrType = (CollectionType) propType;
+			if (CollectionsType.SET.equals(attrType.getCollectionType())) {
 				ret = "new HashSet<>();";
 				type.addImport(HashSet.class);
 			} else {
@@ -328,14 +329,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return javaClass;
 	}
 
-	protected void populateSuperType(final ItemType type, final JavaClass javaClass) {
+	protected void populateSuperType(final ItemType type, final JavaClass javaClass) throws MojoExecutionException {
 		final JavaInterface superClass = new JavaInterface();
 
 		if (StringUtils.isNotBlank(type.getExtends())) {
 			final ItemType superItemType = typeDefinitions.getItemTypes().get(type.getExtends());
 
-			superClass.setName(superItemType.getName());
-			superClass.setPackagePath(superItemType.getPackage());
+			if (superItemType != null) {
+				superClass.setName(superItemType.getName());
+				superClass.setPackagePath(superItemType.getPackage());
+			} else {
+				throw new MojoExecutionException(
+						String.format("Super type %s for %s not found", type.getExtends(), type.getName()));
+			}
 		} else {
 			superClass.setName("Item");
 			superClass.setPackagePath(Item.class.getPackage().getName());
@@ -565,10 +571,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void populateRelationProperty(RelationNode from, RelationNode to, RelationNodeType nodeType,
-			JavaClass javaClass, JavaField property, JavaAnnotation relationAnn) throws MojoExecutionException {
+	protected void populateRelationProperty(final RelationNode from, final RelationNode to,
+			final RelationNodeType nodeType, final JavaClass javaClass, final JavaField property,
+			final JavaAnnotation relationAnn) throws MojoExecutionException {
 
-		String mappedTo = to.getMappedBy();
+		final String mappedTo = to.getMappedBy();
 		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
 
 		if (StringUtils.isNotBlank(mappedTo)) {
@@ -628,7 +635,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected JavaMemberType createRelationPropertyMemberType(final RelationshipCardinality cardinality,
-			final String elementType, RelationCollectionType collectionType) throws MojoExecutionException {
+			final String elementType, final RelationCollectionType collectionType) throws MojoExecutionException {
 
 		JavaMemberType type = null;
 
