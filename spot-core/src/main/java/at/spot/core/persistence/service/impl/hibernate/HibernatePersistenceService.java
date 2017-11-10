@@ -1,8 +1,13 @@
 package at.spot.core.persistence.service.impl.hibernate;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -25,6 +30,7 @@ import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -32,6 +38,7 @@ import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.support.util.ClassUtil;
 
 @Transactional
 public class HibernatePersistenceService extends AbstractService implements PersistenceService {
@@ -85,7 +92,12 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
-		return getSession().get(type, pk);
+		final T item = getSession().get(type, pk);
+
+		// refresh to updated relations
+		refresh(item);
+
+		return item;
 	}
 
 	@Override
@@ -151,6 +163,16 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			query = getSession().createQuery(cq.select(r));
 		}
 
+		// TODO: is there a better way to ensure that the returned entites are
+		// up to date with the DB?
+		for (final T item : query.getResultList()) {
+			try {
+				refresh(item);
+			} catch (final ModelNotFoundException e) {
+				// ignore
+			}
+		}
+
 		return query.getResultList();
 	}
 
@@ -210,16 +232,15 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void initItem(final T item) {
-		// for (final Field field :
-		// ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-		// if (field.getType().isAssignableFrom(List.class)) {
-		// ClassUtil.setField(item, field.getName(), new ArrayList());
-		// } else if (field.getType().isAssignableFrom(Set.class)) {
-		// ClassUtil.setField(item, field.getName(), new HashSet());
-		// } else if (field.getType().isAssignableFrom(Map.class)) {
-		// ClassUtil.setField(item, field.getName(), new HashMap());
-		// }
-		// }
+		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
+			if (field.getType().isAssignableFrom(List.class)) {
+				ClassUtil.setField(item, field.getName(), new ArrayList());
+			} else if (field.getType().isAssignableFrom(Set.class)) {
+				ClassUtil.setField(item, field.getName(), new HashSet());
+			} else if (field.getType().isAssignableFrom(Map.class)) {
+				ClassUtil.setField(item, field.getName(), new HashMap());
+			}
+		}
 	}
 
 	@Override
