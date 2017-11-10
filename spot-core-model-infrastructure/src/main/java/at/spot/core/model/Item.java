@@ -1,10 +1,7 @@
 package at.spot.core.model;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import javax.jdo.annotations.Discriminator;
@@ -23,6 +20,7 @@ import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.datanucleus.api.jdo.annotations.CreateTimestamp;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,7 +29,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import at.spot.core.infrastructure.IdGenerator;
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.support.util.ClassUtil;
 
 //JDO
 @PersistenceCapable
@@ -56,6 +53,9 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Id
 	final protected Long pk = IdGenerator.createLongId();
 
+	@Version
+	protected Long version;
+
 	@Transient
 	protected String typeCode;
 
@@ -71,11 +71,12 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@CreatedDate
 	protected Date createdAt;
 
-	@Version
-	protected long version = -1;
-
 	public Long getPk() {
 		return pk;
+	}
+
+	protected Long getVersion() {
+		return this.version;
 	}
 
 	public Date getLastModifiedAt() {
@@ -92,7 +93,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 *         with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
-		return pk != null;
+		return getVersion() != null;
 	}
 
 	/**
@@ -101,45 +102,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	public void markAsDirty() {
 		// auditingHandler.markModified(this);
 		this.lastModifiedAt = new Date();
-	}
-
-	/**
-	 * Returns the names and the values of all properties annotated with @Unique.
-	 *
-	 * @return
-	 */
-	public Map<String, Object> getUniqueProperties() {
-		final Map<String, Object> uniqueProps = new HashMap<>();
-
-		for (final Field uniqueField : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
-			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
-
-			if (prop.unique()) {
-				Object propertyValue = ClassUtil.getField(this, uniqueField.getName(), true);
-
-				if (propertyValue instanceof Item) {
-					propertyValue = ((Item) propertyValue).uniquenessHash();
-				}
-
-				uniqueProps.put(uniqueField.getName(), propertyValue);
-			}
-		}
-
-		return uniqueProps;
-	}
-
-	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation).
-	 *
-	 * @return
-	 */
-	public int uniquenessHash() {
-		int hash = 0;
-
-		hash = getUniqueProperties().hashCode();
-
-		return hash;
 	}
 
 	/**
@@ -153,25 +115,25 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		if (this == obj) {
 			return true;
 		}
-
-		if (obj == null || !(obj.getClass().equals(this.getClass()))) {
+		if (obj == null) {
 			return false;
 		}
 
-		if (pk == null) {
+		if (!(obj instanceof Item)) {
 			return false;
 		}
 
-		return this.pk.equals(((Item) obj).pk);
+		// use this to circumvent failing checks caused by proxied objects
+		if (Hibernate.getClass(this) != Hibernate.getClass(obj)) {
+			return false;
+		}
+
+		return this.getPk().equals(((Item) obj).getPk());
 	}
 
 	@Override
 	public int hashCode() {
-		if (pk != null) {
-			return pk.hashCode();
-		} else {
-			return super.hashCode();
-		}
+		return getPk().hashCode();
 	}
 
 	@Override
@@ -180,10 +142,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 			return 0;
 		}
 
-		if (obj != null) {
-			return Objects.compare(this.pk, obj.pk, new NullComparator<Long>());
-		} else {
-			return 1;
-		}
+		return Objects.compare(this.getPk(), obj.getPk(), new NullComparator<Long>());
 	}
 }

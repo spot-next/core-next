@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -83,21 +82,20 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
-		return persistenceService.load(type, searchParameters).collect(Collectors.toList());
+		return persistenceService.load(type, searchParameters);
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
-		return persistenceService.load(type, searchParameters, page, pageSize, loadAsProxy)
-				.collect(Collectors.toList());
+		return persistenceService.load(type, searchParameters, page, pageSize, loadAsProxy);
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type) {
 
-		return persistenceService.load(type, null).collect(Collectors.toList());
+		return persistenceService.load(type, null);
 	}
 
 	@Override

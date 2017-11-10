@@ -175,14 +175,14 @@
 						</aspectLibrary>
 					</aspectLibraries>
 					<!-- setting this to true can cause build errors im M2E -->
-					<showWeaveInfo>false</showWeaveInfo>
+					<showWeaveInfo>true</showWeaveInfo>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<Xlint>ignore</Xlint>
 					<XnoInline>true</XnoInline>
 					<complianceLevel>${java.version}</complianceLevel>
 					<encoding>UTF-8</encoding>
-					<verbose>false</verbose>
+					<verbose>true</verbose>
 				</configuration>
 				<executions>
 					<execution>

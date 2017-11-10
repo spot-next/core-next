@@ -3,7 +3,6 @@ package at.spot.core.persistence.service.impl.hibernate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -73,15 +72,15 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			}
 		}
 
-		try {
-			getSession().flush();
-
-			for (final T item : items) {
-				refresh(item);
-			}
-		} catch (HibernateException | ModelNotFoundException e) {
-			throw new ModelSaveException("Could not save given items", e);
-		}
+		// try {
+		// getSession().flush();
+		//
+		// for (final T item : items) {
+		// refresh(item);
+		// }
+		// } catch (HibernateException | ModelNotFoundException e) {
+		// throw new ModelSaveException("Could not save given items", e);
+		// }
 	}
 
 	@Override
@@ -127,7 +126,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
 		TypedQuery<T> query = null;
 
 		final CriteriaBuilder cb = getSession().getCriteriaBuilder();
@@ -152,18 +151,18 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			query = getSession().createQuery(cq.select(r));
 		}
 
-		return query.getResultList().stream();
+		return query.getResultList();
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
 		return load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
 			final boolean returnProxies) {
 

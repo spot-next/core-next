@@ -3,7 +3,6 @@ package at.spot.core.persistence.service.impl.datanucleus;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -52,20 +51,20 @@ public class DatanucleusPersistenceService extends AbstractService implements Pe
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
 			int pageSize, boolean loadAsProxy) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
 			int pageSize, boolean loadAsProxy, Integer minCountForParallelStream, boolean returnProxies) {
 		// TODO Auto-generated method stub
 		return null;

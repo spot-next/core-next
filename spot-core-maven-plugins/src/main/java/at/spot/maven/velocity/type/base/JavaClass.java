@@ -53,6 +53,14 @@ public class JavaClass extends AbstractComplexJavaType {
 		return isAbstract;
 	}
 
+	public void addImport(String importType) {
+		getImports().add(importType);
+	}
+
+	public void addImport(Class<?> importType) {
+		getImports().add(importType.getName());
+	}
+
 	@Override
 	public Set<String> getImports() {
 		final Set<String> allImports = super.getImports();

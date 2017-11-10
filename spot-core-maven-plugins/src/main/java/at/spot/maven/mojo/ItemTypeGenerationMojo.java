@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -231,6 +233,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				field.setType(propType);
 				field.setName(prop.getName());
 				field.setDescription(prop.getDescription());
+				field.setAssignement(getDefaultFieldAssignment(javaClass, field, prop.getType()));
 
 				populatePropertyAnnotation(prop, field);
 				populatePropertyValidators(prop, field);
@@ -255,6 +258,30 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 		}
 	}
+
+	protected String getDefaultFieldAssignment(JavaClass type, JavaField field, String typeName) {
+		final BaseType propType = typeDefinitions.getType(typeName);
+
+		String ret = null;
+
+		if (propType instanceof CollectionType) {
+			CollectionType attrType = (CollectionType) propType;
+			if (CollectionsType.SET.equals(attrType)) {
+				ret = "new HashSet<>();";
+				type.addImport(HashSet.class);
+			} else {
+				ret = "new ArrayList<>();";
+				type.addImport(ArrayList.class);
+			}
+		} else if (propType instanceof MapType) {
+			ret = "new HashMap<>();";
+			type.addImport(HashMap.class);
+		}
+
+		return ret;
+	}
+
+	// protected Class<?> getCollectionType( )
 
 	protected void addGetter(final JavaField field, final JavaClass javaClass) {
 		final JavaMethod getter = new JavaMethod();
@@ -559,6 +586,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
 			property.setType(propType);
+			// getDefaultFieldAssignment(javaClass, property, typeName)
 
 			property.addAnnotation(relationAnn);
 			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
