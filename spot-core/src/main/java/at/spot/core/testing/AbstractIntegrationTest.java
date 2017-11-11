@@ -27,7 +27,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * This is the base class for all integration tasks. Database access will be
  * reverted after the each test using a transaction rollback.
  */
-@TestPropertySource(properties = { "service.persistence.mapdb.filepath=" + AbstractIntegrationTest.MAPDB_FILE })
+@TestPropertySource(locations = { "classpath:core-test.properties" }, properties = {
+		"service.persistence.mapdb.filepath=" + AbstractIntegrationTest.MAPDB_FILE })
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
@@ -48,12 +49,6 @@ public abstract class AbstractIntegrationTest {
 
 	@Resource
 	protected ModelService modelService;
-
-	// protected AbstractIntegrationTest() {
-	// final IntegrationTest testAnnotation =
-	// ClassUtil.getAnnotation(this.getClass(), IntegrationTest.class);
-	// Registry.setMainClass(testAnnotation.initClass());
-	// }
 
 	protected String getTestPackagePath() {
 		return this.getClass().getPackage().getName();
