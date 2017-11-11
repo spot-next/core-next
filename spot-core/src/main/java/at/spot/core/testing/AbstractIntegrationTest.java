@@ -110,10 +110,10 @@ public abstract class AbstractIntegrationTest {
 	/**
 	 * Runs custom code before a test is executed, eg. to prepare test data.
 	 */
-	protected abstract void prepareTest();
+	protected abstract void prepareTest() throws Exception;
 
 	/**
 	 * Runs after each test, eg. to clean up stuff.
 	 */
-	protected abstract void teardownTest();
+	protected abstract void teardownTest() throws Exception;
 }

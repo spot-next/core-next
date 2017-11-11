@@ -36,7 +36,7 @@ public @interface Relation {
 	/**
 	 * This is the name of the property of the referenced item.
 	 */
-	String mappedTo();
+	String mappedTo() default "";
 
 	/**
 	 * Defines at which end of the relation the current object is.

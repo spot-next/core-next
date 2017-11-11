@@ -99,7 +99,24 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	protected boolean isValidClass(String className) {
-		return !className.contains("$Proxy") && !className.contains("sun/reflect") && !className.contains("java.lang");
+		boolean valid = true;
+
+		// proxy stuff
+		if (className.contains("$Proxy") || className.contains("sun/reflect")) {
+			valid = false;
+		}
+
+		// java internal stuff
+		if (className.startsWith("java.lang")) {
+			valid = false;
+		}
+
+		// primitive types
+		if (!className.contains(".")) {
+			valid = false;
+		}
+
+		return valid;
 	}
 
 	/**

@@ -92,7 +92,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 					// process item type property annotation
-					if (propertyAnn.isPresent()) {
+					if (propertyAnn.isPresent() && isValidClass(field.getType().getName())) {
 						// create the necessary JPA annotations based on Relation and Property
 						// annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
@@ -153,11 +153,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected boolean isItemType(final CtClass clazz) throws IllegalClassTransformationException {
-		if (!clazz.isFrozen()) {
-			return getItemTypeAnnotation(clazz).isPresent();
-		}
-
-		return false;
+		return getItemTypeAnnotation(clazz).isPresent();
 	}
 
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
@@ -241,8 +237,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 
-			annotation.addMemberValue(MV_MAPPED_BY,
-					createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
+			if (mappedTo != null && StringUtils.isNotBlank(mappedTo.getValue())) {
+				annotation.addMemberValue(MV_MAPPED_BY,
+						createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
+			}
 		}
 	}
 

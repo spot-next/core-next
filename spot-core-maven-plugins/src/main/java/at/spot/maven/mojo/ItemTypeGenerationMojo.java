@@ -582,8 +582,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			property.setName(mappedTo);
 
 			relationAnn.addParameter("type", getRelationType(from, to), AnnotationValueType.ENUM_VALUE);
-			relationAnn.addParameter("mappedTo", from.getMappedBy(), AnnotationValueType.STRING);
 			relationAnn.addParameter("nodeType", nodeType, AnnotationValueType.ENUM_VALUE);
+
+			if (StringUtils.isNotBlank(from.getMappedBy())) {
+				relationAnn.addParameter("mappedTo", from.getMappedBy(), AnnotationValueType.STRING);
+			}
 
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
 				collectionType = getCollectionType(to.getCollectionType());
