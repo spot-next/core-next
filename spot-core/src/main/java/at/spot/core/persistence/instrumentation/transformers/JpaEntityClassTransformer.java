@@ -14,7 +14,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -224,7 +223,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		} else if (isItemType(field.getType())) { // one to one in case the
 													// field type is a subtype
 													// of Item
-			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
+			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
 		}
@@ -252,10 +251,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		addCascadeAnnotation(ann, field);
 
 		// add fetch type
-		final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
-		fetchType.setType(FetchType.class.getName());
-		fetchType.setValue(FetchType.LAZY.name());
-		ann.addMemberValue("fetch", fetchType);
+		// final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
+		// fetchType.setType(FetchType.class.getName());
+		// fetchType.setValue(FetchType.LAZY.name());
+		// ann.addMemberValue("fetch", fetchType);
 
 		return ann;
 	}
