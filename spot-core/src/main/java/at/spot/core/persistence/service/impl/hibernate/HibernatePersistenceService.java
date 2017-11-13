@@ -33,15 +33,15 @@ import org.springframework.transaction.annotation.Transactional;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
 
 @Transactional
-public class HibernatePersistenceService extends AbstractService implements PersistenceService {
+public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
 
 	@PersistenceContext
 	protected EntityManager em;
@@ -138,7 +138,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
 		TypedQuery<T> query = null;
 
 		final CriteriaBuilder cb = getSession().getCriteriaBuilder();
@@ -148,7 +148,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		if (searchParameters != null) {
 			Predicate p = cb.conjunction();
 
-			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
+			for (final Map.Entry<String, Object> entry : searchParameters.entrySet()) {
 				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
 					throw new PersistenceException(String.format(
 							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
@@ -177,16 +177,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy) {
-
-		return load(type, searchParameters);
-	}
-
-	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
-			final boolean returnProxies) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+			final Integer page, final Integer pageSize) {
 
 		return load(type, searchParameters);
 	}

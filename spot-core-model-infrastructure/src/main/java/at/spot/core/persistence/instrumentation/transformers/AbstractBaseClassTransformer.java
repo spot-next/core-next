@@ -75,6 +75,18 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(String.format("Processing class '%s'", clazz.getName()));
 					}
+
+					if (clazz.isFrozen()) {
+						try {
+							defrostClassHierarchy(clazz);
+							LOG.debug(String.format("Defrosted class '%s'", clazz.getName()));
+						} catch (NotFoundException e) {
+							String message = String.format("Could not defrost class '%s'", classId);
+							LOG.error(message, e);
+							throw new IllegalClassTransformationException(message, e);
+						}
+					}
+
 					final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined,
 							protectionDomain);
 
@@ -406,6 +418,15 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 
 		return interfaces;
+	}
+
+	protected void defrostClassHierarchy(CtClass clazz) throws NotFoundException {
+		CtClass c = clazz;
+
+		while (c != null) {
+			c.defrost();
+			c = c.getSuperclass();
+		}
 	}
 
 	protected ArrayMemberValue createAnnotationArrayValue(final ConstPool constPool, final MemberValue... values) {

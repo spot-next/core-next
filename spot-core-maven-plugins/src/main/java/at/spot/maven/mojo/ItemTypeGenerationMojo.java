@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +36,8 @@ import org.apache.maven.project.MavenProject;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.hibernate.mapping.Collection;
 
+import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
@@ -53,6 +54,7 @@ import at.spot.core.infrastructure.maven.xml.RelationType;
 import at.spot.core.infrastructure.maven.xml.RelationshipCardinality;
 import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
+import at.spot.core.infrastructure.type.AccessorType;
 import at.spot.core.infrastructure.type.RelationCollectionType;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.model.Item;
@@ -291,6 +293,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		getter.setDescription(field.getDescription());
 		getter.setCodeBlock(String.format("return this.%s;", field.getName()));
 
+		JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
+		accessor.addParameter("type", AccessorType.GETTER, AnnotationValueType.ENUM_VALUE);
+		getter.addAnnotation(accessor);
+
 		javaClass.addMethod(getter);
 	}
 
@@ -301,6 +307,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		setter.setDescription(field.getDescription());
 		setter.addArgument(field.getName(), field.getType());
 		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
+
+		JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
+		accessor.addParameter("type", AccessorType.SETTER, AnnotationValueType.ENUM_VALUE);
+		setter.addAnnotation(accessor);
 
 		javaClass.addMethod(setter);
 	}

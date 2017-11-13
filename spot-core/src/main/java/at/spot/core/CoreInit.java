@@ -3,7 +3,6 @@ package at.spot.core;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -37,7 +36,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @EnableAsync
 @EnableTransactionManagement
 @EnableScheduling
-@EnableJpaAuditing
 public class CoreInit extends ModuleInit {
 
 	@Autowired
@@ -143,7 +141,7 @@ public class CoreInit extends ModuleInit {
 			//
 			// modelService.saveAll(users);
 			//
-			// final Map<String, Comparable<?>> criteria = new HashMap<>();
+			// final Map<String, Object> criteria = new HashMap<>();
 			// criteria.put("uid", "user-1");
 			//
 			// final User test99 = modelService.get(User.class, criteria);

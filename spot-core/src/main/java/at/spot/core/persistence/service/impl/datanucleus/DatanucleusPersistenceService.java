@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 
 @Transactional
-public class DatanucleusPersistenceService extends AbstractService implements PersistenceService {
+public class DatanucleusPersistenceService extends AbstractPersistenceService implements PersistenceService {
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
@@ -51,21 +51,14 @@ public class DatanucleusPersistenceService extends AbstractService implements Pe
 	}
 
 	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
-			int pageSize, boolean loadAsProxy) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters, int page,
-			int pageSize, boolean loadAsProxy, Integer minCountForParallelStream, boolean returnProxies) {
+	public <T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters, Integer page,
+			Integer pageSize) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -115,5 +108,4 @@ public class DatanucleusPersistenceService extends AbstractService implements Pe
 			em.detach(item);
 		}
 	}
-
 }

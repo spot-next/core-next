@@ -251,7 +251,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
 
 		final Map<String, String[]> query = request.queryMap().toMap();
-		final Map<String, Comparable<?>> searchParameters = new HashMap<>();
+		final Map<String, Object> searchParameters = new HashMap<>();
 
 		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeProperties(typeCode).values()) {
 			final String[] queryValues = query.get(prop.name);

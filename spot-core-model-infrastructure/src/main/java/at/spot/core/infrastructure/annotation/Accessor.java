@@ -6,12 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import at.spot.core.infrastructure.type.AccessorType;
+
 /**
- * Defines an item property. Without this annotation, the values are not stored
- * in the database.
+ * Marks a method as an accessor to a item property.
  */
 @Target(ElementType.METHOD)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GetProperty {
+public @interface Accessor {
+	AccessorType type();
 }

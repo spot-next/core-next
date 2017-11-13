@@ -1,7 +1,13 @@
 package at.spot.core.infrastructure.exception;
 
+import at.spot.core.model.Item;
+
 public class ModelNotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
+
+	public ModelNotFoundException(Class<? extends Item> type, long pk) {
+		this(String.format("%s with pk=%s not found.", type.getName(), pk));
+	}
 
 	public ModelNotFoundException(final String message) {
 		super(message);

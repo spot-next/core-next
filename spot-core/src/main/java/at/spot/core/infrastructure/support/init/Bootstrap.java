@@ -147,8 +147,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with
-	 * the parent context.
+	 * necessary, so that the spring context of this module can be merged with the
+	 * parent context.
 	 * 
 	 * @param parentContext
 	 */
@@ -223,8 +223,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths.
-	 * This causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths. This
+	 * causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

@@ -60,9 +60,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 		try {
 			final ForkJoinTask<List<T>> task = threadPool.submit((Callable<List<T>>) () -> {
-				Stream<T> stream = persistenceService
-						.load(type, null, page, pageSize, false, MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING, returnProxies)
-						.stream();
+				Stream<T> stream = persistenceService.load(type, null, page, pageSize).stream();
 
 				if (orderBy != null) {
 					stream = stream.sorted(orderBy);

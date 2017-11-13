@@ -26,20 +26,21 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.zoodb.api.impl.ZooPC;
 
 import at.spot.core.infrastructure.IdGenerator;
 import at.spot.core.infrastructure.annotation.Property;
 
 //JDO
 @PersistenceCapable
-@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.COMPLETE_TABLE)
+@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
 @Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
 @javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
 // JPA
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
-public abstract class Item implements Serializable, Comparable<Item> {
+public abstract class Item extends ZooPC implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 

@@ -22,7 +22,7 @@ public class DefaultMailBoxService implements MailBoxService {
 
 	@Override
 	public MailBox getMailBoxForUser(final User owner) {
-		final Map<String, Comparable<?>> condition = new HashMap<>();
+		final Map<String, Object> condition = new HashMap<>();
 		condition.put("owner.uid", owner.getId());
 
 		MailBox mailbox = null;

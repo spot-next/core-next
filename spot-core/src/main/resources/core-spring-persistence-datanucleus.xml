@@ -17,9 +17,6 @@
         http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd">
 
 	<context:annotation-config />
-	<aop:aspectj-autoproxy proxy-target-class="true" />
-	<tx:annotation-driven mode="proxy"
-		proxy-target-class="true" />
 
 	<bean id="datanucleusPersistenceService"
 		class="at.spot.core.persistence.service.impl.datanucleus.DatanucleusPersistenceService" />

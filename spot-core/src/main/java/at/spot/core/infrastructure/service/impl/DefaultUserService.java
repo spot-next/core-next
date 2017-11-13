@@ -65,7 +65,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public U getUser(final String uid) {
-		final Map<String, Comparable<?>> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put("id", uid);
 
 		return modelService.get(getUserType(), params);
@@ -73,7 +73,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public G getUserGroup(final String uid) {
-		final Map<String, Comparable<?>> params = new HashMap<>();
+		final Map<String, Object> params = new HashMap<>();
 		params.put("id", uid);
 
 		return modelService.get(getUserGroupType(), params);

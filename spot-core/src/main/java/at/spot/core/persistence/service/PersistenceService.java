@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
@@ -55,7 +56,7 @@ public interface PersistenceService {
 	 *            if empty or null, all items of the given type will be returned.
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
+	<T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
@@ -68,36 +69,12 @@ public interface PersistenceService {
 	 *            defines the amount of items that are being skipped.
 	 * @param amount
 	 *            starting from the start param this is the amount of items that
-	 *            will be returned.
-	 * @param loadAsProxy
-	 *            the items will be just proxies that are lazy-loaded.
+	 *            will be returned. the items will be just proxies that are
+	 *            lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final int page, final int pageSize, boolean loadAsProxy);
-
-	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
-	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 * @param start
-	 *            defines the amount of items that are being skipped.
-	 * @param amount
-	 *            starting from the start param this is the amount of items that
-	 *            will be returned.
-	 * @param loadAsProxy
-	 *            the items will be just proxies that are lazy-loaded.
-	 * @param
-	 * @return minCountForParallelStream if the amount of items to be processed is
-	 *         greater than this value, a parallel stream is used instead of a
-	 *         regular one.
-	 */
-	<T extends Item> List<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
-			final boolean returnProxies);
+	<T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+			final Integer page, final Integer pageSize);
 
 	/**
 	 * Fills the given proxy item with it's property values.
@@ -161,4 +138,13 @@ public interface PersistenceService {
 	 * @param items
 	 */
 	<T extends Item> void detach(T... items);
+
+	/**
+	 * Converts the given item to a map.
+	 * 
+	 * @param item
+	 * @return
+	 * @throws ModelValidationException
+	 */
+	<T extends Item> Map<String, Object> convertItemToMap(T item) throws ModelValidationException;
 }

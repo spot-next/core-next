@@ -46,7 +46,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 /**
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
  */
-@ClassTransformer
+@ClassTransformer(order = 0)
 public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	protected static final String MV_CASCADE = "cascade";

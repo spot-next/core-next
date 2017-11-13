@@ -74,7 +74,7 @@ public #if ($abstract)abstract #end class $name #if($superClass.name)extends $su
 
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
-		#annotations($field.annotations)
+		#annotations($method.annotations)
 		public $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
 				$arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
