@@ -4,13 +4,15 @@
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "type": "java",
-            "name": "Debug (Launch)-Bootstrap<spot-core>",
+            "name": "spot-core",
             "request": "launch",
             "mainClass": "at.spot.core.infrastructure.support.init.Bootstrap",
             "projectName": "spot-core",
-            "args": ""
+            "args": "",
+            "vmArgs": "-ea -XXaltjvm=dcevm"
         },
         {
             "type": "java",

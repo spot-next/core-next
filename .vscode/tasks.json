@@ -4,22 +4,32 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "clean install",
+            "label": "install",
             "type": "shell",
-            "command": "mvn -clean install -DskipTests=true",
-            "group": "build"
+            "command": "mvn install -DskipTests=true",
+            "group": "build",
+            "problemMatcher": []
         },
         {
-            "taskName": "verify",
+            "label": "clean install",
+            "type": "shell",
+            "command": "mvn clean install -DskipTests=true",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "verify",
             "type": "shell",
             "command": "mvn -B verify",
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         },
         {
-            "taskName": "test",
+            "label": "test",
             "type": "shell",
             "command": "mvn -B test",
-            "group": "test"
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }
