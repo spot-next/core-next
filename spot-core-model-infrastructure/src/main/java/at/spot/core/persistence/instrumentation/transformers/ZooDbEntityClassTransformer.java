@@ -62,7 +62,7 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 				addEntityAnnotation(clazz);
 
 				// process item properties
-				for (final CtMethod method : getDeclaredMethods(clazz)) {
+				for (final CtMethod method : clazz.getMethods()) {
 					final Optional<Annotation> accessor = getAnnotation(method, Accessor.class);
 
 					if (accessor.isPresent()) {
@@ -94,8 +94,9 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.empty();
 	}
 
-	protected void activateAccessor(CtMethod method, Optional<Annotation> accessor) throws CannotCompileException {
-		EnumMemberValue accessorType = (EnumMemberValue) accessor.get().getMemberValue("type");
+	protected void activateAccessor(final CtMethod method, final Optional<Annotation> accessor)
+			throws CannotCompileException {
+		final EnumMemberValue accessorType = (EnumMemberValue) accessor.get().getMemberValue("type");
 
 		if (accessorType != null) {
 			if (AccessorType.GETTER.name().equals(accessorType.getValue())) {
