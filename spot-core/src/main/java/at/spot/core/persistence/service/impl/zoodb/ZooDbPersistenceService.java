@@ -36,6 +36,7 @@ public class ZooDbPersistenceService extends AbstractPersistenceService implemen
 
 	@PostConstruct
 	public void setup() {
+		pm.currentTransaction().setNontransactionalRead(true);
 	}
 
 	@PreDestroy
