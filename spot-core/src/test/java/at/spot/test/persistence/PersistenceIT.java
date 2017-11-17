@@ -30,7 +30,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// TODO Auto-generated method stub
 	}
 
-	// @Test
+	@Test
 	public void testBidirectionalRelations() throws Exception {
 		final User user = modelService.create(User.class);
 		user.setId("testUser");
@@ -56,7 +56,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(group.getPk(), loadedGroup.getPk());
 	}
 
-	// @Test
+	@Test
 	public void testQueryByExample() throws Exception {
 		final User user = modelService.create(User.class);
 		user.setId("testUser");

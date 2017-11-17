@@ -107,18 +107,20 @@ public class ZooDbPersistenceService extends AbstractPersistenceService implemen
 	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final Integer page, final Integer pageSize) {
 
-		final List<String> criteria = buildQueryStringWithNonItemTypeProperties(searchParameters, null);
-		final String criteriaString = StringUtils.join(criteria, " AND ");
+		if (searchParameters != null && !searchParameters.isEmpty()) {
+			final List<String> criteria = buildQueryStringWithNonItemTypeProperties(searchParameters, null);
+			final String criteriaString = StringUtils.join(criteria, " AND ");
 
-		try {
-			beginTransaction();
-			final Query query = pm.newQuery(type, criteriaString);
-			commit();
+			try {
+				beginTransaction();
+				final Query query = pm.newQuery(type, criteriaString);
+				commit();
 
-			return new ArrayList<T>((Collection<T>) query.execute());
-		} catch (final Exception e) {
-			loggingService.warn(String.format("Could not load item of type %s with search params %s.", type.getName(),
-					searchParameters));
+				return new ArrayList<T>((Collection<T>) query.execute());
+			} catch (final Exception e) {
+				loggingService.warn(String.format("Could not load item of type %s with search params %s.",
+						type.getName(), searchParameters));
+			}
 		}
 
 		return Collections.emptyList();
