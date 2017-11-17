@@ -79,10 +79,10 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 		getSession().flush();
 		try {
-			for (T item : items) {
+			for (final T item : items) {
 				refresh(item);
 			}
-		} catch (ModelNotFoundException e) {
+		} catch (final ModelNotFoundException e) {
 			throw new ModelSaveException("Could not save given items", e);
 		}
 	}
@@ -136,13 +136,13 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
 		// String queryString = String.format("FROM %s", type.getSimpleName());
 		// TypedQuery<T> query = null;
 		//
 		// if (searchParameters != null) {
 		// final List<String> params = new ArrayList<>();
-		// for (final Map.Entry<String, Comparable<?>> e :
+		// for (final Map.Entry<String, Object> e :
 		// searchParameters.entrySet()) {
 		// params.add(e.getKey() + " = :" + e.getKey());
 		// }
@@ -154,7 +154,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// query = em.createQuery(queryString, type);
 		//
 		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
+		// for (final Map.Entry<String, Object> e :
 		// searchParameters.entrySet()) {
 		// query.setParameter(e.getKey(), e.getValue());
 		// }
@@ -168,7 +168,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// query.from(type);
 
 		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
+		// for (final Map.Entry<String, Object> e :
 		// searchParameters.entrySet()) {
 		// if (e.getValue() instanceof Item) {
 		// query.where(builder.equal(builder.crea y));
@@ -212,7 +212,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 			// final Metamodel mm = getSession().getMetamodel();
 			// final EntityType<T> et = mm.entity(type);
 
-			for (final Map.Entry<String, Comparable<?>> entry : searchParameters.entrySet()) {
+			for (final Map.Entry<String, Object> entry : searchParameters.entrySet()) {
 				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
 					throw new PersistenceException(String.format(
 							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
@@ -248,14 +248,14 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	// }
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
 		return load(type, searchParameters);
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
 			final boolean returnProxies) {
 

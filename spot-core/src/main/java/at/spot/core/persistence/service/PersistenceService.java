@@ -57,7 +57,7 @@ public interface PersistenceService {
 	 *            returned.
 	 * @return
 	 */
-	<T extends Item> Stream<T> load(Class<T> type, Map<String, Comparable<?>> searchParameters);
+	<T extends Item> Stream<T> load(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
 	 * Returns an object based on the given search parameters (key = property
@@ -76,7 +76,7 @@ public interface PersistenceService {
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize, boolean loadAsProxy);
 
 	/**
@@ -99,7 +99,7 @@ public interface PersistenceService {
 	 *         is greater than this value, a parallel stream is used instead of
 	 *         a regular one.
 	 */
-	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
 			final boolean returnProxies);
 

@@ -251,7 +251,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final Class<T> type = (Class<T>) typeService.getType(typeCode);
 
 		final Map<String, String[]> query = request.queryMap().toMap();
-		final Map<String, Comparable<?>> searchParameters = new HashMap<>();
+		final Map<String, Object> searchParameters = new HashMap<>();
 
 		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeProperties(typeCode).values()) {
 			final String[] queryValues = query.get(prop.name);
@@ -268,12 +268,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 					return body;
 				}
 
-				if (value instanceof Comparable || value == null) {
-					searchParameters.put(prop.name, (Comparable<?>) value);
-				} else {
-					body.getBody().addWarning(new Status("query.unknownattribute",
-							String.format("Unknown attribute value %s=%S in query", prop.name, value.toString())));
-				}
+				searchParameters.put(prop.name, value);
 			} else {
 				body.getBody().addWarning(new Status("query.duplicateattribute",
 						String.format("Query attribute %s passed more than once - only taking the first.", prop.name)));
@@ -327,7 +322,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			if (item.getPk() != null) {
 				body.getBody()
 						.addWarning(new Status("warning.general", "PK was reset, it may not be set for new items."));
-				item.setPk(null);
 			}
 
 			modelService.save(item);

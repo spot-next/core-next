@@ -60,7 +60,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> T get(Class<T> type, T example) throws ModelValidationException {
-		Map<String, Comparable<?>> map = convertItemToMap(example);
+		Map<String, Object> map = convertItemToMap(example);
 
 		if (map.keySet().size() == 0) {
 			throw new ModelValidationException("Given example model has no properties set.");
@@ -70,7 +70,7 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters) {
 		// ignore empty search parameters
 		if (searchParameters == null || searchParameters.values().size() == 0) {
 			return null;
@@ -82,12 +82,12 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters) {
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
 		return persistenceService.load(type, searchParameters).collect(Collectors.toList());
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Comparable<?>> searchParameters,
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize, final boolean loadAsProxy) {
 
 		return persistenceService.load(type, searchParameters, page, pageSize, loadAsProxy)
@@ -171,20 +171,20 @@ public class DefaultModelService extends AbstractModelService {
 		ClassUtil.setField(item, propertyName, propertyValue);
 	}
 
-	public <T extends Item> Map<String, Comparable<?>> convertItemToMap(T item) throws ModelValidationException {
+	public <T extends Item> Map<String, Object> convertItemToMap(T item) throws ModelValidationException {
 		Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeProperties(item.getClass());
 
 		final ObjectMapper mapper = new ObjectMapper();
 		Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
 		});
 
-		Map<String, Comparable<?>> retMap = new HashMap<>();
+		Map<String, Object> retMap = new HashMap<>();
 
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			if (properties.get(entry.getKey()) != null) {
 				if (entry.getValue() != null) {
 					if (entry.getValue() instanceof Comparable) {
-						retMap.put(entry.getKey(), (Comparable<?>) entry.getValue());
+						retMap.put(entry.getKey(), (Object) entry.getValue());
 					} else if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
 						loggingService.warn(String.format(
 								"Item property '%s' is a list or collection - it will be ignored.", entry.getKey()));
