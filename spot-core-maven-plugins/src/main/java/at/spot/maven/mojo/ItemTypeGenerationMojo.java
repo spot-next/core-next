@@ -310,6 +310,54 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		javaClass.addMethod(setter);
 	}
 
+	protected void addModifierAccessors(final JavaField field, final JavaClass javaClass) {
+		final JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
+		accessor.addParameter("type", AccessorType.MODIFIER, AnnotationValueType.ENUM_VALUE);
+		accessor.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
+
+		// add
+		JavaMethod adder = new JavaMethod();
+		adder.setName(generateMethodName("addTo", field.getName()));
+		adder.setType(JavaMemberType.VOID);
+		adder.setDescription(field.getDescription());
+		adder.addArgument("val", field.getType().getGenericArguments().get(0).getType());
+		adder.setCodeBlock(String.format("this.%s.add(%s);", field.getName(), "val"));
+		adder.addAnnotation(accessor);
+
+		javaClass.addMethod(adder);
+
+		// addAll
+		adder = new JavaMethod();
+		adder.setName(generateMethodName("addTo", field.getName()));
+		adder.setType(JavaMemberType.VOID);
+		adder.setDescription(field.getDescription());
+		adder.addArgument(field.getName(), field.getType());
+		adder.setCodeBlock(String.format("this.%s.addAll(%s);", field.getName(), field.getName()));
+		adder.addAnnotation(accessor);
+
+		// remove
+		JavaMethod remover = new JavaMethod();
+		remover.setName(generateMethodName("removeFrom", field.getName()));
+		remover.setType(JavaMemberType.VOID);
+		remover.setDescription(field.getDescription());
+		remover.addArgument("val", field.getType().getGenericArguments().get(0).getType());
+		remover.setCodeBlock(String.format("this.%s.remove(%s);", field.getName(), "val"));
+		remover.addAnnotation(accessor);
+
+		javaClass.addMethod(remover);
+
+		// removeAll
+		remover = new JavaMethod();
+		remover.setName(generateMethodName("removeFrom", field.getName()));
+		remover.setType(JavaMemberType.VOID);
+		remover.setDescription(field.getDescription());
+		remover.addArgument(field.getName(), field.getType());
+		remover.setCodeBlock(String.format("this.%s.removeAll(%s);", field.getName(), field.getName()));
+		remover.addAnnotation(accessor);
+
+		javaClass.addMethod(remover);
+	}
+
 	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
 		final JavaClass javaClass = new JavaClass(type.getName(), type.getPackage());
 		javaClass.setDescription(type.getDescription());
@@ -615,7 +663,12 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			javaClass.addField(property);
 
 			addGetter(property, javaClass);
-			addSetter(property, javaClass);
+
+			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
+				addModifierAccessors(property, javaClass);
+			} else {
+				addSetter(property, javaClass);
+			}
 		}
 	}
 
