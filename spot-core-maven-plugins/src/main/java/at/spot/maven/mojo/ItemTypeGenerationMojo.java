@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -234,9 +233,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				field.setVisiblity(Visibility.PROTECTED);
 				field.setType(propType);
 				field.setName(prop.getName());
-				field.setDescription(prop.getDescription());
-				// field.setAssignement(getDefaultFieldAssignment(javaClass,
-				// field, prop.getType()));
+				field.setDescription(StringUtils.trim(prop.getDescription()));
 
 				populatePropertyAnnotation(prop, field);
 				populatePropertyValidators(prop, field);
@@ -262,23 +259,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected String getDefaultFieldAssignment(final JavaClass type, final JavaField field, final String typeName) {
-		final BaseType propType = typeDefinitions.getType(typeName);
+	protected String getDefaultFieldAssignment(final JavaClass type, final JavaField field,
+			final RelationCollectionType collectionType) {
 
 		String ret = null;
 
-		if (propType instanceof CollectionType) {
-			final CollectionType attrType = (CollectionType) propType;
-			if (CollectionsType.SET.equals(attrType.getCollectionType())) {
-				ret = "new HashSet<>();";
-				type.addImport(HashSet.class);
-			} else {
-				ret = "new ArrayList<>();";
-				type.addImport(ArrayList.class);
-			}
-		} else if (propType instanceof MapType) {
-			ret = "new HashMap<>();";
-			type.addImport(HashMap.class);
+		if (RelationCollectionType.Set.equals(collectionType)) {
+			ret = "new HashSet<>();";
+			type.addImport(HashSet.class);
+		} else if (RelationCollectionType.List.equals(collectionType)
+				| RelationCollectionType.Collection.equals(collectionType)) {
+
+			ret = "new ArrayList<>();";
+			type.addImport(ArrayList.class);
 		}
 
 		return ret;
@@ -293,8 +286,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		getter.setDescription(field.getDescription());
 		getter.setCodeBlock(String.format("return this.%s;", field.getName()));
 
-		JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
+		final JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
 		accessor.addParameter("type", AccessorType.GETTER, AnnotationValueType.ENUM_VALUE);
+		accessor.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
 		getter.addAnnotation(accessor);
 
 		javaClass.addMethod(getter);
@@ -308,8 +302,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		setter.addArgument(field.getName(), field.getType());
 		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
 
-		JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
+		final JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
 		accessor.addParameter("type", AccessorType.SETTER, AnnotationValueType.ENUM_VALUE);
+		accessor.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
 		setter.addAnnotation(accessor);
 
 		javaClass.addMethod(setter);
@@ -499,7 +494,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
-		return writer.toString();
+		final String ret = writer.toString();
+
+		// if (formatSource) {
+		// ret = ret.replaceAll("\n", "").replaceAll("\r", "");
+		// }
+
+		return ret;
 	}
 
 	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
@@ -601,12 +602,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
 				collectionType = getCollectionType(to.getCollectionType());
 				relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
+
+				property.setAssignement(getDefaultFieldAssignment(javaClass, property, collectionType));
 			}
 
 			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
 			property.setType(propType);
-			// getDefaultFieldAssignment(javaClass, property, typeName)
 
 			property.addAnnotation(relationAnn);
 			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));

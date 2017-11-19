@@ -65,7 +65,7 @@ public #if ($abstract)abstract #end class $name #if($superClass.name)extends $su
 	#foreach ($field in $fields)
 		#javadoc($field.javadoc)
 		#annotations($field.annotations)
-		protected $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
+		protected $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #else; #end
 	#end
 
 ##    @Property(isReference = true)
