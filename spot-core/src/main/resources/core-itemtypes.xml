@@ -331,7 +331,7 @@
 
 	<relation name="Country2Language">
 		<description>The languages available for that country.</description>
-		<source itemType="Country" mappedBy="country" cardinality="many" />
+		<source itemType="Country" mappedBy="countries" cardinality="many" />
 		<target itemType="Language" mappedBy="languages" cardinality="many" />
 	</relation>
 

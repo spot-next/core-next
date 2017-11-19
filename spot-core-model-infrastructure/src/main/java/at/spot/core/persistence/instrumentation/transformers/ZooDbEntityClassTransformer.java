@@ -8,15 +8,24 @@ import java.util.Optional;
 
 import javax.jdo.annotations.PersistenceCapable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.zoodb.api.impl.ZooPC;
+
 import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.ItemType;
+import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.type.AccessorType;
+import at.spot.core.infrastructure.type.RelationType;
+import at.spot.core.model.Item;
 import at.spot.instrumentation.ClassTransformer;
 import at.spot.instrumentation.transformer.IllegalClassTransformationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CannotCompileException;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.NotFoundException;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
@@ -47,6 +56,7 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
 	protected static final String RELATION_TARGET_COLUMN = "target_pk";
+	protected static final String PK_PROPERTY = "getPk";
 
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	@Override
@@ -63,13 +73,25 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 
 				// process item properties
 				for (final CtMethod method : clazz.getMethods()) {
+
+					// ignore jdo methods
+					if (method.getName().startsWith("jdo") || method.getName().startsWith("zoo")) {
+						continue;
+					}
+
 					final Optional<Annotation> accessor = getAnnotation(method, Accessor.class);
 
 					if (accessor.isPresent()) {
-						// method.getReturnType().defrost();
 						activateAccessor(method, accessor);
+
+						// set bidirectional relation mapping for setters
+						if (method.getName().startsWith("set")) {
+							addBiDirectionalRelationMapping(clazz, method, accessor.get());
+						}
 					}
 				}
+
+				overridePkAccessor(clazz);
 
 				try {
 					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
@@ -92,6 +114,66 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		return Optional.empty();
+	}
+
+	protected void addBiDirectionalRelationMapping(final CtClass clazz, final CtMethod method,
+			final Annotation accessor) throws CannotCompileException, NotFoundException {
+
+		final StringMemberValue propertyName = (StringMemberValue) accessor.getMemberValue("propertyName");
+
+		if (propertyName != null && StringUtils.isNotBlank(propertyName.getValue())) {
+			final CtField field = clazz.getField(propertyName.getValue());
+			final Optional<Annotation> relAnnotation = getAnnotation(field, Relation.class);
+
+			if (relAnnotation.isPresent()) {
+				final EnumMemberValue relType = (EnumMemberValue) relAnnotation.get().getMemberValue(MV_TYPE);
+
+				final StringMemberValue mappedTo = (StringMemberValue) relAnnotation.get().getMemberValue("mappedTo");
+
+				if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
+					// groups.stream().forEach(i -> i.getMembers().add(this));
+
+					// languages.stream().forEach(new Consumer<Language>() {
+					// public void accept(Language t) {
+					// i.getCountry().add(this);
+					// }
+					// });
+
+					String mapper = propertyName.getValue() + ".stream().forEach(new java.util.function.Consumer() {";
+					mapper += "public void accept(Language i) {";
+					mapper += "i.get" + StringUtils.capitalize(mappedTo.getValue()) + "().add(this);";
+					mapper += "}});";
+
+					method.insertBefore(mapper);
+
+				} else if (StringUtils.equals(relType.getValue(), RelationType.OneToMany.toString())) {
+
+				} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
+
+				} else {
+					// one to one in case the field type is a subtype of Item
+
+				}
+			}
+		}
+	}
+
+	/**
+	 * Overrides the {@link Item#getPk()} method to return
+	 * {@link ZooPC#jdoZooGetOid()}.
+	 * 
+	 * @param clazz
+	 * @throws CannotCompileException
+	 * @throws IllegalClassTransformationException
+	 */
+	protected void overridePkAccessor(final CtClass clazz)
+			throws CannotCompileException, IllegalClassTransformationException {
+
+		final CtMethod getter = CtNewMethod.make("public Long getPk() { return Long.valueOf(this.jdoZooGetOid()); }",
+				clazz);
+		final Annotation ann = createAnnotation(getConstPool(clazz), Override.class);
+		addAnnotations(getter, Arrays.asList(ann));
+		clazz.addMethod(getter);
 	}
 
 	protected void activateAccessor(final CtMethod method, final Optional<Annotation> accessor)

@@ -66,7 +66,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					clazz = pool.get(classId);
 
 				} catch (final NotFoundException e) {
-					String message = String.format("Could not process class '%s'", classId);
+					final String message = String.format("Could not process class '%s'", classId);
 					LOG.error(message, e);
 					throw new IllegalClassTransformationException(message, e);
 				}
@@ -80,8 +80,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 						try {
 							defrostClassHierarchy(clazz);
 							LOG.debug(String.format("Defrosted class '%s'", clazz.getName()));
-						} catch (NotFoundException e) {
-							String message = String.format("Could not defrost class '%s'", classId);
+						} catch (final NotFoundException e) {
+							final String message = String.format("Could not defrost class '%s'", classId);
 							LOG.error(message, e);
 							throw new IllegalClassTransformationException(message, e);
 						}
@@ -93,8 +93,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					if (transformedClass.isPresent()) {
 						try {
 							return transformedClass.get().toBytecode();
-						} catch (Exception e) {
-							String message = String.format("Could not compile transformed class %s", classId);
+						} catch (final Exception e) {
+							final String message = String.format("Could not compile transformed class %s", classId);
 							LOG.error(message, e);
 							throw new IllegalClassTransformationException(message, e);
 						}
@@ -110,7 +110,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return null;
 	}
 
-	protected boolean isValidClass(String className) {
+	protected boolean isValidClass(final String className) {
 		boolean valid = true;
 
 		// proxy stuff
@@ -135,17 +135,18 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * 
 	 * 
 	 * @param loader
-	 *            the defining loader of the class to be transformed, may be null if
-	 *            the bootstrap loader
+	 *            the defining loader of the class to be transformed, may be
+	 *            null if the bootstrap loader
 	 * @param clazz
 	 *            the class in the internal form of the JVM.
 	 * @param classBeingRedefined
-	 *            if this is triggered by a redefine or retransform, the class being
-	 *            redefined or retransformed; if this is a class load, null
+	 *            if this is triggered by a redefine or retransform, the class
+	 *            being redefined or retransformed; if this is a class load,
+	 *            null
 	 * @param protectionDomain
 	 *            the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed, return
-	 *         null instead.
+	 * @return the transformed class object. If the class was not changed,
+	 *         return null instead.
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -162,7 +163,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected List<Annotation> getAnnotations(final CtClass clazz) throws IllegalClassTransformationException {
 		final List<Annotation> annotations = new ArrayList<>();
 
-		ClassFile clazzFile = getClassFile(clazz, true);
+		final ClassFile clazzFile = getClassFile(clazz, true);
 
 		final AttributeInfo attInfo = clazzFile.getAttribute(AnnotationsAttribute.visibleTag);
 
@@ -174,13 +175,14 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns the {@link ClassFile} of the given class. If defrost = true, and the
-	 * {@link CtClass#getClassFile2()} is null, the class is defrosted and
+	 * Returns the {@link ClassFile} of the given class. If defrost = true, and
+	 * the {@link CtClass#getClassFile2()} is null, the class is defrosted and
 	 * {@link CtClass#getClassFile()} is returned instead.
 	 * 
 	 * @throws IllegalClassTransformationException
 	 */
-	protected ClassFile getClassFile(CtClass clazz, boolean defrost) throws IllegalClassTransformationException {
+	protected ClassFile getClassFile(final CtClass clazz, final boolean defrost)
+			throws IllegalClassTransformationException {
 		ClassFile clazzFile = clazz.getClassFile2();
 
 		if (clazzFile == null && clazz.isFrozen() && defrost) {
@@ -319,10 +321,25 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations)
 			throws IllegalClassTransformationException {
+
 		final List<Annotation> allAnnotations = getAnnotations(clazz);
 		allAnnotations.addAll(annotations);
 
 		final AttributeInfo info = clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
+
+		if (info != null && info instanceof AnnotationsAttribute) {
+			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;
+			attInfo.setAnnotations(allAnnotations.toArray(new Annotation[0]));
+		}
+	}
+
+	protected void addAnnotations(final CtMethod method, final List<Annotation> annotations)
+			throws IllegalClassTransformationException {
+
+		final List<Annotation> allAnnotations = new ArrayList<>(getAnnotations(method));
+		allAnnotations.addAll(annotations);
+
+		final AttributeInfo info = method.getMethodInfo2().getAttribute(AnnotationsAttribute.visibleTag);
 
 		if (info != null && info instanceof AnnotationsAttribute) {
 			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;
@@ -337,7 +354,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible fields (even from super classes) for the given class.
+	 * Returns all accessible fields (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -359,7 +377,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns all accessible methods (even from super classes) for the given class.
+	 * Returns all accessible methods (even from super classes) for the given
+	 * class.
 	 * 
 	 * @param clazz
 	 * @return
@@ -407,12 +426,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return false;
 	}
 
-	protected List<CtClass> getInterfaces(CtClass clazz) {
+	protected List<CtClass> getInterfaces(final CtClass clazz) {
 		List<CtClass> interfaces;
 
 		try {
 			interfaces = Arrays.asList(clazz.getInterfaces());
-		} catch (NotFoundException e) {
+		} catch (final NotFoundException e) {
 			// ignore
 			interfaces = Collections.emptyList();
 		}
@@ -420,7 +439,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return interfaces;
 	}
 
-	protected void defrostClassHierarchy(CtClass clazz) throws NotFoundException {
+	protected void defrostClassHierarchy(final CtClass clazz) throws NotFoundException {
 		CtClass c = clazz;
 
 		while (c != null) {
