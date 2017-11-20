@@ -2,7 +2,6 @@ package at.spot.maven.mojo;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -77,7 +76,6 @@ import at.spot.maven.velocity.type.parts.JavaGenericTypeArgument;
 import at.spot.maven.velocity.type.parts.JavaMemberType;
 import at.spot.maven.velocity.type.parts.JavaMethod;
 import at.spot.maven.velocity.util.VelocityUtil;
-import de.hunsicker.jalopy.Jalopy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -87,7 +85,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
-	protected Jalopy jalopy = new Jalopy();
 	protected VelocityEngine velocityEngine = new VelocityEngine();
 
 	@Parameter(property = "localRepository", defaultValue = "${localRepository}", readonly = true, required = true)
@@ -536,18 +533,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			} finally {
 				MiscUtil.closeQuietly(writer);
 			}
-
-			// format code
-			if (formatSource) {
-				formatSourceCode(filePath.toFile());
-			}
 		}
-	}
-
-	protected void formatSourceCode(final File sourceFile) throws FileNotFoundException {
-		jalopy.setInput(sourceFile);
-		jalopy.setOutput(sourceFile);
-			jalopy.format();
 	}
 
 	protected String encodeType(final AbstractJavaObject type) throws MojoExecutionException {
@@ -564,11 +550,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final StringWriter writer = new StringWriter();
 		t.merge(context, writer);
 
-		final String ret = writer.toString();
+		String ret = writer.toString();
 
-		// if (formatSource) {
-		// ret = ret.replaceAll("\n", "").replaceAll("\r", "");
-		// }
+		if (formatSource) {
+			ret = ret.replaceAll("\n", "").replaceAll("\r", "");
+		}
 
 		return ret;
 	}
