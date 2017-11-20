@@ -19,9 +19,7 @@
 
 #macro( javadoc $text )
 	#if ( $!text )
-		/**
-		 * $text
-		 */
+		/** $text */
 	#end
 #end
 
@@ -43,9 +41,7 @@
 #end
 
 
-/**
- * This file is auto-generated. All changes will be overwritten.
- */
+/** This file is auto-generated. All changes will be overwritten. */
 package $packagePath;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -68,10 +64,6 @@ public #if ($abstract)abstract #end class $name #if($superClass.name)extends $su
 		protected $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #else; #end
 	#end
 
-##    @Property(isReference = true)
-##   @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
-##    protected List<PrincipalGroup> groups;
-
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
 		#annotations($method.annotations)
@@ -84,16 +76,5 @@ public #if ($abstract)abstract #end class $name #if($superClass.name)extends $su
 			$method.codeBlock
 		}
 	#end
-	
-
-##    @GetProperty
-##    public List<PrincipalGroup> getGroups() {
-##        return ((List<PrincipalGroup>) handler.getProperty(this, "groups"));
-##    }
-
-##    @SetProperty
-##    public void setGroups(List<PrincipalGroup> groups) {
-##        handler.setProperty(this, "groups", groups);
-##    }
 
 }

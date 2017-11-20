@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -334,47 +335,54 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		accessor.addParameter("type", AccessorType.MODIFIER, AnnotationValueType.ENUM_VALUE);
 		accessor.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
 
-		// add
-		JavaMethod adder = new JavaMethod();
-		adder.setName(generateMethodName("addTo", field.getName()));
-		adder.setType(JavaMemberType.VOID);
-		adder.setDescription(field.getDescription());
-		adder.addArgument("val", field.getType().getGenericArguments().get(0).getType());
-		adder.setCodeBlock(String.format("this.%s.add(%s);", field.getName(), "val"));
-		adder.addAnnotation(accessor);
-
-		javaClass.addMethod(adder);
+		// use collection for both Set and List properties
+		final JavaMemberType argumentType = new JavaMemberType(Collection.class);
+		argumentType.addGenericArgument(field.getType().getGenericArguments().get(0));
 
 		// addAll
-		adder = new JavaMethod();
-		adder.setName(generateMethodName("addTo", field.getName()));
-		adder.setType(JavaMemberType.VOID);
-		adder.setDescription(field.getDescription());
-		adder.addArgument(field.getName(), field.getType());
-		adder.setCodeBlock(String.format("this.%s.addAll(%s);", field.getName(), field.getName()));
-		adder.addAnnotation(accessor);
+		final JavaMethod addAll = new JavaMethod();
+		addAll.setName(generateMethodName("addTo", field.getName()));
+		addAll.setType(JavaMemberType.VOID);
+		addAll.setDescription(field.getDescription());
+		addAll.addArgument(field.getName(), argumentType);
+		addAll.setCodeBlock(String.format("this.%s.addAll(%s);", field.getName(), field.getName()));
+		addAll.addAnnotation(accessor);
 
-		// remove
-		JavaMethod remover = new JavaMethod();
-		remover.setName(generateMethodName("removeFrom", field.getName()));
-		remover.setType(JavaMemberType.VOID);
-		remover.setDescription(field.getDescription());
-		remover.addArgument("val", field.getType().getGenericArguments().get(0).getType());
-		remover.setCodeBlock(String.format("this.%s.remove(%s);", field.getName(), "val"));
-		remover.addAnnotation(accessor);
+		javaClass.addMethod(addAll);
 
-		javaClass.addMethod(remover);
+		// add
+		final JavaMethod add = new JavaMethod();
+		add.setName(generateMethodName("addTo", field.getName()));
+		add.setType(JavaMemberType.VOID);
+		add.setDescription(field.getDescription());
+		add.addArgument("val", field.getType().getGenericArguments().get(0).getType());
+		add.setCodeBlock(String.format("%s(Arrays.asList(%s));", addAll.getName(), "val"));
+		add.addAnnotation(accessor);
+		javaClass.addImport(Arrays.class);
+
+		javaClass.addMethod(add);
 
 		// removeAll
-		remover = new JavaMethod();
-		remover.setName(generateMethodName("removeFrom", field.getName()));
-		remover.setType(JavaMemberType.VOID);
-		remover.setDescription(field.getDescription());
-		remover.addArgument(field.getName(), field.getType());
-		remover.setCodeBlock(String.format("this.%s.removeAll(%s);", field.getName(), field.getName()));
-		remover.addAnnotation(accessor);
+		final JavaMethod removeAll = new JavaMethod();
+		removeAll.setName(generateMethodName("removeFrom", field.getName()));
+		removeAll.setType(JavaMemberType.VOID);
+		removeAll.setDescription(field.getDescription());
+		removeAll.addArgument(field.getName(), argumentType);
+		removeAll.setCodeBlock(String.format("this.%s.removeAll(%s);", field.getName(), field.getName()));
+		removeAll.addAnnotation(accessor);
 
-		javaClass.addMethod(remover);
+		javaClass.addMethod(removeAll);
+
+		// remove
+		final JavaMethod remove = new JavaMethod();
+		remove.setName(generateMethodName("removeFrom", field.getName()));
+		remove.setType(JavaMemberType.VOID);
+		remove.setDescription(field.getDescription());
+		remove.addArgument("val", field.getType().getGenericArguments().get(0).getType());
+		remove.setCodeBlock(String.format("%s(Arrays.asList(%s));", removeAll.getName(), "val"));
+		remove.addAnnotation(accessor);
+
+		javaClass.addMethod(remove);
 	}
 
 	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
