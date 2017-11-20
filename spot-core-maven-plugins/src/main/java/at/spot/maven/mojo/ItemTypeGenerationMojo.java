@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -279,7 +280,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	// protected Class<?> getCollectionType( )
 
-	protected void addGetter(final JavaField field, final JavaClass javaClass) {
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass) {
 		final JavaMethod getter = new JavaMethod();
 		getter.setName(generateMethodName("get", field.getName()));
 		getter.setType(field.getType());
@@ -292,9 +293,28 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		getter.addAnnotation(accessor);
 
 		javaClass.addMethod(getter);
+
+		return getter;
 	}
 
-	protected void addSetter(final JavaField field, final JavaClass javaClass) {
+	protected JavaMethod addRelationCollectionGetter(final JavaField field, final JavaClass javaClass,
+			final RelationCollectionType collectionType) {
+
+		final JavaMethod getter = addGetter(field, javaClass);
+
+		if (RelationCollectionType.Set.equals(collectionType)) {
+			getter.setCodeBlock(String.format("return Collections.unmodifiableSet(this.%s);", field.getName()));
+		} else if (RelationCollectionType.List.equals(collectionType)
+				| RelationCollectionType.Collection.equals(collectionType)) {
+			getter.setCodeBlock(String.format("return Collections.unmodifiableList(this.%s);", field.getName()));
+		}
+
+		javaClass.addImport(Collections.class);
+
+		return getter;
+	}
+
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass) {
 		final JavaMethod setter = new JavaMethod();
 		setter.setName(generateMethodName("set", field.getName()));
 		setter.setType(JavaMemberType.VOID);
@@ -308,6 +328,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		setter.addAnnotation(accessor);
 
 		javaClass.addMethod(setter);
+
+		return setter;
 	}
 
 	protected void addModifierAccessors(final JavaField field, final JavaClass javaClass) {
@@ -525,7 +547,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected void formatSourceCode(final File sourceFile) throws FileNotFoundException {
 		jalopy.setInput(sourceFile);
 		jalopy.setOutput(sourceFile);
-		jalopy.format();
+			jalopy.format();
 	}
 
 	protected String encodeType(final AbstractJavaObject type) throws MojoExecutionException {
@@ -662,9 +684,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
 			javaClass.addField(property);
 
-			addGetter(property, javaClass);
-
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
+				addRelationCollectionGetter(property, javaClass, collectionType);
 				addModifierAccessors(property, javaClass);
 			} else {
 				addSetter(property, javaClass);
