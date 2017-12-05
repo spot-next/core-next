@@ -41,7 +41,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// user.getGroups().add(group);
 		modelService.save(user);
 
-		group.getMembers().add(user);
+		group.addToMembers(user);
 		modelService.save(group);
 
 		final Map<String, Object> query = new HashMap<>();
