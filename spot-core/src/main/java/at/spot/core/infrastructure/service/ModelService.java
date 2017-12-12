@@ -78,7 +78,7 @@ public interface ModelService {
 	 * @param searchParameters
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, Map<String, Comparable<?>> searchParameters);
+	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
 	 * Returns the first {@link Item} based on the given example item.
@@ -129,7 +129,7 @@ public interface ModelService {
 	 *            if empty or null, all items of the given type will be returned.
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters);
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
@@ -147,7 +147,7 @@ public interface ModelService {
 	 *            the items will be just proxies that are lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Comparable<?>> searchParameters, int page, int pageSize,
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize,
 			boolean loadAsProxy);
 
 	/**

@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
 import at.spot.core.CoreInit;
 import at.spot.core.infrastructure.service.LoggingService;
@@ -31,7 +30,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
-@Transactional
 @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest {
 
@@ -83,6 +81,7 @@ public abstract class AbstractIntegrationTest {
 		MockitoAnnotations.initMocks(this);
 
 		try {
+			transactionService.start();
 			prepareTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
@@ -95,6 +94,7 @@ public abstract class AbstractIntegrationTest {
 	@After
 	public void afterTest() {
 		try {
+			transactionService.rollback();
 			teardownTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
