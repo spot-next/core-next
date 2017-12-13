@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        // whole spot-framework
+        {
+            "label": "spot-framework: install",
+            "type": "shell",
+            "command": "mvn -B install",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/../"
+            }
+        },
+        {
+            "label": "spot-framework: clean install",
+            "type": "shell",
+            "command": "mvn -B clean install",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/../"
+            }
+        },
+        // spot-core specific
+        {
+            "label": "spot-core: install",
+            "type": "shell",
+            "command": "mvn -B install",
+            "group": "build"
+        },
+        {
+            "label": "spot-core: clean install",
+            "type": "shell",
+            "command": "mvn -B clean install",
+            "group": "build"
+        },
+        {
+            "label": "spot-core: verify",
+            "type": "shell",
+            "command": "mvn -B verify",
+            "group": "build"
+        },
+        {
+            "label": "spot-core: test",
+            "type": "shell",
+            "command": "mvn -B test",
+            "group": "test"
+        }
+    ]
+}

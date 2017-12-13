@@ -5,7 +5,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
 import at.spot.core.infrastructure.http.Session;
-import at.spot.itemtype.core.user.User;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
@@ -14,8 +13,8 @@ public class WebSession extends Session implements HttpSession {
 	protected ServletContext servletContext;
 	protected HttpSessionContext sessionContext;
 
-	public WebSession(final String id, final User user) {
-		super(id, user);
+	public WebSession(final String id) {
+		super(id);
 	}
 
 	@Override

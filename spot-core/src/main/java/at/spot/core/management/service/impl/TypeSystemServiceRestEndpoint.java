@@ -268,12 +268,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 					return body;
 				}
 
-				if (value instanceof Comparable || value == null) {
-					searchParameters.put(prop.name, (Comparable<?>) value);
-				} else {
-					body.getBody().addWarning(new Status("query.unknownattribute",
-							String.format("Unknown attribute value %s=%S in query", prop.name, value.toString())));
-				}
+				searchParameters.put(prop.name, value);
 			} else {
 				body.getBody().addWarning(new Status("query.duplicateattribute",
 						String.format("Query attribute %s passed more than once - only taking the first.", prop.name)));

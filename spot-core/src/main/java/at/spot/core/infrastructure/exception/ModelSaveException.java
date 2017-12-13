@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.exception;
 
-public class ModelSaveException extends Exception {
+public class ModelSaveException extends AbstractModelException {
 	private static final long serialVersionUID = 1L;
 
 	public ModelSaveException(final String message) {

@@ -1,0 +1,259 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DemoSingleWindowApplication<jfly>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "at.spot.jfly.demo.DemoSingleWindowApplication",
+            "projectName": "jfly",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PlanInit<plan>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "at.spot.plan.PlanInit",
+            "projectName": "plan",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Bootstrap<spot-core>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "at.spot.core.infrastructure.support.init.Bootstrap",
+            "projectName": "spot-core",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DynamicInstrumentationLoadAgentMain<spot-instrumentation>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "at.spot.instrumentation.internal.DynamicInstrumentationLoadAgentMain",
+            "projectName": "spot-instrumentation",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ClassDebugger<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.internal.util.ClassDebugger",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooCheckDb<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.tools.ZooCheckDb",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooCompareDb<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.tools.ZooCompareDb",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooQuery<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.tools.ZooQuery",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooXmlExport<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.tools.ZooXmlExport",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ZooXmlImport<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.tools.ZooXmlImport",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-QueryFuzzying<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.fuzzying.QueryFuzzying",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfByteArray<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfByteArray",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfByteArrayReadWrite<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfByteArrayReadWrite",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfExceptionHandling<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfExceptionHandling",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfFinalField<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfFinalField",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfForLoops<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfForLoops",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfIterator<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfIterator",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfNativeCall<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfNativeCall",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfNonLocalField<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfNonLocalField",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfPolymorph<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfPolymorph",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfReflection<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfReflection",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfSerializer<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfSerializer",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-PerfStringSerializer<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.java.PerfStringSerializer",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-RmiTestRunner<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.test.testutil.RmiTestRunner",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-ExampleMain<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.jdo.ex1.ExampleMain",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Example2Main<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.jdo.ex2.Example2Main",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Example3Main<zoodb>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "org.zoodb.jdo.ex3.Example3Main",
+            "projectName": "zoodb",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Debug (Attach)",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": 0
+        }
+    ]
+}

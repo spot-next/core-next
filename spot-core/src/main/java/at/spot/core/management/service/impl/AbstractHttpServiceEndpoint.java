@@ -18,7 +18,6 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 
@@ -56,16 +55,16 @@ import spark.route.HttpMethod;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
 
-	@Autowired
+	@Resource
 	protected SerializationService serializationService;
 
-	@Autowired
+	@Resource
 	protected I18nService i18nService;
 
-	@Autowired
+	@Resource
 	protected AuthenticationService authenticationService;
 
-	@Autowired
+	@Resource
 	protected SessionService sessionService;
 
 	@Resource

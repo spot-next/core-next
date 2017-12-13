@@ -29,6 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import at.spot.core.infrastructure.annotation.Property;
@@ -68,36 +69,46 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		bindSession();
 
-		transactionService.execute(() -> {
-			for (final T item : items) {
+		try {
+			transactionService.execute(() -> {
+				for (final T item : items) {
+					try {
+						getSession().saveOrUpdate(item);
+						// getSession().merge(item);
+					} catch (final DataIntegrityViolationException | TransactionRequiredException
+							| IllegalArgumentException e) {
+
+						throw new ModelSaveException("Could not save given items", e);
+
+					} catch (final PersistenceException e) {
+						final Throwable rootCause = ExceptionUtils.getRootCause(e);
+						final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
+
+						throw new ModelSaveException(rootCauseMessage, e);
+					}
+				}
+
+				getSession().flush();
+
 				try {
-					getSession().saveOrUpdate(item);
-					// getSession().merge(item);
-				} catch (final DataIntegrityViolationException | TransactionRequiredException
-						| IllegalArgumentException e) {
-
+					for (final T item : items) {
+						refresh(item);
+					}
+				} catch (final ModelNotFoundException e) {
 					throw new ModelSaveException("Could not save given items", e);
-
-				} catch (final PersistenceException e) {
-					final Throwable rootCause = ExceptionUtils.getRootCause(e);
-					final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
-
-					throw new ModelSaveException(rootCauseMessage, e);
 				}
+
+				return null;
+			});
+		} catch (final TransactionException e) {
+			if (e.getCause() instanceof ModelSaveException) {
+				throw (ModelSaveException) e.getCause();
+			} else if (e.getCause() instanceof ModelNotUniqueException) {
+				throw (ModelNotUniqueException) e.getCause();
+			} else {
+				throw e;
 			}
-
-			getSession().flush();
-
-			try {
-				for (T item : items) {
-					refresh(item);
-				}
-			} catch (ModelNotFoundException e) {
-				throw new ModelSaveException("Could not save given items", e);
-			}
-
-			return null;
-		});
+		}
 
 		// try {
 		// transactionService.start();
@@ -106,14 +117,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		// try {
 		// getSession().saveOrUpdate(item);
 		// // getSession().merge(item);
-		// } catch (final DataIntegrityViolationException | TransactionRequiredException
+		// } catch (final DataIntegrityViolationException |
+		// TransactionRequiredException
 		// | IllegalArgumentException e) {
 		//
 		// throw new ModelSaveException("Could not save given items", e);
 		//
 		// } catch (final PersistenceException e) {
 		// final Throwable rootCause = ExceptionUtils.getRootCause(e);
-		// final String rootCauseMessage = rootCause != null ? rootCause.getMessage() :
+		// final String rootCauseMessage = rootCause != null ?
+		// rootCause.getMessage() :
 		// e.getMessage();
 		//
 		// throw new ModelSaveException(rootCauseMessage, e);
@@ -144,9 +157,17 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		// :pk",
 		// type.getSimpleName());
 
-		return transactionService.execute(() -> {
-			return getSession().find(type, pk);
-		});
+		try {
+			return transactionService.execute(() -> {
+				return getSession().find(type, pk);
+			});
+		} catch (final TransactionException e) {
+			if (e.getCause() instanceof ModelNotFoundException) {
+				throw (ModelNotFoundException) e.getCause();
+			} else {
+				throw e;
+			}
+		}
 
 		// return em.createQuery(query, type).setParameter("pk",
 		// pk).getSingleResult();
@@ -156,18 +177,27 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		bindSession();
 
-		transactionService.execute(() -> {
-			try {
-				attach(item);
+		try {
+			transactionService.execute(() -> {
+				try {
+					attach(item);
 
-				getSession().refresh(item);
-			} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
-					| EntityNotFoundException e) {
-				throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+					getSession().refresh(item);
+				} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
+						| EntityNotFoundException e) {
+					throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()),
+							e);
+				}
+
+				return null;
+			});
+		} catch (final TransactionException e) {
+			if (e.getCause() instanceof ModelNotFoundException) {
+				throw (ModelNotFoundException) e.getCause();
+			} else {
+				throw e;
 			}
-
-			return null;
-		});
+		}
 	}
 
 	/**
@@ -286,7 +316,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
 
-				// for (final Attribute<? super T, ?> attr : et.getAttributes()) {
+				// for (final Attribute<? super T, ?> attr : et.getAttributes())
+				// {
 				// final String name = attr.getName();
 				// final String javaName = attr.getJavaMember().getName();
 				// final String getter = "get" + javaName.substring(0,
@@ -295,7 +326,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				// final Method m = cl.getMethod(getter, (Class<?>[]) null);
 				//
 				// if (m.invoke(example, (Object[]) null) != null)
-				// p = cb.and(p, cb.equal(r.get(name), m.invoke(example, (Object[])
+				// p = cb.and(p, cb.equal(r.get(name), m.invoke(example,
+				// (Object[])
 				// null)));
 				// }
 
@@ -421,7 +453,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	protected void unbindSession() {
-		EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(em);
+		final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(em);
 		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
 	}
 

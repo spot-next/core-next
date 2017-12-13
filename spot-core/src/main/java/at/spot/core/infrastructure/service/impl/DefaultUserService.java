@@ -141,7 +141,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			User user = (User) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+			U user = (U) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
 
 			if (user != null) {
 				try {
