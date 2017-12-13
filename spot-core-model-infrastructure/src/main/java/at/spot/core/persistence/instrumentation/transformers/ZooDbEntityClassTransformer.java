@@ -1,7 +1,9 @@
 package at.spot.core.persistence.instrumentation.transformers;
 
-import java.io.File;
-import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Optional;
@@ -35,28 +37,9 @@ import javassist.bytecode.annotation.StringMemberValue;
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
  */
 @ClassTransformer(order = 0)
-public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
+public class ZooDbEntityClassTransformer extends AbstractItemTypeClassTransformer {
 
-	protected static final String MV_CASCADE = "cascade";
-	protected static final String MV_NODE_TYPE = "nodeType";
-	protected static final String MV_REFERENCED_COLUMN_NAME = "referencedColumnName";
-	protected static final String MV_PK = "pk";
-	protected static final String MV_INVERSE_JOIN_COLUMNS = "inverseJoinColumns";
-	protected static final String MV_JOIN_COLUMNS = "joinColumns";
-	protected static final String MV_NAME = "name";
-	protected static final String MV_RELATION_NAME = "relationName";
 	protected static final String MV_PERSISTABLE = "persistable";
-	protected static final String CLASS_FILE_SUFFIX = ".class";
-	protected static final String MV_MAPPED_BY = "mappedBy";
-	protected static final String MV_MAPPED_TO = "mappedTo";
-	protected static final String MV_TYPE = "type";
-	protected static final String MV_TYPE_CODE = "typeCode";
-	protected static final String MV_UNIQUE = "unique";
-	protected static final String MV_COLUMN_NAMES = "columnNames";
-	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
-	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
-	protected static final String RELATION_TARGET_COLUMN = "target_pk";
-	protected static final String PK_PROPERTY = "getPk";
 
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	@Override
@@ -80,31 +63,14 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 					}
 
 					final Optional<Annotation> accessor = getAnnotation(method, Accessor.class);
+					final Optional<Annotation> zooEnabled = getAnnotation(method, ZooMethodEnhanced.class);
 
-					if (accessor.isPresent()) {
-						activateAccessor(method, accessor);
-
-						// set bidirectional relation mapping for setters
-						if (method.getName().startsWith("set")) {
-							addBiDirectionalRelationMapping(clazz, method, accessor.get());
-						}
+					if (accessor.isPresent() && !zooEnabled.isPresent()) {
+						activateAccessor(clazz, method, accessor);
 					}
 				}
 
 				overridePkAccessor(clazz);
-
-				try {
-					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
-
-					if (file.exists()) {
-						file.delete();
-					}
-
-					writeClass(clazz, file);
-				} catch (final IOException e) {
-					throw new IllegalClassTransformationException(
-							String.format("Unable to write class file %s", clazz.getName()), e);
-				}
 
 				return Optional.of(clazz);
 			}
@@ -116,6 +82,7 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.empty();
 	}
 
+	@Override
 	protected void addBiDirectionalRelationMapping(final CtClass clazz, final CtMethod method,
 			final Annotation accessor) throws CannotCompileException, NotFoundException {
 
@@ -176,15 +143,27 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		clazz.addMethod(getter);
 	}
 
-	protected void activateAccessor(final CtMethod method, final Optional<Annotation> accessor)
-			throws CannotCompileException {
+	protected void activateAccessor(final CtClass clazz, final CtMethod method, final Optional<Annotation> accessor)
+			throws CannotCompileException, IllegalClassTransformationException {
+
 		final EnumMemberValue accessorType = (EnumMemberValue) accessor.get().getMemberValue("type");
 
 		if (accessorType != null) {
+			boolean modified = false;
+
 			if (AccessorType.GETTER.name().equals(accessorType.getValue())) {
 				method.insertBefore("zooActivateRead();");
+				modified = true;
 			} else if (AccessorType.SETTER.name().equals(accessorType.getValue())) {
 				method.insertBefore("zooActivateWrite();");
+				modified = true;
+			} else if (AccessorType.MODIFIER.name().equals(accessorType.getValue())) {
+				method.insertBefore("zooActivateWrite();");
+				modified = true;
+			}
+
+			if (modified) {
+				addAnnotations(method, Arrays.asList(createAnnotation(getConstPool(clazz), ZooMethodEnhanced.class)));
 			}
 		}
 	}
@@ -203,16 +182,19 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 	}
 
+	@Override
 	protected boolean isItemType(final CtClass clazz) throws IllegalClassTransformationException {
 		return getItemTypeAnnotation(clazz).isPresent();
 	}
 
+	@Override
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
 		return getAnnotation(clazz, ItemType.class);
 	}
 
+	@Override
 	protected String getItemTypeCode(final CtClass clazz) throws IllegalClassTransformationException {
 		final Optional<Annotation> ann = getItemTypeAnnotation(clazz);
 
@@ -223,5 +205,10 @@ public class ZooDbEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		return null;
+	}
+
+	@Target(value = ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	protected @interface ZooMethodEnhanced {
 	}
 }

@@ -330,7 +330,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return setter;
 	}
 
-	protected void addModifierAccessors(final JavaField field, final JavaClass javaClass) {
+	protected void addModifierAccessors(final JavaField field, final JavaClass javaClass, final String mappedTo,
+			final RelationshipCardinality relationshipCardinality) {
+
 		final JavaAnnotation accessor = new JavaAnnotation(Accessor.class);
 		accessor.addParameter("type", AccessorType.MODIFIER, AnnotationValueType.ENUM_VALUE);
 		accessor.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
@@ -340,12 +342,23 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		argumentType.addGenericArgument(field.getType().getGenericArguments().get(0));
 
 		// addAll
+		String addCodeBlock = null;
+
+		// update opposite relation
+		if (RelationshipCardinality.ONE.equals(relationshipCardinality)) {
+			addCodeBlock = String.format("%s.stream().forEach(i -> i.%s = %s.this);", field.getName(), mappedTo,
+					javaClass.getName());
+		} else {
+			addCodeBlock = String.format("%s.stream().forEach(i -> i.%s.add(%s.this));", field.getName(), mappedTo,
+					javaClass.getName());
+		}
+
 		final JavaMethod addAll = new JavaMethod();
 		addAll.setName(generateMethodName("addTo", field.getName()));
 		addAll.setType(JavaMemberType.VOID);
 		addAll.setDescription(field.getDescription());
 		addAll.addArgument(field.getName(), argumentType);
-		addAll.setCodeBlock(String.format("this.%s.addAll(%s);", field.getName(), field.getName()));
+		addAll.setCodeBlock(addCodeBlock + String.format("this.%s.addAll(%s);", field.getName(), field.getName()));
 		addAll.addAnnotation(accessor);
 
 		javaClass.addMethod(addAll);
@@ -363,12 +376,22 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		javaClass.addMethod(add);
 
 		// removeAll
+		String removeCodeBlock = null;
+
+		if (RelationshipCardinality.ONE.equals(relationshipCardinality)) {
+			removeCodeBlock = String.format("this.%s.stream().forEach(i -> i.%s = null);", field.getName(), mappedTo);
+		} else {
+			removeCodeBlock = String.format("this.%s.stream().forEach(i -> i.%s.remove(%s.this));", field.getName(),
+					mappedTo, javaClass.getName());
+		}
+
 		final JavaMethod removeAll = new JavaMethod();
 		removeAll.setName(generateMethodName("removeFrom", field.getName()));
 		removeAll.setType(JavaMemberType.VOID);
 		removeAll.setDescription(field.getDescription());
 		removeAll.addArgument(field.getName(), argumentType);
-		removeAll.setCodeBlock(String.format("this.%s.removeAll(%s);", field.getName(), field.getName()));
+		removeAll.setCodeBlock(
+				removeCodeBlock + String.format("this.%s.removeAll(%s);", field.getName(), field.getName()));
 		removeAll.addAnnotation(accessor);
 
 		javaClass.addMethod(removeAll);
@@ -383,6 +406,35 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		remove.addAnnotation(accessor);
 
 		javaClass.addMethod(remove);
+	}
+
+	protected void addRelationSetter(final JavaField property, final JavaClass javaClass, final String mappedTo,
+			final RelationshipCardinality relationshipCardinality) {
+
+		// only inject relation mapping if the defined so
+		if (StringUtils.isNotBlank(mappedTo)) {
+			final JavaMethod setter = addSetter(property, javaClass);
+
+			String codeBlock = null;
+
+			// remove
+			if (RelationshipCardinality.ONE.equals(relationshipCardinality)) {
+				codeBlock = String.format("this.%s.stream().forEach(i -> i.%s(null));", property.getName(),
+						generateMethodName("set", mappedTo));
+			} else {
+				// if (container != null) {
+				// this.container.medias.add(Media.this); } else
+				// {this.container.medias.remove(Media.this);};
+				codeBlock = String.format(
+						// remove existing relation
+						"if (this.%s != null) { this.%s.%s.remove(%s.this); }"
+								+ "if (%s != null) { %s.%s.add(%s.this); }",
+						property.getName(), property.getName(), mappedTo, javaClass.getName(), property.getName(),
+						property.getName(), mappedTo, javaClass.getName());
+			}
+
+			setter.setCodeBlock(codeBlock + setter.getCodeBlock());
+		}
 	}
 
 	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
@@ -680,9 +732,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
 				addRelationCollectionGetter(property, javaClass, collectionType);
-				addModifierAccessors(property, javaClass);
+				addModifierAccessors(property, javaClass, from.getMappedBy(), from.getCardinality());
 			} else {
-				addSetter(property, javaClass);
+				addRelationSetter(property, javaClass, from.getMappedBy(), from.getCardinality());
 			}
 		}
 	}

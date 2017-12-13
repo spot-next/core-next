@@ -1,7 +1,5 @@
 package at.spot.core.persistence.instrumentation.transformers;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +45,7 @@ import javassist.bytecode.annotation.StringMemberValue;
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
  */
 @ClassTransformer(order = 0)
-public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
+public class JpaEntityClassTransformer extends AbstractItemTypeClassTransformer {
 
 	protected static final String MV_CASCADE = "cascade";
 	protected static final String MV_NODE_TYPE = "nodeType";
@@ -58,11 +56,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_NAME = "name";
 	protected static final String MV_RELATION_NAME = "relationName";
 	protected static final String MV_PERSISTABLE = "persistable";
-	protected static final String CLASS_FILE_SUFFIX = ".class";
 	protected static final String MV_MAPPED_BY = "mappedBy";
 	protected static final String MV_MAPPED_TO = "mappedTo";
-	protected static final String MV_TYPE = "type";
-	protected static final String MV_TYPE_CODE = "typeCode";
 	protected static final String MV_UNIQUE = "unique";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
@@ -92,15 +87,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 					// process item type property annotation
 					if (propertyAnn.isPresent() && isValidClass(field.getType().getName())) {
-						// create the necessary JPA annotations based on Relation and Property
+						// create the necessary JPA annotations based on
+						// Relation and Property
 						// annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
 								propertyAnn.get());
 
-						// only add column annotation if there is not relation annotation
+						// only add column annotation if there is not relation
+						// annotation
 						if (CollectionUtils.isEmpty(fieldAnnotations)) {
-							// add column annotation used hold infos about unique constraints
-							Optional<Annotation> columnAnn = createColumnAnnotation(clazz, field, propertyAnn.get());
+							// add column annotation used hold infos about
+							// unique constraints
+							final Optional<Annotation> columnAnn = createColumnAnnotation(clazz, field,
+									propertyAnn.get());
 
 							if (columnAnn.isPresent()) {
 								fieldAnnotations.add(columnAnn.get());
@@ -110,19 +109,6 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						// and add them to the clazz
 						addAnnotations(clazz, field, fieldAnnotations);
 					}
-				}
-
-				try {
-					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
-
-					if (file.exists()) {
-						file.delete();
-					}
-
-					writeClass(clazz, file);
-				} catch (final IOException e) {
-					throw new IllegalClassTransformationException(
-							String.format("Unable to write class file %s", clazz.getName()), e);
 				}
 
 				return Optional.of(clazz);
@@ -151,16 +137,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 	}
 
+	@Override
 	protected boolean isItemType(final CtClass clazz) throws IllegalClassTransformationException {
 		return getItemTypeAnnotation(clazz).isPresent();
 	}
 
+	@Override
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
 		return getAnnotation(clazz, ItemType.class);
 	}
 
+	@Override
 	protected String getItemTypeCode(final CtClass clazz) throws IllegalClassTransformationException {
 		final Optional<Annotation> ann = getItemTypeAnnotation(clazz);
 
@@ -173,10 +162,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return null;
 	}
 
-	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, CtField field,
+	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
 
 		Annotation ann = null;
 
@@ -231,8 +220,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return jpaAnnotations;
 	}
 
-	protected void addMappedByAnnotationValue(CtField field, final Annotation annotation, final CtClass entityClass,
-			final Annotation relation) {
+	protected void addMappedByAnnotationValue(final CtField field, final Annotation annotation,
+			final CtClass entityClass, final Annotation relation) {
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 
@@ -251,7 +240,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		addCascadeAnnotation(ann, field);
 
 		// add fetch type
-		// final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
+		// final EnumMemberValue fetchType = new
+		// EnumMemberValue(getConstPool(clazz));
 		// fetchType.setType(FetchType.class.getName());
 		// fetchType.setValue(FetchType.LAZY.name());
 		// ann.addMemberValue("fetch", fetchType);

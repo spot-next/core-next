@@ -1,15 +1,11 @@
 package at.spot.core.persistence.service.impl.zoodb;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -19,7 +15,6 @@ import javax.jdo.Query;
 import org.apache.commons.lang3.StringUtils;
 import org.zoodb.jdo.ZooJdoHelper;
 
-import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.model.Item;
@@ -27,7 +22,6 @@ import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
-import at.spot.core.support.util.ClassUtil;
 
 public class ZooDbPersistenceService extends AbstractPersistenceService implements PersistenceService {
 
@@ -65,6 +59,10 @@ public class ZooDbPersistenceService extends AbstractPersistenceService implemen
 			}
 
 			commit();
+
+			// for (final T item : models) {
+			// item.zooActivateRead();
+			// }
 		} catch (final Exception e) {
 			rollback();
 			throw new ModelSaveException("Could not save given items", e);
@@ -205,15 +203,7 @@ public class ZooDbPersistenceService extends AbstractPersistenceService implemen
 
 	@Override
 	public <T extends Item> void initItem(final T item) {
-		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			if (field.getType().isAssignableFrom(List.class)) {
-				ClassUtil.setField(item, field.getName(), new ArrayList());
-			} else if (field.getType().isAssignableFrom(Set.class)) {
-				ClassUtil.setField(item, field.getName(), new HashSet());
-			} else if (field.getType().isAssignableFrom(Map.class)) {
-				ClassUtil.setField(item, field.getName(), new HashMap());
-			}
-		}
+		//
 	}
 
 	@Override

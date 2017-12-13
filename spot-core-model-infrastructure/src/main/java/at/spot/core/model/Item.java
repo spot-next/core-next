@@ -1,6 +1,7 @@
 package at.spot.core.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Objects;
 
@@ -90,8 +91,8 @@ public abstract class Item extends ZooPC implements Serializable, Comparable<Ite
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing item
-	 *         with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing
+	 *         item with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return getVersion() != null;
@@ -105,9 +106,19 @@ public abstract class Item extends ZooPC implements Serializable, Comparable<Ite
 		this.lastModifiedAt = new Date();
 	}
 
+	protected <T extends Item> void addRelationMapping(final Collection<T> localRelationProperty,
+			final T referencingItem) {
+		localRelationProperty.add(referencingItem);
+	}
+
+	protected <T extends Item> void removeRelationMapping(final Collection<T> localRelationProperty,
+			final T referencingItem) {
+		localRelationProperty.remove(referencingItem);
+	}
+
 	/**
-	 * If the type and the pk of the given object is the same as the current object,
-	 * both are equal.
+	 * If the type and the pk of the given object is the same as the current
+	 * object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

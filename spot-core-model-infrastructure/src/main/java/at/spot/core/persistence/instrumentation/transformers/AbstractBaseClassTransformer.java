@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.instrumentation.transformer.IllegalClassTransformationException;
 import ch.qos.logback.core.util.CloseUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -40,11 +39,14 @@ import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 /**
- * Transforms custom {@link ItemType} annotations to JPA entity annotations.
+ * This class provides some useful functionality for custom
+ * {@link ClassFileTransformer}.
  */
 public abstract class AbstractBaseClassTransformer implements ClassFileTransformer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
+	protected static final String CLASS_FILE_SUFFIX = ".class";
+
 	protected ClassPool pool = ClassPool.getDefault();
 
 	@SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "Return value of null is necessary by specifications.")
@@ -87,12 +89,35 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 						}
 					}
 
-					final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined,
-							protectionDomain);
+					Optional<CtClass> transformedClass;
 
+					// apply actual transformation
+					try {
+						transformedClass = transform(loader, clazz, classBeingRedefined, protectionDomain);
+					} catch (CannotCompileException | NotFoundException e) {
+						throw new IllegalClassTransformationException(
+								String.format("Cannot transform class %s", clazz.getName()), e);
+					}
+
+					// compile class to byte code
 					if (transformedClass.isPresent()) {
 						try {
-							return transformedClass.get().toBytecode();
+							final byte[] byteCode = transformedClass.get().toBytecode();
+
+							try {
+								final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
+
+								if (file.exists()) {
+									file.delete();
+								}
+
+								writeClassByteCode(clazz.getName(), byteCode, file);
+							} catch (final IOException e) {
+								throw new IllegalClassTransformationException(
+										String.format("Unable to write class file %s", clazz.getName()), e);
+							}
+
+							return byteCode;
 						} catch (final Exception e) {
 							final String message = String.format("Could not compile transformed class %s", classId);
 							LOG.error(message, e);
@@ -150,7 +175,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
-			throws IllegalClassTransformationException;
+			throws IllegalClassTransformationException, CannotCompileException, NotFoundException,
+			CannotCompileException;
 
 	/**
 	 * Returns the annotation for the given class.
@@ -399,13 +425,15 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return methods;
 	}
 
-	protected void writeClass(final CtClass clazz, final File file) throws IOException {
+	protected void writeClassByteCode(final String className, final byte[] byteCode, final File file)
+			throws IOException {
 		final DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
 
 		try {
-			clazz.toBytecode(out);
-		} catch (CannotCompileException | IOException e) {
-			throw new IOException(String.format("Cannot write class %s to file", clazz.getName()), e);
+			out.write(byteCode);
+		} catch (final IOException e) {
+			throw new IOException(String.format("Cannot write class %s to file %s", className, file.getAbsolutePath()),
+					e);
 		} finally {
 			CloseUtil.closeQuietly(out);
 		}
