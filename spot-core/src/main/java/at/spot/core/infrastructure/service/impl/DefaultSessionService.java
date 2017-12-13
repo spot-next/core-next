@@ -27,7 +27,7 @@ public class DefaultSessionService implements SessionService {
 		final UUID sessionId = UUID.randomUUID();
 
 		// create the session object
-		final Session session = new Session(sessionId.toString(), null);
+		final Session session = new Session(sessionId.toString());
 
 		if (registerAsCurrentSession) {
 			// set the newly created session as current session for the current
