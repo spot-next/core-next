@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -45,14 +45,8 @@ import at.spot.core.support.util.ClassUtil;
 
 public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
 
-	// @PersistenceUnit
-	// protected EntityManagerFactory entityManagerFactory;
-
-	@PersistenceContext()
-	protected EntityManager em;
-
-	// @Resource
-	// protected SessionFactory sessionFactory;
+	@PersistenceUnit
+	protected EntityManagerFactory entityManagerFactory;
 
 	@Resource
 	protected TransactionService transactionService;
@@ -109,44 +103,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				throw e;
 			}
 		}
-
-		// try {
-		// transactionService.start();
-		//
-		// for (final T item : items) {
-		// try {
-		// getSession().saveOrUpdate(item);
-		// // getSession().merge(item);
-		// } catch (final DataIntegrityViolationException |
-		// TransactionRequiredException
-		// | IllegalArgumentException e) {
-		//
-		// throw new ModelSaveException("Could not save given items", e);
-		//
-		// } catch (final PersistenceException e) {
-		// final Throwable rootCause = ExceptionUtils.getRootCause(e);
-		// final String rootCauseMessage = rootCause != null ?
-		// rootCause.getMessage() :
-		// e.getMessage();
-		//
-		// throw new ModelSaveException(rootCauseMessage, e);
-		// }
-		// }
-		//
-		// getSession().flush();
-		//
-		// try {
-		// for (T item : items) {
-		// refresh(item);
-		// }
-		// } catch (ModelNotFoundException e) {
-		// throw new ModelSaveException("Could not save given items", e);
-		// }
-		// } catch (Exception e) {
-		// transactionService.rollback();
-		// } finally {
-		// transactionService.commit();
-		// }
 	}
 
 	@Override
@@ -168,9 +124,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				throw e;
 			}
 		}
-
-		// return em.createQuery(query, type).setParameter("pk",
-		// pk).getSingleResult();
 	}
 
 	@Override
@@ -230,69 +183,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
 		bindSession();
 
-		// String queryString = String.format("FROM %s", type.getSimpleName());
-		// TypedQuery<T> query = null;
-		//
-		// if (searchParameters != null) {
-		// final List<String> params = new ArrayList<>();
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// params.add(e.getKey() + " = :" + e.getKey());
-		// }
-		//
-		// queryString += String.format(" WHERE %s", StringUtils.join(params, "
-		// AND "));
-		// }
-		//
-		// query = em.createQuery(queryString, type);
-		//
-		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// query.setParameter(e.getKey(), e.getValue());
-		// }
-		// }
-
-		// final CriteriaBuilder builder = em.getCriteriaBuilder();
-		//
-		// final CriteriaQuery<T> query =
-		// em.getCriteriaBuilder().createQuery(type);
-		//
-		// query.from(type);
-
-		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Comparable<?>> e :
-		// searchParameters.entrySet()) {
-		// if (e.getValue() instanceof Item) {
-		// query.where(builder.equal(builder.crea y));
-		// } else {
-		//
-		// }
-
-		// String key = e.getKey();
-		//
-		// if (e.getValue() instanceof Item) {
-		// key = key + ".pk";
-		// }
-		//
-		// params.add(e.getKey() + " = :" + e.getKey());
-		//// }
-		// }
-
-		// return query.getResultList().stream();
-
-		// // Query by example
-		// final Session session = getEntitySession();
-		// // create an example from our customer, exclude all zero valued
-		// numeric
-		// // properties
-		// final Example customerExample = Example.create().excludeZeroes();
-		// // create criteria based on the customer example
-		// final Criteria criteria =
-		// session.createCriteria(Customer.class).add(customerExample);
-		// // perform the query
-		// criteria.list();
-
 		return transactionService.execute(() -> {
 
 			TypedQuery<T> query = null;
@@ -304,9 +194,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 			if (searchParameters != null) {
 				Predicate p = cb.conjunction();
 
-				// final Metamodel mm = getSession().getMetamodel();
-				// final EntityType<T> et = mm.entity(type);
-
 				for (final Map.Entry<String, Object> entry : searchParameters.entrySet()) {
 					if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
 						throw new PersistenceException(String.format(
@@ -315,21 +202,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
-
-				// for (final Attribute<? super T, ?> attr : et.getAttributes())
-				// {
-				// final String name = attr.getName();
-				// final String javaName = attr.getJavaMember().getName();
-				// final String getter = "get" + javaName.substring(0,
-				// 1).toUpperCase()
-				// + javaName.substring(1);
-				// final Method m = cl.getMethod(getter, (Class<?>[]) null);
-				//
-				// if (m.invoke(example, (Object[]) null) != null)
-				// p = cb.and(p, cb.equal(r.get(name), m.invoke(example,
-				// (Object[])
-				// null)));
-				// }
 
 				cq.select(r).where(p);
 				query = getSession().createQuery(cq);
@@ -340,10 +212,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 			return query.getResultList();
 		});
 	}
-
-	// protected <T extends Item> boolean isPersisted(final T item) {
-	// return em.contains(item);
-	// }
 
 	@Override
 	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
@@ -412,19 +280,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				ClassUtil.setField(item, field.getName(), new HashMap());
 			}
 		}
-
-		// if (item != null && item.getPk() != null) {
-		// try {
-		// refresh(item);
-		// } catch (ModelNotFoundException e) {
-		// loggingService.warn(String.format("Could not initialize item with
-		// pk=%s",
-		// item.getPk()));
-		// }
-		// } else {
-		// loggingService.warn("Could not initialize null item");
-		// }
-		// not needed
 	}
 
 	@Override
@@ -440,21 +295,20 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	protected Session getSession() {
-		return em.unwrap(Session.class);
-		// return entityManagerFactory.get;
-		// return sessionFactory.getCurrentSession();
+		return ((EntityManagerHolder) TransactionSynchronizationManager.getResource(entityManagerFactory))
+				.getEntityManager().unwrap(Session.class);
 	}
 
 	protected void bindSession() {
-		if (!TransactionSynchronizationManager.hasResource(em)) {
-			// em = entityManagerFactory.createEntityManager();
-			TransactionSynchronizationManager.bindResource(em, new EntityManagerHolder(em));
+		if (!TransactionSynchronizationManager.hasResource(entityManagerFactory)) {
+			TransactionSynchronizationManager.bindResource(entityManagerFactory,
+					new EntityManagerHolder(entityManagerFactory.createEntityManager()));
 		}
 	}
 
 	protected void unbindSession() {
-		final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(em);
+		final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
+				.unbindResource(entityManagerFactory);
 		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
 	}
-
 }

@@ -135,7 +135,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	public boolean isCurrentUserAnonymous() {
 		return getCurrentUser() == null;
 	}
-	
+
 	@Override
 	public U getCurrentUser() {
 		final Session session = sessionService.getCurrentSession();
@@ -146,7 +146,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 			if (user != null) {
 				try {
 					// load from database, because entities/models might not be threadsafe
-					user = modelService.get(user.getClass(), user.getPk());
+					user = (U) modelService.get(user.getClass(), user.getPk());
 				} catch (final ModelNotFoundException e) {
 					loggingService.warn("Current session user was invalid - removed it.");
 					sessionService.closeSession(session.getId());

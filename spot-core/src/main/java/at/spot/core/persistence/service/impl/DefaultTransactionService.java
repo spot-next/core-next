@@ -66,6 +66,9 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			TransactionDefinition def = new DefaultTransactionDefinition();
 			TransactionStatus status = transactionManager.getTransaction(def);
 
+			loggingService.debug(String.format("Creating new transaction for thread %s (id = %s)",
+					Thread.currentThread().getName(), Thread.currentThread().getId()));
+
 			currentTransaction.set(status);
 		} else {
 			throw new CannotCreateTransactionException("There is already an active transaction.");
