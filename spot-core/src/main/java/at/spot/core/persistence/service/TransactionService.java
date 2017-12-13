@@ -1,7 +1,8 @@
 package at.spot.core.persistence.service;
 
+import java.util.concurrent.Callable;
+
 import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.support.TransactionCallback;
 
 public interface TransactionService {
 	/**
@@ -11,7 +12,7 @@ public interface TransactionService {
 	 * 
 	 * @param body
 	 */
-	<R> R execute(TransactionCallback<R> body) throws TransactionException;
+	<R> R execute(Callable<R> body) throws TransactionException;
 
 	/**
 	 * Starts a transaction in the given thread context. After the work has been

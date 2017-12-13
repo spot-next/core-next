@@ -20,12 +20,13 @@ import org.apache.commons.jexl3.MapContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -59,8 +60,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 		try {
 			final ForkJoinTask<List<T>> task = threadPool.submit((Callable<List<T>>) () -> {
-				Stream<T> stream = persistenceService.load(type, null, page, pageSize, false,
-						MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING, returnProxies);
+				Stream<T> stream = persistenceService.load(type, null, page, pageSize).stream();
 
 				if (orderBy != null) {
 					stream = stream.sorted(orderBy);
@@ -92,8 +92,8 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	}
 
 	/**
-	 * Finds item models using a jexl query that is used as a steam operation.
-	 * The single available argument is called "item" of the given type.<br />
+	 * Finds item models using a jexl query that is used as a steam operation. The
+	 * single available argument is called "item" of the given type.<br />
 	 * Example:<br/>
 	 * Query: item.name.size() > 2 and item.group.uid == test-group-1
 	 */

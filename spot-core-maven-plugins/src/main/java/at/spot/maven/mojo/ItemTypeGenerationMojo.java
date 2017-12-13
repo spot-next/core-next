@@ -301,14 +301,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return javaClass;
 	}
 
-	protected void populateSuperType(final ItemType type, final JavaClass javaClass) {
+	protected void populateSuperType(final ItemType type, final JavaClass javaClass) throws MojoExecutionException {
 		final JavaInterface superClass = new JavaInterface();
 
 		if (StringUtils.isNotBlank(type.getExtends())) {
 			final ItemType superItemType = typeDefinitions.getItemTypes().get(type.getExtends());
 
-			superClass.setName(superItemType.getName());
-			superClass.setPackagePath(superItemType.getPackage());
+			if (superItemType != null) {
+				superClass.setName(superItemType.getName());
+				superClass.setPackagePath(superItemType.getPackage());
+			} else {
+				throw new MojoExecutionException(String.format("Super type %s not found for itemtype %s",
+						type.getExtends(), type.getTypeCode()));
+			}
 		} else {
 			superClass.setName("Item");
 			superClass.setPackagePath(Item.class.getPackage().getName());

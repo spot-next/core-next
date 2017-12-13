@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -27,27 +26,35 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.persistence.service.TransactionService;
+import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
 
-@Transactional
-public class HibernatePersistenceService extends AbstractService implements PersistenceService {
+public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
 
-	@PersistenceContext
+	// @PersistenceUnit
+	// protected EntityManagerFactory entityManagerFactory;
+
+	@PersistenceContext()
 	protected EntityManager em;
 
 	// @Resource
 	// protected SessionFactory sessionFactory;
+
+	@Resource
+	protected TransactionService transactionService;
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
@@ -59,41 +66,87 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
+		bindSession();
 
-		for (final T item : items) {
-			try {
-				getSession().saveOrUpdate(item);
-				// getSession().merge(item);
-			} catch (final DataIntegrityViolationException | TransactionRequiredException
-					| IllegalArgumentException e) {
-
-				throw new ModelSaveException("Could not save given items", e);
-
-			} catch (final PersistenceException e) {
-				final Throwable rootCause = ExceptionUtils.getRootCause(e);
-				final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
-
-				throw new ModelSaveException(rootCauseMessage, e);
-			}
-		}
-
-		getSession().flush();
-		try {
+		transactionService.execute(() -> {
 			for (final T item : items) {
-				refresh(item);
+				try {
+					getSession().saveOrUpdate(item);
+					// getSession().merge(item);
+				} catch (final DataIntegrityViolationException | TransactionRequiredException
+						| IllegalArgumentException e) {
+
+					throw new ModelSaveException("Could not save given items", e);
+
+				} catch (final PersistenceException e) {
+					final Throwable rootCause = ExceptionUtils.getRootCause(e);
+					final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
+
+					throw new ModelSaveException(rootCauseMessage, e);
+				}
 			}
-		} catch (final ModelNotFoundException e) {
-			throw new ModelSaveException("Could not save given items", e);
-		}
+
+			getSession().flush();
+
+			try {
+				for (T item : items) {
+					refresh(item);
+				}
+			} catch (ModelNotFoundException e) {
+				throw new ModelSaveException("Could not save given items", e);
+			}
+
+			return null;
+		});
+
+		// try {
+		// transactionService.start();
+		//
+		// for (final T item : items) {
+		// try {
+		// getSession().saveOrUpdate(item);
+		// // getSession().merge(item);
+		// } catch (final DataIntegrityViolationException | TransactionRequiredException
+		// | IllegalArgumentException e) {
+		//
+		// throw new ModelSaveException("Could not save given items", e);
+		//
+		// } catch (final PersistenceException e) {
+		// final Throwable rootCause = ExceptionUtils.getRootCause(e);
+		// final String rootCauseMessage = rootCause != null ? rootCause.getMessage() :
+		// e.getMessage();
+		//
+		// throw new ModelSaveException(rootCauseMessage, e);
+		// }
+		// }
+		//
+		// getSession().flush();
+		//
+		// try {
+		// for (T item : items) {
+		// refresh(item);
+		// }
+		// } catch (ModelNotFoundException e) {
+		// throw new ModelSaveException("Could not save given items", e);
+		// }
+		// } catch (Exception e) {
+		// transactionService.rollback();
+		// } finally {
+		// transactionService.commit();
+		// }
 	}
 
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
+		bindSession();
+
 		// final String query = String.format("SELECT i FROM %s i WHERE pk =
 		// :pk",
 		// type.getSimpleName());
 
-		return getSession().find(type, pk);
+		return transactionService.execute(() -> {
+			return getSession().find(type, pk);
+		});
 
 		// return em.createQuery(query, type).setParameter("pk",
 		// pk).getSingleResult();
@@ -101,14 +154,20 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
-		try {
-			attach(item);
+		bindSession();
 
-			getSession().refresh(item);
-		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
-				| EntityNotFoundException e) {
-			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
-		}
+		transactionService.execute(() -> {
+			try {
+				attach(item);
+
+				getSession().refresh(item);
+			} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
+					| EntityNotFoundException e) {
+				throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+			}
+
+			return null;
+		});
 	}
 
 	/**
@@ -118,6 +177,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> void attach(final T item) throws ModelNotFoundException {
+		bindSession();
+
 		try {
 			// ignore unpersisted or already attached items
 			if (item.getPk() == null | getSession().contains(item)) {
@@ -136,13 +197,15 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
+		bindSession();
+
 		// String queryString = String.format("FROM %s", type.getSimpleName());
 		// TypedQuery<T> query = null;
 		//
 		// if (searchParameters != null) {
 		// final List<String> params = new ArrayList<>();
-		// for (final Map.Entry<String, Object> e :
+		// for (final Map.Entry<String, Comparable<?>> e :
 		// searchParameters.entrySet()) {
 		// params.add(e.getKey() + " = :" + e.getKey());
 		// }
@@ -154,7 +217,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// query = em.createQuery(queryString, type);
 		//
 		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Object> e :
+		// for (final Map.Entry<String, Comparable<?>> e :
 		// searchParameters.entrySet()) {
 		// query.setParameter(e.getKey(), e.getValue());
 		// }
@@ -168,7 +231,7 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// query.from(type);
 
 		// if (searchParameters != null) {
-		// for (final Map.Entry<String, Object> e :
+		// for (final Map.Entry<String, Comparable<?>> e :
 		// searchParameters.entrySet()) {
 		// if (e.getValue() instanceof Item) {
 		// query.where(builder.equal(builder.crea y));
@@ -200,47 +263,50 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 		// // perform the query
 		// criteria.list();
 
-		TypedQuery<T> query = null;
+		return transactionService.execute(() -> {
 
-		final CriteriaBuilder cb = getSession().getCriteriaBuilder();
-		final CriteriaQuery<T> cq = cb.createQuery(type);
-		final Root<T> r = cq.from(type);
+			TypedQuery<T> query = null;
 
-		if (searchParameters != null) {
-			Predicate p = cb.conjunction();
+			final CriteriaBuilder cb = getSession().getCriteriaBuilder();
+			final CriteriaQuery<T> cq = cb.createQuery(type);
+			final Root<T> r = cq.from(type);
 
-			// final Metamodel mm = getSession().getMetamodel();
-			// final EntityType<T> et = mm.entity(type);
+			if (searchParameters != null) {
+				Predicate p = cb.conjunction();
 
-			for (final Map.Entry<String, Object> entry : searchParameters.entrySet()) {
-				if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
-					throw new PersistenceException(String.format(
-							"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
+				// final Metamodel mm = getSession().getMetamodel();
+				// final EntityType<T> et = mm.entity(type);
+
+				for (final Map.Entry<String, Object> entry : searchParameters.entrySet()) {
+					if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
+						throw new PersistenceException(String.format(
+								"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
+					}
+
+					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
 
-				p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
+				// for (final Attribute<? super T, ?> attr : et.getAttributes()) {
+				// final String name = attr.getName();
+				// final String javaName = attr.getJavaMember().getName();
+				// final String getter = "get" + javaName.substring(0,
+				// 1).toUpperCase()
+				// + javaName.substring(1);
+				// final Method m = cl.getMethod(getter, (Class<?>[]) null);
+				//
+				// if (m.invoke(example, (Object[]) null) != null)
+				// p = cb.and(p, cb.equal(r.get(name), m.invoke(example, (Object[])
+				// null)));
+				// }
+
+				cq.select(r).where(p);
+				query = getSession().createQuery(cq);
+			} else {
+				query = getSession().createQuery(cq.select(r));
 			}
 
-			// for (final Attribute<? super T, ?> attr : et.getAttributes()) {
-			// final String name = attr.getName();
-			// final String javaName = attr.getJavaMember().getName();
-			// final String getter = "get" + javaName.substring(0,
-			// 1).toUpperCase()
-			// + javaName.substring(1);
-			// final Method m = cl.getMethod(getter, (Class<?>[]) null);
-			//
-			// if (m.invoke(example, (Object[]) null) != null)
-			// p = cb.and(p, cb.equal(r.get(name), m.invoke(example, (Object[])
-			// null)));
-			// }
-
-			cq.select(r).where(p);
-			query = getSession().createQuery(cq);
-		} else {
-			query = getSession().createQuery(cq.select(r));
-		}
-
-		return query.getResultList().stream();
+			return query.getResultList();
+		});
 	}
 
 	// protected <T extends Item> boolean isPersisted(final T item) {
@@ -248,16 +314,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 	// }
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy) {
-
-		return load(type, searchParameters);
-	}
-
-	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy, final Integer minCountForParallelStream,
-			final boolean returnProxies) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+			final Integer page, final Integer pageSize) {
 
 		return load(type, searchParameters);
 	}
@@ -274,6 +332,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void remove(final T... items) {
+		bindSession();
+
 		for (final T item : items) {
 			// em.remove(item);
 			getSession().remove(item);
@@ -282,6 +342,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
+		bindSession();
+
 		// final String query = String.format("DELETE FROM %s WHERE pk IN
 		// (?pk)",
 		// type.getSimpleName());
@@ -294,11 +356,15 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public void saveDataStorage() {
+		bindSession();
+
 		getSession().flush();
 	}
 
 	@Override
 	public void clearDataStorage() {
+		bindSession();
+
 		// em.clear();
 		getSession().clear();
 	}
@@ -331,6 +397,8 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	@Override
 	public <T extends Item> void detach(final T... items) {
+		bindSession();
+
 		for (final T item : items) {
 			// HibernateUtil.initializeObject(item, "my.app.model");
 
@@ -341,7 +409,20 @@ public class HibernatePersistenceService extends AbstractService implements Pers
 
 	protected Session getSession() {
 		return em.unwrap(Session.class);
+		// return entityManagerFactory.get;
 		// return sessionFactory.getCurrentSession();
+	}
+
+	protected void bindSession() {
+		if (!TransactionSynchronizationManager.hasResource(em)) {
+			// em = entityManagerFactory.createEntityManager();
+			TransactionSynchronizationManager.bindResource(em, new EntityManagerHolder(em));
+		}
+	}
+
+	protected void unbindSession() {
+		EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager.unbindResource(em);
+		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
 	}
 
 }
