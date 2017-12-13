@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.exception.CannotCreateUserException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -124,9 +125,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		if (user != null) {
-			// session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER,
-			// user);
-			session.user(user);
+			session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, user);
 		} else {
 			loggingService.warn("Cannot set a null user as current session user.");
 		}
@@ -137,20 +136,27 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			if (session.user() != null) {
+			U user = (U) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+
+			if (user != null) {
 				try {
-					modelService.refresh(session.user());
+					user = (U) modelService.get(user.getClass(), user.getPk());
 				} catch (final ModelNotFoundException e) {
 					loggingService.warn("Current session user was invalid - removed it.");
 					sessionService.closeSession(session.getId());
 				}
 			}
 
-			return (U) session.user();
+			return user;
 		} else {
 			loggingService.warn("No session is set up.");
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean isCurrentUserAnonymous() {
+		return getCurrentUser() == null;
 	}
 }

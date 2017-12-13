@@ -72,4 +72,9 @@ public interface UserService<U extends User, G extends UserGroup> {
 	 */
 	void setCurrentUser(U user);
 
+	/**
+	 * Checks if the current user in the session is anonymous.
+	 */
+	boolean isCurrentUserAnonymous();
+
 }

@@ -1,6 +1,8 @@
 package at.spot.core.persistence.exception;
 
-public class ModelNotUniqueException extends Exception {
+import at.spot.core.infrastructure.exception.AbstractModelException;
+
+public class ModelNotUniqueException extends AbstractModelException {
 	private static final long serialVersionUID = 1L;
 
 	public ModelNotUniqueException(final String message) {
@@ -13,9 +15,5 @@ public class ModelNotUniqueException extends Exception {
 
 	public ModelNotUniqueException(final Throwable rootCause) {
 		super(rootCause);
-	}
-
-	public ModelNotUniqueException() {
-		super();
 	}
 }

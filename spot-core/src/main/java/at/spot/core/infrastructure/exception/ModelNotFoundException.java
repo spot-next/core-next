@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.exception;
 
-public class ModelNotFoundException extends Exception {
+public class ModelNotFoundException extends AbstractModelException {
 	private static final long serialVersionUID = 1L;
 
 	public ModelNotFoundException(final String message) {

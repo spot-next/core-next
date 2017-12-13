@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-public class ModelValidationException extends Exception {
+public class ModelValidationException extends AbstractModelException {
 	private static final long serialVersionUID = 1L;
 
 	private final Set<? extends ConstraintViolation<?>> constraintViolations;

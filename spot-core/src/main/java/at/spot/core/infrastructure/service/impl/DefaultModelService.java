@@ -52,8 +52,8 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, T example) throws ModelValidationException {
-		Map<String, Object> map = persistenceService.convertItemToMap(example);
+	public <T extends Item> T get(final Class<T> type, final T example) throws ModelValidationException {
+		final Map<String, Object> map = persistenceService.convertItemToMap(example);
 
 		if (map.keySet().size() == 0) {
 			throw new ModelValidationException("Given example model has no properties set.");

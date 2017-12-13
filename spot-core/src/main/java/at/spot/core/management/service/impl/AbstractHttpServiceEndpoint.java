@@ -15,9 +15,9 @@ import java.util.Base64;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 
@@ -29,6 +29,7 @@ import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
+import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.management.annotation.Handler;
@@ -38,6 +39,7 @@ import at.spot.core.management.support.HttpAuthorizationType;
 import at.spot.core.security.service.AuthenticationService;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
@@ -53,17 +55,20 @@ import spark.route.HttpMethod;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
 
-	@Autowired
+	@Resource
 	protected SerializationService serializationService;
 
-	@Autowired
+	@Resource
 	protected I18nService i18nService;
 
-	@Autowired
+	@Resource
 	protected AuthenticationService authenticationService;
 
-	@Autowired
+	@Resource
 	protected SessionService sessionService;
+
+	@Resource
+	protected UserService<User, UserGroup> userService;
 
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@PostConstruct
@@ -181,12 +186,12 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
 
-		if (spotSession.isAnonymousUser()) {
+		if (userService.isCurrentUserAnonymous()) {
 			// authenticate
 			final User authenticatedUser = authenticate(request, response);
 
 			if (authenticatedUser != null) {
-				spotSession.user(authenticatedUser);
+				userService.setCurrentUser(authenticatedUser);
 			} else {
 				response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
 				Spark.halt(401);
