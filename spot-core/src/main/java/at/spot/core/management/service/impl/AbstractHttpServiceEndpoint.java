@@ -9,6 +9,7 @@ import static spark.Spark.patch;
 import static spark.Spark.post;
 import static spark.Spark.put;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -274,11 +275,14 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 			try {
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
-			} catch (final Exception e) {
+			} catch (final InvocationTargetException e) {
 				final HttpResponse<?> errorResponse = HttpResponse.internalError();
-				errorResponse.getBody().addError(new Status("error.internal", "Cannot execute request."));
+
+				String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
+				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
-				serviceImpl.loggingService.exception("An error occured during execution of request", e);
+				// serviceImpl.loggingService.exception("An error occured during execution of
+				// request", e);
 			}
 
 			return processResponse(response, ret);

@@ -83,7 +83,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * TYPES
 	 */
 
-	@Handler(pathMapping = "/types/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public List<GenericItemDefinitionData> getTypes(final Request request, final Response response)
 			throws UnknownTypeException {
 
@@ -99,7 +99,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return types;
 	}
 
-	@Handler(pathMapping = "/types/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(pathMapping = "/types/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public GenericItemDefinitionData getType(final Request request, final Response response)
 			throws UnknownTypeException {
 		GenericItemDefinitionData ret = null;
@@ -131,7 +131,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @return
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<PageableData<T>> getModels(final Request request, final Response response)
 			throws UnknownTypeException {
 
@@ -159,7 +159,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelNotFoundException
 	 * @throws UnknownTypeException
 	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<T> getModel(final Request request, final Response response)
 			throws ModelNotFoundException, UnknownTypeException {
 
@@ -286,7 +286,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return body;
 	}
 
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object queryModel(final Request request, final Response response)
 			throws UnknownTypeException {
 
@@ -310,7 +310,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelSaveException
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<Void> createModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
@@ -354,7 +354,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.delete, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<Void> deleteModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
@@ -376,6 +376,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			body.getBody().addError(new Status("error.ondelete", "No valid PK given."));
 		}
 
+		body.setStatusCode(HttpStatus.ACCEPTED);
+
 		return body;
 	}
 
@@ -391,7 +393,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<Void> updateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
@@ -425,7 +427,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return body;
 	}
 
-	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JAVASCRIPT, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse<Void> partiallyUpdateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
@@ -443,6 +445,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 			// search old item
 			final T oldItem = modelService.get(type, pk);
+
+			if (oldItem == null) {
+				throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
+			}
 
 			final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService.getItemTypeProperties(type);
 

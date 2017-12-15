@@ -43,7 +43,13 @@ public class DefaultSessionService implements SessionService {
 
 	@Override
 	public Session getCurrentSession() {
-		return currentSession.get();
+		Session session = currentSession.get();
+
+		if (session == null) {
+			session = createSession(true);
+		}
+
+		return session;
 	}
 
 	@Override

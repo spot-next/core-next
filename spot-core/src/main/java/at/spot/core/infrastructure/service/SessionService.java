@@ -12,56 +12,39 @@ public interface SessionService {
 
 	/**
 	 * Creates a new {@link Session} object and sets it for the current thread.
-	 * 
-	 * @return
 	 */
 	Session createSession(boolean registerAsCurrentSession);
 
 	/**
-	 * Returns the {@link Session} associates with the current thread.
-	 * 
-	 * @return
+	 * Returns the {@link Session} associates with the current thread. If there is
+	 * no session registered yet, a new one is created and automatically registered.
 	 */
 	Session getCurrentSession();
 
 	/**
 	 * Sets the given session for the current thread.
-	 * 
-	 * @param session
 	 */
 	void setCurrentSession(Session session);
 
 	/**
 	 * Returns the {@link Session} with the given id.
-	 * 
-	 * @param sessionId
-	 * @return
 	 */
 	Session getSession(String sessionId);
 
 	/**
 	 * Closes/invalidate the {@link Session} with the given id.
-	 * 
-	 * @param sessionID
 	 */
 	void closeSession(String sessionID);
 
 	/**
-	 * Executes the given {@link Callable} in another thread setting the using
-	 * the session of the given id. This is useful to gain different privileges.
-	 * 
-	 * @param sessionId
-	 * @param callable
-	 * @return
+	 * Executes the given {@link Callable} in another thread setting the using the
+	 * session of the given id. This is useful to gain different privileges.
 	 */
 	<T> T executeInSessionContext(String sessionId, Callable<T> callable);
 
 	/**
 	 * Executes the given {@link Callable} in another thread using the system (=
 	 * root) session context.
-	 * 
-	 * @param callable
-	 * @return
 	 */
 	<T> T executeInSystemSessionContext(Callable<T> callable);
 

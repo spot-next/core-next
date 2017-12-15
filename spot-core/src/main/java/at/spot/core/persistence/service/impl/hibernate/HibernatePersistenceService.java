@@ -69,10 +69,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					try {
 						getSession().saveOrUpdate(item);
 						// getSession().merge(item);
+						getSession().flush();
 					} catch (final DataIntegrityViolationException | TransactionRequiredException
 							| IllegalArgumentException e) {
 
-						throw new ModelSaveException("Could not save given items", e);
+						throw new ModelSaveException("Could not save given items: " + e.getMessage(), e);
 
 					} catch (final PersistenceException e) {
 						final Throwable rootCause = ExceptionUtils.getRootCause(e);
@@ -81,8 +82,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 						throw new ModelSaveException(rootCauseMessage, e);
 					}
 				}
-
-				getSession().flush();
 
 				try {
 					for (final T item : items) {
