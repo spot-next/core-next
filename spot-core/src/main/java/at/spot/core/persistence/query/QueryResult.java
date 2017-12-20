@@ -1,28 +1,32 @@
 package at.spot.core.persistence.query;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import at.spot.core.model.Item;
 
 public class QueryResult<T extends Item> {
-	private List<T> results = new ArrayList<>();
+	private Stream<T> results;
 	private final int pageSize;
 	private final int page;
 
-	public QueryResult(final List<T> results, final int page, final int pageSize) {
-		this.results = Collections.unmodifiableList(results);
+	public QueryResult(final Stream<T> results, final int page, final int pageSize) {
+		this.results = results;
 		this.page = page;
 		this.pageSize = pageSize;
 	}
 
-	public List<T> getResult() {
+	public List<T> getResultList() {
+		return results.collect(Collectors.toList());
+	}
+
+	public Stream<T> getResultStream() {
 		return results;
 	}
 
 	public long count() {
-		return results.size();
+		return results.count();
 	}
 
 	public int getPageSize() {

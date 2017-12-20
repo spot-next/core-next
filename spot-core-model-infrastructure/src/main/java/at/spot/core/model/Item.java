@@ -7,14 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.jdo.annotations.Discriminator;
-import javax.jdo.annotations.DiscriminatorStrategy;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.InheritanceStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.VersionStrategy;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -22,7 +14,6 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
-import org.datanucleus.api.jdo.annotations.CreateTimestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -33,11 +24,6 @@ import at.spot.core.infrastructure.IdGenerator;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
 
-//JDO
-@PersistenceCapable
-@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.SUPERCLASS_TABLE)
-@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
-@javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER)
 // JPA
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -49,9 +35,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	// @Resource
 	// protected AuditingHandler auditingHandler;
 
-	// JDO
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.NATIVE)
 	// JPA
 	@Id
 	final protected Long pk = IdGenerator.createLongId();
@@ -60,13 +43,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected String typeCode;
 
 	@Property
-	@org.datanucleus.api.jdo.annotations.UpdateTimestamp
 	@UpdateTimestamp
 	@LastModifiedDate
 	protected Date lastModifiedAt;
 
 	@Property
-	@CreateTimestamp
 	@CreationTimestamp
 	@CreatedDate
 	protected Date createdAt;

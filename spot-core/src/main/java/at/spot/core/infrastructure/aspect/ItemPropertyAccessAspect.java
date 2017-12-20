@@ -131,7 +131,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 			final Item i = (Item) joinPoint.getTarget();
 
 			if (i.isPersisted()) {
-				modelService.loadProxyModel(i);
+				modelService.refresh(i);
 			}
 		}
 

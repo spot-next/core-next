@@ -1,8 +1,16 @@
 package at.spot.core.support.util;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class ValidationUtil {
+
+	public static void validateMinSize(String message, Collection<?> collection, int minSize) {
+		if (collection == null || collection.size() < minSize) {
+			throw new IllegalArgumentException(message);
+		}
+	}
 
 	/**
 	 * 
@@ -16,6 +24,7 @@ public class ValidationUtil {
 	 */
 	public static void validateMaxLength(final String message, final String text, final int maxLength)
 			throws IllegalArgumentException {
+
 		if (StringUtils.length(text) > maxLength) {
 			throw new IllegalArgumentException(String.format(message, maxLength));
 		}
@@ -33,6 +42,7 @@ public class ValidationUtil {
 	 */
 	public static void validateMinLength(final String message, final String text, final int minLength)
 			throws IllegalArgumentException {
+
 		if (StringUtils.length(text) < minLength) {
 			throw new IllegalArgumentException(String.format(message, minLength));
 		}

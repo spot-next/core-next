@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -17,6 +18,7 @@ import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.support.util.ValidationUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
@@ -52,14 +54,12 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(final Class<T> type, final T example) throws ModelValidationException {
+	public <T extends Item> T getByExample(final T example) {
 		final Map<String, Object> map = persistenceService.convertItemToMap(example);
 
-		if (map.keySet().size() == 0) {
-			throw new ModelValidationException("Given example model has no properties set.");
-		}
+		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
-		return get(type, map);
+		return (T) get(example.getClass(), map);
 	}
 
 	@Override
@@ -76,34 +76,25 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
-		return persistenceService.load(type, searchParameters);
+		return getAll(type, searchParameters, 0, 0);
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize, final boolean loadAsProxy) {
+			final int page, final int pageSize) {
 
-		return persistenceService.load(type, searchParameters, page, pageSize);
+		return persistenceService.load(type, searchParameters, page, pageSize).collect(Collectors.toList());
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type) {
 
-		return persistenceService.load(type, null);
+		return persistenceService.load(type, null).collect(Collectors.toList());
 	}
 
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
 		return persistenceService.load(type, pk);
-	}
-
-	@Override
-	public <T extends Item> void loadProxyModel(final T proxyItem) throws ModelNotFoundException {
-		if (proxyItem == null) {
-			throw new ModelNotFoundException("Given item is null");
-		}
-
-		persistenceService.loadProxyModel(proxyItem);
 	}
 
 	@Override

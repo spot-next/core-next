@@ -11,23 +11,6 @@ import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 
 public interface ModelService {
-
-	/**
-	 * Creates a new proxy item that references the given item.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	// <T extends Item> T createProxyModel(Class<T> itemType, long pk);
-
-	/**
-	 * Creates a new proxy item that references the given item.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	// <T extends Item> T createProxyModel(T item);
-
 	/**
 	 * Creates an unsaved instance of the given type.
 	 * 
@@ -87,7 +70,7 @@ public interface ModelService {
 	 *            the example item instance.
 	 * @return
 	 */
-	<T extends Item> T get(Class<T> type, T example) throws ModelValidationException;
+	<T extends Item> T getByExample(T example);
 
 	/**
 	 * Removes the given item.
@@ -143,12 +126,9 @@ public interface ModelService {
 	 * @param amount
 	 *            starting from the start param this is the amount of items that
 	 *            will be returned.
-	 * @param loadAsProxy
-	 *            the items will be just proxies that are lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize,
-			boolean loadAsProxy);
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize);
 
 	/**
 	 * Returns all objects of the given type
@@ -157,14 +137,6 @@ public interface ModelService {
 	 * @return
 	 */
 	<T extends Item> List<T> getAll(Class<T> type);
-
-	/**
-	 * If the given model is a proxy item (=only the pk is filled) then all of it's
-	 * properties are filled.
-	 * 
-	 * @param item
-	 */
-	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.

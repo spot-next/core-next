@@ -53,7 +53,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		User exampleUser = new User();
 		exampleUser.setId("testUser");
 
-		User loadedUser = modelService.get(User.class, exampleUser);
+		User loadedUser = modelService.getByExample(exampleUser);
 
 		Assert.assertEquals(user.getId(), loadedUser.getId());
 	}

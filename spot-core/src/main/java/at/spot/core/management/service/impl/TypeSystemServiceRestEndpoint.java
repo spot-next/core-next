@@ -143,7 +143,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
 
-		models = (List<T>) modelService.getAll(type, null, page, pageSize, false);
+		models = (List<T>) modelService.getAll(type, null, page, pageSize);
 
 		body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
 
@@ -201,7 +201,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
+		final Class<T> type = (Class<T>) typeService.getType(request.params(":typecode"));
 
 		final String[] queryStrings = request.queryParamsValues("query");
 
@@ -209,8 +209,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			final String queryString = MiscUtil.removeEnclosingQuotes(queryStrings[0]);
 
 			try {
-				final QueryResult<T> result = (QueryResult<T>) queryService.query(type, queryString, null, page,
-						pageSize, false);
+				final QueryResult<T> result = (QueryResult<T>) queryService.query(queryString, type, page, pageSize);
 
 				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
@@ -275,7 +274,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			}
 		}
 
-		final List<T> models = modelService.getAll(type, searchParameters, page, pageSize, false);
+		final List<T> models = modelService.getAll(type, searchParameters, page, pageSize);
 
 		if (models == null) {
 			body.setStatusCode(HttpStatus.NOT_FOUND);

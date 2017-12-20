@@ -36,29 +36,6 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
 	}
 
-	// @Override
-	// public <T extends Item> T createProxyModel(final Class<T> itemType, final
-	// long pk) {
-	// T proxyItem = null;
-	//
-	// proxyItem = create(itemType);
-	// proxyItem.setPk(pk);
-	// // ClassUtil.setField(proxyItem, "isProxy", true);
-	// proxyItem.setIsProxy(true);
-	//
-	// return proxyItem;
-	// }
-	//
-	// @Override
-	// public <T extends Item> T createProxyModel(final T item) {
-	// ValidationUtil.validateNotNull(
-	// "The given item has to be persisted, before it can be used to generate a
-	// proxy item from it.",
-	// item.getPk());
-	//
-	// return createProxyModel((Class<T>) item.getClass(), item.getPk());
-	// }
-
 	@Override
 	public <T extends Item> void detach(final T... items) {
 		persistenceService.detach(items);

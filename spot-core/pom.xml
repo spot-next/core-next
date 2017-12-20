@@ -66,7 +66,7 @@
 			<!-- </execution> -->
 			<!-- </executions> -->
 			<!-- </plugin> -->
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -211,6 +211,13 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.7.2</version>
+		</dependency>
+
+		<!-- JPA query -->
+		<dependency>
+			<groupId>org.torpedoquery</groupId>
+			<artifactId>org.torpedoquery</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 
 		<!-- spark rest framework -->

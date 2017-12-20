@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
@@ -36,7 +38,6 @@ import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
@@ -53,6 +54,26 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
+
+	@Override
+	public <T extends Item> Stream<T> query(String queryString, Class<T> resultClass) {
+		return query(queryString, resultClass, 0, 0);
+	}
+
+	@Override
+	public <T extends Item> Stream<T> query(String queryString, Class<T> resultClass, int page, int pageSize) {
+		Query<T> query = getSession().createQuery(queryString, resultClass);
+
+		if (page >= 0) {
+			query.setFirstResult(page);
+		}
+
+		if (pageSize > 0) {
+			query.setMaxResults(pageSize);
+		}
+
+		return query.getResultStream();
+	}
 
 	@Override
 	public <T extends Item> void save(final T... items) throws ModelSaveException, ModelNotUniqueException {
@@ -107,10 +128,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
 		bindSession();
-
-		// final String query = String.format("SELECT i FROM %s i WHERE pk =
-		// :pk",
-		// type.getSimpleName());
 
 		try {
 			return transactionService.execute(() -> {
@@ -179,7 +196,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
 		bindSession();
 
 		return transactionService.execute(() -> {
@@ -202,31 +219,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
 
-				cq.select(r).where(p);
-				query = getSession().createQuery(cq);
+				CriteriaQuery<T> select = cq.select(r).where(p);
+				query = getSession().createQuery(select);
 			} else {
 				query = getSession().createQuery(cq.select(r));
 			}
 
-			return query.getResultList();
+			return ((Query<T>) query).getResultStream();
 		});
 	}
 
 	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final Integer page, final Integer pageSize) {
 
 		return load(type, searchParameters);
-	}
-
-	@Override
-	public <T extends Item> void loadProxyModel(final T proxyItem) throws ModelNotFoundException {
-		refresh(proxyItem);
-	}
-
-	@Override
-	public <T extends Item> T createProxyModel(final T item) throws CannotCreateModelProxyException {
-		return item;
 	}
 
 	@Override
@@ -310,4 +317,5 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				.unbindResource(entityManagerFactory);
 		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
 	}
+
 }

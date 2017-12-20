@@ -2,6 +2,7 @@ package at.spot.core.persistence.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,6 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
-import at.spot.core.persistence.exception.CannotCreateModelProxyException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 
 @Service
@@ -56,7 +56,35 @@ public interface PersistenceService {
 	 *            if empty or null, all items of the given type will be returned.
 	 * @return
 	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters);
+	<T extends Item> Stream<T> load(Class<T> type, Map<String, Object> searchParameters);
+
+	/**
+	 * Returns a result stream for the given query.
+	 * 
+	 * @param queryString
+	 *            the JPQL query string
+	 * @param resultClass
+	 *            the mapped type of the results. If this is a JPA entity, it will
+	 *            be mapped directly. If it is a regular POJO, its properties will
+	 *            be mapped based on the result column names.
+	 */
+	<T extends Item> Stream<T> query(String query, Class<T> resultClass);
+
+	/**
+	 * Returns the paginated result stream for the given query.
+	 * 
+	 * @param queryString
+	 *            the JPQL query string
+	 * @param resultClass
+	 *            the mapped type of the results. If this is a JPA entity, it will
+	 *            be mapped directly. If it is a regular POJO, its properties will
+	 *            be mapped based on the result column names.
+	 * @param page
+	 *            will only be set if it is >= 0
+	 * @param pageSize
+	 *            will only be set if it is > 0
+	 */
+	<T extends Item> Stream<T> query(String queryString, Class<T> resultClass, int page, int pageSize);
 
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
@@ -73,24 +101,8 @@ public interface PersistenceService {
 	 *            lazy-loaded.
 	 * @return
 	 */
-	<T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters, final Integer page,
+	<T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters, final Integer page,
 			final Integer pageSize);
-
-	/**
-	 * Fills the given proxy item with it's property values.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	<T extends Item> void loadProxyModel(T proxyItem) throws ModelNotFoundException;
-
-	/**
-	 * Creates a new proxy item that references the given item.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	<T extends Item> T createProxyModel(T item) throws CannotCreateModelProxyException;
 
 	/**
 	 * Removes the given item.
@@ -146,5 +158,5 @@ public interface PersistenceService {
 	 * @return
 	 * @throws ModelValidationException
 	 */
-	<T extends Item> Map<String, Object> convertItemToMap(T item) throws ModelValidationException;
+	<T extends Item> Map<String, Object> convertItemToMap(T item);
 }

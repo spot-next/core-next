@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.DeserializationException;
@@ -11,11 +12,11 @@ import at.spot.core.infrastructure.strategy.SerializationStrategy;
 @Service
 public class DefaultSerializationService implements SerializationService {
 
-	@Autowired
-	SerializationStrategy jsonSerializationStrategy;
+	@Resource
+	protected SerializationStrategy jsonSerializationStrategy;
 
-	@Autowired
-	SerializationStrategy xmlSerializationStrategy;
+	@Resource
+	protected SerializationStrategy xmlSerializationStrategy;
 
 	/**
 	 * Users @Gson to serialize any object to a json string.

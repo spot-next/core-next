@@ -13,10 +13,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.L10nService;
-import at.spot.core.persistence.query.QueryResult;
-import at.spot.core.persistence.service.QueryService;
+import at.spot.core.infrastructure.service.ModelService;
 import at.spot.itemtype.core.internationalization.LocalizationKey;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -29,7 +29,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	protected I18nService i18nService;
 
 	@Autowired
-	protected QueryService queryService;
+	protected ModelService modelService;
 
 	@Override
 	public String getMessage(final String key, final String defaultMessage, final Object... messageParams)
@@ -62,12 +62,14 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	public String getMessageFromStorage(final String key, final String defaultMessage, final Locale locale,
 			final Object... messageParams) throws NoSuchMessageException {
 
-		final QueryResult<LocalizationKey> locResult = queryService.query(LocalizationKey.class, (i) -> {
-			return i.getId().equals(key) && i.getLocale().equals(locale);
-		}, null, 0, 0, false);
+		LocalizationKey locResult = new LocalizationKey();
+		locResult.setId(key);
+		locResult.setLocale(locale);
 
-		if (locResult.count() >= 1) {
-			return locResult.getResult().get(0).getValue();
+		locResult = modelService.getByExample(locResult);
+
+		if (locResult != null) {
+			return locResult.getValue();
 		} else {
 			throw new NoSuchMessageException(key);
 		}
