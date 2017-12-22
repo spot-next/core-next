@@ -1,9 +1,12 @@
 package at.spot.test.persistence;
 
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import at.spot.core.testing.AbstractIntegrationTest;
+import at.spot.itemtype.core.internationalization.LocalizationKey;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
 
@@ -21,10 +24,10 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testBidirectionalRelations() throws Exception {
-		User user = modelService.create(User.class);
+		final User user = modelService.create(User.class);
 		user.setId("testUser");
 
-		UserGroup group = modelService.create(UserGroup.class);
+		final UserGroup group = modelService.create(UserGroup.class);
 		group.setId("testGroup");
 
 		modelService.save(user);
@@ -34,8 +37,8 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(group);
 
-		User loadedUser = modelService.get(User.class, user.getPk());
-		UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
+		final User loadedUser = modelService.get(User.class, user.getPk());
+		final UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
 
 		Assert.assertEquals(loadedUser.getGroups().get(0).getPk(), loadedGroup.getPk());
 		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().get(0).getPk());
@@ -45,17 +48,19 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testQueryByExample() throws Exception {
-		User user = modelService.create(User.class);
-		user.setId("testUser");
+		final LocalizationKey localization = modelService.create(LocalizationKey.class);
+		localization.setId("test.key");
+		localization.setLocale(Locale.ENGLISH);
 
-		modelService.save(user);
+		modelService.save(localization);
 
-		User exampleUser = new User();
-		exampleUser.setId("testUser");
+		final LocalizationKey example = new LocalizationKey();
+		example.setId("test.key");
+		example.setLocale(Locale.ENGLISH);
 
-		User loadedUser = modelService.getByExample(exampleUser);
+		final LocalizationKey loaded = modelService.getByExample(example);
 
-		Assert.assertEquals(user.getId(), loadedUser.getId());
+		Assert.assertEquals(localization.getId(), loaded.getId());
 	}
 
 }
