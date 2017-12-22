@@ -334,7 +334,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		final Map<String, ItemTypePropertyDefinition> uniqueProps = new HashMap<>();
 
 		for (final Map.Entry<String, ItemTypePropertyDefinition> entry : props.entrySet()) {
-			if (entry.getValue().isUnique) {
+			if (entry.getValue().isUnique()) {
 				uniqueProps.put(entry.getKey(), entry.getValue());
 			}
 		}
@@ -347,7 +347,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		final ItemTypePropertyDefinition def = getUniqueItemTypeProperties(type).get(propertyName);
 
 		if (def != null) {
-			return def.isUnique;
+			return def.isUnique();
 		}
 
 		return false;

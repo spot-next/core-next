@@ -56,13 +56,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	protected PlatformTransactionManager transactionManager;
 
 	@Override
-	public <T extends Item> Stream<T> query(String queryString, Class<T> resultClass) {
+	public <T extends Item> Stream<T> query(final String queryString, final Class<T> resultClass) {
 		return query(queryString, resultClass, 0, 0);
 	}
 
 	@Override
-	public <T extends Item> Stream<T> query(String queryString, Class<T> resultClass, int page, int pageSize) {
-		Query<T> query = getSession().createQuery(queryString, resultClass);
+	public <T extends Item> Stream<T> query(final String queryString, final Class<T> resultClass, final int page,
+			final int pageSize) {
+		final Query<T> query = getSession().createQuery(queryString, resultClass);
 
 		if (page >= 0) {
 			query.setFirstResult(page);
@@ -196,7 +197,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
 		bindSession();
 
 		return transactionService.execute(() -> {
@@ -219,18 +220,18 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
 
-				CriteriaQuery<T> select = cq.select(r).where(p);
+				final CriteriaQuery<T> select = cq.select(r).where(p);
 				query = getSession().createQuery(select);
 			} else {
 				query = getSession().createQuery(cq.select(r));
 			}
 
-			return ((Query<T>) query).getResultStream();
+			return ((Query<T>) query).getResultList();
 		});
 	}
 
 	@Override
-	public <T extends Item> Stream<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
 			final Integer page, final Integer pageSize) {
 
 		return load(type, searchParameters);

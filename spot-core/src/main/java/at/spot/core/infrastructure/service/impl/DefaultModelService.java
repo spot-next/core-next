@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -83,13 +82,13 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
 			final int page, final int pageSize) {
 
-		return persistenceService.load(type, searchParameters, page, pageSize).collect(Collectors.toList());
+		return persistenceService.load(type, searchParameters, page, pageSize);
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type) {
 
-		return persistenceService.load(type, null).collect(Collectors.toList());
+		return persistenceService.load(type, null);
 	}
 
 	@Override

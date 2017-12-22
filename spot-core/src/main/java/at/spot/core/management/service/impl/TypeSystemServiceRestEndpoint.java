@@ -19,9 +19,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.exception.DeserializationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -44,6 +41,8 @@ import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -181,13 +180,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JEXL expression. <br/>
+	 * Gets an item based on the search query. The query is a JEXL expression.
+	 * <br/>
 	 * 
 	 * <br/>
 	 * Example: .../User/query/uid='test-user' & name.contains('Vader') <br/>
 	 * <br/>
-	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)} is
-	 * called.
+	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)}
+	 * is called.
 	 * 
 	 * @param request
 	 * @param response
@@ -209,7 +209,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			final String queryString = MiscUtil.removeEnclosingQuotes(queryStrings[0]);
 
 			try {
-				final QueryResult<T> result = (QueryResult<T>) queryService.query(queryString, type, page, pageSize);
+				final QueryResult<T> result = queryService.query(queryString, type, page, pageSize);
 
 				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
@@ -253,10 +253,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final Map<String, Object> searchParameters = new HashMap<>();
 
 		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeProperties(typeCode).values()) {
-			final String[] queryValues = query.get(prop.name);
+			final String[] queryValues = query.get(prop.getName());
 
 			if (queryValues != null && queryValues.length == 1) {
-				final Class<?> propertyType = prop.returnType;
+				final Class<?> propertyType = prop.getReturnType();
 
 				Object value;
 				try {
@@ -267,10 +267,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 					return body;
 				}
 
-				searchParameters.put(prop.name, value);
+				searchParameters.put(prop.getName(), value);
 			} else {
-				body.getBody().addWarning(new Status("query.duplicateattribute",
-						String.format("Query attribute %s passed more than once - only taking the first.", prop.name)));
+				body.getBody().addWarning(new Status("query.duplicateattribute", String
+						.format("Query attribute %s passed more than once - only taking the first.", prop.getName())));
 			}
 		}
 
@@ -381,10 +381,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an item with the given values. The PK must be provided. If the new
-	 * item is not unique, an error is returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just want
-	 * to update a few fields, use the PATCH Method.
+	 * Updates an item with the given values. The PK must be provided. If the
+	 * new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just
+	 * want to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response
@@ -460,7 +460,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				// if the json property really exists on the item, then
 				// continue
 				if (propDef != null) {
-					final Object parsedValue = serializationService.fromJson(value.toString(), propDef.returnType);
+					final Object parsedValue = serializationService.fromJson(value.toString(), propDef.getReturnType());
 					modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
 				}
 			}

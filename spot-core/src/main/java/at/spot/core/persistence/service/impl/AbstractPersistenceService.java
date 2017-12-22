@@ -1,9 +1,11 @@
 package at.spot.core.persistence.service.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,28 +23,39 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 	protected TypeService typeService;
 
 	@Override
-	public <T extends Item> Map<String, Object> convertItemToMap(T item) {
-		Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeProperties(item.getClass());
+	public <T extends Item> Map<String, Object> convertItemToMap(final T item) {
+		final Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeProperties(item.getClass());
 
 		final ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
+		final Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
 		});
 
-		Map<String, Object> retMap = new HashMap<>();
+		final Map<String, Object> retMap = new HashMap<>();
 
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			if (properties.get(entry.getKey()) != null) {
-				if (entry.getValue() != null) {
-					if (entry.getValue() instanceof Comparable) {
-						retMap.put(entry.getKey(), (Comparable<?>) entry.getValue());
-					} else if (entry.getValue() instanceof Collection || entry.getValue() instanceof Map) {
-						loggingService.warn(String.format(
-								"Item property '%s' is a list or collection - it will be ignored.", entry.getKey()));
+		for (final Map.Entry<String, ItemTypePropertyDefinition> prop : properties.entrySet()) {
+			if (isArrayOrCollection(prop.getValue().getReturnType())) {
+				loggingService.warn(String.format("Item property '%s' is a list or collection - it will be ignored.",
+						prop.getValue().getName()));
+			} else {
+
+				try {
+					final Object value = PropertyUtils.getProperty(item, prop.getValue().getName());
+
+					if (value != null) {
+						retMap.put(prop.getValue().getName(), value);
 					}
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					loggingService.warn(String.format(
+							"Could not convert property '%s' for given item of type '%s' - it will be ignored.",
+							prop.getValue().getName(), item.getClass().getSimpleName()));
 				}
 			}
 		}
 
 		return retMap;
+	}
+
+	protected boolean isArrayOrCollection(final Class<?> type) {
+		return type.isArray() || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
 	}
 }
