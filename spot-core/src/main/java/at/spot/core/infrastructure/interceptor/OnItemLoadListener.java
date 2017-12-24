@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.interceptor;
 
-public interface OnItemLoadListener extends ItemModificationListener {
+import at.spot.core.model.Item;
+
+public interface OnItemLoadListener<T extends Item> extends ItemModificationListener<T> {
 
 }

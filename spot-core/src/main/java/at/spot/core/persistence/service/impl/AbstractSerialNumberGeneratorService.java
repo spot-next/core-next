@@ -1,10 +1,10 @@
 package at.spot.core.persistence.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-
-import org.springframework.beans.factory.annotation.Required;
 
 import at.spot.core.infrastructure.exception.ItemModificationListenerException;
 import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
@@ -17,17 +17,27 @@ import at.spot.core.persistence.service.SerialNumberGeneratorService;
 import at.spot.itemtype.core.UniqueIdItem;
 
 public abstract class AbstractSerialNumberGeneratorService extends AbstractService
-		implements SerialNumberGeneratorService, OnItemSaveListener {
+		implements SerialNumberGeneratorService, OnItemSaveListener<UniqueIdItem> {
 
 	@Resource
 	protected LoggingService logginService;
 
-	protected Map<Class<? extends Item>, SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategies;
+	@Resource
+	protected List<SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategies;
+
+	protected Map<Class<?>, SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategyRegistry;
+
+	@SuppressWarnings("unchecked")
+	@PostConstruct
+	public void setup() {
+		serialNumberGeneratorStrategies.forEach(l -> serialNumberGeneratorStrategyRegistry.put(l.getItemType(), l));
+	}
 
 	@Override
 	public <T extends UniqueIdItem> void generate(final T item) throws SerialNumberGeneratorException {
 
-		final SerialNumberGeneratorStrategy<Item> generator = serialNumberGeneratorStrategies.get(item.getClass());
+		final SerialNumberGeneratorStrategy<Item> generator = serialNumberGeneratorStrategyRegistry
+				.get(item.getClass());
 
 		if (generator != null) {
 			generator.generate(getNextSerialNumber(item), item);
@@ -40,10 +50,10 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 	abstract protected <T extends Item> Long getNextSerialNumber(final T item);
 
 	@Override
-	public <T extends Item> void onEvent(final T item) throws ItemModificationListenerException {
+	public void onEvent(final UniqueIdItem item) throws ItemModificationListenerException {
 		if (item instanceof UniqueIdItem) {
 			try {
-				generate((UniqueIdItem) item);
+				generate(item);
 			} catch (final SerialNumberGeneratorException e) {
 				throw new ItemModificationListenerException(
 						String.format("Could not generate unique id for item of type %s", item.getClass().getName()));
@@ -51,10 +61,13 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 		}
 	}
 
-	@Required
-	public void setSerialNumberGeneratorStrategies(
-			final Map<Class<? extends Item>, SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategies) {
-		this.serialNumberGeneratorStrategies = serialNumberGeneratorStrategies;
+	@Override
+	public Class<UniqueIdItem> getItemType() {
+		return UniqueIdItem.class;
 	}
 
+	@Override
+	public void setItemType(final Class<UniqueIdItem> itemType) {
+		// ignore
+	}
 }

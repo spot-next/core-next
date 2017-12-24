@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.interceptor;
 
-public interface OnItemSaveListener extends ItemModificationListener {
+import at.spot.core.model.Item;
+
+public interface OnItemSaveListener<T extends Item> extends ItemModificationListener<T> {
 
 }

@@ -1,5 +1,7 @@
 package at.spot.core.infrastructure.interceptor;
 
-public interface OnItemValidateListener extends ItemModificationListener {
+import at.spot.core.model.Item;
+
+public interface OnItemValidateListener<T extends Item> extends ItemModificationListener<T> {
 
 }

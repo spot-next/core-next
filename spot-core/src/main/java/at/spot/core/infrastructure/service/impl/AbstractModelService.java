@@ -1,12 +1,16 @@
 package at.spot.core.infrastructure.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.interceptor.ItemModificationListener;
 import at.spot.core.infrastructure.interceptor.OnItemCreateListener;
 import at.spot.core.infrastructure.interceptor.OnItemLoadListener;
 import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
@@ -27,10 +31,46 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Autowired
 	protected PersistenceService persistenceService;
 
-	protected Map<Class<? extends Item>, OnItemSaveListener> saveListeners;
-	protected Map<Class<? extends Item>, OnItemValidateListener> validateListeners;
-	protected Map<Class<? extends Item>, OnItemLoadListener> loadListeners;
-	protected Map<Class<? extends Item>, OnItemCreateListener> createListeners;
+	@Resource
+	protected List<OnItemSaveListener<Item>> saveListeners;
+	@Resource
+	protected List<OnItemValidateListener<Item>> validateListeners;
+	@Resource
+	protected List<OnItemLoadListener<Item>> loadListeners;
+	@Resource
+	protected List<OnItemCreateListener<Item>> createListeners;
+
+	protected Map<Class<Item>, List<ItemModificationListener<Item>>> createListenerRegistry;
+	protected Map<Class<Item>, List<ItemModificationListener<Item>>> validateListenerRegistry;
+	protected Map<Class<Item>, List<ItemModificationListener<Item>>> saveListenerRegistry;
+	protected Map<Class<Item>, List<ItemModificationListener<Item>>> loadListenerRegistry;
+
+	@PostConstruct
+	protected void setup() {
+		createListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, createListenerRegistry));
+		validateListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, validateListenerRegistry));
+		saveListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, saveListenerRegistry));
+		loadListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, loadListenerRegistry));
+	}
+
+	void addToListeners(final Class<Item> itemType, final ItemModificationListener<Item> listener,
+			final Map<Class<Item>, List<ItemModificationListener<Item>>> map) {
+
+		// register all listeners for all superclasses of type Item
+		for (final Class<?> superClass : ClassUtil.getAllAssignableClasses(itemType)) {
+			if (superClass.isAssignableFrom(Item.class)) {
+
+				List<ItemModificationListener<Item>> listeners = map.get(superClass);
+
+				if (listeners == null) {
+					listeners = new ArrayList<>();
+					map.put((Class<Item>) superClass, listeners);
+				}
+
+				listeners.add(listener);
+			}
+		}
+	}
 
 	@Override
 	public <T extends Item> T create(final Class<T> type) {
@@ -56,25 +96,4 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	public <T extends Item> void detach(final List<T> items) {
 		detach(items.toArray(new Item[0]));
 	}
-
-	@Required
-	public void setSaveListeners(final Map<Class<? extends Item>, OnItemSaveListener> saveListeners) {
-		this.saveListeners = saveListeners;
-	}
-
-	@Required
-	public void setValidateListeners(final Map<Class<? extends Item>, OnItemValidateListener> validateListeners) {
-		this.validateListeners = validateListeners;
-	}
-
-	@Required
-	public void setLoadListeners(final Map<Class<? extends Item>, OnItemLoadListener> loadListeners) {
-		this.loadListeners = loadListeners;
-	}
-
-	@Required
-	public void setCreateListeners(final Map<Class<? extends Item>, OnItemCreateListener> createListeners) {
-		this.createListeners = createListeners;
-	}
-
 }
