@@ -1,11 +1,12 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,19 +32,19 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
-	protected List<OnItemSaveListener<Item>> saveListeners;
-	@Resource
-	protected List<OnItemValidateListener<Item>> validateListeners;
-	@Resource
-	protected List<OnItemLoadListener<Item>> loadListeners;
-	@Resource
-	protected List<OnItemCreateListener<Item>> createListeners;
+	@Autowired(required = true)
+	protected List<OnItemSaveListener> saveListeners = Collections.emptyList();
+	@Autowired(required = true)
+	protected List<OnItemValidateListener> validateListeners = Collections.emptyList();
+	@Autowired(required = true)
+	protected List<OnItemLoadListener> loadListeners = Collections.emptyList();
+	@Autowired(required = true)
+	protected List<OnItemCreateListener> createListeners = Collections.emptyList();
 
-	protected Map<Class<Item>, List<ItemModificationListener<Item>>> createListenerRegistry;
-	protected Map<Class<Item>, List<ItemModificationListener<Item>>> validateListenerRegistry;
-	protected Map<Class<Item>, List<ItemModificationListener<Item>>> saveListenerRegistry;
-	protected Map<Class<Item>, List<ItemModificationListener<Item>>> loadListenerRegistry;
+	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> createListenerRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> validateListenerRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> saveListenerRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> loadListenerRegistry = new HashMap<>();
 
 	@PostConstruct
 	protected void setup() {

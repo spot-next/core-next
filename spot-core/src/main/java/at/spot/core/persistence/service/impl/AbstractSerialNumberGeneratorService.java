@@ -1,14 +1,16 @@
 package at.spot.core.persistence.service.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import at.spot.core.infrastructure.exception.ItemModificationListenerException;
 import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
-import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.SerialNumberGeneratorStrategy;
 import at.spot.core.model.Item;
@@ -19,13 +21,10 @@ import at.spot.itemtype.core.UniqueIdItem;
 public abstract class AbstractSerialNumberGeneratorService extends AbstractService
 		implements SerialNumberGeneratorService, OnItemSaveListener<UniqueIdItem> {
 
-	@Resource
-	protected LoggingService logginService;
+	@Autowired(required = true)
+	protected List<SerialNumberGeneratorStrategy> serialNumberGeneratorStrategies = Collections.emptyList();
 
-	@Resource
-	protected List<SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategies;
-
-	protected Map<Class<?>, SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategyRegistry;
+	final protected Map<Class<?>, SerialNumberGeneratorStrategy<Item>> serialNumberGeneratorStrategyRegistry = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@PostConstruct
@@ -64,10 +63,5 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 	@Override
 	public Class<UniqueIdItem> getItemType() {
 		return UniqueIdItem.class;
-	}
-
-	@Override
-	public void setItemType(final Class<UniqueIdItem> itemType) {
-		// ignore
 	}
 }

@@ -26,7 +26,8 @@
 	<context:component-scan base-package="at.spot.core.management.converter" />
 	<context:component-scan base-package="at.spot.core.management.populator" />
 	<context:component-scan base-package="at.spot.core.management.transformer" />
-	<context:component-scan base-package="at.spot.core.persistence.instrumentation.transformers" />
+	<context:component-scan
+		base-package="at.spot.core.persistence.instrumentation.transformers" />
 	<context:component-scan base-package="at.spot.core.persistence.service" />
 	<context:component-scan base-package="at.spot.core.persistence.valueprovider" />
 	<context:component-scan base-package="at.spot.core.security.service" />
@@ -44,11 +45,13 @@
 		<property name="loggingService" ref="loggingService" />
 	</bean>
 
-<!-- 	<bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
-<!-- 	<bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
-<!-- 		<property name="modelService" ref="modelService" /> -->
-<!-- 		<property name="queryService" ref="queryService" /> -->
-<!-- 	</bean> -->
+	<!-- <bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" 
+		parent="abstractBaseAspect" /> -->
+	<!-- <bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" 
+		factory-method="aspectOf" parent="abstractBaseAspect"> -->
+	<!-- <property name="modelService" ref="modelService" /> -->
+	<!-- <property name="queryService" ref="queryService" /> -->
+	<!-- </bean> -->
 
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
@@ -99,17 +102,26 @@
 	</bean>
 
 	<!-- SERVICES -->
-	<bean id="mapDBService" class="at.spot.core.persistence.service.impl.MapDBService" />
-
 	<bean id="hibernatePersistenceService"
 		class="at.spot.core.persistence.service.impl.hibernate.HibernatePersistenceService" />
+
+	<bean id="abstractService"
+		class="at.spot.core.infrastructure.service.impl.AbstractService"
+		abstract="true" />
+
+	<bean id="abstractSerialNumberGeneratorService"
+		class="at.spot.core.persistence.service.impl.AbstractSerialNumberGeneratorService"
+		abstract="true" />
+
+	<bean id="hibernateSerialIdGeneratorService"
+		class="at.spot.core.persistence.service.impl.hibernate.HibernateSerialNumberGeneratorService"
+		parent="abstractSerialNumberGeneratorService" scope="singleton" />
 
 	<!-- ALIASES -->
 
 	<!-- services -->
+	<alias name="hibernateSerialIdGeneratorService" alias="serialNumberGeneratorService" />
 	<alias name="defaultTransactionService" alias="transactionService" />
-	<!-- <alias name="mapDBService" alias="persistenceService" /> -->
-	<alias name="mapDBService" alias="serialNumberGenerator" />
 	<alias name="hibernatePersistenceService" alias="persistenceService" />
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="defaultModelService" alias="modelService" />
@@ -145,7 +157,7 @@
 		</property>
 	</bean>
 
-	<bean id="abstractService"
-		class="at.spot.core.infrastructure.service.impl.AbstractService"
-		abstract="true" />
+	<!-- listeners -->
+
+
 </beans>

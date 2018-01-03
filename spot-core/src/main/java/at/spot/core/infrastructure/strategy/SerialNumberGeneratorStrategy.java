@@ -1,7 +1,5 @@
 package at.spot.core.infrastructure.strategy;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.SerialNumberGeneratorException;
 import at.spot.core.persistence.service.SerialNumberGeneratorService;
@@ -34,9 +32,4 @@ public interface SerialNumberGeneratorStrategy<T extends Item> {
 	 */
 	Class<T> getItemType();
 
-	/**
-	 * Sets the item type this strategy is responsible for.
-	 */
-	@Required
-	void setItemType(Class<T> itemType);
 }
