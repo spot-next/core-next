@@ -13,17 +13,17 @@ import at.spot.core.persistence.service.SerialNumberGeneratorService;
 public interface SerialNumberGeneratorStrategy<T extends Item> {
 
 	/**
+	 * Sets the generated id for the given item in case it has not been set manually
+	 * before. The base serial number is provided from the persistence layer.
 	 * 
 	 * @param nextIdValue
-	 *            the next serial number generated from the underlying
-	 *            persistence layer
+	 *            the next serial number generated from the underlying persistence
+	 *            layer
 	 * @param item
 	 *            for which the serial number is generated
-	 * @return a fully generated serial number for the given item.
 	 * @throws SerialNumberGeneratorException
-	 *             e.g. if there is some data missing needed to generate the
-	 *             serial number. This should be prevented by proper validation
-	 *             though.
+	 *             e.g. if there is some data missing needed to generate the serial
+	 *             number. This should be prevented by proper validation though.
 	 */
 	void generate(long nextIdValue, T item) throws SerialNumberGeneratorException;
 

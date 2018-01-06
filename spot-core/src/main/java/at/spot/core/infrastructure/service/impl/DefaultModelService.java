@@ -45,6 +45,8 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
+		super.saveAll(models);
+
 		for (final T model : models) {
 			validateModel(model);
 		}

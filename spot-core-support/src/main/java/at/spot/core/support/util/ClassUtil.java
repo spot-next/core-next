@@ -32,8 +32,8 @@ public class ClassUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If
-	 * the field does not exist, null is returned.
+	 * Returns a {@link Field} instance from the given {@link Class} object. If the
+	 * field does not exist, null is returned.
 	 *
 	 * @param type
 	 * @param fieldName
@@ -73,8 +73,7 @@ public class ClassUtil {
 	 * @param includeStopClass
 	 *            if this is true, the stop class will be included. defaults to
 	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the
-	 *            result
+	 *            if this is true, the given {@link Class} is included in the result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -107,8 +106,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if
-	 * something goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if something
+	 * goes wrong. something goes wrong.
 	 *
 	 * @param object
 	 * @param fieldName
@@ -133,10 +132,6 @@ public class ClassUtil {
 	/**
 	 * Returns the field value for the given object. This silently fails if
 	 * something goes wrong. something goes wrong.
-	 *
-	 * @param object
-	 * @param fieldName
-	 * @param value
 	 */
 	public static Object getField(final Object object, final String fieldName,
 			final boolean includeInAccessableFields) {
@@ -177,11 +172,6 @@ public class ClassUtil {
 	/**
 	 * Invokes a method on a given object. This silently fails if something goes
 	 * wrong.
-	 *
-	 * @param object
-	 * @param methodName
-	 * @param args
-	 * @return
 	 */
 	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
 		Object retVal = null;
@@ -246,6 +236,10 @@ public class ClassUtil {
 		return annotatedFields;
 	}
 
+	/**
+	 * Returns all assignable classes for the given class, starting with the actual
+	 * class.
+	 */
 	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
 		classes.add(type);
@@ -256,10 +250,6 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given joinPoint.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		return getAnnotation(joinPoint, annotation) != null;
@@ -268,10 +258,6 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		A ret = null;
@@ -307,10 +293,6 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given class.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final Class<?> type, final Class<A> annotation) {
 		return getAnnotation(type, annotation) != null;
@@ -319,10 +301,6 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> A getAnnotation(final Class<?> type, final Class<A> annotation) {
 		return type.getAnnotation(annotation);
@@ -330,10 +308,6 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given member.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
 			final Class<A> annotation) {
@@ -343,10 +317,6 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
-	 *
-	 * @param joinPoint
-	 * @param annotation
-	 * @return
 	 */
 	public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
 		return member.getAnnotation(annotation);

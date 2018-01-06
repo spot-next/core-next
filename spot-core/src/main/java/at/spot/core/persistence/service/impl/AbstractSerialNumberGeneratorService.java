@@ -16,6 +16,7 @@ import at.spot.core.infrastructure.strategy.SerialNumberGeneratorStrategy;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.SerialNumberGeneratorException;
 import at.spot.core.persistence.service.SerialNumberGeneratorService;
+import at.spot.core.support.util.ClassUtil;
 import at.spot.itemtype.core.UniqueIdItem;
 
 public abstract class AbstractSerialNumberGeneratorService extends AbstractService
@@ -34,9 +35,16 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 
 	@Override
 	public <T extends UniqueIdItem> void generate(final T item) throws SerialNumberGeneratorException {
+		SerialNumberGeneratorStrategy<Item> generator = null;
 
-		final SerialNumberGeneratorStrategy<Item> generator = serialNumberGeneratorStrategyRegistry
-				.get(item.getClass());
+		// find any suiting superclass generator
+		for (Class<?> superclass : ClassUtil.getAllAssignableClasses(item.getClass())) {
+			generator = serialNumberGeneratorStrategyRegistry.get(superclass);
+
+			if (generator != null) {
+				break;
+			}
+		}
 
 		if (generator != null) {
 			generator.generate(getNextSerialNumber(item), item);

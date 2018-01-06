@@ -63,4 +63,14 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(localization.getId(), loaded.getId());
 	}
 
+	@Test
+	public void testSerialNumberGeneration() throws Exception {
+		final User user = modelService.create(User.class);
+		user.setShortName("test user");
+
+		modelService.save(user);
+
+		Assert.assertNotNull(user.getId());
+	}
+
 }

@@ -11,6 +11,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.interceptor.ItemModificationListener;
 import at.spot.core.infrastructure.interceptor.OnItemCreateListener;
 import at.spot.core.infrastructure.interceptor.OnItemLoadListener;
@@ -19,6 +21,7 @@ import at.spot.core.infrastructure.interceptor.OnItemValidateListener;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
+import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.support.util.ClassUtil;
 
@@ -32,13 +35,13 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Autowired(required = true)
+	@Autowired(required = false)
 	protected List<OnItemSaveListener> saveListeners = Collections.emptyList();
-	@Autowired(required = true)
+	@Autowired(required = false)
 	protected List<OnItemValidateListener> validateListeners = Collections.emptyList();
-	@Autowired(required = true)
+	@Autowired(required = false)
 	protected List<OnItemLoadListener> loadListeners = Collections.emptyList();
-	@Autowired(required = true)
+	@Autowired(required = false)
 	protected List<OnItemCreateListener> createListeners = Collections.emptyList();
 
 	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> createListenerRegistry = new HashMap<>();
@@ -54,13 +57,12 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		loadListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, loadListenerRegistry));
 	}
 
-	void addToListeners(final Class<Item> itemType, final ItemModificationListener<Item> listener,
+	protected void addToListeners(final Class<Item> itemType, final ItemModificationListener<Item> listener,
 			final Map<Class<Item>, List<ItemModificationListener<Item>>> map) {
 
 		// register all listeners for all superclasses of type Item
 		for (final Class<?> superClass : ClassUtil.getAllAssignableClasses(itemType)) {
 			if (superClass.isAssignableFrom(Item.class)) {
-
 				List<ItemModificationListener<Item>> listeners = map.get(superClass);
 
 				if (listeners == null) {
@@ -81,7 +83,26 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		setTypeCode(item);
 		persistenceService.initItem(item);
 
+		List<ItemModificationListener<Item>> listeners = createListenerRegistry.get(item.getClass());
+
+		if (listeners != null) {
+			listeners.stream().forEach(l -> l.onEvent(item));
+		}
+
 		return item;
+	}
+
+	@Override
+	public <T extends Item> void saveAll(List<T> models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+
+		for (T item : models) {
+			List<ItemModificationListener<Item>> listeners = saveListenerRegistry.get(item.getClass());
+
+			if (listeners != null) {
+				listeners.stream().forEach(l -> l.onEvent(item));
+			}
+		}
 	}
 
 	protected <T extends Item> void setTypeCode(final T item) {
