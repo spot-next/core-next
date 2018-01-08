@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.exception;
 
-public abstract class AbstractModelException extends Exception {
+public abstract class AbstractModelException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public AbstractModelException(final String message) {

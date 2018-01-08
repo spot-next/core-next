@@ -3,7 +3,6 @@ package at.spot.core.management.populator.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
@@ -33,13 +32,8 @@ public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericIt
 		target.setTypeClass(source.getTypeClass());
 		target.setPackageName(source.getPackageName());
 
-		try {
-			for (final ItemTypePropertyDefinition member : typeService.getItemTypeProperties(source.getTypeCode())
-					.values()) {
-				target.addProperty(member);
-			}
-		} catch (final UnknownTypeException e) {
-			loggingService.exception("Can't populate item type definition.", e);
+		for (final ItemTypePropertyDefinition member : source.getProperties().values()) {
+			target.addProperty(member);
 		}
 	}
 }

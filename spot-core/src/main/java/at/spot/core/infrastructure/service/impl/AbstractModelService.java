@@ -13,13 +13,14 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.interceptor.ItemModificationListener;
-import at.spot.core.infrastructure.interceptor.OnItemCreateListener;
-import at.spot.core.infrastructure.interceptor.OnItemLoadListener;
-import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
-import at.spot.core.infrastructure.interceptor.OnItemValidateListener;
+import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
@@ -36,57 +37,76 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected PersistenceService persistenceService;
 
 	@Autowired(required = false)
-	protected List<OnItemSaveListener> saveListeners = Collections.emptyList();
+	protected List<ItemSaveInterceptor<Item>> saveInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemValidateListener> validateListeners = Collections.emptyList();
+	protected List<ItemValidateInterceptor<Item>> validateInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemLoadListener> loadListeners = Collections.emptyList();
+	protected List<ItemLoadInterceptor<Item>> loadInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemCreateListener> createListeners = Collections.emptyList();
+	protected List<ItemCreateInterceptor<Item>> createInterceptors = Collections.emptyList();
 
-	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> createListenerRegistry = new HashMap<>();
-	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> validateListenerRegistry = new HashMap<>();
-	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> saveListenerRegistry = new HashMap<>();
-	final protected Map<Class<Item>, List<ItemModificationListener<Item>>> loadListenerRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemLoadInterceptor<Item>>> loadInterceptorRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemCreateInterceptor<Item>>> createInterceptorRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemValidateInterceptor<Item>>> validateInterceptorRegistry = new HashMap<>();
+	final protected Map<Class<Item>, List<ItemSaveInterceptor<Item>>> saveInterceptorRegistry = new HashMap<>();
 
 	@PostConstruct
 	protected void setup() {
-		createListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, createListenerRegistry));
-		validateListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, validateListenerRegistry));
-		saveListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, saveListenerRegistry));
-		loadListeners.stream().forEach(l -> addToListeners(l.getItemType(), l, loadListenerRegistry));
+		for (Map.Entry<String, ItemTypeDefinition> entry : typeService.getItemTypeDefinitions().entrySet()) {
+
+		}
+
+		createInterceptors.stream().forEach(l -> addToInterceptors(l.getItemType(), l, createInterceptorRegistry));
+		validateInterceptors.stream().forEach(l -> addToInterceptors(l.getItemType(), l, validateInterceptorRegistry));
+		saveInterceptors.stream().forEach(l -> addToInterceptors(l.getItemType(), l, saveInterceptorRegistry));
+		loadInterceptors.stream().forEach(l -> addToInterceptors(l.getItemType(), l, loadInterceptorRegistry));
+
+		// loadInterceptors.stream().collect(Collectors.toMap(ItemLoadInterceptor::getItemType,
+		// Function.identity()));
+		// createInterceptors.stream().collect(Collectors.toMap(ItemCreateInterceptor::getItemType,
+		// Function.identity()));
+		// validateInterceptors.stream()
+		// .collect(Collectors.toMap(ItemValidateInterceptor::getItemType,
+		// Function.identity()));
+		// saveInterceptors.stream().collect(Collectors.toMap(ItemSaveInterceptor::getItemType,
+		// Function.identity()));
 	}
 
-	protected void addToListeners(final Class<Item> itemType, final ItemModificationListener<Item> listener,
-			final Map<Class<Item>, List<ItemModificationListener<Item>>> map) {
+	protected <T extends ItemInterceptor<Item>> void addToInterceptors(final Class<Item> itemType, final T interceptor,
+			final Map<Class<Item>, List<T>> map) {
 
-		// register all listeners for all superclasses of type Item
-		for (final Class<?> superClass : ClassUtil.getAllAssignableClasses(itemType)) {
-			if (superClass.isAssignableFrom(Item.class)) {
-				List<ItemModificationListener<Item>> listeners = map.get(superClass);
+		List<T> interceptors = map.get(itemType);
 
-				if (listeners == null) {
-					listeners = new ArrayList<>();
-					map.put((Class<Item>) superClass, listeners);
-				}
-
-				listeners.add(listener);
-			}
+		if (interceptors == null) {
+			interceptors = new ArrayList<>();
+			map.put((Class<Item>) itemType, interceptors);
 		}
+
+		interceptors.add(interceptor);
 	}
 
 	@Override
-	public <T extends Item> T create(final Class<T> type) {
-		final String typeCode = typeService.getTypeCode(type);
+	public <T extends Item> T create(final Class<T> itemType) {
+		final String typeCode = typeService.getTypeCodeForClass(itemType);
 
-		final T item = getApplicationContext().getBean(typeCode, type);
+		final T item = getApplicationContext().getBean(typeCode, itemType);
 		setTypeCode(item);
 		persistenceService.initItem(item);
 
-		List<ItemModificationListener<Item>> listeners = createListenerRegistry.get(item.getClass());
+		List<ItemCreateInterceptor<Item>> interceptors = createInterceptorRegistry.get(item.getClass());
 
-		if (listeners != null) {
-			listeners.stream().forEach(l -> l.onEvent(item));
+		// for (Class<?> superClass : ClassUtil.getAllAssignableClasses(itemType)) {
+		// if (superClass.isAssignableFrom(Item.class)) {
+		// List<ItemCreateInterceptor<Item>> typeInterceptors =
+		//
+		// if (typeInterceptors != null) {
+		// interceptors.addAll(typeInterceptors);
+		// }
+		// }
+		// }
+
+		if (interceptors != null) {
+			interceptors.stream().forEach(l -> l.onCreate(item));
 		}
 
 		return item;
@@ -97,16 +117,16 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
 		for (T item : models) {
-			List<ItemModificationListener<Item>> listeners = saveListenerRegistry.get(item.getClass());
+			List<ItemSaveInterceptor<Item>> listeners = saveInterceptorRegistry.get(item.getClass());
 
 			if (listeners != null) {
-				listeners.stream().forEach(l -> l.onEvent(item));
+				listeners.stream().forEach(l -> l.onSave(item));
 			}
 		}
 	}
 
 	protected <T extends Item> void setTypeCode(final T item) {
-		ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
+		ClassUtil.setField(item, "typeCode", typeService.getTypeCodeForClass(item.getClass()));
 	}
 
 	@Override

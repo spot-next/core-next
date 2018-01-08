@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.spot.core.persistence.query.QueryCondition;
+import at.spot.core.persistence.query.QueryResult;
+
 import at.spot.core.infrastructure.exception.DeserializationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -41,8 +44,6 @@ import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.query.QueryCondition;
-import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -140,7 +141,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final Class<? extends Item> type = typeService.getType(request.params(":typecode"));
+		final Class<? extends Item> type = typeService.getClassForTypeCode(request.params(":typecode"));
 
 		models = (List<T>) modelService.getAll(type, null, page, pageSize);
 
@@ -167,7 +168,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 		final T model = modelService.get(type, pk);
 
 		if (model == null) {
@@ -180,14 +181,13 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JEXL expression.
-	 * <br/>
+	 * Gets an item based on the search query. The query is a JEXL expression. <br/>
 	 * 
 	 * <br/>
 	 * Example: .../User/query/uid='test-user' & name.contains('Vader') <br/>
 	 * <br/>
-	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)}
-	 * is called.
+	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)} is
+	 * called.
 	 * 
 	 * @param request
 	 * @param response
@@ -201,7 +201,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final Class<T> type = (Class<T>) typeService.getType(request.params(":typecode"));
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
 
 		final String[] queryStrings = request.queryParamsValues("query");
 
@@ -247,12 +247,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 
 		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
 		final Map<String, String[]> query = request.queryMap().toMap();
 		final Map<String, Object> searchParameters = new HashMap<>();
 
-		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeProperties(typeCode).values()) {
+		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeDefinition(typeCode).getProperties()
+				.values()) {
+
 			final String[] queryValues = query.get(prop.getName());
 
 			if (queryValues != null && queryValues.length == 1) {
@@ -363,7 +365,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
 		if (pk > -1) {
-			final Class<T> type = (Class<T>) typeService.getType(typeCode);
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 			try {
 				modelService.remove(type, pk);
 			} catch (final ModelNotFoundException e) {
@@ -381,10 +383,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an item with the given values. The PK must be provided. If the
-	 * new item is not unique, an error is returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just
-	 * want to update a few fields, use the PATCH Method.
+	 * Updates an item with the given values. The PK must be provided. If the new
+	 * item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just want
+	 * to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response
@@ -434,7 +436,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		// get type
 		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
@@ -449,7 +451,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
 			}
 
-			final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService.getItemTypeProperties(type);
+			final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
+					.getItemTypeProperties(typeService.getTypeCodeForClass(type));
 
 			for (final Entry<String, JsonElement> prop : content.entrySet()) {
 				final String key = prop.getKey();
@@ -489,7 +492,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			throws DeserializationException, UnknownTypeException {
 
 		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getType(typeCode);
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
 		final T item = serializationService.fromJson(request.body(), type);
 
