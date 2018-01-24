@@ -20,6 +20,8 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<tx:annotation-driven mode="proxy" proxy-target-class="true" />
 
+	<context:component-scan base-package="at.spot.core.persistence.hibernate.impl" />
+
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="driverClassName" value="${database.jdbc.driverClassName}" />
 		<property name="jdbcUrl" value="${database.jdbc.url}" />
@@ -42,10 +44,12 @@
 		</constructor-arg>
 	</bean>
 
-<!-- 	<bean id="sessionFactory" class="at.spot.core.persistence.service.impl.hibernate.HibernateSessionFactoryBean"> -->
+<!-- 	<bean id="sessionFactory" class="at.spot.core.persistence.hibernate.impl.HibernateSessionFactoryBean"> -->
 <!-- 		<property name="dataSource" ref="dataSource" /> -->
 <!-- 		<property name="hibernateProperties" ref="jpaProperties" /> -->
 <!-- 	</bean> -->
+
+	<bean id="hibernatePersistenceProvider" class="at.spot.core.persistence.hibernate.impl.HibernatePersistenceProviderImpl" />
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -58,7 +62,7 @@
 		<property name="persistenceUnitPostProcessors">
 			<list>
 				<bean
-					class="at.spot.core.persistence.service.impl.hibernate.TypeServicePersistenceUnitPostProcessor" />
+					class="at.spot.core.persistence.hibernate.impl.TypeServicePersistenceUnitPostProcessor" />
 			</list>
 		</property>
 		<property name="jpaProperties" ref="jpaProperties" />

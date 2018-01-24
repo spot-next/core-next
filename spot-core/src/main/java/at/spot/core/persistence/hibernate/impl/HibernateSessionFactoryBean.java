@@ -1,4 +1,4 @@
-package at.spot.core.persistence.service.impl.hibernate;
+package at.spot.core.persistence.hibernate.impl;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -103,7 +103,7 @@
 
 	<!-- SERVICES -->
 	<bean id="hibernatePersistenceService"
-		class="at.spot.core.persistence.service.impl.hibernate.HibernatePersistenceService" />
+		class="at.spot.core.persistence.hibernate.impl.HibernatePersistenceService" />
 
 	<bean id="abstractService"
 		class="at.spot.core.infrastructure.service.impl.AbstractService"
@@ -114,7 +114,7 @@
 		abstract="true" />
 
 	<bean id="hibernateSerialIdGeneratorService"
-		class="at.spot.core.persistence.service.impl.hibernate.HibernateSerialNumberGeneratorService"
+		class="at.spot.core.persistence.hibernate.impl.HibernateSerialNumberGeneratorService"
 		parent="abstractSerialNumberGeneratorService" scope="singleton" />
 
 	<!-- ALIASES -->

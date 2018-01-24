@@ -189,7 +189,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName,
 			Map<String, ItemTypePropertyDefinition> properties) {
 
-		return new ItemTypeDefinition(typeCode, className + "." + packageName, className, packageName, properties);
+		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, properties);
 	}
 
 	/**

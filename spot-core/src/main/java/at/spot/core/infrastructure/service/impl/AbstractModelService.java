@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
-import at.spot.core.infrastructure.interceptor.ItemModificationListener;
-import at.spot.core.infrastructure.interceptor.OnItemCreateListener;
-import at.spot.core.infrastructure.interceptor.OnItemLoadListener;
-import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
-import at.spot.core.infrastructure.interceptor.OnItemValidateListener;
+import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.model.Item;
@@ -44,18 +44,18 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected PersistenceService persistenceService;
 
 	@Autowired(required = false)
-	protected List<OnItemSaveListener> saveInterceptors = Collections.emptyList();
+	protected List<ItemCreateInterceptor> createInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemValidateListener> validateInterceptors = Collections.emptyList();
+	protected List<ItemValidateInterceptor> validateInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemLoadListener> loadInterceptors = Collections.emptyList();
+	protected List<ItemSaveInterceptor> saveInterceptors = Collections.emptyList();
 	@Autowired(required = false)
-	protected List<OnItemCreateListener> createInterceptors = Collections.emptyList();
+	protected List<ItemLoadInterceptor> loadInterceptors = Collections.emptyList();
 
-	final protected Map<String, List<ItemModificationListener<Item>>> createInterceptorRegistry = new HashMap<>();
-	final protected Map<String, List<ItemModificationListener<Item>>> validateInterceptorRegistry = new HashMap<>();
-	final protected Map<String, List<ItemModificationListener<Item>>> saveInterceptorRegistry = new HashMap<>();
-	final protected Map<String, List<ItemModificationListener<Item>>> loadInterceptorRegistry = new HashMap<>();
+	final protected Map<String, List<ItemCreateInterceptor<Item>>> createInterceptorRegistry = new HashMap<>();
+	final protected Map<String, List<ItemValidateInterceptor<Item>>> validateInterceptorRegistry = new HashMap<>();
+	final protected Map<String, List<ItemSaveInterceptor<Item>>> saveInterceptorRegistry = new HashMap<>();
+	final protected Map<String, List<ItemLoadInterceptor<Item>>> loadInterceptorRegistry = new HashMap<>();
 
 	@PostConstruct
 	protected void setup() throws UnknownTypeException {
@@ -88,11 +88,11 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		// addToListeners(l.getItemType(), l, loadInterceptorRegistry));
 	}
 
-	protected void addToListeners(final Class<Item> itemType, final ItemModificationListener<Item> listener,
-			final Map<Class<Item>, List<ItemModificationListener<Item>>> map) {
+	protected void addToListeners(final Class<Item> itemType, final ItemInterceptor<Item> listener,
+			final Map<Class<Item>, List<ItemInterceptor<Item>>> map) {
 
 		// register all listeners for all superclasses of type Item
-		List<ItemModificationListener<Item>> listeners = map.get(itemType);
+		List<ItemInterceptor<Item>> listeners = map.get(itemType);
 
 		if (listeners == null) {
 			listeners = new ArrayList<>();
@@ -104,16 +104,16 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Override
 	public <T extends Item> T create(final Class<T> type) {
-		final String typeCode = typeService.getTypeCode(type);
+		final String typeCode = typeService.getTypeCodeForClass(type);
 
 		final T item = getApplicationContext().getBean(typeCode, type);
 		setTypeCode(item);
 		persistenceService.initItem(item);
 
-		final List<ItemModificationListener<Item>> listeners = createInterceptorRegistry.get(item.getClass());
+		final List<ItemCreateInterceptor<Item>> listeners = createInterceptorRegistry.get(item.getClass());
 
 		if (listeners != null) {
-			listeners.stream().forEach(l -> l.onEvent(item));
+			listeners.stream().forEach(l -> l.onCreate(item));
 		}
 
 		return item;
@@ -133,16 +133,16 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 				}
 			}
 
-			final List<ItemModificationListener<Item>> listeners = saveInterceptorRegistry.get(item.getClass());
+			final List<ItemSaveInterceptor<Item>> listeners = saveInterceptorRegistry.get(item.getClass());
 
 			if (listeners != null) {
-				listeners.stream().forEach(l -> l.onEvent(item));
+				listeners.stream().forEach(l -> l.onSave(item));
 			}
 		}
 	}
 
 	protected <T extends Item> void setTypeCode(final T item) {
-		ClassUtil.setField(item, "typeCode", typeService.getTypeCode(item.getClass()));
+		ClassUtil.setField(item, "typeCode", typeService.getTypeCodeForClass(item.getClass()));
 	}
 
 	@Override
