@@ -3,16 +3,17 @@ package at.spot.core.persistence.service.impl.hibernate;
 import java.io.Serializable;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.Type;
 
@@ -32,10 +33,12 @@ public class HibernateSerialNumberGeneratorService extends AbstractSerialNumberG
 	protected Dialect dialect;
 
 	@Override
-	public void configure(final Type type, final Properties params, final ServiceRegistry serviceRegistry)
-			throws MappingException {
+	@PostConstruct
+	public void setup() {
+		super.setup();
 
-		final JdbcEnvironment jdbcEnvironment = serviceRegistry.getService(JdbcEnvironment.class);
+		final JdbcEnvironment jdbcEnvironment = persistenceService.getSessionFactory().getSessionFactoryOptions()
+				.getServiceRegistry().getService(JdbcEnvironment.class);
 		dialect = jdbcEnvironment.getDialect();
 	}
 
@@ -56,21 +59,35 @@ public class HibernateSerialNumberGeneratorService extends AbstractSerialNumberG
 				return id;
 			}
 
-			sequenceCallSyntax = dialect.getSequenceNextValString(getSequenceName(session, obj.getClass()));
+			final Serializable val = getNextVal(session, obj.getClass());
 
-			final long seqValue = ((Number) Session.class.cast(session).createSQLQuery(sequenceCallSyntax)
-					.uniqueResult()).longValue();
-
-			return seqValue;
+			return 0;
 		}
 
 		return null;
 	}
 
-	protected String getSequenceName(final SharedSessionContractImplementor session, final Class<?> entityClass) {
-		final Type entityType = session.getFactory().getTypeHelper().basic(entityClass);
+	protected Serializable getNextVal(final SharedSessionContractImplementor session, final Class<?> entityClass) {
+		final Type entityType = session.getFactory().getTypeHelper().entity(entityClass);
 		final String entitySequenceName = SEQUENCE_PREFIX + entityType.getName();
 
-		return entitySequenceName;
+		final Properties props = new Properties();
+		props.putAll(persistenceService.getEntityManagerFactory().getProperties());
+
+		final SequenceStyleGenerator seqGenerator = new SequenceStyleGenerator();
+		seqGenerator.configure(entityType, props,
+				persistenceService.getSessionFactory().getSessionFactoryOptions().getServiceRegistry());
+		// seqGenerator.registerExportables();
+
+		final Serializable id = seqGenerator.generate(session, null);
+
+		return id;
+	}
+
+	@Override
+	public void configure(final Type type, final Properties params, final ServiceRegistry serviceRegistry)
+			throws MappingException {
+		// TODO Auto-generated method stub
+
 	}
 }

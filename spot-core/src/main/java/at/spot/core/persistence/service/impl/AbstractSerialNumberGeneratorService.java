@@ -9,8 +9,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import at.spot.core.infrastructure.exception.ItemModificationListenerException;
-import at.spot.core.infrastructure.interceptor.OnItemSaveListener;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.SerialNumberGeneratorStrategy;
 import at.spot.core.model.Item;
@@ -20,7 +18,7 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.itemtype.core.UniqueIdItem;
 
 public abstract class AbstractSerialNumberGeneratorService extends AbstractService
-		implements SerialNumberGeneratorService, OnItemSaveListener<UniqueIdItem> {
+		implements SerialNumberGeneratorService {
 
 	@Autowired(required = true)
 	protected List<SerialNumberGeneratorStrategy> serialNumberGeneratorStrategies = Collections.emptyList();
@@ -38,7 +36,7 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 		SerialNumberGeneratorStrategy<Item> generator = null;
 
 		// find any suiting superclass generator
-		for (Class<?> superclass : ClassUtil.getAllAssignableClasses(item.getClass())) {
+		for (final Class<?> superclass : ClassUtil.getAllAssignableClasses(item.getClass())) {
 			generator = serialNumberGeneratorStrategyRegistry.get(superclass);
 
 			if (generator != null) {
@@ -55,21 +53,4 @@ public abstract class AbstractSerialNumberGeneratorService extends AbstractServi
 	}
 
 	abstract protected <T extends Item> Long getNextSerialNumber(final T item);
-
-	@Override
-	public void onEvent(final UniqueIdItem item) throws ItemModificationListenerException {
-		if (item instanceof UniqueIdItem) {
-			try {
-				generate(item);
-			} catch (final SerialNumberGeneratorException e) {
-				throw new ItemModificationListenerException(
-						String.format("Could not generate unique id for item of type %s", item.getClass().getName()));
-			}
-		}
-	}
-
-	@Override
-	public Class<UniqueIdItem> getItemType() {
-		return UniqueIdItem.class;
-	}
 }

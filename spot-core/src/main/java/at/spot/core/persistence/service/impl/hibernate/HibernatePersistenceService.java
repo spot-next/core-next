@@ -26,6 +26,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -317,6 +318,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
 				.unbindResource(entityManagerFactory);
 		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+	}
+
+	public EntityManagerFactory getEntityManagerFactory() {
+		return entityManagerFactory;
+	}
+
+	public SessionFactory getSessionFactory() {
+		return entityManagerFactory.unwrap(SessionFactory.class);
 	}
 
 }
