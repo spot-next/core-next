@@ -31,11 +31,11 @@ public class UniqueIdItemSaveInterceptor implements ItemSaveInterceptor<UniqueId
 
 	@Override
 	public void onSave(UniqueIdItem item) throws ItemInterceptorException {
-		String typeCode = typeService.getTypeCodeForClass(item.getClass());
 
 		try {
 			// only get a new sequence id if the id property is empty to save some ids
 			if (item.getId() == null) {
+				String typeCode = typeService.getTypeCodeForClass(item.getClass());
 				long nextVal = sequenceGenerator.getNextSequenceValue(typeCode + "_" + "id");
 
 				item.setId(typeCode + "-" + nextVal);
