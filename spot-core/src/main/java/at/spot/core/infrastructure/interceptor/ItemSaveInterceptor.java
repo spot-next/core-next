@@ -1,7 +1,6 @@
 package at.spot.core.infrastructure.interceptor;
 
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
-import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
 
 public interface ItemSaveInterceptor<T extends Item> extends ItemInterceptor<T> {
@@ -10,9 +9,9 @@ public interface ItemSaveInterceptor<T extends Item> extends ItemInterceptor<T> 
 	 * persisted by the persistence layer.
 	 * 
 	 * @param item
-	 *            the validated item
+	 *            The validated item
 	 * @throws ItemInterceptorException
-	 *             if thrown this will not be handler by the {@link ModelService}
+	 *             If thrown the item will not be persisted.
 	 */
 	void onSave(T item) throws ItemInterceptorException;
 }

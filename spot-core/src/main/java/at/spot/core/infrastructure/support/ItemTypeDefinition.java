@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.support;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
@@ -14,7 +13,7 @@ public class ItemTypeDefinition {
 	protected final String typeClass;
 	protected final String typeName;
 	protected final String packageName;
-	protected final Map<String, ItemTypePropertyDefinition> properties = new HashMap<String, ItemTypePropertyDefinition>();
+	protected final Map<String, ItemTypePropertyDefinition> properties;
 
 	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName,
 			Map<String, ItemTypePropertyDefinition> properties) {
@@ -23,6 +22,7 @@ public class ItemTypeDefinition {
 		this.typeClass = typeClass;
 		this.typeName = typeName;
 		this.packageName = packageName;
+		this.properties = properties;
 	}
 
 	public String getTypeCode() {

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemRemoveInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.ModelService;
@@ -43,11 +45,14 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected List<ItemSaveInterceptor> saveInterceptors = Collections.emptyList();
 	@Autowired(required = false)
 	protected List<ItemLoadInterceptor> loadInterceptors = Collections.emptyList();
+	@Autowired(required = false)
+	protected List<ItemRemoveInterceptor> removeInterceptors = Collections.emptyList();
 
 	protected Map<Class, List<ItemCreateInterceptor>> createInterceptorRegistry;
 	protected Map<Class, List<ItemValidateInterceptor>> validateInterceptorRegistry;
 	protected Map<Class, List<ItemSaveInterceptor>> saveInterceptorRegistry;
 	protected Map<Class, List<ItemLoadInterceptor>> loadInterceptorRegistry;
+	protected Map<Class, List<ItemRemoveInterceptor>> removeInterceptorRegistry;
 
 	@PostConstruct
 	protected void setup() throws UnknownTypeException {
@@ -60,6 +65,8 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 				.collect(Collectors.groupingBy(ItemSaveInterceptor::getItemType));
 		loadInterceptorRegistry = loadInterceptors.stream()
 				.collect(Collectors.groupingBy(ItemLoadInterceptor::getItemType));
+		removeInterceptorRegistry = removeInterceptors.stream()
+				.collect(Collectors.groupingBy(ItemRemoveInterceptor::getItemType));
 	}
 
 	@Override
@@ -70,10 +77,12 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		setTypeCode(item);
 		persistenceService.initItem(item);
 
-		final List<ItemCreateInterceptor> listeners = createInterceptorRegistry.get(item.getClass());
+		for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, true, true)) {
+			final List<ItemCreateInterceptor> interceptors = createInterceptorRegistry.get(superClass);
 
-		if (listeners != null) {
-			listeners.stream().forEach(l -> l.onCreate(item));
+			if (CollectionUtils.isNotEmpty(interceptors)) {
+				interceptors.stream().forEach(l -> l.onCreate(item));
+			}
 		}
 
 		return item;
@@ -84,10 +93,12 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
 		for (final T item : models) {
-			final List<ItemSaveInterceptor> listeners = saveInterceptorRegistry.get(item.getClass());
+			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, true, true)) {
+				final List<ItemSaveInterceptor> interceptors = saveInterceptorRegistry.get(superClass);
 
-			if (listeners != null) {
-				listeners.stream().forEach(l -> l.onSave(item));
+				if (CollectionUtils.isNotEmpty(interceptors)) {
+					interceptors.stream().forEach(l -> l.onSave(item));
+				}
 			}
 		}
 	}

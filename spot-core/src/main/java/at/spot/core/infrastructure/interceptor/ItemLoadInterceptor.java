@@ -1,7 +1,6 @@
 package at.spot.core.infrastructure.interceptor;
 
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
-import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
 
 public interface ItemLoadInterceptor<T extends Item> extends ItemInterceptor<T> {
@@ -10,9 +9,9 @@ public interface ItemLoadInterceptor<T extends Item> extends ItemInterceptor<T> 
 	 * can be done here.
 	 * 
 	 * @param item
-	 *            the loaded item
+	 *            The loaded item
 	 * @throws ItemInterceptorException
-	 *             if thrown this will not be handler by the {@link ModelService}
+	 *             If thrown the item instantiation will be cancelled.
 	 */
 	void onLoad(T item) throws ItemInterceptorException;
 }

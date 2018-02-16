@@ -2,7 +2,6 @@ package at.spot.core.infrastructure.interceptor;
 
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
 
 public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor<T> {
@@ -11,11 +10,11 @@ public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor
 	 * passed the (JSR 303) annotation-based validation.
 	 * 
 	 * @param item
-	 *            the item to be saved
+	 *            The item to be saved
 	 * @throws ModelValidationException
-	 *             can be thrown if the item is not valid.
+	 *             Can be thrown if the item is not valid
 	 * @throws ItemInterceptorException
-	 *             If thrown this will not be handler by the {@link ModelService}
+	 *             If thrown the item will not be persisted
 	 */
 	void onValidate(T item) throws ModelValidationException, ItemInterceptorException;
 }
