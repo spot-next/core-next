@@ -16,7 +16,8 @@ import at.spot.itemtype.core.UniqueIdItem;
  * is not already set.
  */
 @Service
-public class UniqueIdItemSaveInterceptor implements ItemSaveInterceptor<UniqueIdItem> {
+public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueIdItem>
+		implements ItemSaveInterceptor<UniqueIdItem> {
 
 	@Resource
 	protected SequenceGenerator sequenceGenerator;

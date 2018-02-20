@@ -152,17 +152,20 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected boolean isItemType(final CtClass clazz) throws IllegalClassTransformationException {
-		if (!clazz.isFrozen()) {
-			return getItemTypeAnnotation(clazz).isPresent();
-		}
-
-		return false;
+		return getItemTypeAnnotation(clazz).isPresent();
 	}
 
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
-		return getAnnotation(clazz, ItemType.class);
+		// if the given class is a java base class it can't be unfrozen and it would
+		// throw an exception
+		// so we check for valid classes
+		if (isValidClass(clazz.getName())) {
+			return getAnnotation(clazz, ItemType.class);
+		}
+
+		return Optional.empty();
 	}
 
 	protected String getItemTypeCode(final CtClass clazz) throws IllegalClassTransformationException {
@@ -227,7 +230,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		} else if (isItemType(field.getType())) { // one to one in case the
 													// field type is a subtype
 													// of Item
-			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
+			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
 		}

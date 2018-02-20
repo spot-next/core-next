@@ -107,7 +107,7 @@ public class Registry implements ApplicationContextAware {
 		Registry.configuration = configuration;
 	}
 
-	public static Configuration getAppConfiguration() {
+	public static Configuration getApplicationConfiguration() {
 		return configuration;
 	}
 }

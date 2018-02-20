@@ -153,6 +153,18 @@
 		</property>
 	</bean>
 
-	<!-- listeners -->
+	<!-- item interceptors -->
+	<bean id="abstractItemInterceptorRegistry" abstract="true"
+		class="at.spot.core.infrastructure.support.ItemInterceptorRegistry">
+
+		<property name="typeService" ref="typeService" />
+		<property name="persistenceService" ref="persistenceService" />
+	</bean>
+
+	<bean id="itemCreateInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
+	<bean id="itemValidateInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
+	<bean id="itemSaveInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
+	<bean id="itemLoadInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
+	<bean id="itemRemoveInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 
 </beans>

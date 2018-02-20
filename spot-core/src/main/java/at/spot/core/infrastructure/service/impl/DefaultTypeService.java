@@ -160,7 +160,13 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	public <I extends Item> String getTypeCodeForClass(final Class<I> itemType) {
 		final ItemType annotation = ClassUtil.getAnnotation(itemType, ItemType.class);
 
-		return annotation.typeCode();
+		if (annotation != null) {
+			return annotation.typeCode();
+		}
+
+		loggingService.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
+
+		return null;
 	}
 
 	@Override

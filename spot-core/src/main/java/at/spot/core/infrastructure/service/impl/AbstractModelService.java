@@ -1,20 +1,14 @@
 package at.spot.core.infrastructure.service.impl;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemRemoveInterceptor;
@@ -22,6 +16,7 @@ import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.support.ItemInterceptorRegistry;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
@@ -37,37 +32,20 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Resource
 	protected PersistenceService persistenceService;
 
-	@Autowired(required = false)
-	protected List<ItemCreateInterceptor> createInterceptors = Collections.emptyList();
-	@Autowired(required = false)
-	protected List<ItemValidateInterceptor> validateInterceptors = Collections.emptyList();
-	@Autowired(required = false)
-	protected List<ItemSaveInterceptor> saveInterceptors = Collections.emptyList();
-	@Autowired(required = false)
-	protected List<ItemLoadInterceptor> loadInterceptors = Collections.emptyList();
-	@Autowired(required = false)
-	protected List<ItemRemoveInterceptor> removeInterceptors = Collections.emptyList();
+	@Resource
+	protected ItemInterceptorRegistry<ItemCreateInterceptor<Item>> itemCreateInterceptorRegistry;
 
-	protected Map<Class, List<ItemCreateInterceptor>> createInterceptorRegistry;
-	protected Map<Class, List<ItemValidateInterceptor>> validateInterceptorRegistry;
-	protected Map<Class, List<ItemSaveInterceptor>> saveInterceptorRegistry;
-	protected Map<Class, List<ItemLoadInterceptor>> loadInterceptorRegistry;
-	protected Map<Class, List<ItemRemoveInterceptor>> removeInterceptorRegistry;
+	@Resource
+	protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
 
-	@PostConstruct
-	protected void setup() throws UnknownTypeException {
-		// TODO: super type handling not yet implemented
-		createInterceptorRegistry = createInterceptors.stream()
-				.collect(Collectors.groupingBy(ItemCreateInterceptor::getItemType));
-		validateInterceptorRegistry = validateInterceptors.stream()
-				.collect(Collectors.groupingBy(ItemValidateInterceptor::getItemType));
-		saveInterceptorRegistry = saveInterceptors.stream()
-				.collect(Collectors.groupingBy(ItemSaveInterceptor::getItemType));
-		loadInterceptorRegistry = loadInterceptors.stream()
-				.collect(Collectors.groupingBy(ItemLoadInterceptor::getItemType));
-		removeInterceptorRegistry = removeInterceptors.stream()
-				.collect(Collectors.groupingBy(ItemRemoveInterceptor::getItemType));
-	}
+	@Resource
+	protected ItemInterceptorRegistry<ItemSaveInterceptor<Item>> itemSaveInterceptorRegistry;
+
+	@Resource
+	protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
+
+	@Resource
+	protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
 
 	@Override
 	public <T extends Item> T create(final Class<T> type) {
@@ -77,8 +55,10 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		setTypeCode(item);
 		persistenceService.initItem(item);
 
-		for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, true, true)) {
-			final List<ItemCreateInterceptor> interceptors = createInterceptorRegistry.get(superClass);
+		for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+			final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+			final List<ItemCreateInterceptor<Item>> interceptors = itemCreateInterceptorRegistry
+					.getValues(superTypeCode);
 
 			if (CollectionUtils.isNotEmpty(interceptors)) {
 				interceptors.stream().forEach(l -> l.onCreate(item));
@@ -93,8 +73,10 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
 		for (final T item : models) {
-			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, true, true)) {
-				final List<ItemSaveInterceptor> interceptors = saveInterceptorRegistry.get(superClass);
+			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+				final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+				final List<ItemSaveInterceptor<Item>> interceptors = itemSaveInterceptorRegistry
+						.getValues(superTypeCode);
 
 				if (CollectionUtils.isNotEmpty(interceptors)) {
 					interceptors.stream().forEach(l -> l.onSave(item));
