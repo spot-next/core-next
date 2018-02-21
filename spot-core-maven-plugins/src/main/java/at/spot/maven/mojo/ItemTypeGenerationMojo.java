@@ -651,6 +651,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						}
 					}
 				}
+
+				field.addAnnotation(ann);
 			}
 		}
 	}

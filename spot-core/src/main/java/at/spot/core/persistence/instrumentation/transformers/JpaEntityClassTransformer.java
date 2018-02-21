@@ -24,6 +24,8 @@ import javax.persistence.OneToOne;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
@@ -48,6 +50,8 @@ import javassist.bytecode.annotation.StringMemberValue;
  */
 @ClassTransformer
 public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
+
+	private static final Logger LOG = LoggerFactory.getLogger(JpaEntityClassTransformer.class);
 
 	protected static final String MV_CASCADE = "cascade";
 	protected static final String MV_NODE_TYPE = "nodeType";
@@ -128,6 +132,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				return Optional.of(clazz);
 			}
 		} catch (final Exception e) {
+			LOG.error(e.getMessage(), e);
+
 			throw new IllegalClassTransformationException(
 					String.format("Unable process JPA annotations for class file %s", clazz.getName()), e);
 		}
