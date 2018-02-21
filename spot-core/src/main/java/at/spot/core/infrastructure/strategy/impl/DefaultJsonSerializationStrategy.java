@@ -3,7 +3,6 @@ package at.spot.core.infrastructure.strategy.impl;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.stereotype.Service;
 
-import com.fatboyindustrial.gsonjodatime.Converters;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -34,7 +33,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());
 
 		// register helper builders for datetimes etc.
-		gson = Converters.registerAll(builder).create();
+		// gson = Converters.registerAll(builder).create();
 	}
 
 	@Override
