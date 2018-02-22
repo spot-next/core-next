@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
-import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemPrepareInterceptor;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.persistence.exception.SequenceAccessException;
 import at.spot.core.persistence.service.SequenceGenerator;
@@ -17,7 +17,7 @@ import at.spot.itemtype.core.UniqueIdItem;
  */
 @Service
 public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueIdItem>
-		implements ItemSaveInterceptor<UniqueIdItem> {
+		implements ItemPrepareInterceptor<UniqueIdItem> {
 
 	@Resource
 	protected SequenceGenerator sequenceGenerator;
@@ -31,7 +31,7 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 	}
 
 	@Override
-	public void onSave(UniqueIdItem item) throws ItemInterceptorException {
+	public void onPrepare(UniqueIdItem item) throws ItemInterceptorException {
 
 		try {
 			// only get a new sequence id if the id property is empty to save some ids

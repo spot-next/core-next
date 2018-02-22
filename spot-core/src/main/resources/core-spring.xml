@@ -163,7 +163,7 @@
 
 	<bean id="itemCreateInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 	<bean id="itemValidateInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
-	<bean id="itemSaveInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
+	<bean id="itemPrepareInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 	<bean id="itemLoadInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 	<bean id="itemRemoveInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 

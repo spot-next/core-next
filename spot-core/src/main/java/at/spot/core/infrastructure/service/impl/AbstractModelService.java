@@ -11,8 +11,8 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemPrepareInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemRemoveInterceptor;
-import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
@@ -39,7 +39,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
 
 	@Resource
-	protected ItemInterceptorRegistry<ItemSaveInterceptor<Item>> itemSaveInterceptorRegistry;
+	protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
 
 	@Resource
 	protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
@@ -75,11 +75,11 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		for (final T item : models) {
 			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
 				final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
-				final List<ItemSaveInterceptor<Item>> interceptors = itemSaveInterceptorRegistry
+				final List<ItemPrepareInterceptor<Item>> interceptors = itemPrepareInterceptorRegistry
 						.getValues(superTypeCode);
 
 				if (CollectionUtils.isNotEmpty(interceptors)) {
-					interceptors.stream().forEach(l -> l.onSave(item));
+					interceptors.stream().forEach(l -> l.onPrepare(item));
 				}
 			}
 		}

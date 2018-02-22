@@ -6,8 +6,8 @@ import javax.annotation.Resource;
 import at.spot.core.infrastructure.interceptor.ItemCreateInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemLoadInterceptor;
+import at.spot.core.infrastructure.interceptor.ItemPrepareInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemRemoveInterceptor;
-import at.spot.core.infrastructure.interceptor.ItemSaveInterceptor;
 import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -31,7 +31,7 @@ public abstract class AbstractItemInterceptor<T extends Item> extends AbstractSe
 	protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
 
 	@Resource
-	protected ItemInterceptorRegistry<ItemSaveInterceptor<Item>> itemSaveInterceptorRegistry;
+	protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
 
 	@Resource
 	protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
@@ -50,8 +50,8 @@ public abstract class AbstractItemInterceptor<T extends Item> extends AbstractSe
 			itemCreateInterceptorRegistry.registerMapping(typeCode, (ItemCreateInterceptor<Item>) this);
 		} else if (this instanceof ItemValidateInterceptor) {
 			itemValidateInterceptorRegistry.registerMapping(typeCode, (ItemValidateInterceptor<Item>) this);
-		} else if (this instanceof ItemSaveInterceptor) {
-			itemSaveInterceptorRegistry.registerMapping(typeCode, (ItemSaveInterceptor<Item>) this);
+		} else if (this instanceof ItemPrepareInterceptor) {
+			itemPrepareInterceptorRegistry.registerMapping(typeCode, (ItemPrepareInterceptor<Item>) this);
 		} else if (this instanceof ItemLoadInterceptor) {
 			itemLoadInterceptorRegistry.registerMapping(typeCode, (ItemLoadInterceptor<Item>) this);
 		} else if (this instanceof ItemRemoveInterceptor) {

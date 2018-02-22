@@ -3,7 +3,7 @@ package at.spot.core.infrastructure.interceptor;
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
 import at.spot.core.model.Item;
 
-public interface ItemSaveInterceptor<T extends Item> extends ItemInterceptor<T> {
+public interface ItemPrepareInterceptor<T extends Item> extends ItemInterceptor<T> {
 	/**
 	 * The given item has been validated and can now be post-processed before it is
 	 * persisted by the persistence layer.
@@ -13,5 +13,5 @@ public interface ItemSaveInterceptor<T extends Item> extends ItemInterceptor<T> 
 	 * @throws ItemInterceptorException
 	 *             If thrown the item will not be persisted.
 	 */
-	void onSave(T item) throws ItemInterceptorException;
+	void onPrepare(T item) throws ItemInterceptorException;
 }
