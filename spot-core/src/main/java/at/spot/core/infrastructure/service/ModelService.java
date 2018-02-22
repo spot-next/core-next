@@ -3,6 +3,7 @@ package at.spot.core.infrastructure.service;
 import java.util.List;
 import java.util.Map;
 
+import at.spot.core.infrastructure.exception.ModelCreationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
@@ -17,7 +18,7 @@ public interface ModelService {
 	 * @param type
 	 * @return
 	 */
-	<T extends Item> T create(Class<T> type);
+	<T extends Item> T create(Class<T> type) throws ModelCreationException;
 
 	/**
 	 * Saves the given model. Referenced Item models will not be saved.
@@ -80,11 +81,11 @@ public interface ModelService {
 	<T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Removes the given item.
+	 * Removes the given items.
 	 * 
-	 * @param item
+	 * @param items
 	 */
-	<T extends Item> void remove(T item) throws ModelNotFoundException;
+	<T extends Item> void removeAll(List<T> items) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given item.

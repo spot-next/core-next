@@ -2,7 +2,6 @@ package at.spot.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +63,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	@Override
 	public <T extends Item> Stream<T> query(final String queryString, final Class<T> resultClass, final int page,
 			final int pageSize) {
+
 		final Query<T> query = getSession().createQuery(queryString, resultClass);
 
 		if (page >= 0) {
@@ -75,11 +75,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		}
 
 		return query.getResultStream();
-	}
-
-	@Override
-	public <T extends Item> void save(final T... items) throws ModelSaveException, ModelNotUniqueException {
-		save(Arrays.asList(items));
 	}
 
 	@Override
@@ -107,9 +102,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				}
 
 				try {
-					for (final T item : items) {
-						refresh(item);
-					}
+					refresh(items);
 				} catch (final ModelNotFoundException e) {
 					throw new ModelSaveException("Could not save given items", e);
 				}
@@ -145,19 +138,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	@Override
-	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
+	public <T extends Item> void refresh(final List<T> items) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			transactionService.execute(() -> {
-				try {
-					attach(item);
+				for (T item : items) {
+					try {
+						attach(item);
 
-					getSession().refresh(item);
-				} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
-						| EntityNotFoundException e) {
-					throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()),
-							e);
+						getSession().refresh(item);
+					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
+							| EntityNotFoundException e) {
+						throw new ModelNotFoundException(
+								String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+					}
 				}
 
 				return null;
@@ -239,27 +234,33 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	@Override
-	public <T extends Item> void remove(final T... items) {
+	public <T extends Item> void remove(final List<T> items) {
 		bindSession();
 
-		for (final T item : items) {
-			// em.remove(item);
-			getSession().remove(item);
-		}
+		transactionService.execute(() -> {
+			for (final T item : items) {
+				getSession().remove(item);
+			}
+			return null;
+		});
 	}
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		bindSession();
 
-		// final String query = String.format("DELETE FROM %s WHERE pk IN
-		// (?pk)",
-		// type.getSimpleName());
+		transactionService.execute(() -> {
+			// TODO: improve
+			// final String query = String.format("DELETE FROM %s WHERE pk IN
+			// (?pk)",
+			// type.getSimpleName());
 
-		// em.createQuery(query, type).setParameter("pk", pk);
+			// em.createQuery(query, type).setParameter("pk", pk);
+			final T item = getSession().find(type, pk);
+			getSession().remove(item);
 
-		final T item = getSession().find(type, pk);
-		getSession().remove(item);
+			return null;
+		});
 	}
 
 	@Override
@@ -281,17 +282,17 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
 			if (field.getType().isAssignableFrom(List.class)) {
-				ClassUtil.setField(item, field.getName(), new ArrayList());
+				ClassUtil.setField(item, field.getName(), new ArrayList<>());
 			} else if (field.getType().isAssignableFrom(Set.class)) {
-				ClassUtil.setField(item, field.getName(), new HashSet());
+				ClassUtil.setField(item, field.getName(), new HashSet<>());
 			} else if (field.getType().isAssignableFrom(Map.class)) {
-				ClassUtil.setField(item, field.getName(), new HashMap());
+				ClassUtil.setField(item, field.getName(), new HashMap<>());
 			}
 		}
 	}
 
 	@Override
-	public <T extends Item> void detach(final T... items) {
+	public <T extends Item> void detach(final List<T> items) {
 		bindSession();
 
 		for (final T item : items) {

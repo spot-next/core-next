@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.interceptor;
 
-import at.spot.core.infrastructure.exception.ItemInterceptorException;
+import at.spot.core.infrastructure.exception.ModelCreationException;
 import at.spot.core.model.Item;
 
 public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T> {
@@ -10,8 +10,8 @@ public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T
 	 * 
 	 * @param item
 	 *            the newly instantiated item instance
-	 * @throws ItemInterceptorException
+	 * @throws ModelCreationException
 	 *             if thrown the item instantiation will be cancelled
 	 */
-	void onCreate(T item) throws ItemInterceptorException;
+	void onCreate(T item) throws ModelCreationException;
 }

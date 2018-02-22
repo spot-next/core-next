@@ -1,19 +1,15 @@
 package at.spot.core.infrastructure.service.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-import javax.validation.ConstraintViolation;
 
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.support.util.ClassUtil;
@@ -23,9 +19,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
 public class DefaultModelService extends AbstractModelService {
-
-	@Resource
-	protected ValidationService validationService;
 
 	@Override
 	public <T extends Item> void save(final T model)
@@ -45,11 +38,8 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
-		super.saveAll(models);
-
-		for (final T model : models) {
-			validateModel(model);
-		}
+		super.applyPrepareInterceptors(models);
+		super.validateModels(models);
 
 		persistenceService.save(models);
 	}
@@ -104,7 +94,7 @@ public class DefaultModelService extends AbstractModelService {
 			throw new ModelNotFoundException("Given item is null");
 		}
 
-		persistenceService.refresh(item);
+		persistenceService.refresh(Collections.singletonList(item));
 	}
 
 	@Override
@@ -112,28 +102,15 @@ public class DefaultModelService extends AbstractModelService {
 		persistenceService.remove(type, pk);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Item> void remove(final T item) {
-		persistenceService.remove(item);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends Item> void remove(final T... items) {
+	public <T extends Item> void removeAll(List<T> items) throws ModelNotFoundException {
 		persistenceService.remove(items);
 	}
 
-	protected <T extends Item> void validateModel(final T model) throws ModelValidationException {
-		if (model == null) {
-			throw new ModelValidationException("Given item is null");
-		}
-
-		final Set<ConstraintViolation<T>> errors = validationService.validate(model);
-
-		if (!errors.isEmpty()) {
-			throw new ModelValidationException(errors.iterator().next().getMessage(), errors);
-		}
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Item> void remove(final T... items) throws ModelNotFoundException {
+		removeAll(Arrays.asList(items));
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.interceptor;
 
-import at.spot.core.infrastructure.exception.ItemInterceptorException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.model.Item;
 
@@ -13,8 +12,6 @@ public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor
 	 *            The item to be saved
 	 * @throws ModelValidationException
 	 *             Can be thrown if the item is not valid
-	 * @throws ItemInterceptorException
-	 *             If thrown the item will not be persisted
 	 */
-	void onValidate(T item) throws ModelValidationException, ItemInterceptorException;
+	void onValidate(T item) throws ModelValidationException;
 }
