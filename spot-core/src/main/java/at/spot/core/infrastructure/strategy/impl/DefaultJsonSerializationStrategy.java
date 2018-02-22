@@ -33,7 +33,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());
 
 		// register helper builders for datetimes etc.
-		// gson = Converters.registerAll(builder).create();
+		gson = builder.create();
 	}
 
 	@Override

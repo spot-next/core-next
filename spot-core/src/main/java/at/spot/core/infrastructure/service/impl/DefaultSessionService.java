@@ -32,7 +32,7 @@ public class DefaultSessionService implements SessionService {
 		if (registerAsCurrentSession) {
 			// set the newly created session as current session for the current
 			// thread
-			currentSession.set(session);
+			setCurrentSession(session);
 		}
 
 		// add the session to the session storage.
