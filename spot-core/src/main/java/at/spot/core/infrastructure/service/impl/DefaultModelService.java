@@ -50,7 +50,10 @@ public class DefaultModelService extends AbstractModelService {
 
 		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
-		return (T) get(example.getClass(), map);
+		T item = (T) get(example.getClass(), map);
+		applyLoadInterceptors(Collections.singletonList(item));
+
+		return item;
 	}
 
 	@Override
@@ -62,12 +65,21 @@ public class DefaultModelService extends AbstractModelService {
 
 		final List<T> items = getAll(type, searchParameters);
 
+		if (items.size() > 1) {
+			loggingService.warn(String.format("Found more than one matching item for the given search parameters: %s ",
+					searchParameters));
+		}
+
 		return items.size() > 0 ? items.get(0) : null;
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
-		return getAll(type, searchParameters, 0, 0);
+		List<T> items = getAll(type, searchParameters, 0, 0);
+
+		applyLoadInterceptors(items);
+
+		return items;
 	}
 
 	@Override
@@ -99,11 +111,15 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
+		// TODO: remove interceptors
+
 		persistenceService.remove(type, pk);
 	}
 
 	@Override
 	public <T extends Item> void removeAll(List<T> items) throws ModelNotFoundException {
+		applyRemoveInterceptors(items);
+
 		persistenceService.remove(items);
 	}
 

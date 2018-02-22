@@ -77,6 +77,34 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		return item;
 	}
 
+	protected <T extends Item> void applyLoadInterceptors(List<T> items) throws ItemInterceptorException {
+		for (final T item : items) {
+			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+				final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+				final List<ItemLoadInterceptor<Item>> interceptors = itemLoadInterceptorRegistry
+						.getValues(superTypeCode);
+
+				if (CollectionUtils.isNotEmpty(interceptors)) {
+					interceptors.stream().forEach(l -> l.onLoad(item));
+				}
+			}
+		}
+	}
+
+	protected <T extends Item> void applyRemoveInterceptors(final List<T> items) throws ItemInterceptorException {
+		for (final T item : items) {
+			for (Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+				final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+				final List<ItemRemoveInterceptor<Item>> interceptors = itemRemoveInterceptorRegistry
+						.getValues(superTypeCode);
+
+				if (CollectionUtils.isNotEmpty(interceptors)) {
+					interceptors.stream().forEach(l -> l.onRemove(item));
+				}
+			}
+		}
+	}
+
 	protected <T extends Item> void applyPrepareInterceptors(final List<T> items)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
