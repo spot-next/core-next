@@ -51,7 +51,10 @@ public class DefaultModelService extends AbstractModelService {
 		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
 		T item = (T) get(example.getClass(), map);
-		applyLoadInterceptors(Collections.singletonList(item));
+
+		if (item != null) {
+			applyLoadInterceptors(Collections.singletonList(item));
+		}
 
 		return item;
 	}
