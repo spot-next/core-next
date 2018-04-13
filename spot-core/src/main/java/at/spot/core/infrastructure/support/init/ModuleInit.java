@@ -16,7 +16,7 @@ import at.spot.core.infrastructure.exception.ModuleInitializationException;
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class })
 public abstract class ModuleInit {
 
-	boolean alreadyInitializied = false;
+	boolean alreadyInitialized = false;
 
 	/**
 	 * This is a hook to customize the initialization process. It is called
@@ -33,9 +33,9 @@ public abstract class ModuleInit {
 	 */
 	@EventListener
 	protected void onApplicationEvent(final ApplicationReadyEvent event) throws ModuleInitializationException {
-		if (!alreadyInitializied) {
+		if (!alreadyInitialized) {
 			initialize();
-			alreadyInitializied = true;
+			alreadyInitialized = true;
 		}
 	}
 }

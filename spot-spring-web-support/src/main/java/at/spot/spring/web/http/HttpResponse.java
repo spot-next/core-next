@@ -1,6 +1,9 @@
-package at.spot.core.infrastructure.http;
+package at.spot.spring.web.http;
 
 import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * This entity extends the spring {@link ResponseEntity} with the ability to set
@@ -8,7 +11,7 @@ import java.util.Objects;
  * 
  * @param <T>
  */
-public class HttpResponse<T> {
+public class HttpResponse<T> extends ResponseEntity<Payload<T>> {
 	protected Payload<T> body;
 	protected HttpStatus statusCode;
 
@@ -21,6 +24,7 @@ public class HttpResponse<T> {
 	}
 
 	public HttpResponse(final Payload<T> body, final HttpStatus status) {
+		super(status);
 		this.body = body;
 		this.statusCode = status;
 	}
@@ -43,6 +47,7 @@ public class HttpResponse<T> {
 	 * 
 	 * @return the HTTP status as an HttpStatus enum entry
 	 */
+	@Override
 	public HttpStatus getStatusCode() {
 		return this.statusCode;
 	}
@@ -53,10 +58,12 @@ public class HttpResponse<T> {
 	 * @return the HTTP status as an int value
 	 * @since 4.3
 	 */
+	@Override
 	public int getStatusCodeValue() {
 		return this.statusCode.value();
 	}
 
+	@Override
 	public Payload<T> getBody() {
 		return this.body;
 	}

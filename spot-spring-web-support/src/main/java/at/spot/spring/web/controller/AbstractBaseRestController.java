@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import at.spot.core.infrastructure.http.HttpResponse;
-import at.spot.core.infrastructure.http.Status;
+import at.spot.spring.web.http.HttpResponse;
+import at.spot.spring.web.http.Status;
 
 @ControllerAdvice
 public abstract class AbstractBaseRestController extends AbstractBaseController {

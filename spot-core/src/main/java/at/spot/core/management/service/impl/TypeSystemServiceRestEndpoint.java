@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -28,6 +27,7 @@ import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.HttpStatus;
 import at.spot.core.infrastructure.http.Payload;
 import at.spot.core.infrastructure.http.Status;
 import at.spot.core.infrastructure.service.ModelService;

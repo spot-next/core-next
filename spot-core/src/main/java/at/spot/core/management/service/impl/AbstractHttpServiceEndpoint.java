@@ -1,14 +1,5 @@
 package at.spot.core.management.service.impl;
 
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.head;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.Spark.put;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -20,10 +11,10 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
 
 import at.spot.core.infrastructure.exception.SerializationException;
 import at.spot.core.infrastructure.http.HttpResponse;
+import at.spot.core.infrastructure.http.HttpStatus;
 import at.spot.core.infrastructure.http.Payload;
 import at.spot.core.infrastructure.http.Session;
 import at.spot.core.infrastructure.http.Status;
@@ -46,7 +37,7 @@ import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
 import spark.Route;
-import spark.Spark;
+import spark.Service;
 import spark.route.HttpMethod;
 
 /**
@@ -71,12 +62,15 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Resource
 	protected UserService<User, UserGroup> userService;
 
+	protected Service service;
+
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@PostConstruct
 	@Override
 	public void init() throws RemoteServiceInitException {
 		try {
-			Spark.port(getPort());
+			service = Service.ignite();
+			service.port(getPort());
 		} catch (final IllegalStateException e) {
 			loggingService.warn(e.getMessage());
 		}
@@ -95,27 +89,27 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 					}
 
 					if (handler.method() == HttpMethod.get) {
-						get(handler.pathMapping(), mimeType, route, transformer);
+						service.get(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					if (handler.method() == HttpMethod.post) {
-						post(handler.pathMapping(), mimeType, route, transformer);
+						service.post(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					if (handler.method() == HttpMethod.put) {
-						put(handler.pathMapping(), mimeType, route, transformer);
+						service.put(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					if (handler.method() == HttpMethod.delete) {
-						delete(handler.pathMapping(), mimeType, route, transformer);
+						service.delete(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					if (handler.method() == HttpMethod.head) {
-						head(handler.pathMapping(), mimeType, route, transformer);
+						service.head(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					if (handler.method() == HttpMethod.patch) {
-						patch(handler.pathMapping(), mimeType, route, transformer);
+						service.patch(handler.pathMapping(), mimeType, route, transformer);
 					}
 
 					// handler of last resort, eg for 404 error pages
@@ -127,7 +121,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				}
 			}
 
-			exception(Exception.class, (exception, request, response) -> {
+			service.exception(Exception.class, (exception, request, response) -> {
 				loggingService.exception(exception.getMessage(), exception);
 
 				final Payload empty = Payload.empty();
@@ -143,7 +137,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				}
 			});
 
-			before((request, response) -> {
+			service.before((request, response) -> {
 				setupSession(request, response);
 				setupLocale();
 			});
@@ -151,6 +145,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 			// after((request, response) -> {
 			// response.header("Content-Encoding", "gzip");
 			// });
+
+			service.init();
 
 		} catch (final Exception e) {
 			loggingService.exception(
@@ -195,7 +191,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				userService.setCurrentUser(authenticatedUser);
 			} else {
 				response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
-				Spark.halt(401);
+				service.halt(401);
 			}
 		}
 	}
@@ -242,7 +238,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Override
 	@PreDestroy
 	public void shutdown() {
-		Spark.stop();
+		service.stop();
 	}
 
 	/**

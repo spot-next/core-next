@@ -60,8 +60,9 @@ public class Bootstrap extends SpringApplicationBuilder {
 		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.OFF);
 	}
 
-	public static ConfigurableApplicationContext bootstrap(final Class<? extends ModuleInit> configuration,
+	public static SpringApplicationBuilder bootstrap(final Class<? extends ModuleInit> configuration,
 			final String[] modelScanPaths) {
+
 		final SpringApplicationBuilder builder = build(CoreInit.class);
 
 		builder.initializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
@@ -82,8 +83,7 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 		// override default mainClass
 		Registry.setMainClass(configuration);
-		return builder.child(configuration).web(WebApplicationType.SERVLET).registerShutdownHook(true)
-				.bannerMode(Mode.OFF).run();
+		return builder.child(configuration).registerShutdownHook(true).bannerMode(Mode.OFF);
 	}
 
 	/**
