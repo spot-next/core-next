@@ -32,7 +32,7 @@
 		<junit.version>4.12</junit.version>
 		<spring.boot.version>2.0.1.RELEASE</spring.boot.version>
 		<spring.version>5.0.5.RELEASE</spring.version>
-		<aspectj.version>1.9.0</aspectj.version>
+		<aspectj.version>1.9.1</aspectj.version>
 
 		<!-- nexus repositry -->
 		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
@@ -168,6 +168,9 @@
 					</dependency>
 				</dependencies>
 				<configuration>
+					<complianceLevel>1.8</complianceLevel>
+					<source>1.8</source>
+					<target>1.8</target>
 					<aspectLibraries>
 						<aspectLibrary>
 							<groupId>org.springframework</groupId>

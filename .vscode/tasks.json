@@ -4,22 +4,16 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "clean install",
+            "label": "clean install",
             "type": "shell",
-            "command": "mvn -clean install -DskipTests=true",
+            "command": "mvn -B clean install",
             "group": "build"
         },
         {
-            "taskName": "verify",
+            "label": "install",
             "type": "shell",
-            "command": "mvn -B verify",
+            "command": "mvn -B install",
             "group": "build"
         },
-        {
-            "taskName": "test",
-            "type": "shell",
-            "command": "mvn -B test",
-            "group": "test"
-        }
     ]
 }
