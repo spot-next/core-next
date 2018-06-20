@@ -24,14 +24,14 @@ Of course, documentation is ... scarce and mostly useless.
 ## Idea
 So what's the idea behind spOt?
 
-* Pure-java based persistence layer
-* Flexible and adaptable type system
+* Conventient "just-works" persistence layer
+* Flexible and adaptable type system (even add properties to out-of-the-box types)
 * Lightweight service-oriented architecture
-* Microservice-oriented approach: for services both a "local" and "remote" implemenatation is available. So spOt nodes can interact naturally with each other
+* Microservice-oriented approach: for services both a "local" and "remote" implemenatation is available. So spOt nodes can interact naturally with each other.
 
 ## Current state
-* Persistence layer implemented with MapDB (quite stable and fast)
-* Type generation from XML (maven plugin)
+* Persistence layer implemented using Hibernate
+* Item type generation from XML (maven plugin)
 * Basic services infrastructure for model model handling and quering, localization/internationalization, security/authentication, serialization
 * REST services for querying type system and models (read-write)
 * Tomcat/spring-mvc integration (spOt is loaded as spring parent context)
