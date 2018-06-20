@@ -2,6 +2,7 @@ package at.spot.core.management.service.impl;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -311,21 +312,20 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws ModelSaveException
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpResponse<Void> createModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException {
+	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse<Map<String, Object>> createModel(final Request request,
+			final Response response) throws UnknownTypeException, ModelSaveException {
 
-		final HttpResponse<Void> body = new HttpResponse<>(HttpStatus.PRECONDITION_FAILED);
+		Payload<Map<String, Object>> payload = new Payload<>();
+
+		final HttpResponse<Map<String, Object>> body = new HttpResponse<>(payload, HttpStatus.PRECONDITION_FAILED);
 
 		try {
 			final T item = deserializeToItem(request);
 
-			if (item.getPk() != null) {
-				body.getBody()
-						.addWarning(new Status("warning.general", "PK was reset, it may not be set for new items."));
-			}
-
 			modelService.save(item);
+
+			payload.setData(Collections.singletonMap("pk", item.getPk()));
 			body.setStatusCode(HttpStatus.CREATED);
 		} catch (final DeserializationException e) {
 			body.getBody().addError(new Status("error.oncreate", e.getMessage()));
@@ -383,8 +383,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an item with the given values. The PK must be provided. If the new
-	 * item is not unique, an error is returned.<br/>
+	 * Updates an existing or creates the item with the given values. The PK must be
+	 * provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want
 	 * to update a few fields, use the PATCH Method.
 	 * 
@@ -394,38 +394,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
-	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpResponse<Void> updateModel(final Request request, final Response response)
+	@Handler(method = HttpMethod.put, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse<Void> createOrUpdateModel(final Request request, final Response response)
 			throws UnknownTypeException, ModelSaveException {
 
-		final HttpResponse<Void> body = new HttpResponse<Void>();
-
-		T item = null;
-
-		try {
-			item = deserializeToItem(request);
-		} catch (final DeserializationException e) {
-			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
-			body.getBody().addError(new Status("error.onupdate", e.getMessage()));
-			return body;
-		}
-
-		if (item.getPk() == null) {
-			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
-			body.getBody().addError(new Status("error.onupdate", "You cannot update a new item (PK was null)"));
-		} else {
-			try {
-				modelService.save(item);
-				body.setStatusCode(HttpStatus.ACCEPTED);
-				item.markAsDirty();
-			} catch (final ModelNotUniqueException | ModelValidationException e) {
-				body.setStatusCode(HttpStatus.CONFLICT);
-				body.getBody().addError(new Status("error.onupdate",
-						"Another item with the same uniqueness criteria (but a different PK) was found."));
-			}
-		}
-
-		return body;
+		return partiallyUpdateModel(request, response);
 	}
 
 	@Handler(method = HttpMethod.patch, pathMapping = "/v1/models/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
