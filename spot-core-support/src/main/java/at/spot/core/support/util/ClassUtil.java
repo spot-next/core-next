@@ -2,9 +2,11 @@ package at.spot.core.support.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -12,7 +14,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +24,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.assertj.core.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -348,5 +353,40 @@ public class ClassUtil {
 		final Class<?> collectionType = (Class<?>) paramType.getActualTypeArguments()[0];
 
 		return collectionType;
+	}
+
+	public static <T> Optional<T> instantiate(Class<T> type, Object... constructorArgs) {
+		T instance = null;
+
+		final Class<?> parentClass = type.getEnclosingClass();
+
+		final List<Object> constructorArgValues = new ArrayList<>();
+		if (constructorArgs != null) {
+			constructorArgValues.addAll(Arrays.asList(constructorArgs));
+		}
+
+		final List<Class<?>> constructorArgTypes = new ArrayList<>();
+		if (constructorArgs != null) {
+			Stream.of(constructorArgs).forEach(a -> constructorArgTypes.add(a.getClass()));
+		}
+
+		// is inner class, first constructor argument is always the parent class!
+		if (parentClass != null && !Modifier.isStatic(type.getModifiers())) {
+			constructorArgTypes.add(0, parentClass);
+			constructorArgValues.add(0, null);
+		}
+
+		try {
+			Constructor<T> ctor = type
+					.getDeclaredConstructor(constructorArgTypes.toArray(new Class<?>[constructorArgTypes.size()]));
+			ctor.setAccessible(true);
+			instance = ctor.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
+			LOG.debug(e.getMessage());
+			// silently ignore
+		}
+
+		return Optional.ofNullable(instance);
 	}
 }

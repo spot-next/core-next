@@ -1,13 +1,20 @@
 package at.spot.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -15,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.TransactionRequiredException;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,12 +47,18 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.exception.QueryException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
 
 public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
+
+	protected static final List<Class<?>> NATIVE_DATATYPES = java.util.Arrays.asList(Boolean.class, String.class,
+			Integer.class, Long.class, Double.class, Float.class, Byte.class, Short.class, BigDecimal.class,
+			BigInteger.class, Character.class, Date.class, java.sql.Date.class, Time.class, Timestamp.class,
+			Calendar.class);
 
 	@PersistenceUnit
 	protected EntityManagerFactory entityManagerFactory;
@@ -56,25 +70,96 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	protected PlatformTransactionManager transactionManager;
 
 	@Override
-	public <T extends Item> Stream<T> query(final String queryString, final Class<T> resultClass) {
-		return query(queryString, resultClass, 0, 0);
+	public <T> List<T> query(at.spot.core.persistence.query.Query<T> queryObj) throws QueryException {
+
+		List<T> results;
+
+		try {
+			// if this is an item type, we just load the entities
+			// if it is a "primitive" natively supported type we can also just let hibernate
+			// do the work
+			if (Item.class.isAssignableFrom(queryObj.getResultClass())
+					|| NATIVE_DATATYPES.contains(queryObj.getResultClass())) {
+				final Query<T> query = getSession().createQuery(queryObj.getQuery(), queryObj.getResultClass())
+						.setReadOnly(true);
+
+				setParameters(queryObj.getParams(), query);
+				setPage(query, queryObj.getPage());
+				setPageSize(query, queryObj.getPageSize());
+				results = query.getResultList();
+
+			} else {
+				// otherwise we load each value into a list of tuples
+				// in that case the selected columns need to be aliased in case the given result
+				// type has no constructor that exactly matches the returned columns' types, as
+				// otherwise we cannot map the row values to properties.
+
+				final Query<Tuple> query = getSession().createQuery(queryObj.getQuery(), Tuple.class).setReadOnly(true);
+
+				setParameters(queryObj.getParams(), query);
+				setPage(query, queryObj.getPage());
+				setPageSize(query, queryObj.getPageSize());
+
+				final List<Tuple> resultList = query.list();
+				results = new ArrayList<>();
+
+				for (Tuple t : resultList) {
+					final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
+							.collect(Collectors.toList());
+
+					// first try to create the pojo using a constructor that matches the result's
+					// column types
+					List<Object> values = t.getElements().stream().map(e -> t.get(e.getAlias()))
+							.collect(Collectors.toList());
+					Optional<T> pojo = ClassUtil.instantiate(queryObj.getResultClass(), values.toArray());
+
+					if (!pojo.isPresent()) {
+						final Optional<T> obj = ClassUtil.instantiate(queryObj.getResultClass());
+
+						if (obj.isPresent()) {
+							Object o = obj.get();
+							t.getElements().stream()
+									.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+						}
+
+						pojo = obj;
+					}
+
+					if (pojo.isPresent()) {
+						results.add(pojo.get());
+					} else {
+						throw new InstantiationException(
+								String.format("Could not instantiate result type '%s'", queryObj.getResultClass()));
+					}
+				}
+			}
+		} catch (Exception e) {
+			if (e instanceof QueryException) {
+				throw (QueryException) e;
+			} else {
+				throw new QueryException(String.format("Could not execute query '%s'", queryObj.getQuery()), e);
+			}
+		}
+
+		return results;
 	}
 
-	@Override
-	public <T extends Item> Stream<T> query(final String queryString, final Class<T> resultClass, final int page,
-			final int pageSize) {
+	protected <T> void setParameters(Map<String, Object> params, Query<T> query) {
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
+		}
+	}
 
-		final Query<T> query = getSession().createQuery(queryString, resultClass);
-
+	protected void setPage(Query<?> query, int page) {
 		if (page >= 0) {
 			query.setFirstResult(page);
 		}
+	}
 
-		if (pageSize > 0) {
-			query.setMaxResults(pageSize);
+	protected void setPageSize(Query<?> query, int pageSize) {
+		if (pageSize >= 0) {
+			query.setFetchSize(pageSize);
 		}
-
-		return query.getResultStream();
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import at.spot.core.persistence.query.Query;
 import at.spot.core.persistence.query.QueryCondition;
 import at.spot.core.persistence.query.QueryResult;
 
@@ -210,7 +211,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			final String queryString = MiscUtil.removeEnclosingQuotes(queryStrings[0]);
 
 			try {
-				final QueryResult<T> result = queryService.query(queryString, type, page, pageSize);
+				final Query<T> query = new Query<>(queryString, type);
+				query.setPage(page);
+				query.setPageSize(pageSize);
+
+				final QueryResult<T> result = queryService.query(query);
 
 				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
@@ -292,7 +297,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	public <T extends Item> Object queryModel(final Request request, final Response response)
 			throws UnknownTypeException {
 
-		final String[] queryParamValues = request.queryParamsValues("query");
+		final String[] queryParamValues = request.queryParamsValues("q");
 
 		if (queryParamValues != null && queryParamValues.length > 0) {
 			return queryModelByQuery(request, response);
