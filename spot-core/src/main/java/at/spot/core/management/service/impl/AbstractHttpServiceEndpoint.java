@@ -142,6 +142,15 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				setupLocale();
 			});
 
+			service.notFound((request, response) -> {
+				final Payload ret = Payload.empty();
+				ret.addError(new Status("not.found", ""));
+
+				final HttpResponse<?> status = new HttpResponse(HttpStatus.NOT_FOUND);
+				status.setBody(ret);
+				return ret;
+			});
+
 			// after((request, response) -> {
 			// response.header("Content-Encoding", "gzip");
 			// });

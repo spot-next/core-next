@@ -3,7 +3,6 @@ package at.spot.core.management.service.impl;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import at.spot.core.persistence.query.Query;
-import at.spot.core.persistence.query.QueryCondition;
 import at.spot.core.persistence.query.QueryResult;
 
 import at.spot.core.infrastructure.exception.DeserializationException;
@@ -183,13 +182,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JEXL expression. <br/>
-	 * 
-	 * <br/>
-	 * Example: .../User/query/uid='test-user' & name.contains('Vader') <br/>
-	 * <br/>
-	 * {@link QueryService#query(Class, QueryCondition, Comparator, int, int)} is
-	 * called.
+	 * Gets an item based on the search query. The query is a JPQL WHERE clause.
 	 * 
 	 * @param request
 	 * @param response
@@ -293,17 +286,29 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return body;
 	}
 
+	/**
+	 * Returns the items found by the given query.<br />
+	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
+	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object queryModel(final Request request, final Response response)
 			throws UnknownTypeException {
 
+		final HttpResponse<QueryResult<T>> body = new HttpResponse<>();
+
+		final String typeCode = request.params(":typecode");
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 		final String[] queryParamValues = request.queryParamsValues("q");
 
-		if (queryParamValues != null && queryParamValues.length > 0) {
-			return queryModelByQuery(request, response);
-		} else {
-			return queryModelByExample(request, response);
+		if (ArrayUtils.isNotEmpty(queryParamValues)) {
+			Query<T> query = new Query<>(
+					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
+			QueryResult<T> result = queryService.query(query);
+
+			body.setBody(Payload.of(result));
 		}
+
+		return body;
 	}
 
 	/**

@@ -80,6 +80,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 			// do the work
 			if (Item.class.isAssignableFrom(queryObj.getResultClass())
 					|| NATIVE_DATATYPES.contains(queryObj.getResultClass())) {
+
 				final Query<T> query = getSession().createQuery(queryObj.getQuery(), queryObj.getResultClass())
 						.setReadOnly(true);
 
