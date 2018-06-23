@@ -88,9 +88,9 @@ public class DefaultModelService extends AbstractModelService {
 			final int page, final int pageSize) {
 
 		// return nothing if search parameters are empty
-		if (searchParameters == null || searchParameters.values().size() == 0) {
-			return Collections.emptyList();
-		}
+		// if (searchParameters == null || searchParameters.values().size() == 0) {
+		// return Collections.emptyList();
+		// }
 
 		final List<T> items = persistenceService.load(type, searchParameters, page, pageSize);
 

@@ -1,5 +1,10 @@
 package at.spot.core;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
@@ -65,124 +70,33 @@ public class CoreInit extends ModuleInit {
 	protected QueryService queryService;
 
 	@SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
-	public void run() {
-		final long start = System.currentTimeMillis();
+	@Log(message = "Importing test data ...")
+	public void importTestData() {
+		StopWatch watch = StopWatch.createStarted();
 
-		// first clear storage, then we start our test
-		// persistenceService.clearDataStorage();
+		List<User> users = new ArrayList<>();
 
-		try {
-			// final User user1 = modelService.create(User.class);
-			// user1.uid = "test1";
-			//
-			// final UserGroup userGroup1 =
-			// modelService.create(UserGroup.class);
-			// userGroup1.uid = "group1";
-			// final UserGroup userGroup2 =
-			// modelService.create(UserGroup.class);
-			// userGroup2.uid = "group2";
-			//
-			// modelService.saveAll(user1, userGroup1, userGroup2);
-			//
-			// final AddressType at = modelService.create(AddressType.class);
-			// at.code = "private";
-			//
-			// final Address address1 = modelService.create(Address.class);
-			// address1.type = at;
-			// address1.owner = user1;
-			//
-			// modelService.save(address1);
-			//
-			// modelService.refresh(user1);
-			// System.out.println(user1.addresses);
-			//
-			// user1.addresses.remove(address1);
-			// modelService.save(user1);
-			//
-			// System.out.println(user1.addresses);
-			// System.out.println("");
+		UserGroup userGroup = modelService.create(UserGroup.class);
+		userGroup.setId("testUserGroup");
+		userGroup.setShortName("Test user group");
 
-			// final List<User> users = new ArrayList<>();
-			//
-			// final UserGroup group = modelService.create(UserGroup.class);
-			// group.name = "tester group";
-			// group.uid = "test-group";
-			//
-			// User user1 = modelService.create(User.class);
-			// User user2 = modelService.create(User.class);
-			//
-			// user1.uid = "user-1";
-			// user2.uid = "user-2";
-			//
-			// user1.groups.add(group);
-			// user2.groups.add(group);
-			//
-			// users.add(user1);
-			// users.add(user2);
-			//
-			// modelService.saveAll(users);
-			//
-			// for (int i = 1; i < 10000; i++) {
-			// if (i > 0 && i % 50 == 0) {
-			// final long duration = System.currentTimeMillis() - start;
-			//
-			// if (duration >= 1000) {
-			// // loggingService.debug("Created " + i + " users (" + i
-			// // / (duration / 1000) + " items/s )");
-			// }
-			// }
-			//
-			// final User user = modelService.create(User.class);
-			// user.name = "test-" + i;
-			// user.uid = user.name;
-			//
-			// user.groups.add(group);
-			//
-			// users.add(user);
-			// }
-			//
-			// modelService.saveAll(users);
-			//
-			// final Map<String, Comparable<?>> criteria = new HashMap<>();
-			// criteria.put("uid", "user-1");
-			//
-			// final User test99 = modelService.get(User.class, criteria);
-			//
-			// user1.groups.get(0).uid = "abc";
-			//
-			// // iterate over all children and check dirty flag
-			// modelService.saveAll(user1);
-			//
-			// user1 = modelService.get(User.class, user1.pk);
-			// user2 = modelService.get(User.class, user2.pk);
+		modelService.save(userGroup);
 
-			// System.out.println(user1.groups.get(0).uid);
-			// System.out.println(user2.groups.get(0).uid);
+		for (int i = 0; i < 1000; i++) {
+			final User user = modelService.create(User.class);
+			user.setId("user-" + UUID.randomUUID());
+			user.setEmailAddress("test@test.at");
+			user.setPassword("test1234");
+			user.setShortName("Test user");
 
-			// modelService.refresh(user2);
+			userGroup.getMembers().add(user);
 
-			// System.out.println(user2.groups.get(0).uid);
-
-			// Query query = Query.select(User.class)
-			// .where(Condition.startsWith("groups.uid", "test",
-			// true).or(Condition.equals("uid", "User-1", true)))
-			// .build();
-			//
-			// QueryResult result = queryService.query(query);
-
-			// System.out.print("");
-		} catch (final Exception e) {
-			loggingService.exception(e.getMessage(), e);
+			users.add(user);
 		}
 
-		// try {
-		// User loadedUser = modelService.get(User.class, 0l);
-		// loggingService.info("loaded user again");
-		// } catch (ModelNotFoundException e) {
-		// loggingService.exception(e.getMessage());
-		// }
-
-		persistenceService.saveDataStorage();
+		modelService.saveAll(users);
+		watch.stop();
+		loggingService.info("Test data import took " + watch.getNanoTime() / 1000 / 1000 + " sec");
 	}
 
 	/*
@@ -192,24 +106,11 @@ public class CoreInit extends ModuleInit {
 	@Override
 	@Log(message = "Initializing system ...")
 	protected void initialize() throws ModuleInitializationException {
-		setupTypeInfrastructure();
-
 		runMigrateScripts();
 		importInitialData();
 
 		// this is just for testing
-		// run();
-	}
-
-	@Log(message = "Setting up type registry ...")
-	protected void setupTypeInfrastructure() throws ModuleInitializationException {
-		// typeService.registerTypes();
-
-		// try {
-		// persistenceService.initDataStorage();
-		// } catch (final PersistenceStorageException e) {
-		// throw new ModuleInitializationException(e);
-		// }
+		importTestData();
 	}
 
 	@Log(message = "Importing initial data ...")

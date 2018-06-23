@@ -280,6 +280,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 	@Override
 	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters) {
+		return load(type, searchParameters, 0, 100);
+	}
+
+	@Override
+	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
+			final Integer page, final Integer pageSize) {
+
 		bindSession();
 
 		return transactionService.execute(() -> {
@@ -310,13 +317,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 			return ((Query<T>) query).getResultList();
 		});
-	}
-
-	@Override
-	public <T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters,
-			final Integer page, final Integer pageSize) {
-
-		return load(type, searchParameters);
 	}
 
 	@Override
