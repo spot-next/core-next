@@ -65,6 +65,33 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
+	 * 
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be returned.
+	 * @return
+	 */
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters);
+
+	/**
+	 * Returns an object based on the given search parameters (key = property name,
+	 * value = property value).
+	 * 
+	 * @param type
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be returned.
+	 * @param start
+	 *            defines the amount of items that are being skipped.
+	 * @param amount
+	 *            starting from the start param this is the amount of items that
+	 *            will be returned.
+	 * @return
+	 */
+	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize);
+
+	/**
 	 * Returns the first {@link Item} based on the given example item.
 	 * 
 	 * @param example
@@ -72,6 +99,15 @@ public interface ModelService {
 	 * @return
 	 */
 	<T extends Item> T getByExample(T example);
+
+	/**
+	 * Returns all {@link Item}s that match the given example item.
+	 * 
+	 * @param example
+	 *            the example item instance.
+	 * @return
+	 */
+	<T extends Item> List<T> getAllByExample(T example);
 
 	/**
 	 * Removes the given item.
@@ -103,33 +139,6 @@ public interface ModelService {
 	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
-
-	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
-	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 * @return
-	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters);
-
-	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
-	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 * @param start
-	 *            defines the amount of items that are being skipped.
-	 * @param amount
-	 *            starting from the start param this is the amount of items that
-	 *            will be returned.
-	 * @return
-	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize);
 
 	/**
 	 * Returns all objects of the given type

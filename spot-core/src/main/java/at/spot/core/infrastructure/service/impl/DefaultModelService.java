@@ -45,40 +45,61 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> T getByExample(final T example) {
-		final Map<String, Object> map = persistenceService.convertItemToMap(example);
-
-		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
-
-		T item = (T) get(example.getClass(), map);
-
-		if (item != null) {
-			applyLoadInterceptors(Collections.singletonList(item));
-		}
+	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
+		final T item = persistenceService.load(type, pk);
+		applyLoadInterceptors(Collections.singletonList(item));
 
 		return item;
 	}
 
 	@Override
 	public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters) {
-		// ignore empty search parameters
-		if (searchParameters == null || searchParameters.values().size() == 0) {
-			return null;
-		}
-
-		final List<T> items = getAll(type, searchParameters);
+		final List<T> items = getAllInternal(type, searchParameters, 0, 0);
 
 		if (items.size() > 1) {
 			loggingService.warn(String.format("Found more than one matching item for the given search parameters: %s ",
 					searchParameters));
 		}
 
-		return items.size() > 0 ? items.get(0) : null;
+		if (items.size() == 1) {
+			applyLoadInterceptors(Collections.singletonList(items.get(0)));
+			return items.get(0);
+		}
+
+		return null;
 	}
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
-		List<T> items = getAll(type, searchParameters, 0, 0);
+		return getAll(type, searchParameters, 0, 0);
+	}
+
+	@Override
+	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
+			final int page, final int pageSize) {
+
+		final List<T> items = getAllInternal(type, searchParameters, page, pageSize);
+		applyLoadInterceptors(items);
+
+		return items;
+	}
+
+	protected <T extends Item> List<T> getAllInternal(final Class<T> type, final Map<String, Object> searchParameters,
+			final int page, final int pageSize) {
+
+		// return nothing if search parameters are empty
+		if (searchParameters == null || searchParameters.values().size() == 0) {
+			return Collections.emptyList();
+		}
+
+		final List<T> items = persistenceService.load(type, searchParameters, page, pageSize);
+
+		return items;
+	}
+
+	@Override
+	public <T extends Item> List<T> getAll(final Class<T> type) {
+		final List<T> items = persistenceService.load(type, null);
 
 		applyLoadInterceptors(items);
 
@@ -86,21 +107,25 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize) {
+	public <T extends Item> T getByExample(final T example) {
+		final Map<String, Object> map = persistenceService.convertItemToMap(example);
 
-		return persistenceService.load(type, searchParameters, page, pageSize);
+		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
+
+		T item = (T) get(example.getClass(), map);
+
+		return item;
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type) {
+	public <T extends Item> List<T> getAllByExample(final T example) {
+		final Map<String, Object> map = persistenceService.convertItemToMap(example);
 
-		return persistenceService.load(type, null);
-	}
+		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
-	@Override
-	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
-		return persistenceService.load(type, pk);
+		List<T> items = (List<T>) getAll(example.getClass(), map, 0, 0);
+
+		return items;
 	}
 
 	@Override

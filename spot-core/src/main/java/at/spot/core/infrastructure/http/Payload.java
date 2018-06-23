@@ -63,11 +63,6 @@ public class Payload<T> {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(this);
-	}
-
-	@Override
 	public boolean equals(final Object obj) {
 		return Objects.equals(this, obj);
 	}

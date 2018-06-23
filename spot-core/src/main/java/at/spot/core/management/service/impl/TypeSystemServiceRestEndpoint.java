@@ -3,7 +3,6 @@ package at.spot.core.management.service.impl;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -182,34 +181,28 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JPQL WHERE clause.
+	 * Gets an item based on the search query. The query is a JPQL WHERE
+	 * clause.<br />
+	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 * 
-	 * @param request
-	 * @param response
-	 * @return
 	 * @throws UnknownTypeException
 	 */
-	public <T extends Item> Object queryModelByQuery(final Request request, final Response response)
+	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> Object queryModel(final Request request, final Response response)
 			throws UnknownTypeException {
 
 		final HttpResponse<QueryResult<T>> body = new HttpResponse<>();
 
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
+		final String typeCode = request.params(":typecode");
+		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		final String[] queryParamValues = request.queryParamsValues("q");
 
-		final String[] queryStrings = request.queryParamsValues("query");
-
-		if (queryStrings != null && queryStrings.length > 0) {
-			final String queryString = MiscUtil.removeEnclosingQuotes(queryStrings[0]);
+		if (ArrayUtils.isNotEmpty(queryParamValues)) {
+			Query<T> query = new Query<>(
+					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
 
 			try {
-				final Query<T> query = new Query<>(queryString, type);
-				query.setPage(page);
-				query.setPageSize(pageSize);
-
-				final QueryResult<T> result = queryService.query(query);
-
+				QueryResult<T> result = queryService.query(query);
 				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
 				body.setStatusCode(HttpStatus.BAD_REQUEST);
@@ -225,18 +218,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. <br/>
-	 * <br/>
-	 * Example: .../User/query/?uid=test-user&name=LordVader. <br/>
+	 * Gets item based on an example. <br/>
 	 * <br/>
 	 * {@link ModelService#get(Class, Map)} is called (=search by example).
 	 * 
-	 * @param request
-	 * @param response
-	 * @return
 	 * @throws UnknownTypeException
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	@Handler(method = HttpMethod.post, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> Object queryModelByExample(final Request request, final Response response)
 			throws UnknownTypeException {
 
@@ -248,64 +237,19 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
-		final Map<String, String[]> query = request.queryMap().toMap();
-		final Map<String, Object> searchParameters = new HashMap<>();
+		T example = null;
 
-		for (final ItemTypePropertyDefinition prop : typeService.getItemTypeDefinition(typeCode).getProperties()
-				.values()) {
-
-			final String[] queryValues = query.get(prop.getName());
-
-			if (queryValues != null && queryValues.length == 1) {
-				final Class<?> propertyType = prop.getReturnType();
-
-				Object value;
-				try {
-					value = serializationService.fromJson(queryValues[0], propertyType);
-				} catch (final DeserializationException e) {
-					body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
-					body.getBody().addError(new Status("error.query", e.getMessage()));
-					return body;
-				}
-
-				searchParameters.put(prop.getName(), value);
-			} else {
-				body.getBody().addWarning(new Status("query.duplicateattribute", String
-						.format("Query attribute %s passed more than once - only taking the first.", prop.getName())));
-			}
+		try {
+			example = deserializeToItem(request);
+			modelService.getByExample(example);
+		} catch (UnknownTypeException | DeserializationException e) {
+			body.getBody().addError(
+					new Status("query.unknowntype", "Could not deserialize request body into valid example item."));
 		}
 
-		final List<T> models = modelService.getAll(type, searchParameters, page, pageSize);
-
-		if (models == null) {
-			body.setStatusCode(HttpStatus.NOT_FOUND);
-		} else {
-			body.setBody(Payload.of(models));
-		}
-
-		return body;
-	}
-
-	/**
-	 * Returns the items found by the given query.<br />
-	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
-	 */
-	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> Object queryModel(final Request request, final Response response)
-			throws UnknownTypeException {
-
-		final HttpResponse<QueryResult<T>> body = new HttpResponse<>();
-
-		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-		final String[] queryParamValues = request.queryParamsValues("q");
-
-		if (ArrayUtils.isNotEmpty(queryParamValues)) {
-			Query<T> query = new Query<>(
-					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
-			QueryResult<T> result = queryService.query(query);
-
-			body.setBody(Payload.of(result));
+		if (example != null) {
+			final List<T> items = modelService.getAllByExample(example);
+			body.setBody(Payload.of(items));
 		}
 
 		return body;
