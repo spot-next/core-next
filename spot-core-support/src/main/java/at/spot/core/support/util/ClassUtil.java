@@ -37,8 +37,8 @@ public class ClassUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If the
-	 * field does not exist, null is returned.
+	 * Returns a {@link Field} instance from the given {@link Class} object. If
+	 * the field does not exist, null is returned.
 	 *
 	 * @param type
 	 * @param fieldName
@@ -54,14 +54,21 @@ public class ClassUtil {
 
 		Field field = null;
 
+		boolean fieldRead = false;
+
 		for (final Class<?> c : getAllSuperClasses(type, Object.class, true, true)) {
 			try {
 				field = c.getDeclaredField(fieldName);
+				fieldRead = true;
 				break;
 			} catch (NoSuchFieldException | SecurityException e) {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(String.format("Can't get field %s from class %s", fieldName, type.getSimpleName()));
-				}
+				// ignore field
+			}
+		}
+
+		if (!fieldRead) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(String.format("Can't get field %s from class %s", fieldName, type.getName()));
 			}
 		}
 
@@ -78,7 +85,8 @@ public class ClassUtil {
 	 * @param includeStopClass
 	 *            if this is true, the stop class will be included. defaults to
 	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the result
+	 *            if this is true, the given {@link Class} is included in the
+	 *            result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -111,25 +119,32 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if something
-	 * goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if
+	 * something goes wrong. something goes wrong.
 	 *
 	 * @param object
 	 * @param fieldName
 	 * @param value
 	 */
 	public static void setField(final Object object, final String fieldName, final Object value) {
+		boolean fieldSet = false;
+
 		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
 			try {
 				final Field field = c.getDeclaredField(fieldName);
 				setAccessable(field);
 				field.set(object, value);
+				fieldSet = true;
 				break;
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				// silently fail
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(String.format("Can't set field %s from class %s", fieldName, c.getSimpleName()));
-				}
+				//
+			}
+		}
+
+		if (!fieldSet) {
+			// silently fail
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(String.format("Can't set field %s from class %s", fieldName, object.getClass()));
 			}
 		}
 	}
@@ -242,8 +257,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all assignable classes for the given class, starting with the actual
-	 * class.
+	 * Returns all assignable classes for the given class, starting with the
+	 * actual class.
 	 */
 	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
@@ -278,10 +293,6 @@ public class ClassUtil {
 					method = joinPoint.getTarget().getClass().getMethod(methodSignature.getName());
 				} catch (NoSuchMethodException | SecurityException e) {
 					// silently fail
-					if (annotation != null && LOG.isDebugEnabled()) {
-						LOG.debug(String.format("Can't get annotation %s from joinpoint %s", annotation.getSimpleName(),
-								joinPoint.getSignature()));
-					}
 				}
 			}
 
@@ -355,7 +366,7 @@ public class ClassUtil {
 		return collectionType;
 	}
 
-	public static <T> Optional<T> instantiate(Class<T> type, Object... constructorArgs) {
+	public static <T> Optional<T> instantiate(final Class<T> type, final Object... constructorArgs) {
 		T instance = null;
 
 		final Class<?> parentClass = type.getEnclosingClass();
@@ -370,14 +381,15 @@ public class ClassUtil {
 			Stream.of(constructorArgs).forEach(a -> constructorArgTypes.add(a.getClass()));
 		}
 
-		// is inner class, first constructor argument is always the parent class!
+		// is inner class, first constructor argument is always the parent
+		// class!
 		if (parentClass != null && !Modifier.isStatic(type.getModifiers())) {
 			constructorArgTypes.add(0, parentClass);
 			constructorArgValues.add(0, null);
 		}
 
 		try {
-			Constructor<T> ctor = type
+			final Constructor<T> ctor = type
 					.getDeclaredConstructor(constructorArgTypes.toArray(new Class<?>[constructorArgTypes.size()]));
 			ctor.setAccessible(true);
 			instance = ctor.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
