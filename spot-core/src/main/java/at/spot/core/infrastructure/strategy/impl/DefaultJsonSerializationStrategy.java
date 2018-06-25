@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
 import at.spot.core.infrastructure.serialization.ClassSerializer;
 import at.spot.core.infrastructure.serialization.GsonExclusionStrategy;
-import at.spot.core.infrastructure.serialization.gson.ItemTypeAdapter;
+import at.spot.core.infrastructure.serialization.gson.ItemTypeSerializer;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
+import at.spot.itemtype.core.user.User;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.
@@ -30,8 +30,9 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		}
 
 		// for handling hibernate entities
-		builder.registerTypeAdapterFactory(ItemTypeAdapter.FACTORY);
+		// builder.registerTypeAdapterFactory(ItemTypeAdapter.FACTORY);
 		builder.setExclusionStrategies(new GsonExclusionStrategy(excludeFieldsWithoutExposeAnnotation));
+		builder.registerTypeAdapter(User.class, new ItemTypeSerializer());
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());
 
 		// register helper builders for datetimes etc.
@@ -50,8 +51,10 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 	@Override
 	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
 		try {
+			// JsonObject jsonObj = gson.fromJson(serializedObject, JsonObject.class);
+
 			return gson.fromJson(serializedObject, type);
-		} catch (final JsonSyntaxException e) {
+		} catch (final Exception e) {
 			throw new SerializationException("Cannot deserialize object", e);
 		}
 	}

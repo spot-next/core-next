@@ -286,8 +286,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
-				// serviceImpl.loggingService.exception("An error occured during execution of
-				// request", e);
+				serviceImpl.loggingService.exception("An error occured during execution of request", e);
 			}
 
 			return processResponse(response, ret);
