@@ -58,6 +58,7 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.maven.exception.IllegalItemTypeDefinitionException;
 import at.spot.maven.util.ItemTypeDefinitionUtil;
+import at.spot.maven.velocity.JavaMemberModifier;
 import at.spot.maven.velocity.TemplateFile;
 import at.spot.maven.velocity.Visibility;
 import at.spot.maven.velocity.type.AbstractComplexJavaType;
@@ -222,12 +223,23 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void populateProperties(final ItemType type, final JavaClass javaClass) throws MojoExecutionException {
+		// add item type constant
+		final JavaField typeCodeConstant = new JavaField();
+		typeCodeConstant.setVisibility(Visibility.PUBLIC);
+		typeCodeConstant.addModifier(JavaMemberModifier.STATIC);
+		typeCodeConstant.addModifier(JavaMemberModifier.FINAL);
+		typeCodeConstant.setAssignement("\"" + type.getTypeCode() + "\"");
+		typeCodeConstant.setType(new JavaMemberType(String.class));
+		typeCodeConstant.setName("TYPECODE");
+
+		javaClass.addField(typeCodeConstant);
+
 		if (type.getProperties() != null) {
 			for (final Property prop : type.getProperties().getProperty()) {
 				final JavaMemberType propType = createMemberType(prop.getType());
 
 				final JavaField field = new JavaField();
-				field.setVisiblity(Visibility.PROTECTED);
+				field.setVisibility(Visibility.PROTECTED);
 				field.setType(propType);
 				field.setName(prop.getName());
 				field.setDescription(prop.getDescription());
@@ -252,8 +264,35 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				if (isWritable) {
 					addSetter(field, javaClass);
 				}
+
+				// add constant for each property
+				final JavaField constant = new JavaField();
+				constant.setVisibility(Visibility.PUBLIC);
+				constant.addModifier(JavaMemberModifier.STATIC);
+				constant.addModifier(JavaMemberModifier.FINAL);
+				constant.setAssignement("\"" + prop.getName() + "\"");
+				constant.setType(new JavaMemberType(String.class));
+				constant.setName("PROPERTY_" + generateConstantName(prop.getName()));
+
+				javaClass.addField(constant);
 			}
 		}
+	}
+
+	protected String generateConstantName(String fieldName) {
+		String ret = "";
+		int index = 0;
+		for (char c : fieldName.toCharArray()) {
+			if (Character.isUpperCase(c) && index > 0) {
+				ret += "_";
+			}
+
+			ret += c;
+
+			index++;
+		}
+
+		return ret.toUpperCase();
 	}
 
 	protected void addGetter(final JavaField field, final JavaClass javaClass) {
@@ -262,6 +301,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		getter.setType(field.getType());
 		getter.setDescription(field.getDescription());
 		getter.setCodeBlock(String.format("return this.%s;", field.getName()));
+		getter.setVisibility(Visibility.PUBLIC);
 
 		javaClass.addMethod(getter);
 	}
@@ -273,6 +313,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		setter.setDescription(field.getDescription());
 		setter.addArgument(field.getName(), field.getType());
 		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
+		setter.setVisibility(Visibility.PUBLIC);
 
 		javaClass.addMethod(setter);
 	}
@@ -320,7 +361,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 
 		javaClass.setSuperClass(superClass);
-		javaClass.setVisiblity(Visibility.PUBLIC);
+		javaClass.setVisibility(Visibility.PUBLIC);
 	}
 
 	protected String generateMethodName(final String prefix, final String name) {
@@ -571,6 +612,17 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			addGetter(property, javaClass);
 			addSetter(property, javaClass);
+
+			// add constant for each property
+			final JavaField constant = new JavaField();
+			constant.setVisibility(Visibility.PUBLIC);
+			constant.addModifier(JavaMemberModifier.STATIC);
+			constant.addModifier(JavaMemberModifier.FINAL);
+			constant.setAssignement("\"" + property.getName() + "\"");
+			constant.setType(new JavaMemberType(String.class));
+			constant.setName("PROPERTY_" + generateConstantName(property.getName()));
+
+			javaClass.addField(constant);
 		}
 	}
 

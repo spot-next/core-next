@@ -6,12 +6,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import at.spot.maven.velocity.MethodModifier;
+import at.spot.maven.velocity.JavaMethodModifier;
 
 public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;
 
-	protected final Set<MethodModifier> modifiers = new TreeSet<>();
+	protected final Set<JavaMethodModifier> methodModifiers = new TreeSet<>();
 	protected final List<JavaMethodArgument> arguments = new ArrayList<>();
 
 	protected String codeBlock;
@@ -24,8 +24,12 @@ public class JavaMethod extends JavaMember {
 		this.codeBlock = codeBlock;
 	}
 
-	public Set<MethodModifier> getModifiers() {
-		return modifiers;
+	public Set<JavaMethodModifier> getMethodModifiers() {
+		return methodModifiers;
+	}
+
+	public void addMethodModifier(JavaMethodModifier modifier) {
+		this.methodModifiers.add(modifier);
 	}
 
 	public void addArgument(String name, JavaMemberType type) {

@@ -42,6 +42,13 @@
 	#end
 #end
 
+#macro( modifiers $modifiers )
+	#if ($modifiers)
+		#foreach($modifier in $modifiers)
+			$modifier.toLowerCase() 
+		#end
+	#end
+#end
 
 /**
  * This file is auto-generated. All changes will be overwritten.
@@ -57,7 +64,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressWarnings("unchecked")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 #annotations($annotations)
-public #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
+$visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
  		private static final long serialVersionUID = 1L;
  	#end
@@ -65,17 +72,17 @@ public #if ($abstract)abstract #end class $name #if($superClass.name)extends $su
 	#foreach ($field in $fields)
 		#javadoc($field.javadoc)
 		#annotations($field.annotations)
-		protected $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
+		$field.visibility.toLowerCase() #modifiers($field.modifiers) $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
 	#end
 
 ##    @Property(isReference = true)
-##   @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
+##    @Relation(type = RelationType.ManyToMany, mappedTo = "members", referencedType = PrincipalGroup.class)
 ##    protected List<PrincipalGroup> groups;
 
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
 		#annotations($field.annotations)
-		public $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
+		$method.visibility.toLowerCase() #modifiers($method.methodModifiers) #modifiers($method.modifiers) $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
 				$arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
 				#if( $foreach.hasNext ), #end

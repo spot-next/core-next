@@ -1,11 +1,11 @@
 package at.spot.maven.velocity;
 
-public enum Visibility {
-	PUBLIC("public"), PACKAGE_PRIVATE(""), PROTECTED("protected"), PRIVATE("private");
+public enum JavaMemberModifier {
+	NONE(""), STATIC("static"), FINAL("final");
 
 	private final String code;
 
-	private Visibility(String code) {
+	private JavaMemberModifier(String code) {
 		this.code = code;
 	}
 
@@ -17,5 +17,4 @@ public enum Visibility {
 	public String getCode() {
 		return code;
 	}
-
 }

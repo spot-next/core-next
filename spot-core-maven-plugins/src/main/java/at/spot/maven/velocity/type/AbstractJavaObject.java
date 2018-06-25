@@ -14,7 +14,7 @@ public abstract class AbstractJavaObject extends AbstractObject {
 	private static final long serialVersionUID = 1L;
 
 	protected String description;
-	protected Visibility visiblity = Visibility.PUBLIC;
+	protected Visibility visibility = Visibility.PUBLIC;
 	protected final Set<JavaAnnotation> annotations = new HashSet<>();
 
 	public void addAnnotation(JavaAnnotation annotation) {
@@ -37,12 +37,12 @@ public abstract class AbstractJavaObject extends AbstractObject {
 		return Collections.unmodifiableSet(annotations);
 	}
 
-	public Visibility getVisiblity() {
-		return visiblity;
+	public Visibility getVisibility() {
+		return visibility;
 	}
 
-	public void setVisiblity(Visibility visiblity) {
-		this.visiblity = visiblity;
+	public void setVisibility(Visibility visibility) {
+		this.visibility = visibility;
 	}
 
 	@Override

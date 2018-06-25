@@ -64,6 +64,10 @@ public interface ModelService {
 	 */
 	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters);
 
+	// TODO allow to pass JPA hints, eg for dynamic enttity graphs (fetch joins for
+	// relations):
+	// https://www.thoughts-on-java.org/5-ways-to-initialize-lazy-relations-and-when-to-use-them/
+
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
 	 * value = property value).
