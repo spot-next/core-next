@@ -1,13 +1,7 @@
 package at.spot.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,11 +48,6 @@ import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
 
 public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
-
-	protected static final List<Class<?>> NATIVE_DATATYPES = java.util.Arrays.asList(Boolean.class, String.class,
-			Integer.class, Long.class, Double.class, Float.class, Byte.class, Short.class, BigDecimal.class,
-			BigInteger.class, Character.class, Date.class, java.sql.Date.class, Time.class, Timestamp.class,
-			Calendar.class);
 
 	@PersistenceUnit
 	protected EntityManagerFactory entityManagerFactory;

@@ -9,7 +9,7 @@ import com.google.gson.JsonSyntaxException;
 
 import at.spot.core.infrastructure.serialization.ClassSerializer;
 import at.spot.core.infrastructure.serialization.GsonExclusionStrategy;
-import at.spot.core.infrastructure.serialization.gson.HibernateProxyTypeAdapter;
+import at.spot.core.infrastructure.serialization.gson.ItemTypeAdapter;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
 
 /**
@@ -30,7 +30,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		}
 
 		// for handling hibernate entities
-		builder.registerTypeAdapterFactory(HibernateProxyTypeAdapter.FACTORY);
+		builder.registerTypeAdapterFactory(ItemTypeAdapter.FACTORY);
 		builder.setExclusionStrategies(new GsonExclusionStrategy(excludeFieldsWithoutExposeAnnotation));
 		builder.registerTypeAdapter(Class.class, new ClassSerializer());
 
