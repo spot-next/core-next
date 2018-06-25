@@ -48,6 +48,7 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 					if (propValue.getClass().isArray() || Collection.class.isAssignableFrom(propValue.getClass())) {
 
 						final JsonArray array = new JsonArray();
+						jsonObj.add(p.getName(), array);
 
 						final Collection<Object> propValueList = propValue.getClass().isArray()
 								? Arrays.asList(propValue)
@@ -63,6 +64,7 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 					} else if (Map.class.isAssignableFrom(propValue.getClass())) {
 						Map<Object, Object> mapValue = (Map) propValue;
 						JsonObject map = new JsonObject();
+						jsonObj.add(p.getName(), map);
 
 						for (Map.Entry e : mapValue.entrySet()) {
 							Object k = e.getKey();
@@ -83,8 +85,6 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 								writeObject(key, v, map, context);
 							}
 						}
-
-						jsonObj.add(p.getName(), map);
 					} else {
 						if (propValue instanceof Item) {
 							writeItem(p.getName(), (Item) propValue, jsonObj);
