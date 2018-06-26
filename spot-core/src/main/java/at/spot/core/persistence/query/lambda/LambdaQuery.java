@@ -11,10 +11,9 @@ import at.spot.core.model.Item;
 public class LambdaQuery<T extends Item> extends AbstractQuery<T> {
 
 	private final List<SerializablePredicate<T>> filters = new ArrayList<>();
-	private final Class<T> itemClass;
 
-	public LambdaQuery(final Class<T> itemClass) {
-		this.itemClass = itemClass;
+	public LambdaQuery(final Class<T> resultClass) {
+		super(resultClass);
 	}
 
 	public LambdaQuery<T> filter(final SerializablePredicate<T> filter) {
@@ -31,7 +30,4 @@ public class LambdaQuery<T extends Item> extends AbstractQuery<T> {
 		return Collections.unmodifiableList(filters);
 	}
 
-	public Class<T> getItemClass() {
-		return itemClass;
-	}
 }

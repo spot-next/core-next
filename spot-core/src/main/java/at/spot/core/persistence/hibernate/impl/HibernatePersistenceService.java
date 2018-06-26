@@ -11,10 +11,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.persistence.PersistenceUnit;
+import javax.persistence.Subgraph;
 import javax.persistence.TransactionRequiredException;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
@@ -28,6 +30,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -39,6 +42,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
+import at.spot.core.infrastructure.exception.UnknownTypeException;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
@@ -64,15 +69,18 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		List<T> results;
 
 		try {
+			Session session = getSession();
+
 			// if this is an item type, we just load the entities
 			// if it is a "primitive" natively supported type we can also just let hibernate
 			// do the work
 			if (Item.class.isAssignableFrom(queryObj.getResultClass())
 					|| NATIVE_DATATYPES.contains(queryObj.getResultClass())) {
 
-				final Query<T> query = getSession().createQuery(queryObj.getQuery(), queryObj.getResultClass())
-						.setReadOnly(true);
+				final Query<T> query = session.createQuery(queryObj.getQuery(), queryObj.getResultClass())
+						.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
+				setFetchSubGraphs(session, queryObj, query);
 				setParameters(queryObj.getParams(), query);
 				setPage(query, queryObj.getPage());
 				setPageSize(query, queryObj.getPageSize());
@@ -84,7 +92,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				// type has no constructor that exactly matches the returned columns' types, as
 				// otherwise we cannot map the row values to properties.
 
-				final Query<Tuple> query = getSession().createQuery(queryObj.getQuery(), Tuple.class).setReadOnly(true);
+				final Query<Tuple> query = session.createQuery(queryObj.getQuery(), Tuple.class).setReadOnly(true)
+						.setHint(QueryHints.HINT_CACHEABLE, true);
 
 				setParameters(queryObj.getParams(), query);
 				setPage(query, queryObj.getPage());
@@ -99,10 +108,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 					// first try to create the pojo using a constructor that matches the result's
 					// column types
-					List<Object> values = t.getElements().stream().map(e -> t.get(e.getAlias()))
+
+					final List<Object> values = t.getElements().stream().map(e -> t.get(e))
 							.collect(Collectors.toList());
 					Optional<T> pojo = ClassUtil.instantiate(queryObj.getResultClass(), values.toArray());
 
+					// if the pojo can't be instantated, we try to create it manually and inject the
+					// data using reflection
+					// for this to work, each selected column has to have the same alias as the
+					// pojo's property!
 					if (!pojo.isPresent()) {
 						final Optional<T> obj = ClassUtil.instantiate(queryObj.getResultClass());
 
@@ -132,6 +146,41 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		}
 
 		return results;
+	}
+
+	protected <T> void setFetchSubGraphs(Session session, at.spot.core.persistence.query.Query<T> queryObj,
+			Query<T> query) throws UnknownTypeException {
+
+		if (!Item.class.isAssignableFrom(queryObj.getResultClass())) {
+			loggingService.warn("Fetch sub graphs can only be used for item queries.");
+			return;
+		}
+
+		final List<String> fetchSubGraphs = new ArrayList<>();
+
+		if (queryObj.isFetchAllSubGrahps()) {
+			Map<String, ItemTypePropertyDefinition> props = typeService
+					.getItemTypeProperties(typeService.getTypeCodeForClass((Class<Item>) queryObj.getResultClass()));
+
+			// add all properties
+			final List<String> validProperties = props.values().stream() //
+					.filter(p -> Item.class.isAssignableFrom(p.getReturnType()) || p.getRelationDefinition() != null) //
+					.map(p -> p.getName()) //
+					.collect(Collectors.toList());
+			fetchSubGraphs.addAll(validProperties);
+		} else if (queryObj.getFetchSubGraphs().size() > 0) {
+			fetchSubGraphs.addAll(queryObj.getFetchSubGraphs());
+		}
+
+		if (fetchSubGraphs.size() > 0) {
+			EntityGraph<T> graph = session.createEntityGraph(queryObj.getResultClass());
+
+			for (String subgraph : fetchSubGraphs) {
+				Subgraph itemGraph = graph.addSubgraph(subgraph);
+			}
+
+			query.setHint("javax.persistence.loadgraph", graph);
+		}
 	}
 
 	protected <T> void setParameters(Map<String, Object> params, Query<T> query) {

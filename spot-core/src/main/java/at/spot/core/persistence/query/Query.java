@@ -9,8 +9,8 @@ public class Query<T> extends AbstractQuery<T> {
 	private boolean isNativeQuery = false;
 
 	public Query(String query, Class<T> resultClass) {
+		super(resultClass);
 		this.query = query;
-		this.resultClass = resultClass;
 	}
 
 	/**

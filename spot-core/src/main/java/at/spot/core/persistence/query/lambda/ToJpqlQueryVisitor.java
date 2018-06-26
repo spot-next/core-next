@@ -40,7 +40,7 @@ import at.spot.core.persistence.service.impl.DefaultLambdaQueryTranslationServic
  * Visitor which translates Predicate lambda into
  * {@link PredicateTranslationResult}
  */
-public class ToFlexibleSearchVisitor implements ExpressionVisitor<PredicateTranslationResult> {
+public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslationResult> {
 
 	private static final String SQL_LIKE = "LIKE";
 	private final PredicateTranslationResult sb = new PredicateTranslationResult();
@@ -49,7 +49,7 @@ public class ToFlexibleSearchVisitor implements ExpressionVisitor<PredicateTrans
 	private final Deque<UnaryOperator<Object>> parameterModifiers = new LinkedList<>();
 	private boolean columnBlock = false;
 
-	public ToFlexibleSearchVisitor(final ParametersNameGenerator paramGenerator, final ModelService modelService) {
+	public ToJpqlQueryVisitor(final ParametersNameGenerator paramGenerator, final ModelService modelService) {
 		this.paramGenerator = paramGenerator;
 		this.modelService = modelService;
 	}

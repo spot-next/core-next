@@ -28,24 +28,12 @@ public interface QueryService {
 	<T> QueryResult<T> query(Query<T> query);
 
 	/**
-	 * Executes given query and returns list of results
+	 * Executes lambda query and returns list of results.
 	 *
 	 * @param query
-	 *            the query
-	 * @return list of result or empty if not found
+	 *            the lambda query
+	 * @return list of result or empty if nothing is found
 	 */
 	<T extends Item> QueryResult<T> query(LambdaQuery<T> query);
 
-	/**
-	 * Executes given query and returns single result
-	 *
-	 * @param query
-	 *            the query
-	 * @return single result returned by query (never null)
-	 * @throws UnknownIdentifierException
-	 *             if query did not return any result
-	 * @throws AmbiguousIdentifierException
-	 *             if query returned more than 1 result
-	 */
-	<T extends Item> T getSingleResult(LambdaQuery<T> query);
 }

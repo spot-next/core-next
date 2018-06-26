@@ -200,6 +200,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
 			Query<T> query = new Query<>(
 					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
+			query.setFetchAllSubGrahps(true);
 
 			try {
 				QueryResult<T> result = queryService.query(query);

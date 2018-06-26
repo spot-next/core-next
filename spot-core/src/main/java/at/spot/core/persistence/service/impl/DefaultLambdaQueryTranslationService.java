@@ -14,7 +14,7 @@ import at.spot.core.persistence.query.lambda.LambdaQuery;
 import at.spot.core.persistence.query.lambda.ParametersNameGenerator;
 import at.spot.core.persistence.query.lambda.PredicateTranslationResult;
 import at.spot.core.persistence.query.lambda.SerializablePredicate;
-import at.spot.core.persistence.query.lambda.ToFlexibleSearchVisitor;
+import at.spot.core.persistence.query.lambda.ToJpqlQueryVisitor;
 
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
@@ -23,7 +23,7 @@ import at.spot.core.persistence.service.LambdaQueryTranslationService;
 @Service
 public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslationService {
 
-	public static final String FS_MAIN_ALIAS = "this";
+	public static final String FS_MAIN_ALIAS = "item";
 
 	@Resource
 	private ModelService modelService;
@@ -37,9 +37,8 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 		final PredicateTranslationResult allFiltersResult = new PredicateTranslationResult();
 
 		for (final Predicate<T> filter : filters) {
-
 			final PredicateTranslationResult singleResult = LambdaExpression.parse(filter)
-					.accept(new ToFlexibleSearchVisitor(generator, modelService));
+					.accept(new ToJpqlQueryVisitor(generator, modelService));
 
 			allFiltersResult.getJoins().addAll(singleResult.getJoins());
 			allFiltersResult.getParameters().putAll(singleResult.getParameters());
@@ -53,18 +52,18 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 			}
 		}
 
-		final Query<T> result = createQuery(allFiltersResult, query.getItemClass());
-		// if (query.getLimit() > 0) {
-		// result.setCount(query.getLimit());
-		// }
-		return result;
+		final Query<T> jpqlQuery = createQuery(allFiltersResult, query.getResultClass());
+		if (query.getLimit() > 0) {
+			jpqlQuery.setLimit(query.getLimit());
+		}
+		return jpqlQuery;
 	}
 
 	private <T> Query<T> createQuery(final PredicateTranslationResult allFiltersResult, final Class<T> itemClass) {
 
 		final String typeCode = itemClass.getSimpleName();
-		final StringBuilder query = new StringBuilder("SELECT ").append(FS_MAIN_ALIAS).append(".PK FROM ")
-				.append(typeCode).append(" AS ").append(FS_MAIN_ALIAS);
+		final StringBuilder query = new StringBuilder("SELECT ").append(FS_MAIN_ALIAS).append(" FROM ").append(typeCode)
+				.append(" AS ").append(FS_MAIN_ALIAS);
 		final String joins = String.join(" ", allFiltersResult.getJoins());
 		if (!joins.isEmpty()) {
 			query.append(" ").append(joins);
@@ -76,6 +75,5 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 		}
 
 		return new Query<T>(query.toString(), allFiltersResult.getParameters(), itemClass);
-
 	}
 }
