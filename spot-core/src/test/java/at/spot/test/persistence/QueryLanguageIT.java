@@ -7,6 +7,8 @@ import org.junit.Test;
 
 import at.spot.core.persistence.query.Query;
 import at.spot.core.persistence.query.QueryResult;
+import at.spot.core.persistence.query.lambda.LambdaQuery;
+import at.spot.core.persistence.query.lambda.SerializablePredicate;
 
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.testing.AbstractIntegrationTest;
@@ -59,6 +61,16 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 				UserData.class);
 		query.addParam("id", "testUser");
 		QueryResult<UserData> result = queryService.query(query);
+
+		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
+		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
+	}
+
+	@Test
+	public void testLamdbaQuery() throws Exception {
+		final SerializablePredicate<User> pred = u -> u.getId().equals("testUser");
+		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(pred);
+		QueryResult<User> result = queryService.query(query);
 
 		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
 		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());

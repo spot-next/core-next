@@ -3,12 +3,9 @@ package at.spot.core.persistence.query;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Query<T> {
+public class Query<T> extends AbstractQuery<T> {
 	private String query;
 	private final Map<String, Object> params = new HashMap<>();
-	private int page = 0;
-	private int pageSize = Integer.MAX_VALUE;
-	private Class<T> resultClass;
 	private boolean isNativeQuery = false;
 
 	public Query(String query, Class<T> resultClass) {
@@ -45,30 +42,6 @@ public class Query<T> {
 
 	public void addParam(String name, Object value) {
 		this.params.put(name, value);
-	}
-
-	public int getPage() {
-		return page;
-	}
-
-	public void setPage(int page) {
-		this.page = page;
-	}
-
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public Class<T> getResultClass() {
-		return resultClass;
-	}
-
-	public void setResultClass(Class<T> resultClass) {
-		this.resultClass = resultClass;
 	}
 
 	public boolean isNativeQuery() {

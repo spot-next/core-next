@@ -21,6 +21,7 @@ public class JavaAnnotation extends AbstractObject {
 	public JavaAnnotation(final Class<? extends Annotation> type) {
 		super(type.getSimpleName());
 		this.type = new JavaMemberType(type);
+		this.imports.add(type.getName());
 	}
 
 	public JavaAnnotation(JavaMemberType type) {

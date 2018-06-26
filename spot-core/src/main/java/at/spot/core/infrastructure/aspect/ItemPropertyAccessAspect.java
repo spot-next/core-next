@@ -10,10 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import at.spot.core.infrastructure.annotation.GetProperty;
+import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
-import at.spot.core.infrastructure.annotation.SetProperty;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
@@ -96,7 +95,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @After("setField() && notFromPersistencePackage()")
 	public void setPropertyValue(final JoinPoint joinPoint) {
 		final Property ann = getAnnotation(joinPoint, Property.class);
-		final SetProperty setAnn = getAnnotation(joinPoint, SetProperty.class);
+		final Accessor setAnn = getAnnotation(joinPoint, Accessor.class);
 
 		if (setAnn == null && (ann == null || !ann.writable())) {
 			throw new RuntimeException(String.format("Attribute %s is not writable.", createSignature(joinPoint)));
@@ -119,7 +118,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @Around("getField() && notFromPersistencePackage()")
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Property ann = getAnnotation(joinPoint, Property.class);
-		final GetProperty getAnn = getAnnotation(joinPoint, GetProperty.class);
+		final Accessor getAnn = getAnnotation(joinPoint, Accessor.class);
 
 		if (getAnn == null && (ann == null || !ann.readable())) {
 			throw new RuntimeException(String.format("Attribute %s is not readable.", createSignature(joinPoint)));

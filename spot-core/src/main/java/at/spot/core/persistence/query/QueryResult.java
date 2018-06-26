@@ -26,6 +26,10 @@ public class QueryResult<T> {
 		return results.size();
 	}
 
+	public boolean isEmpty() {
+		return count() == 0;
+	}
+
 	public int getPageSize() {
 		return pageSize;
 	}
