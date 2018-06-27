@@ -1,55 +1,96 @@
 package at.spot.core.persistence.query;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class Query<T> extends AbstractQuery<T> {
-	private String query;
-	private final Map<String, Object> params = new HashMap<>();
-	private boolean isNativeQuery = false;
+public abstract class Query<T> {
+	protected final Class<T> resultClass;
+	protected int limit = 0;
+	protected int page = 0;
+	protected int pageSize = Integer.MAX_VALUE;
+	protected final List<String> eagerFetchRelationProperties = new ArrayList<>();
+	protected boolean eagerFetchRelations = false;
 
-	public Query(String query, Class<T> resultClass) {
-		super(resultClass);
-		this.query = query;
+	/**
+	 * @param resultClass
+	 *            the type of the result.
+	 */
+	public Query(Class<T> resultClass) {
+		this.resultClass = resultClass;
+	}
+
+	public int getPage() {
+		return page;
 	}
 
 	/**
-	 * @param query
-	 *            the JPQL query string
-	 * @param params
-	 *            the query parameters
-	 * @param resultClass
-	 *            the mapped type of the results. If this is a JPA entity, it will
-	 *            be mapped directly. If it is a regular POJO, its properties will
-	 *            be mapped based on the result column names.
+	 * Set the page of the result data.
 	 */
-	public Query(String query, Map<String, Object> params, Class<T> resultClass) {
-		this(query, resultClass);
-		this.params.putAll(params);
+	public void setPage(int page) {
+		this.page = page;
 	}
 
-	public String getQuery() {
-		return query;
+	public int getPageSize() {
+		return pageSize;
 	}
 
-	public void setQuery(String query) {
-		this.query = query;
+	/**
+	 * Sets the page size for pagination.
+	 */
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
 
-	public Map<String, Object> getParams() {
-		return params;
+	public List<String> getEagerFetchRelationProperties() {
+		return eagerFetchRelationProperties;
 	}
 
-	public void addParam(String name, Object value) {
-		this.params.put(name, value);
+	/**
+	 * Defines which relation properties should be eagerly fetched. This can be
+	 * helpful if those properties are being accessed for sure as it reduces the
+	 * amount of database queries at the cost of memory usage.
+	 */
+	public void setEagerFetchRelationProperties(String... eagerFetchRelationProperties) {
+		if (eagerFetchRelationProperties != null) {
+			this.eagerFetchRelationProperties.addAll(Arrays.asList(eagerFetchRelationProperties));
+		}
 	}
 
-	public boolean isNativeQuery() {
-		return isNativeQuery;
+	/**
+	 * @see #setEagerFetchRelationProperties(String...)
+	 */
+	public void setEagerFetchRelationProperties(List<String> eagerFetchRelations) {
+		this.eagerFetchRelationProperties.addAll(eagerFetchRelations);
 	}
 
-	public void setNativeQuery(boolean isNativeQuery) {
-		this.isNativeQuery = isNativeQuery;
+	public boolean isEagerFetchRelations() {
+		return eagerFetchRelations;
+	}
+
+	/**
+	 * Enable this to eagerly fetch ALL relation properties (item references) in one
+	 * query. This overrides the {@link #EagerFetchRelationProperties} property.
+	 * This can reduce stress on the database, although it increases memory usage as
+	 * all data is loaded at once.
+	 */
+	public void setEagerFetchRelations(boolean eagerFetchRelations) {
+		this.eagerFetchRelations = eagerFetchRelations;
+	}
+
+	public Class<T> getResultClass() {
+		return resultClass;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	/**
+	 * Sets the result limit.
+	 */
+	public void setLimit(int limit) {
+		this.limit = limit;
 	}
 
 }

@@ -1,14 +1,14 @@
-package at.spot.core.persistence.query.lambda;
+package at.spot.core.persistence.query;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import at.spot.core.persistence.query.AbstractQuery;
+import at.spot.core.persistence.query.lambda.SerializablePredicate;
 
 import at.spot.core.model.Item;
 
-public class LambdaQuery<T extends Item> extends AbstractQuery<T> {
+public class LambdaQuery<T extends Item> extends Query<T> {
 
 	private final List<SerializablePredicate<T>> filters = new ArrayList<>();
 

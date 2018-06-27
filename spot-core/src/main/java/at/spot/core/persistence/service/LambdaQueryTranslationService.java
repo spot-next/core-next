@@ -1,7 +1,7 @@
 package at.spot.core.persistence.service;
 
-import at.spot.core.persistence.query.Query;
-import at.spot.core.persistence.query.lambda.LambdaQuery;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.LambdaQuery;
 
 import at.spot.core.model.Item;
 
@@ -12,11 +12,11 @@ import at.spot.core.model.Item;
 public interface LambdaQueryTranslationService {
 
 	/**
-	 * Translates given query to {@link Query}
+	 * Translates given query to {@link JpqlQuery}
 	 * 
 	 * @param query
 	 *            to translate
 	 * @return flexible search query
 	 */
-	<T extends Item> Query<T> translate(LambdaQuery<T> query);
+	<T extends Item> JpqlQuery<T> translate(LambdaQuery<T> query);
 }

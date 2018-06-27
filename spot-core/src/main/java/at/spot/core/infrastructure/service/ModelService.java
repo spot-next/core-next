@@ -3,6 +3,8 @@ package at.spot.core.infrastructure.service;
 import java.util.List;
 import java.util.Map;
 
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.exception.ModelCreationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -14,25 +16,16 @@ import at.spot.core.persistence.service.PersistenceService;
 public interface ModelService {
 	/**
 	 * Creates an unsaved instance of the given type.
-	 * 
-	 * @param type
-	 * @return
 	 */
 	<T extends Item> T create(Class<T> type) throws ModelCreationException;
 
 	/**
 	 * Saves the given model. Referenced Item models will not be saved.
-	 * 
-	 * @param type
-	 * @return
 	 */
 	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be saved.
-	 * 
-	 * @param type
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends Item> void saveAll(T... items)
@@ -40,18 +33,12 @@ public interface ModelService {
 
 	/**
 	 * Saves all the given Item models. Referenced Item models will not be saved.
-	 * 
-	 * @param type
-	 * @return
 	 */
 	<T extends Item> void saveAll(List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
 	 * Returns an {@link Item} based on its PK.
-	 * 
-	 * @param pk
-	 * @return
 	 */
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
@@ -59,20 +46,25 @@ public interface ModelService {
 	 * Returns the first {@link Item} based on the given search parameters (key =
 	 * property name, value = property value).
 	 * 
-	 * @param searchParameters
-	 * @return
+	 * @throws ModelNotUniqueException
+	 *             if there is more than one matching item.
 	 */
-	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters);
+	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotUniqueException;
 
-	// TODO allow to pass JPA hints, eg for dynamic enttity graphs (fetch joins for
-	// relations):
-	// https://www.thoughts-on-java.org/5-ways-to-initialize-lazy-relations-and-when-to-use-them/
+	/**
+	 * Returns the first {@link Item} based on the given model query parameters. the
+	 * {@link ModelQuery} allows you to set the fetching strategy, pagination and to
+	 * limit the result.
+	 * 
+	 * @throws ModelNotUniqueException
+	 *             if there is more than one matching item.
+	 */
+	<T extends Item> T get(ModelQuery<T> query) throws ModelNotUniqueException;;
 
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
 	 * value = property value).
 	 * 
-	 * @param type
 	 * @param searchParameters
 	 *            if empty or null, all items of the given type will be returned.
 	 * @return
@@ -82,18 +74,8 @@ public interface ModelService {
 	/**
 	 * Returns an object based on the given search parameters (key = property name,
 	 * value = property value).
-	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 * @param start
-	 *            defines the amount of items that are being skipped.
-	 * @param amount
-	 *            starting from the start param this is the amount of items that
-	 *            will be returned.
-	 * @return
 	 */
-	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters, int page, int pageSize);
+	<T extends Item> List<T> getAll(ModelQuery<T> query);
 
 	/**
 	 * Returns the first {@link Item} based on the given example item.
@@ -143,14 +125,6 @@ public interface ModelService {
 	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
-
-	/**
-	 * Returns all objects of the given type
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	<T extends Item> List<T> getAll(Class<T> type);
 
 	/**
 	 * Returns the item's value of the given property.

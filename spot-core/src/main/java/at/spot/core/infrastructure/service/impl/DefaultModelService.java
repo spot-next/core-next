@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
@@ -47,21 +49,28 @@ public class DefaultModelService extends AbstractModelService {
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
 		final T item = persistenceService.load(type, pk);
+
 		applyLoadInterceptors(Collections.singletonList(item));
 
 		return item;
 	}
 
 	@Override
-	public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters) {
-		final List<T> items = getAllInternal(type, searchParameters, 0, 0);
+	public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters)
+			throws ModelNotUniqueException {
+
+		return get(new ModelQuery<>(type, searchParameters));
+	}
+
+	@Override
+	public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
+		final List<T> items = getAllInternal(query);
 
 		if (items.size() > 1) {
-			loggingService.warn(String.format("Found more than one matching item for the given search parameters: %s ",
-					searchParameters));
+			throw new ModelNotUniqueException("Found more than 1 result for the given search parameters");
 		}
 
-		if (items.size() == 1) {
+		if (items.size() > 0) {
 			applyLoadInterceptors(Collections.singletonList(items.get(0)));
 			return items.get(0);
 		}
@@ -71,37 +80,20 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
-		return getAll(type, searchParameters, 0, 0);
+		return getAll(new ModelQuery<>(type, searchParameters));
 	}
 
 	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize) {
+	public <T extends Item> List<T> getAll(final ModelQuery<T> query) {
+		final List<T> items = getAllInternal(query);
 
-		final List<T> items = getAllInternal(type, searchParameters, page, pageSize);
 		applyLoadInterceptors(items);
 
 		return items;
 	}
 
-	protected <T extends Item> List<T> getAllInternal(final Class<T> type, final Map<String, Object> searchParameters,
-			final int page, final int pageSize) {
-
-		// return nothing if search parameters are empty
-		// if (searchParameters == null || searchParameters.values().size() == 0) {
-		// return Collections.emptyList();
-		// }
-
-		final List<T> items = persistenceService.load(type, searchParameters, page, pageSize);
-
-		return items;
-	}
-
-	@Override
-	public <T extends Item> List<T> getAll(final Class<T> type) {
-		final List<T> items = persistenceService.load(type, null);
-
-		applyLoadInterceptors(items);
+	protected <T extends Item> List<T> getAllInternal(final ModelQuery<T> query) {
+		final List<T> items = persistenceService.load(query);
 
 		return items;
 	}
@@ -112,7 +104,7 @@ public class DefaultModelService extends AbstractModelService {
 
 		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
-		T item = (T) get(example.getClass(), map);
+		final T item = get(new ModelQuery<T>((Class<T>) example.getClass(), map));
 
 		return item;
 	}
@@ -123,7 +115,7 @@ public class DefaultModelService extends AbstractModelService {
 
 		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
-		List<T> items = (List<T>) getAll(example.getClass(), map, 0, 0);
+		final List<T> items = getAll(new ModelQuery<T>((Class<T>) example.getClass(), map));
 
 		return items;
 	}
@@ -145,7 +137,7 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item> void removeAll(List<T> items) throws ModelNotFoundException {
+	public <T extends Item> void removeAll(final List<T> items) throws ModelNotFoundException {
 		applyRemoveInterceptors(items);
 
 		persistenceService.remove(items);

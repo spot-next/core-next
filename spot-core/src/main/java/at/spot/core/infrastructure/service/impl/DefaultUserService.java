@@ -22,6 +22,7 @@ import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.model.ItemTypeConstants;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.security.service.AuthenticationService;
+import at.spot.itemtype.core.user.Principal;
 import at.spot.itemtype.core.user.PrincipalGroup;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
@@ -67,7 +68,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public U getUser(final String uid) {
 		final Map<String, Object> params = new HashMap<>();
-		params.put("id", uid);
+		params.put(Principal.PROPERTY_ID, uid);
 
 		return modelService.get(getUserType(), params);
 	}
@@ -100,12 +101,12 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	@Override
 	public List<U> getAllUsers() {
-		return modelService.getAll(getUserType());
+		return modelService.getAll(getUserType(), null);
 	}
 
 	@Override
 	public List<G> getAllUserGroups() {
-		return modelService.getAll(getUserGroupType());
+		return modelService.getAll(getUserGroupType(), null);
 	}
 
 	protected Class<U> getUserType() {

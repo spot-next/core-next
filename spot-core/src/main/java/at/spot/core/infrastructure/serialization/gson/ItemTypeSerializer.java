@@ -39,8 +39,11 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 		final String typeCode = getTypeService().getTypeCodeForClass(value.getClass());
 		final JsonObject jsonObj = new JsonObject();
 
+		jsonObj.addProperty("pk", value.getPk());
+
 		try {
 			final Map<String, ItemTypePropertyDefinition> props = getTypeService().getItemTypeProperties(typeCode);
+
 			for (final ItemTypePropertyDefinition p : props.values()) {
 				final Object propValue = getModelService().getPropertyValue(value, p.getName());
 

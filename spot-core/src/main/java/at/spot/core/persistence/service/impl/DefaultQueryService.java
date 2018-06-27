@@ -6,9 +6,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.QueryResult;
-import at.spot.core.persistence.query.lambda.LambdaQuery;
 
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -33,13 +33,13 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 	@Override
 	public <T> QueryResult<T> query(String queryString, Class<T> resultClass) {
-		final Query<T> query = new Query<>(queryString, resultClass);
+		final JpqlQuery<T> query = new JpqlQuery<>(queryString, resultClass);
 
 		return query(query);
 	}
 
 	@Override
-	public <T> QueryResult<T> query(Query<T> query) {
+	public <T> QueryResult<T> query(JpqlQuery<T> query) {
 		final List<T> resultList = persistenceService.query(query);
 		final QueryResult<T> result = new QueryResult<T>(resultList, query.getPage(), query.getPageSize());
 
@@ -49,7 +49,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	@Override
 	public <T extends Item> QueryResult<T> query(final LambdaQuery<T> query) {
 		// translate lambda query to regular JPGL query
-		final Query<T> translated = lambdaQueryTranslationService.translate(query);
+		final JpqlQuery<T> translated = lambdaQueryTranslationService.translate(query);
 
 		final List<T> resultList = query(translated).getResultList();
 

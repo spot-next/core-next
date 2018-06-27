@@ -1,8 +1,8 @@
 package at.spot.core.persistence.service;
 
-import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.QueryResult;
-import at.spot.core.persistence.query.lambda.LambdaQuery;
 
 import at.spot.core.model.Item;
 
@@ -25,7 +25,7 @@ public interface QueryService {
 	 * 
 	 * @return the query result
 	 */
-	<T> QueryResult<T> query(Query<T> query);
+	<T> QueryResult<T> query(JpqlQuery<T> query);
 
 	/**
 	 * Executes lambda query and returns list of results.

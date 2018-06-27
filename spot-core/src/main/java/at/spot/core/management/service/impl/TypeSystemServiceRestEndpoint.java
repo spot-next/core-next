@@ -18,7 +18,8 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.query.QueryResult;
 
 import at.spot.core.infrastructure.exception.DeserializationException;
@@ -143,7 +144,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 		final Class<? extends Item> type = typeService.getClassForTypeCode(request.params(":typecode"));
 
-		models = (List<T>) modelService.getAll(type, null, page, pageSize);
+		final ModelQuery<? extends Item> query = new ModelQuery<>(type, null);
+		query.setPage(page);
+		query.setPageSize(pageSize);
+		query.setEagerFetchRelations(true);
+		models = (List<T>) modelService.getAll(query);
 
 		body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
 
@@ -198,9 +203,9 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String[] queryParamValues = request.queryParamsValues("q");
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
-			Query<T> query = new Query<>(
+			JpqlQuery<T> query = new JpqlQuery<>(
 					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
-			query.setFetchAllSubGrahps(true);
+			query.setEagerFetchRelations(true);
 
 			try {
 				QueryResult<T> result = queryService.query(query);

@@ -6,9 +6,9 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.QueryResult;
-import at.spot.core.persistence.query.lambda.LambdaQuery;
 
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.testing.AbstractIntegrationTest;
@@ -39,8 +39,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testFetchSubGraph() throws Exception {
-		final Query<User> query = new Query<>("SELECT u FROM User u", User.class);
-		query.setFetchAllSubGrahps(true);
+		final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u", User.class);
+		query.setEagerFetchRelations(true);
 		final QueryResult<User> result = queryService.query(query);
 
 		Assert.assertTrue(result.getResultList().size() > 0);
@@ -48,7 +48,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testSimpleItemTypeQuery() throws Exception {
-		final Query<User> query = new Query<>("SELECT u FROM User u WHERE id = :id", User.class);
+		final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
 		query.addParam("id", "testUser");
 		final QueryResult<User> result = queryService.query(query);
 
@@ -57,7 +57,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testSimpleTypeQuery() throws Exception {
-		final Query<String> query = new Query<>("SELECT id FROM User u WHERE id = :id", String.class);
+		final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id = :id", String.class);
 		query.addParam("id", "testUser");
 		final QueryResult<String> result = queryService.query(query);
 
@@ -66,7 +66,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testDtoQuery() throws Exception {
-		final Query<UserData> query = new Query<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id",
+		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id",
 				UserData.class);
 		query.addParam("id", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
@@ -79,7 +79,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 	@Ignore
 	@Test
 	public void testDtoQueryWithoutAlias() throws Exception {
-		final Query<UserData> query = new Query<>("SELECT id, shortName FROM User u WHERE id = :id", UserData.class);
+		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id, shortName FROM User u WHERE id = :id", UserData.class);
 		query.addParam("id", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 

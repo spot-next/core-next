@@ -11,7 +11,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.Query;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -36,14 +37,6 @@ public interface PersistenceService {
 	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
-	 * Returns an object based on its PK.
-	 * 
-	 * @param pk
-	 * @return
-	 */
-	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
-
-	/**
 	 * Refreshes the given model's properties.
 	 * 
 	 * @param pk
@@ -53,36 +46,22 @@ public interface PersistenceService {
 	<T extends Item> void refresh(List<T> item) throws ModelNotFoundException;
 
 	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
-	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 */
-	<T extends Item> List<T> load(Class<T> type, Map<String, Object> searchParameters);
-
-	/**
 	 * Returns the paginated results for the given query.
 	 */
-	<T> List<T> query(Query<T> query) throws QueryException;
+	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
+	 * Returns an object based on its PK.
 	 * 
-	 * @param type
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
-	 * @param start
-	 *            defines the amount of items that are being skipped.
-	 * @param amount
-	 *            starting from the start param this is the amount of items that
-	 *            will be returned. the items will be just proxies that are
-	 *            lazy-loaded.
+	 * @param pk
+	 * @return
 	 */
-	<T extends Item> List<T> load(final Class<T> type, final Map<String, Object> searchParameters, final Integer page,
-			final Integer pageSize);
+	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
+
+	/**
+	 * Returns an list of items based on the given search query.
+	 */
+	<T extends Item> List<T> load(ModelQuery<T> query);
 
 	/**
 	 * Removes the given item.

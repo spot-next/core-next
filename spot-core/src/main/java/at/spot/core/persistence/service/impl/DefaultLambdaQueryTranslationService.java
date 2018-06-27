@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.trigersoft.jaque.expression.LambdaExpression;
 
-import at.spot.core.persistence.query.Query;
-import at.spot.core.persistence.query.lambda.LambdaQuery;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.lambda.ParametersNameGenerator;
 import at.spot.core.persistence.query.lambda.PredicateTranslationResult;
 import at.spot.core.persistence.query.lambda.SerializablePredicate;
@@ -29,7 +29,7 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 	private ModelService modelService;
 
 	@Override
-	public <T extends Item> Query<T> translate(final LambdaQuery<T> query) {
+	public <T extends Item> JpqlQuery<T> translate(final LambdaQuery<T> query) {
 
 		final List<SerializablePredicate<T>> filters = query.getFilters();
 
@@ -52,14 +52,14 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 			}
 		}
 
-		final Query<T> jpqlQuery = createQuery(allFiltersResult, query.getResultClass());
+		final JpqlQuery<T> jpqlQuery = createQuery(allFiltersResult, query.getResultClass());
 		if (query.getLimit() > 0) {
 			jpqlQuery.setLimit(query.getLimit());
 		}
 		return jpqlQuery;
 	}
 
-	private <T> Query<T> createQuery(final PredicateTranslationResult allFiltersResult, final Class<T> itemClass) {
+	private <T> JpqlQuery<T> createQuery(final PredicateTranslationResult allFiltersResult, final Class<T> itemClass) {
 
 		final String typeCode = itemClass.getSimpleName();
 		final StringBuilder query = new StringBuilder("SELECT ").append(FS_MAIN_ALIAS).append(" FROM ").append(typeCode)
@@ -74,6 +74,6 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 			query.append(" WHERE ").append(where);
 		}
 
-		return new Query<T>(query.toString(), allFiltersResult.getParameters(), itemClass);
+		return new JpqlQuery<T>(query.toString(), allFiltersResult.getParameters(), itemClass);
 	}
 }
