@@ -10,9 +10,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import at.spot.core.infrastructure.serialization.jackson.ItemDeserializer;
+import at.spot.core.infrastructure.serialization.jackson.ItemIgnorePropertiesMixIn;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
+import at.spot.core.model.Item;
+import at.spot.itemtype.core.user.User;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.
@@ -32,6 +37,14 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 	@PostConstruct
 	public void init() throws ClassNotFoundException {
 		jacksonMapper = new ObjectMapper();
+		jacksonMapper.addMixIn(Item.class, ItemIgnorePropertiesMixIn.class);
+		// jacksonMapper.enableDefaultTyping();
+		// jacksonMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+
+		SimpleModule module = new SimpleModule("itemTypes");
+		module.addDeserializer(User.class, new ItemDeserializer<>());
+		jacksonMapper.registerModule(module);
+
 		jacksonReader = jacksonMapper.reader();
 		jacksonWriter = jacksonMapper.writer();
 	}
