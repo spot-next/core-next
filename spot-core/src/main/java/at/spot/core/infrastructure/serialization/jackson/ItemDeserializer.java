@@ -29,6 +29,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 		if (typeCodeNode != null && !typeCodeNode.isNull()) {
 			try {
 				Class<I> itemType = (Class<I>) getTypeService().getClassForTypeCode(typeCodeNode.asText());
+
 			} catch (UnknownTypeException e) {
 				throw new IOException("Could not deserialize object", e);
 			}
