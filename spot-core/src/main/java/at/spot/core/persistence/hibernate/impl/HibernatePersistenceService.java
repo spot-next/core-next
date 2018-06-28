@@ -39,8 +39,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -49,6 +47,7 @@ import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
@@ -68,15 +67,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	protected PlatformTransactionManager transactionManager;
 
 	@Override
-	public <T> List<T> query(at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
+	public <T> List<T> query(final at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 
 		List<T> results;
 
 		try {
-			Session session = getSession();
+			final Session session = getSession();
 
 			// if this is an item type, we just load the entities
-			// if it is a "primitive" natively supported type we can also just let hibernate
+			// if it is a "primitive" natively supported type we can also just
+			// let hibernate
 			// do the work
 			if (Item.class.isAssignableFrom(sourceQuery.getResultClass())
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
@@ -92,8 +92,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 			} else {
 				// otherwise we load each value into a list of tuples
-				// in that case the selected columns need to be aliased in case the given result
-				// type has no constructor that exactly matches the returned columns' types, as
+				// in that case the selected columns need to be aliased in case
+				// the given result
+				// type has no constructor that exactly matches the returned
+				// columns' types, as
 				// otherwise we cannot map the row values to properties.
 
 				final Query<Tuple> query = session.createQuery(sourceQuery.getQuery(), Tuple.class).setReadOnly(true)
@@ -106,26 +108,29 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 				final List<Tuple> resultList = query.list();
 				results = new ArrayList<>();
 
-				for (Tuple t : resultList) {
+				for (final Tuple t : resultList) {
 					final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
 							.collect(Collectors.toList());
 
-					// first try to create the pojo using a constructor that matches the result's
+					// first try to create the pojo using a constructor that
+					// matches the result's
 					// column types
 
 					final List<Object> values = t.getElements().stream().map(e -> t.get(e))
 							.collect(Collectors.toList());
 					Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-					// if the pojo can't be instantated, we try to create it manually and inject the
+					// if the pojo can't be instantated, we try to create it
+					// manually and inject the
 					// data using reflection
-					// for this to work, each selected column has to have the same alias as the
+					// for this to work, each selected column has to have the
+					// same alias as the
 					// pojo's property!
 					if (!pojo.isPresent()) {
 						final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
 
 						if (obj.isPresent()) {
-							Object o = obj.get();
+							final Object o = obj.get();
 							t.getElements().stream()
 									.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
 						}
@@ -141,7 +146,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			if (e instanceof QueryException) {
 				throw (QueryException) e;
 			} else {
@@ -152,8 +157,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		return results;
 	}
 
-	protected <T, Q extends at.spot.core.persistence.query.Query<T>> void setFetchSubGraphsHint(Session session,
-			Q sourceQuery, TypedQuery<T> query) throws UnknownTypeException {
+	protected <T, Q extends at.spot.core.persistence.query.Query<T>> void setFetchSubGraphsHint(final Session session,
+			final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
 		if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
 			loggingService.warn("Fetch sub graphs can only be used for item queries.");
@@ -163,7 +168,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		final List<String> fetchSubGraphs = new ArrayList<>();
 
 		if (sourceQuery.isEagerFetchRelations()) {
-			Map<String, ItemTypePropertyDefinition> props = typeService
+			final Map<String, ItemTypePropertyDefinition> props = typeService
 					.getItemTypeProperties(typeService.getTypeCodeForClass((Class<Item>) sourceQuery.getResultClass()));
 
 			// add all properties
@@ -177,29 +182,29 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		}
 
 		if (fetchSubGraphs.size() > 0) {
-			EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
+			final EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
 
-			for (String subgraph : fetchSubGraphs) {
-				Subgraph itemGraph = graph.addSubgraph(subgraph);
+			for (final String subgraph : fetchSubGraphs) {
+				final Subgraph itemGraph = graph.addSubgraph(subgraph);
 			}
 
 			query.setHint("javax.persistence.loadgraph", graph);
 		}
 	}
 
-	protected <T> void setParameters(Map<String, Object> params, Query<T> query) {
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
+	protected <T> void setParameters(final Map<String, Object> params, final Query<T> query) {
+		for (final Map.Entry<String, Object> entry : params.entrySet()) {
 			query.setParameter(entry.getKey(), entry.getValue());
 		}
 	}
 
-	protected void setPage(Query<?> query, int page) {
+	protected void setPage(final Query<?> query, final int page) {
 		if (page >= 0) {
 			query.setFirstResult(page);
 		}
 	}
 
-	protected void setPageSize(Query<?> query, int pageSize) {
+	protected void setPageSize(final Query<?> query, final int pageSize) {
 		if (pageSize >= 0) {
 			query.setFetchSize(pageSize);
 		}
@@ -211,7 +216,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 		try {
 			transactionService.execute(() -> {
-				Session session = getSession();
+				final Session session = getSession();
 				int i = 0;
 
 				for (final T item : items) {
@@ -219,7 +224,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 						session.saveOrUpdate(item);
 						// getSession().merge(item);
 
-						if (i % JDBC_BATCH_SIZE == 0) { // use same as the JDBC batch size
+						if (i % JDBC_BATCH_SIZE == 0) { // use same as the JDBC
+														// batch size
 							// flush a batch of inserts and release memory:
 							session.flush();
 							session.clear();
@@ -280,7 +286,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 		try {
 			transactionService.execute(() -> {
-				for (T item : items) {
+				for (final T item : items) {
 					try {
 						attach(item);
 
@@ -330,7 +336,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	@Override
-	public <T extends Item> List<T> load(ModelQuery<T> sourceQuery) {
+	public <T extends Item> List<T> load(final ModelQuery<T> sourceQuery) {
 
 		bindSession();
 
@@ -357,6 +363,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 				final CriteriaQuery<T> select = cq.select(r).where(p);
 				query = session.createQuery(select);
+
+				if (sourceQuery.getPageSize() > 0) {
+					query.setFirstResult((sourceQuery.getPage() - 1) * sourceQuery.getPageSize());
+					query.setMaxResults(sourceQuery.getPageSize());
+				}
 			} else {
 				query = session.createQuery(cq.select(r));
 			}
