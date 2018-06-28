@@ -82,7 +82,7 @@ public class CoreInit extends ModuleInit {
 
 		modelService.save(userGroup);
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10; i++) {
 			final User user = modelService.create(User.class);
 			user.setId("user-" + UUID.randomUUID());
 			user.setEmailAddress("test@test.at");

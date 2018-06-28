@@ -1,20 +1,16 @@
 package at.spot.core.infrastructure.serialization.gson;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.lang.SerializationException;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
@@ -32,7 +28,7 @@ import at.spot.core.persistence.service.PersistenceService;
 /**
  * This TypeAdapter serializes item type objects. Any * .
  */
-public class ItemTypeAdapter<T extends Item> extends TypeAdapter<T> implements JsonSerializer<T> {
+public class ItemTypeAdapter<T extends Item> extends TypeAdapter<T> {
 
 	private TypeService typeService;
 	private ModelService modelService;
@@ -54,108 +50,34 @@ public class ItemTypeAdapter<T extends Item> extends TypeAdapter<T> implements J
 	}
 
 	@Override
-	public T read(final JsonReader in) throws IOException {
-		// in.beginObject();
-		// String typeCode = null;
-		// Long pk = null;
-		//
-		// while (in.hasNext()) {
-		// if (in.nextName().equals("type")) {
-		// typeCode = in.nextString();
-		// break;
-		// }
-		//
-		// if (in.nextName().equals("pk")) {
-		// pk = in.nextLong();
-		// break;
-		// }
-		// }
-		// in.endObject();
-
-		// if (StringUtils.isNotBlank(typeCode)) {
-		// Class<? extends Item> itemType;
-		// try {
-		// itemType = getTypeService().getClassForTypeCode(typeCode);
-		// } catch (UnknownTypeException e) {
-		// throw new IOException(e);
-		// }
-		//
-		// } else {
-		// throw new IOException("Could not deserialize item of type " + typeCode);
-		// }
-
-		return context.fromJson(in, type.getRawType());
-	}
-
-	@Override
-	public JsonElement serialize(T value, Type typeOfSrc, JsonSerializationContext context) {
-		if (value == null) {
-			return null;
-		}
-
-		final String typeCode = getTypeService().getTypeCodeForClass(value.getClass());
-		final JsonObject jsonObj = new JsonObject();
+	public T read(JsonReader in) throws IOException {
+		String typeCode = null;
 
 		try {
-			final Map<String, ItemTypePropertyDefinition> props = getTypeService().getItemTypeProperties(typeCode);
-			for (final ItemTypePropertyDefinition p : props.values()) {
-				final Object propValue = getModelService().getPropertyValue(value, p.getName());
-
-				if (propValue != null) {
-					if (propValue.getClass().isArray() || Collection.class.isAssignableFrom(propValue.getClass())) {
-
-						final JsonArray array = new JsonArray();
-
-						final Collection<Object> propValueList = propValue.getClass().isArray()
-								? Arrays.asList(propValue)
-								: (Collection<Object>) propValue;
-
-						for (Object o : propValueList) {
-							if (o instanceof Item) {
-								array.add(serializeSubItem((Item) o));
-							} else {
-								array.add(context.serialize(o));
-							}
-						}
-					} else if (Map.class.isAssignableFrom(propValue.getClass())) {
-						Map<Object, Object> mapValue = (Map) propValue;
-						JsonObject map = new JsonObject();
-
-						for (Map.Entry e : mapValue.entrySet()) {
-							Object k = e.getKey();
-							Object v = e.getValue();
-
-							String key = null;
-
-							if (PersistenceService.NATIVE_DATATYPES.contains(k.getClass())) {
-								key = k.toString();
-							} else {
-								throw new IOException(
-										"Complex objects are not supported as property key: " + k.getClass().getName());
-							}
-
-							if (v instanceof Item) {
-								writeItem(key, (Item) v, map);
-							} else {
-								writeObject(key, v, map, context);
-							}
-						}
-
-						jsonObj.add(p.getName(), map);
-					} else {
-						if (propValue instanceof Item) {
-							writeItem(p.getName(), (Item) propValue, jsonObj);
-						} else {
-							writeObject(p.getName(), propValue, jsonObj, context);
-						}
-					}
+			while (in.hasNext()) {
+				if (in.peek().equals("typeCode")) {
+					typeCode = in.nextString();
+					break;
 				}
 			}
-		} catch (final Exception e) {
-			throw new SerializationException("Could not get property definitions of type " + typeCode, e);
-		}
 
-		return jsonObj;
+			TypeToken<T> objType = null;
+
+			if (StringUtils.isNotBlank(typeCode)) {
+				Class<?> itemType;
+				itemType = getTypeService().getClassForTypeCode(typeCode);
+				objType = (TypeToken<T>) TypeToken.get(itemType);
+			}
+
+			TypeAdapter<T> delegate = getDelegateAdapter(type);
+			return delegate.read(in);
+		} catch (Exception e) {
+			throw new IOException("Could not get deserialze json " + typeCode, e);
+		}
+	}
+
+	private TypeAdapter<T> getDelegateAdapter(TypeToken<T> typeToken) {
+		return context.getDelegateAdapter(this.FACTORY, typeToken != null ? typeToken : type);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -249,7 +171,7 @@ public class ItemTypeAdapter<T extends Item> extends TypeAdapter<T> implements J
 		out.beginObject();
 		out.name("pk");
 		out.value(item.getPk());
-		out.name("type");
+		out.name("typCode");
 		out.value(getTypeService().getTypeCodeForClass(item.getClass()));
 		out.endObject();
 	}

@@ -9,8 +9,10 @@ import java.util.Map;
 import org.apache.commons.lang.SerializationException;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -29,6 +31,76 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 
 	private TypeService typeService;
 	private ModelService modelService;
+
+	// @Override
+	public Item deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+			throws JsonParseException {
+
+		Item deserializedItem = null;
+
+		try {
+			JsonObject jsonObj = json.getAsJsonObject();
+			JsonElement itemTypeCode = jsonObj.get("type");
+
+			if (itemTypeCode != null) {
+				Class<? extends Item> itemTypeClass = getTypeService().getClassForTypeCode(itemTypeCode.getAsString());
+				deserializedItem = itemTypeClass.newInstance();
+			} else {
+				deserializedItem = (Item) Class.forName(typeOfT.getTypeName()).newInstance();
+
+			}
+
+			String typeCode = getTypeService().getTypeCodeForClass(deserializedItem.getClass());
+
+			final Map<String, ItemTypePropertyDefinition> props = getTypeService().getItemTypeProperties(typeCode);
+
+			for (final ItemTypePropertyDefinition p : props.values()) {
+				Object deserialiezdValue = null;
+
+				JsonElement property = jsonObj.get(p.getName());
+				if (property != null && !property.isJsonNull()) {
+					deserialiezdValue = context.deserialize(property, p.getReturnType());
+				}
+
+				if (deserialiezdValue != null) {
+					getModelService().setPropertyValue(deserializedItem, p.getName(), deserialiezdValue);
+				}
+			}
+
+			// for (Map.Entry<String, JsonElement> e : jsonObj.entrySet()) {
+			// String key = e.getKey();
+			// JsonElement value = e.getValue();
+			//
+			// Object deserialiezdValue = null;
+
+			// if (value.isJsonPrimitive()) {
+			// JsonPrimitive primitiveValue = value.getAsJsonPrimitive();
+			//
+			// if (primitiveValue.isBoolean()) {
+			// deserialiezdValue = Boolean.valueOf(primitiveValue.getAsBoolean());
+			// } else if (primitiveValue.isNumber()) {
+			// // deserialiezdValue = Number.valueOf(primitiveValue.getAsNumber());
+			// } else if (primitiveValue.isString()) {
+			// deserialiezdValue = primitiveValue.getAsString();
+			// } else if (primitiveValue.isJsonArray()) {
+			// // deserialiezdValue = primitiveValue.getasj);
+			// }
+			// } else if (value.isJsonArray()) {
+			// deserialiezdValue = context.deserialize(value, Object[].class);
+			// } else if (value.isJsonObject()) {
+			// String
+			//
+			// deserialiezdValue = context.deserialize(value, );
+			// }
+
+			// getModelService().setPropertyValue(deserializedItem, key, deserialiezdValue);
+			// }
+		} catch (Exception e) {
+			throw new SerializationException("Could not deserialize item of type=" + typeOfT.getTypeName(), e);
+		}
+
+		return deserializedItem;
+	}
 
 	@Override
 	public JsonElement serialize(Item value, Type typeOfSrc, JsonSerializationContext context) {
@@ -98,7 +170,7 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 				}
 			}
 		} catch (final Exception e) {
-			throw new SerializationException("Could not get property definitions of type " + typeCode, e);
+			throw new SerializationException("Could not serialize item with typeCode=" + typeCode, e);
 		}
 
 		return jsonObj;
@@ -108,7 +180,7 @@ public class ItemTypeSerializer implements JsonSerializer<Item> {
 		JsonObject itemJsonObj = new JsonObject();
 
 		itemJsonObj.add("pk", new JsonPrimitive(item.getPk()));
-		itemJsonObj.add("type", new JsonPrimitive(getTypeService().getTypeCodeForClass(item.getClass())));
+		itemJsonObj.add("typeCode", new JsonPrimitive(getTypeService().getTypeCodeForClass(item.getClass())));
 
 		return itemJsonObj;
 	}
