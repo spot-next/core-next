@@ -298,12 +298,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected void addGetter(final JavaField field, final JavaClass javaClass) {
+		addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
+	}
+
+	protected void addGetter(final JavaField field, final JavaClass javaClass, String codeBlock) {
 		final JavaMethod getter = new JavaMethod();
 		getter.setName(generateMethodName("get", field.getName()));
 		getter.setType(field.getType());
 		getter.setDescription(field.getDescription());
-		getter.setCodeBlock(String.format("return this.%s;", field.getName()));
 		getter.setVisibility(Visibility.PUBLIC);
+		getter.setCodeBlock(codeBlock);
 
 		JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
 		accessorAnnotation.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
@@ -614,6 +618,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
 			}
 
+			// always use Sets for now, because hibernate can't handle multiple Collections
+			// when using FETCH JOINS.
 			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
 			property.setType(propType);
@@ -622,6 +628,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
 			javaClass.addField(property);
 
+			// addGetter(property, javaClass, String.format("return Collections.this.%s;",
+			// field.getName()));
 			addGetter(property, javaClass);
 			addSetter(property, javaClass);
 
@@ -674,11 +682,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		JavaMemberType type = null;
 
 		if (RelationshipCardinality.MANY.equals(cardinality)) {
-			CollectionsType colType = CollectionsType.LIST;
+			CollectionsType colType = CollectionsType.SET;
 
-			if (RelationCollectionType.Set.equals(collectionType)) {
-				colType = CollectionsType.SET;
-			}
+			// if (RelationCollectionType.List.equals(collectionType)) {
+			// colType = CollectionsType.LIST;
+			// }
 
 			type = createCollectionMemberType(colType, elementType);
 		} else {

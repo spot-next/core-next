@@ -40,8 +40,8 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User loadedUser = modelService.get(User.class, user.getPk());
 		final UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
 
-		Assert.assertEquals(loadedUser.getGroups().get(0).getPk(), loadedGroup.getPk());
-		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().get(0).getPk());
+		Assert.assertEquals(loadedUser.getGroups().iterator().next().getPk(), loadedGroup.getPk());
+		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().iterator().next().getPk());
 		Assert.assertEquals(user.getId(), loadedUser.getId());
 		Assert.assertEquals(group.getPk(), loadedGroup.getPk());
 	}

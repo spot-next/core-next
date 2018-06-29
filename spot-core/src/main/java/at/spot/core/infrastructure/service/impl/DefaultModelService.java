@@ -50,7 +50,9 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
 		final T item = persistenceService.load(type, pk);
 
-		applyLoadInterceptors(Collections.singletonList(item));
+		if (item != null) {
+			applyLoadInterceptors(Collections.singletonList(item));
+		}
 
 		return item;
 	}

@@ -27,9 +27,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
+import at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer;
+import at.spot.core.infrastructure.serialization.jackson.ItemProxySerializer;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.instrumentation.ClassTransformer;
@@ -42,6 +47,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
+import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
@@ -215,6 +221,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToMany.class));
 
+				// necessary for serialization
+				jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+
 				// JoinTable annotation for bi-directional m-to-n relation table
 				jpaAnnotations
 						.add(createJoinTableAnnotation(entityClass, field, propertyAnnotation, relAnnotation.get()));
@@ -224,24 +233,47 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				addMappedByAnnotationValue(field, o2mAnn, entityClass, relAnnotation.get());
 				jpaAnnotations.add(o2mAnn);
 
+				// necessary for serialization
+				jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
+				// necessary for serialization
+				jpaAnnotations.add(createAnnotation(entityClass, field, ItemProxySerializer.class));
 			} else {
 				// one to one in case the field type is a subtype of Item
 
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
 			}
 
-		} else if (isItemType(field.getType())) { // one to one in case the
-													// field type is a subtype
-													// of Item
+		} else if (isItemType(field.getType())) { // one to one in case the field type is a subtype of Item
 			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
+
+			// necessary for serialization
+			jpaAnnotations.add(createAnnotation(entityClass, field, ItemProxySerializer.class));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
+
+			// necessary for serialization
+			jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
 		}
 
 		return jpaAnnotations;
+	}
+
+	/**
+	 * Necessary to prohibit infinite loops when serializating using Jackson
+	 */
+	protected Annotation createAnnotation(CtClass entityClass, CtField field,
+			Class<? extends JsonSerializer<?>> serializer) throws IllegalClassTransformationException {
+
+		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
+
+		final ClassMemberValue val = new ClassMemberValue(field.getFieldInfo2().getConstPool());
+		val.setValue(serializer.getName());
+		jsonSerializeAnn.addMemberValue("using", val);
+
+		return jsonSerializeAnn;
 	}
 
 	protected void addMappedByAnnotationValue(CtField field, final Annotation annotation, final CtClass entityClass,
