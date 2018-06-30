@@ -21,6 +21,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,15 +104,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 					// process item type property annotation
 					if (propertyAnn.isPresent()) {
-						// create the necessary JPA annotations based on Relation and Property
+						// create the necessary JPA annotations based on
+						// Relation and Property
 						// annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
 								propertyAnn.get());
 
-						// only add column annotation if there is not relation annotation
+						// only add column annotation if there is not relation
+						// annotation
 						if (CollectionUtils.isEmpty(fieldAnnotations)) {
-							// add column annotation used hold infos about unique constraints
-							Optional<Annotation> columnAnn = createColumnAnnotation(clazz, field, propertyAnn.get());
+							// add column annotation used hold infos about
+							// unique constraints
+							final Optional<Annotation> columnAnn = createColumnAnnotation(clazz, field,
+									propertyAnn.get());
 
 							if (columnAnn.isPresent()) {
 								fieldAnnotations.add(columnAnn.get());
@@ -170,7 +176,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
-		// if the given class is a java base class it can't be unfrozen and it would
+		// if the given class is a java base class it can't be unfrozen and it
+		// would
 		// throw an exception
 		// so we check for valid classes
 		if (isValidClass(clazz.getName())) {
@@ -192,10 +199,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return null;
 	}
 
-	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, CtField field,
+	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
 
 		Annotation ann = null;
 
@@ -222,7 +229,11 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToMany.class));
 
 				// necessary for serialization
-				jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+				jpaAnnotations
+						.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+
+				// necessary for FETCH JOINS
+				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
 
 				// JoinTable annotation for bi-directional m-to-n relation table
 				jpaAnnotations
@@ -234,38 +245,61 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(o2mAnn);
 
 				// necessary for serialization
-				jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+				jpaAnnotations
+						.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+
+				// necessary for FETCH JOINS
+				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
+
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
 				// necessary for serialization
-				jpaAnnotations.add(createAnnotation(entityClass, field, ItemProxySerializer.class));
+				jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemProxySerializer.class));
 			} else {
 				// one to one in case the field type is a subtype of Item
 
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
 			}
 
-		} else if (isItemType(field.getType())) { // one to one in case the field type is a subtype of Item
+		} else if (isItemType(field.getType())) { // one to one in case the
+													// field type is a subtype
+													// of Item
 			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
 			// necessary for serialization
-			jpaAnnotations.add(createAnnotation(entityClass, field, ItemProxySerializer.class));
+			jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemProxySerializer.class));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
 
 			// necessary for serialization
-			jpaAnnotations.add(createAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+			jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
 		}
 
 		return jpaAnnotations;
 	}
 
 	/**
+	 * Annotates relation collections with an {@link OrderBy} annotation to make
+	 * FETCH JOINS work correctly.
+	 */
+	protected Annotation createOrderedListAnnotation(final CtClass entityClass, final CtField field)
+			throws IllegalClassTransformationException {
+
+		final Annotation jsonSerializeAnn = createAnnotation(entityClass, OrderColumn.class);
+
+		final StringMemberValue val = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		val.setValue("pk");
+		jsonSerializeAnn.addMemberValue("name", val);
+
+		return jsonSerializeAnn;
+	}
+
+	/**
 	 * Necessary to prohibit infinite loops when serializating using Jackson
 	 */
-	protected Annotation createAnnotation(CtClass entityClass, CtField field,
-			Class<? extends JsonSerializer<?>> serializer) throws IllegalClassTransformationException {
+	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
+			final Class<? extends JsonSerializer<?>> serializer) throws IllegalClassTransformationException {
 
 		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
 
@@ -276,8 +310,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return jsonSerializeAnn;
 	}
 
-	protected void addMappedByAnnotationValue(CtField field, final Annotation annotation, final CtClass entityClass,
-			final Annotation relation) {
+	protected void addMappedByAnnotationValue(final CtField field, final Annotation annotation,
+			final CtClass entityClass, final Annotation relation) {
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 

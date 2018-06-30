@@ -281,10 +281,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected String generateConstantName(String fieldName) {
+	protected String generateConstantName(final String fieldName) {
 		String ret = "";
 		int index = 0;
-		for (char c : fieldName.toCharArray()) {
+		for (final char c : fieldName.toCharArray()) {
 			if (Character.isUpperCase(c) && index > 0) {
 				ret += "_";
 			}
@@ -301,7 +301,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
 	}
 
-	protected void addGetter(final JavaField field, final JavaClass javaClass, String codeBlock) {
+	protected void addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
 		final JavaMethod getter = new JavaMethod();
 		getter.setName(generateMethodName("get", field.getName()));
 		getter.setType(field.getType());
@@ -309,7 +309,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		getter.setVisibility(Visibility.PUBLIC);
 		getter.setCodeBlock(codeBlock);
 
-		JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
+		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
 		accessorAnnotation.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
 		accessorAnnotation.addParameter("type", AccessorType.get, AnnotationValueType.ENUM_VALUE);
 		getter.addAnnotation(accessorAnnotation);
@@ -326,7 +326,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
 		setter.setVisibility(Visibility.PUBLIC);
 
-		JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
+		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
 		accessorAnnotation.addParameter("propertyName", field.getName(), AnnotationValueType.STRING);
 		accessorAnnotation.addParameter("type", AccessorType.set, AnnotationValueType.ENUM_VALUE);
 		setter.addAnnotation(accessorAnnotation);
@@ -600,10 +600,11 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		}
 	}
 
-	protected void populateRelationProperty(RelationNode from, RelationNode to, RelationNodeType nodeType,
-			JavaClass javaClass, JavaField property, JavaAnnotation relationAnn) throws MojoExecutionException {
+	protected void populateRelationProperty(final RelationNode from, final RelationNode to,
+			final RelationNodeType nodeType, final JavaClass javaClass, final JavaField property,
+			final JavaAnnotation relationAnn) throws MojoExecutionException {
 
-		String mappedTo = to.getMappedBy();
+		final String mappedTo = to.getMappedBy();
 		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
 
 		if (StringUtils.isNotBlank(mappedTo)) {
@@ -618,7 +619,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				relationAnn.addParameter("collectionType", collectionType, AnnotationValueType.ENUM_VALUE);
 			}
 
-			// always use Sets for now, because hibernate can't handle multiple Collections
+			// always use Sets for now, because hibernate can't handle multiple
+			// Collections
 			// when using FETCH JOINS.
 			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
@@ -628,7 +630,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
 			javaClass.addField(property);
 
-			// addGetter(property, javaClass, String.format("return Collections.this.%s;",
+			// addGetter(property, javaClass, String.format("return
+			// Collections.this.%s;",
 			// field.getName()));
 			addGetter(property, javaClass);
 			addSetter(property, javaClass);
@@ -677,16 +680,13 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected JavaMemberType createRelationPropertyMemberType(final RelationshipCardinality cardinality,
-			final String elementType, RelationCollectionType collectionType) throws MojoExecutionException {
+			final String elementType, final RelationCollectionType collectionType) throws MojoExecutionException {
 
 		JavaMemberType type = null;
 
 		if (RelationshipCardinality.MANY.equals(cardinality)) {
-			CollectionsType colType = CollectionsType.SET;
-
-			// if (RelationCollectionType.List.equals(collectionType)) {
-			// colType = CollectionsType.LIST;
-			// }
+			final CollectionsType colType = RelationCollectionType.List.equals(collectionType) ? CollectionsType.LIST
+					: CollectionsType.SET;
 
 			type = createCollectionMemberType(colType, elementType);
 		} else {
