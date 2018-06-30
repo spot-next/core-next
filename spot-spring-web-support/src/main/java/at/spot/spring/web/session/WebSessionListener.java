@@ -1,6 +1,7 @@
 package at.spot.spring.web.session;
 
 import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -9,7 +10,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import at.spot.core.infrastructure.http.Session;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
@@ -29,31 +29,20 @@ public class WebSessionListener
 
 	@Override
 	public void sessionCreated(final HttpSessionEvent event) {
-		// check if the web session has already a reference to the
-		// backend session
-		String spotSessionId = (String) event.getSession().getAttribute(SpringWebSupportConstants.SPOT_SESSION_ID);
-
-		Session spotSession = null;
-
-		// if yes then we fetch the backend session
-		if (StringUtils.isNotBlank(spotSessionId)) {
-			spotSession = getSessionService().getSession(spotSessionId);
-		}
-
-		// if it is null we create a new one
-		if (spotSession == null) {
-			spotSession = getSessionService().createSession(true);
-			getLoggingService().debug(String.format("Created new session %s", spotSession.getId()));
-			spotSessionId = spotSession.getId();
-
-			// and store the session id in the web session
-			event.getSession().setAttribute(SpringWebSupportConstants.SPOT_SESSION_ID, spotSessionId);
-		}
+		//
 	}
 
 	@Override
 	public void sessionDestroyed(final HttpSessionEvent event) {
-		getSessionService().closeSession(event.getSession().getId());
+		String spotSessionId = getSpotSessionid(event.getSession());
+
+		if (StringUtils.isNotBlank(spotSessionId)) {
+			getSessionService().closeSession(spotSessionId);
+		}
+	}
+
+	protected String getSpotSessionid(HttpSession session) {
+		return (String) session.getAttribute(SpringWebSupportConstants.SPOT_SESSION_ID);
 	}
 
 	@Override

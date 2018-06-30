@@ -30,8 +30,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j.version>2.9.1</log4j.version>
 		<junit.version>4.12</junit.version>
-		<spring.boot.version>2.0.0.M5</spring.boot.version>
-		<spring.version>5.0.0.RELEASE</spring.version>
+		<spring.boot.version>2.0.0.RC1</spring.boot.version>
+		<spring.version>5.0.3.RELEASE</spring.version>
 		<aspectj.version>1.9.0.BETA-6</aspectj.version>
 
 		<!-- nexus repositry -->

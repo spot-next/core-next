@@ -1,19 +1,19 @@
 package at.spot.core.infrastructure.http;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
-import org.joda.time.DateTime;
 
 public class Session {
 
 	protected boolean isValid = true;
 
 	protected String id;
-	protected DateTime creationTime = new DateTime();
-	protected DateTime lastAccessedTime = new DateTime();
+	protected Date creationTime = new Date();
+	protected Date lastAccessedTime = new Date();
 	protected final Map<String, Object> attributes = new HashMap<>();
 
 	protected int maxInactiveInterval;
@@ -47,11 +47,11 @@ public class Session {
 	}
 
 	public long getCreationTime() {
-		return creationTime.toDate().getTime();
+		return creationTime.getTime();
 	}
 
 	public long getLastAccessedTime() {
-		return lastAccessedTime.toDate().getTime();
+		return lastAccessedTime.getTime();
 	}
 
 	public int getMaxInactiveInterval() {
