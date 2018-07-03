@@ -5,6 +5,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -94,7 +95,6 @@ public class Registry implements ApplicationContextAware {
 	public static LoggingService getLoggingService() {
 		if (loggingService == null)
 			loggingService = (LoggingService) Registry.getApplicationContext().getBean("loggingService");
-		;
 
 		return loggingService;
 	}
@@ -109,5 +109,11 @@ public class Registry implements ApplicationContextAware {
 
 	public static Configuration getApplicationConfiguration() {
 		return configuration;
+	}
+
+	public static void shutdown() {
+		getLoggingService().warn("SHUTTING DOWN!");
+		((AbstractApplicationContext) context).close();
+		System.exit(1);
 	}
 }

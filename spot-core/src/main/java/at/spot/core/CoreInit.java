@@ -72,17 +72,17 @@ public class CoreInit extends ModuleInit {
 	@SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
 	@Log(message = "Importing test data ...")
 	public void importTestData() {
-		StopWatch watch = StopWatch.createStarted();
+		final StopWatch watch = StopWatch.createStarted();
 
-		List<User> users = new ArrayList<>();
+		final List<User> users = new ArrayList<>();
 
-		UserGroup userGroup = modelService.create(UserGroup.class);
+		final UserGroup userGroup = modelService.create(UserGroup.class);
 		userGroup.setId("testUserGroup");
 		userGroup.setShortName("Test user group");
 
 		modelService.save(userGroup);
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			final User user = modelService.create(User.class);
 			user.setId("user-" + UUID.randomUUID());
 			user.setEmailAddress("test@test.at");
@@ -106,13 +106,10 @@ public class CoreInit extends ModuleInit {
 	@Override
 	@Log(message = "Initializing system ...")
 	protected void initialize() throws ModuleInitializationException {
-		runMigrateScripts();
-		importInitialData();
-
-		// this is just for testing
-		importTestData();
+		//
 	}
 
+	@Override
 	@Log(message = "Importing initial data ...")
 	protected void importInitialData() throws ModuleInitializationException {
 		final String adminUserName = configurationService.getString(CoreConstants.CONFIG_KEY_DEFAULT_ADMIN_USERNAME,
@@ -137,8 +134,9 @@ public class CoreInit extends ModuleInit {
 		}
 	}
 
-	@Log(message = "Running data migration scripts ...")
-	protected void runMigrateScripts() {
-		// not yet implemented
+	@Override
+	@Log(message = "Importing sample data ...")
+	protected void importSampleData() throws ModuleInitializationException {
+		//
 	}
 }

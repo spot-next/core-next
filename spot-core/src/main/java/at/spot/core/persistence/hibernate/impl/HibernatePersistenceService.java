@@ -2,6 +2,7 @@ package at.spot.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
@@ -32,6 +34,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
+import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
+import org.hibernate.tool.schema.TargetType;
+import org.hibernate.tool.schema.spi.TargetDescriptor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
@@ -57,6 +63,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 	static final int JDBC_BATCH_SIZE = 20;
 
+	protected MetadataExtractorIntegrator metadataIntegrator = MetadataExtractorIntegrator.INSTANCE;
+
 	@PersistenceUnit
 	protected EntityManagerFactory entityManagerFactory;
 
@@ -65,6 +73,39 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
+
+	@PostConstruct
+	public void initialize() {
+		if (configurationService.getBoolean("initializetypesystem", false)) {
+			loggingService.info("Initializing type system ...");
+
+			final TargetDescriptor targetDescriptor = null;
+
+			final SchemaExport schemaExport = new SchemaExport();
+			schemaExport.setHaltOnError(true);
+			schemaExport.setFormat(true);
+			schemaExport.setDelimiter(";");
+			schemaExport.setOutputFile("db-schema.sql");
+			schemaExport.create(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+		}
+
+		if (configurationService.getBoolean("updatetypesystem", false)) {
+			loggingService.info("Updating type system ...");
+
+			final TargetDescriptor targetDescriptor = null;
+
+			final SchemaUpdate schemaExport = new SchemaUpdate();
+			schemaExport.setHaltOnError(true);
+			schemaExport.setFormat(true);
+			schemaExport.setDelimiter(";");
+			schemaExport.setOutputFile("db-schema.sql");
+			schemaExport.execute(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+		}
+
+		if (configurationService.getBoolean("cleantypesystem", false)) {
+			loggingService.info("Cleaning type system ... (not yet implemented)");
+		}
+	}
 
 	@Override
 	public <T> List<T> query(final at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {

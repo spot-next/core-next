@@ -1,6 +1,7 @@
 package at.spot.core.persistence.hibernate.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,11 @@ import org.hibernate.boot.model.relational.Database;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
+import org.hibernate.jpa.boot.spi.IntegratorProvider;
 import org.springframework.orm.jpa.persistenceunit.SmartPersistenceUnitInfo;
+
+import at.spot.core.infrastructure.service.LoggingService;
+import at.spot.core.infrastructure.support.spring.Registry;
 
 /**
  * Copy of
@@ -21,6 +26,7 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 		implements at.spot.core.persistence.hibernate.HibernatePersistenceProvider {
 
 	protected EntityManagerFactoryBuilderImpl builder;
+	protected LoggingService logginService;
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -33,6 +39,9 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 			mergedClassesAndPackages.addAll(((SmartPersistenceUnitInfo) info).getManagedPackages());
 		}
 
+		properties.put("hibernate.integrator_provider",
+				(IntegratorProvider) () -> Collections.singletonList(MetadataExtractorIntegrator.INSTANCE));
+
 		builder = new EntityManagerFactoryBuilderImpl(new PersistenceUnitInfoDescriptor(info) {
 			@Override
 			public List<String> getManagedClassNames() {
@@ -40,7 +49,21 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 			}
 		}, properties);
 
-		return builder.build();
+		try {
+			return builder.build();
+		} catch (final Exception e) {
+			getLogginService().warn("The type system is not initialized!");
+			Registry.shutdown();
+			return null;
+		}
+	}
+
+	public LoggingService getLogginService() {
+		if (logginService == null) {
+			logginService = Registry.getLoggingService();
+		}
+
+		return logginService;
 	}
 
 	@Override

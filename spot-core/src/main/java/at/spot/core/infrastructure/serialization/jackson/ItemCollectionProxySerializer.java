@@ -24,10 +24,12 @@ public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Ite
 		gen.writeStartArray();
 
 		for (final Item item : source) {
-			gen.writeStartObject();
-			gen.writeObjectField("pk", item.getPk());
-			gen.writeObjectField("typeCode", getTypeService().getTypeCodeForClass(item.getClass()));
-			gen.writeEndObject();
+			if (item != null) {
+				gen.writeStartObject();
+				gen.writeObjectField("pk", item.getPk());
+				gen.writeObjectField("typeCode", getTypeService().getTypeCodeForClass(item.getClass()));
+				gen.writeEndObject();
+			}
 		}
 
 		gen.writeEndArray();

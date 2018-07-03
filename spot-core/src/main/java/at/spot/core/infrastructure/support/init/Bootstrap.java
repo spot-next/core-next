@@ -2,9 +2,11 @@ package at.spot.core.infrastructure.support.init;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -43,9 +45,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * all necessary initialization for their module.
  */
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
-public class Bootstrap extends SpringApplicationBuilder {
+public class Bootstrap {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
+
+	private final SpringApplicationBuilder builder;
 
 	static {
 		DynamicInstrumentationLoader.initialize();
@@ -53,6 +57,11 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 	private Bootstrap() {
 		Registry.setMainThread(Thread.currentThread());
+		builder = new SpringApplicationBuilder();
+	}
+
+	public SpringApplicationBuilder sources(final Class<?>... sources) {
+		return builder.sources(sources);
 	}
 
 	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
@@ -103,9 +112,30 @@ public class Bootstrap extends SpringApplicationBuilder {
 		// load external spring configs into builder
 		loadSpringConfiguration(builder, options);
 
+		loadCommandLineArgsIntoSpringContext(builder, options);
+
 		LOG.info("Bootstrapping done.");
 
 		builder.run();
+	}
+
+	/**
+	 * Adds the parsed command line args regarding type system initialization
+	 * and import to the spring properties.
+	 */
+	protected static void loadCommandLineArgsIntoSpringContext(final SpringApplicationBuilder builder,
+			final BootstrapOptions options) {
+
+		builder.addCommandLineProperties(true);
+
+		final Map<String, Object> props = new HashMap<>();
+		props.put("initializeTypeSystem", options.isInitializeTypeSystem());
+		props.put("updateTypeSystem", options.isUpdateTypeSystem());
+		props.put("cleanTypeSystem", options.isCleanTypeSystem());
+		props.put("importInitialData", options.isImportInitialData());
+		props.put("importSampleData", options.isImportSampleData());
+
+		builder.properties(props);
 	}
 
 	protected static List<ModuleConfig> loadModuleConfig(final BootstrapOptions options) {
@@ -148,8 +178,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with the
-	 * parent context.
+	 * necessary, so that the spring context of this module can be merged with
+	 * the parent context.
 	 * 
 	 * @param parentContext
 	 */
@@ -193,6 +223,18 @@ public class Bootstrap extends SpringApplicationBuilder {
 		options.addOption(Option.builder("initclass").longOpt("i").desc("application the properties file").hasArg()
 				.argName("initclass").build());
 
+		// init and update type system commands
+		options.addOption(Option.builder("initializetypesystem").longOpt("init") //
+				.optionalArg(true).desc("initialize the type system (removes all all data in the database)").build());
+		options.addOption(Option.builder("importinitialdata").longOpt("importinitialdata") //
+				.optionalArg(true).desc("Imports the initial data").build());
+		options.addOption(Option.builder("importsampledata").longOpt("importsampledata") //
+				.optionalArg(true).desc("Imports the sample data").build());
+		options.addOption(Option.builder("updatetypesystem").longOpt("updatetypesystem") //
+				.optionalArg(true).desc("updates the type system").build());
+		options.addOption(Option.builder("cleantypesystem").longOpt("cleantypesystem") //
+				.optionalArg(true).desc("Removes unused typesystem data").build());
+
 		final CommandLineParser parser = new DefaultParser();
 		final CommandLine cmd = parser.parse(options, args);
 
@@ -202,6 +244,22 @@ public class Bootstrap extends SpringApplicationBuilder {
 
 		if (cmd.hasOption("s")) {
 			ret.setSpringConfigFile(cmd.getOptionValue("s"));
+		}
+
+		if (cmd.hasOption("initializetypesystem")) {
+			ret.setInitializeTypeSystem(true);
+		}
+		if (cmd.hasOption("updatetypesystem")) {
+			ret.setUpdateTypeSystem(true);
+		}
+		if (cmd.hasOption("cleantypesystem")) {
+			ret.setCleanTypeSystem(true);
+		}
+		if (cmd.hasOption("importinitialdata")) {
+			ret.setImportInitialData(true);
+		}
+		if (cmd.hasOption("importsampledata")) {
+			ret.setImportSampleData(true);
 		}
 
 		Class<? extends ModuleInit> initClass = CoreInit.class;
@@ -224,8 +282,8 @@ public class Bootstrap extends SpringApplicationBuilder {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths. This
-	 * causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths.
+	 * This causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

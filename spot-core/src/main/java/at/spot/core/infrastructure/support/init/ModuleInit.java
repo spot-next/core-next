@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.support.init;
 
 import javax.annotation.Priority;
+import javax.annotation.Resource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
+import at.spot.core.infrastructure.service.ConfigurationService;
 
 @Configuration
 @Priority(value = -1)
@@ -22,12 +24,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	protected ApplicationContext applicationContext;
 	protected boolean alreadyInitialized = false;
 
-	/**
-	 * This is a hook to customize the initialization process. It is called after
-	 * {@link Bootstrap} has finished doing the basic initialization (load config
-	 * properties and spring configuration).
-	 */
-	protected abstract void initialize() throws ModuleInitializationException;
+	@Resource
+	protected ConfigurationService configurationService;
 
 	/**
 	 * Called when the spring application context has been initialized.
@@ -41,10 +39,35 @@ public abstract class ModuleInit implements ApplicationContextAware {
 			initialize();
 			alreadyInitialized = true;
 		}
+
+		if (configurationService.getBoolean("importInitialData", false)) {
+			importInitialData();
+		}
+
+		if (configurationService.getBoolean("importSampleData", false)) {
+			importSampleData();
+		}
+	}
+
+	/**
+	 * This is a hook to customize the initialization process. It is called
+	 * after {@link Bootstrap} all spring beans are initialized.
+	 */
+	protected abstract void initialize() throws ModuleInitializationException;
+
+	/**
+	 * This is only called, if the corresponding command line flag is also set
+	 */
+	protected void importInitialData() throws ModuleInitializationException {
+		//
+	}
+
+	protected void importSampleData() throws ModuleInitializationException {
+		//
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
