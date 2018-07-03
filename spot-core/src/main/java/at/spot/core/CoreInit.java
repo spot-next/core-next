@@ -104,7 +104,7 @@ public class CoreInit extends ModuleInit {
 	 */
 
 	@Override
-	@Log(message = "Initializing system ...")
+	@Log(message = "Initializing core")
 	protected void initialize() throws ModuleInitializationException {
 		//
 	}

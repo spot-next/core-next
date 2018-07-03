@@ -8,25 +8,23 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.hibernate.boot.model.relational.Database;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
 import org.hibernate.jpa.boot.spi.IntegratorProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.persistenceunit.SmartPersistenceUnitInfo;
-
-import at.spot.core.infrastructure.service.LoggingService;
-import at.spot.core.infrastructure.support.spring.Registry;
 
 /**
  * Copy of
  * org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.
  */
-public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvider
-		implements at.spot.core.persistence.hibernate.HibernatePersistenceProvider {
+public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvider {
+
+	private static final Logger LOG = LoggerFactory.getLogger(HibernatePersistenceProviderImpl.class);
 
 	protected EntityManagerFactoryBuilderImpl builder;
-	protected LoggingService logginService;
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -49,26 +47,7 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 			}
 		}, properties);
 
-		try {
-			return builder.build();
-		} catch (final Exception e) {
-			getLogginService().warn("The type system is not initialized!");
-			Registry.shutdown();
-			return null;
-		}
-	}
-
-	public LoggingService getLogginService() {
-		if (logginService == null) {
-			logginService = Registry.getLoggingService();
-		}
-
-		return logginService;
-	}
-
-	@Override
-	public Database getDatabase() {
-		return builder.getMetadata().getDatabase();
+		return builder.build();
 	}
 
 }

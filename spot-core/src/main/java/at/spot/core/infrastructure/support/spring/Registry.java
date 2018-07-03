@@ -20,7 +20,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * This is a static provider for the current spring context. It also provides
  * some getters for commonly used Services.
- *
  */
 @Service
 @Order(value = 0)

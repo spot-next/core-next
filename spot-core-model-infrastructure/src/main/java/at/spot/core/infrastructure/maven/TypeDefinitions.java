@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
 import at.spot.core.infrastructure.maven.xml.BaseComplexType;
 import at.spot.core.infrastructure.maven.xml.BaseType;
+import at.spot.core.infrastructure.maven.xml.BeanType;
 import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.ItemType;
@@ -24,6 +25,7 @@ public class TypeDefinitions {
 	final Map<String, CollectionType> collectionTypes = new HashMap<>();
 	final Map<String, MapType> mapTypes = new HashMap<>();
 	final Map<String, EnumType> enumTypes = new HashMap<>();
+	final Map<String, BeanType> beanTypes = new HashMap<>();
 	final Map<String, RelationType> relationTypes = new HashMap<>();
 
 	public Map<String, ItemType> getItemTypes() {
@@ -32,6 +34,10 @@ public class TypeDefinitions {
 
 	public Map<String, EnumType> getEnumTypes() {
 		return enumTypes;
+	}
+
+	public Map<String, BeanType> getBeanTypes() {
+		return beanTypes;
 	}
 
 	public Map<String, AtomicType> getAtomicTypes() {

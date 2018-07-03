@@ -1,5 +1,7 @@
 package at.spot.core.persistence.hibernate.impl;
 
+import java.util.Map;
+
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.model.relational.Database;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
@@ -19,6 +21,10 @@ public class MetadataExtractorIntegrator implements org.hibernate.integrator.spi
 		this.sessionFactory = sessionFactory;
 		this.metadata = metadata;
 		this.serviceRegistry = serviceRegistry;
+	}
+
+	public Map<String, Object> getProperties() {
+		return this.sessionFactory.getProperties();
 	}
 
 	@Override
