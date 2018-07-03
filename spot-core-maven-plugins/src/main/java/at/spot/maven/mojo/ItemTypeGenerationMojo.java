@@ -40,6 +40,7 @@ import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
 import at.spot.core.infrastructure.maven.xml.BaseType;
+import at.spot.core.infrastructure.maven.xml.BeanType;
 import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.CollectionsType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
@@ -172,6 +173,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final List<AbstractComplexJavaType> types = new ArrayList<>();
 
 		types.addAll(generateEnums());
+		types.addAll(generateBeans());
 		types.addAll(generateItemTypes());
 
 		try {// write all java classes
@@ -197,6 +199,33 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			ret.add(enumeration);
+		}
+
+		return ret;
+	}
+
+	protected List<JavaClass> generateBeans() throws MojoExecutionException {
+		final List<JavaClass> ret = new ArrayList<>();
+
+		for (final BeanType beanType : typeDefinitions.getBeanTypes().values()) {
+			final JavaClass bean = new JavaClass(beanType.getName(), beanType.getPackage());
+			bean.setDescription(beanType.getDescription());
+
+			if (beanType.getProperties() != null) {
+				for (final Property prop : beanType.getProperties().getProperty()) {
+					final JavaMemberType propType = createMemberType(prop.getType());
+
+					final JavaField field = new JavaField();
+					field.setName(prop.getName());
+					field.setType(propType);
+					bean.addField(field);
+
+					addGetter(field, bean);
+					addSetter(field, bean);
+				}
+			}
+
+			ret.add(bean);
 		}
 
 		return ret;

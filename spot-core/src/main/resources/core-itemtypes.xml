@@ -26,7 +26,18 @@
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
 	</enum>
-
+	
+	<enum name="ImportFormat" package="at.spot.itemtype.core.enumeration">
+		<description>Formats that are supported for import of data.</description>
+		<value code="ImpEx" />
+		<value code="JSON" />
+		<value code="XML" />
+	</enum>
+	
+	<bean name="ImportConfiguration" package="at.spot.itemtype.core.beans">
+		<description>Holds import configuration and parameters.</description>
+	</bean>
+	
 	<!-- users and groups -->
 
 	<type name="UniqueIdItem" abstract="true" package="at.spot.itemtype.core" persistable="false">
