@@ -82,9 +82,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @description Generates the java source code for the defined item types.
- * @requiresDependencyResolution test
  */
-@Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true)
+@Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
 public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	protected Jalopy jalopy = new Jalopy();

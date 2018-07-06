@@ -147,7 +147,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			LOG.error(e.getMessage(), e);
 
 			throw new IllegalClassTransformationException(
-					String.format("Unable process JPA annotations for class file %s", clazz.getName()), e);
+					String.format("Unable to process JPA annotations for class file %s", clazz.getName()), e);
 		}
 
 		return Optional.empty();

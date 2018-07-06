@@ -35,7 +35,6 @@ import at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.PropertiesUtil;
-import at.spot.instrumentation.DynamicInstrumentationLoader;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -51,9 +50,9 @@ public class Bootstrap {
 
 	private final SpringApplicationBuilder builder;
 
-	static {
-		DynamicInstrumentationLoader.initialize();
-	}
+	// static {
+	// DynamicInstrumentationLoader.initialize();
+	// }
 
 	private Bootstrap() {
 		Registry.setMainThread(Thread.currentThread());
@@ -120,8 +119,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Adds the parsed command line args regarding type system initialization
-	 * and import to the spring properties.
+	 * Adds the parsed command line args regarding type system initialization and
+	 * import to the spring properties.
 	 */
 	protected static void loadCommandLineArgsIntoSpringContext(final SpringApplicationBuilder builder,
 			final BootstrapOptions options) {
@@ -178,8 +177,8 @@ public class Bootstrap {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with
-	 * the parent context.
+	 * necessary, so that the spring context of this module can be merged with the
+	 * parent context.
 	 * 
 	 * @param parentContext
 	 */
@@ -282,8 +281,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths.
-	 * This causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths. This
+	 * causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

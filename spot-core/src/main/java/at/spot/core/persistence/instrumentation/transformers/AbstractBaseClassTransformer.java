@@ -152,10 +152,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @throws IllegalClassTransformationException
 	 */
 	protected ClassFile getClassFile(CtClass clazz, boolean defrost) throws IllegalClassTransformationException {
-		ClassFile clazzFile = clazz.getClassFile2();
+		ClassFile clazzFile = null;
 
-		if (clazzFile == null && clazz.isFrozen() && defrost) {
+		if (clazz.isFrozen() && defrost) {
 			clazz.defrost();
+			clazzFile = clazz.getClassFile2();
+		} else {
 			clazzFile = clazz.getClassFile();
 		}
 
