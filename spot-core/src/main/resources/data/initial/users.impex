@@ -1,0 +1,2 @@
+INSERT_UPDATE User ; id[unique=true] ; password ;
+                   ; admin           ; nimda    ;
