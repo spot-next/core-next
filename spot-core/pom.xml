@@ -16,6 +16,27 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.22.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-junit47</artifactId>
+						<version>2.22.0</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- item type generation -->
 			<plugin>
 				<groupId>at.spot</groupId>
@@ -29,14 +50,6 @@
 							<goal>itemTypeGeneration</goal>
 						</goals>
 					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>at.spot</groupId>
-				<artifactId>spot-core-maven-plugins</artifactId>
-				<version>1.0-SNAPSHOT</version>
-				<executions>
 					<execution>
 						<id>Item type post-processing</id>
 						<phase>process-classes</phase>
@@ -47,7 +60,7 @@
 							<includeJars>false</includeJars>
 							<classFileTransformers>
 								<classFileTransformer>
-									at.spot.core.persistence.instrumentation.transformers.JpaEntityClassTransformer
+									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
 								</classFileTransformer>
 							</classFileTransformers>
 						</configuration>
@@ -56,40 +69,40 @@
 			</plugin>
 
 			<!-- packaging -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-shade-plugin</artifactId> -->
-<!-- 				<version>3.1.1</version> -->
-<!-- 				<configuration> -->
-<!-- 					<transformers> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
-<!-- 							<manifestEntries> -->
-<!-- 								<Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class> -->
-<!-- 							</manifestEntries> -->
-<!-- 						</transformer> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
-<!-- 							<resource>META-INF/spring.handlers</resource> -->
-<!-- 						</transformer> -->
-<!-- 						<transformer -->
-<!-- 							implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
-<!-- 							<resource>META-INF/spring.schemas</resource> -->
-<!-- 						</transformer> -->
-<!-- 					</transformers> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<phase>package</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>shade</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-shade-plugin</artifactId> -->
+			<!-- <version>3.1.1</version> -->
+			<!-- <configuration> -->
+			<!-- <transformers> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> -->
+			<!-- <manifestEntries> -->
+			<!-- <Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class> -->
+			<!-- </manifestEntries> -->
+			<!-- </transformer> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
+			<!-- <resource>META-INF/spring.handlers</resource> -->
+			<!-- </transformer> -->
+			<!-- <transformer -->
+			<!-- implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer"> -->
+			<!-- <resource>META-INF/spring.schemas</resource> -->
+			<!-- </transformer> -->
+			<!-- </transformers> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <phase>package</phase> -->
+			<!-- <goals> -->
+			<!-- <goal>shade</goal> -->
+			<!-- </goals> -->
+			<!-- <configuration> -->
+			<!-- <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -231,18 +244,6 @@
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
 			<version>2.7.1</version>
-		</dependency>
-
-		<!-- dynamic load time weaving support -->
-		<dependency>
-			<groupId>at.spot</groupId>
-			<artifactId>spot-instrumentation</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.22.0-GA</version>
 		</dependency>
 
 	</dependencies>

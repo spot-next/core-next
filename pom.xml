@@ -9,6 +9,14 @@
 	<name>spOt framework</name>
 	<packaging>pom</packaging>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
 	<modules>
 		<module>build-tools</module>
 		<module>spot-core-maven-plugins</module>
@@ -150,7 +158,6 @@
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>

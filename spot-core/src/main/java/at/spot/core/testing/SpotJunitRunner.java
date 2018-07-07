@@ -6,13 +6,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.support.util.ClassUtil;
-import at.spot.instrumentation.DynamicInstrumentationLoader;
 
 public class SpotJunitRunner extends SpringJUnit4ClassRunner {
-
-	static {
-		DynamicInstrumentationLoader.initialize();
-	}
 
 	protected IntegrationTest testAnnotation;
 
