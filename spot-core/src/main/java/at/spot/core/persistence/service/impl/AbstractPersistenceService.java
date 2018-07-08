@@ -17,7 +17,9 @@ import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.service.PersistenceService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public abstract class AbstractPersistenceService extends AbstractService implements PersistenceService {
 
 	@Autowired
@@ -25,11 +27,11 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 
 	@Override
 	public <T extends Item> Map<String, Object> convertItemToMap(final T item) {
-		String typeCode = typeService.getTypeCodeForClass(item.getClass());
+		final String typeCode = typeService.getTypeCodeForClass(item.getClass());
 		final Map<String, Object> retMap = new HashMap<>();
 
 		try {
-			Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeDefinition(typeCode)
+			final Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeDefinition(typeCode)
 					.getProperties();
 			final ObjectMapper mapper = new ObjectMapper();
 			final Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
@@ -55,7 +57,7 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 					}
 				}
 			}
-		} catch (UnknownTypeException e1) {
+		} catch (final UnknownTypeException e1) {
 			loggingService.warn(String.format("Could not load properties for item with type code '%s'", typeCode));
 		}
 

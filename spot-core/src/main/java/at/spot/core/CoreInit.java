@@ -18,7 +18,6 @@ import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
-import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
@@ -50,9 +49,6 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected ModelService modelService;
-
-	@Autowired
-	protected ConfigurationService configurationService;
 
 	@Autowired
 	protected UserService<User, UserGroup> userService;

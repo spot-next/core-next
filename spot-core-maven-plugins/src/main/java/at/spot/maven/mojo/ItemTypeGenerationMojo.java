@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -282,19 +283,19 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	}
 
 	protected String generateConstantName(final String fieldName) {
-		String ret = "";
+		final StringBuilder builder = new StringBuilder();
 		int index = 0;
 		for (final char c : fieldName.toCharArray()) {
 			if (Character.isUpperCase(c) && index > 0) {
-				ret += "_";
+				builder.append("_");
 			}
 
-			ret += c;
+			builder.append(c);
 
 			index++;
 		}
 
-		return ret.toUpperCase();
+		return builder.toString().toUpperCase(Locale.ENGLISH);
 	}
 
 	protected void addGetter(final JavaField field, final JavaClass javaClass) {
