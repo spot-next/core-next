@@ -1,4 +1,4 @@
-package at.spot.core.persistence.instrumentation.transformers;
+package at.spot.core.infrastructure.instrumentation;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,17 +29,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
-import at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer;
-import at.spot.core.infrastructure.serialization.jackson.ItemProxySerializer;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.instrumentation.ClassTransformer;
+import at.spot.instrumentation.transformer.AbstractBaseClassTransformer;
 import at.spot.instrumentation.transformer.IllegalClassTransformationException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CtClass;
@@ -147,7 +145,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			LOG.error(e.getMessage(), e);
 
 			throw new IllegalClassTransformationException(
-					String.format("Unable process JPA annotations for class file %s", clazz.getName()), e);
+					String.format("Unable to process JPA annotations for class file %s", clazz.getName()), e);
 		}
 
 		return Optional.empty();
@@ -229,8 +227,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToMany.class));
 
 				// necessary for serialization
-				jpaAnnotations
-						.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
@@ -245,8 +243,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(o2mAnn);
 
 				// necessary for serialization
-				jpaAnnotations
-						.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
@@ -255,7 +253,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
 				// necessary for serialization
-				jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemProxySerializer.class));
+				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+						"at.spot.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 			} else {
 				// one to one in case the field type is a subtype of Item
 
@@ -268,12 +267,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 
 			// necessary for serialization
-			jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemProxySerializer.class));
+			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+					"at.spot.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
 
 			// necessary for serialization
-			jpaAnnotations.add(createSerializationAnnotation(entityClass, field, ItemCollectionProxySerializer.class));
+			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+					"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 		}
 
 		return jpaAnnotations;
@@ -299,12 +300,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Necessary to prohibit infinite loops when serializating using Jackson
 	 */
 	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
-			final Class<? extends JsonSerializer<?>> serializer) throws IllegalClassTransformationException {
+			String serializerClassName) throws IllegalClassTransformationException {
 
 		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
 
 		final ClassMemberValue val = new ClassMemberValue(field.getFieldInfo2().getConstPool());
-		val.setValue(serializer.getName());
+		val.setValue(serializerClassName);
 		jsonSerializeAnn.addMemberValue("using", val);
 
 		return jsonSerializeAnn;

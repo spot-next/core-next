@@ -88,6 +88,14 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			} catch (final IOException e) {
 				throw new BeanCreationException("Cannot create read merged item type defintion files from jar.", e);
 			}
+		} else if (applicationRoot.getProtocol().equals("file") && applicationRoot.toString().endsWith(".jar")) {
+			try {
+				final JarFile jarFile = new JarFile(applicationRoot.getFile());
+				mergedItemDef = FileUtils.readFileFromZipFile(jarFile,
+						InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
+			} catch (final IOException e) {
+				throw new BeanCreationException("Cannot create read merged item type defintion files from jar.", e);
+			}
 		} else {
 			try {
 				final File applicationRootFile = java.nio.file.Paths.get(applicationRoot.toURI()).toFile();

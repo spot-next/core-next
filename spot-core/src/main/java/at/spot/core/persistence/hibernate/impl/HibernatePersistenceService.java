@@ -37,13 +37,19 @@ import org.hibernate.query.Query;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
-import org.hibernate.tool.schema.spi.TargetDescriptor;
+import org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl;
+import org.hibernate.tool.schema.spi.SchemaManagementException;
+import org.hibernate.tool.schema.spi.SchemaManagementTool;
+import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
+import org.hibernate.tool.schema.spi.SchemaValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import at.spot.core.persistence.query.ModelQuery;
 
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
@@ -53,7 +59,6 @@ import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
@@ -77,22 +82,26 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	@PostConstruct
 	public void initialize() {
 		if (configurationService.getBoolean("initializetypesystem", false)) {
-			loggingService.info("Initializing type system ...");
-
-			final TargetDescriptor targetDescriptor = null;
+			loggingService.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
 			schemaExport.setHaltOnError(true);
 			schemaExport.setFormat(true);
 			schemaExport.setDelimiter(";");
 			schemaExport.setOutputFile("db-schema.sql");
-			schemaExport.create(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+
+			try {
+				schemaExport.drop(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+			} catch (Exception e) {
+				loggingService.warn("Could not drop type system schema.");
+			}
+
+			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT),
+					metadataIntegrator.getMetadata());
 		}
 
 		if (configurationService.getBoolean("updatetypesystem", false)) {
-			loggingService.info("Updating type system ...");
-
-			final TargetDescriptor targetDescriptor = null;
+			loggingService.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();
 			schemaExport.setHaltOnError(true);
@@ -100,6 +109,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 			schemaExport.setDelimiter(";");
 			schemaExport.setOutputFile("db-schema.sql");
 			schemaExport.execute(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+		}
+
+		// validate schema
+		final SchemaManagementTool tool = metadataIntegrator.getServiceRegistry()
+				.getService(SchemaManagementTool.class);
+
+		try {
+			SchemaValidator validator = tool.getSchemaValidator(entityManagerFactory.getProperties());
+			validator.doValidation(metadataIntegrator.getMetadata(), SchemaManagementToolCoordinator
+					.buildExecutionOptions(entityManagerFactory.getProperties(), ExceptionHandlerLoggedImpl.INSTANCE));
+
+			loggingService.debug("Type system schema seems to be OK");
+
+		} catch (SchemaManagementException e) {
+			loggingService.warn("Type system schema needs to be initialized/updated");
 		}
 
 		if (configurationService.getBoolean("cleantypesystem", false)) {

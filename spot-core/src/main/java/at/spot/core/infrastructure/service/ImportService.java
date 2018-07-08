@@ -1,5 +1,13 @@
 package at.spot.core.infrastructure.service;
 
-public interface ImportService {
+import java.io.File;
 
+import at.spot.itemtype.core.beans.ImportConfiguration;
+import at.spot.itemtype.core.enumeration.ImportFormat;
+
+public interface ImportService {
+	/**
+	 * Imports the item models of the given file based on the chosen file format.
+	 */
+	void importItems(ImportFormat format, ImportConfiguration config, File file);
 }

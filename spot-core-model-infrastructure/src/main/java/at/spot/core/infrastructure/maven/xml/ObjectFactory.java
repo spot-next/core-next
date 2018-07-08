@@ -38,6 +38,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BeanType }
+     * 
+     */
+    public BeanType createBeanType() {
+        return new BeanType();
+    }
+
+    /**
      * Create an instance of {@link Types }
      * 
      */
@@ -163,6 +171,14 @@ public class ObjectFactory {
      */
     public ItemType.Properties createItemTypeProperties() {
         return new ItemType.Properties();
+    }
+
+    /**
+     * Create an instance of {@link BeanType.Properties }
+     * 
+     */
+    public BeanType.Properties createBeanTypeProperties() {
+        return new BeanType.Properties();
     }
 
 }

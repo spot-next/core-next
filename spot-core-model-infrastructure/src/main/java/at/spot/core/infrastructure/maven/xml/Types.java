@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="atomic" type="{}AtomicType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="collection" type="{}CollectionType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="map" type="{}MapType" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="bean" type="{}BeanType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="enum" type="{}EnumType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="type" type="{}ItemType" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="relation" type="{}RelationType" maxOccurs="unbounded" minOccurs="0"/>
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
     "atomic",
     "collection",
     "map",
+    "bean",
     "_enum",
     "type",
     "relation"
@@ -49,6 +51,7 @@ public class Types {
     protected List<AtomicType> atomic;
     protected List<CollectionType> collection;
     protected List<MapType> map;
+    protected List<BeanType> bean;
     @XmlElement(name = "enum")
     protected List<EnumType> _enum;
     protected List<ItemType> type;
@@ -139,6 +142,35 @@ public class Types {
             map = new ArrayList<MapType>();
         }
         return this.map;
+    }
+
+    /**
+     * Gets the value of the bean property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the bean property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getBean().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link BeanType }
+     * 
+     * 
+     */
+    public List<BeanType> getBean() {
+        if (bean == null) {
+            bean = new ArrayList<BeanType>();
+        }
+        return this.bean;
     }
 
     /**

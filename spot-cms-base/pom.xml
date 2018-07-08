@@ -23,6 +23,21 @@
                             <goal>itemTypeGeneration</goal>
                         </goals>
                     </execution>
+					<execution>
+						<id>Item type post-processing</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+						<configuration>
+							<includeJars>false</includeJars>
+							<classFileTransformers>
+								<classFileTransformer>
+									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+								</classFileTransformer>
+							</classFileTransformers>
+						</configuration>
+					</execution>
                 </executions>
             </plugin>
         </plugins>

@@ -29,6 +29,7 @@ import at.spot.core.infrastructure.constants.InfrastructureConstants;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
 import at.spot.core.infrastructure.maven.xml.BaseType;
+import at.spot.core.infrastructure.maven.xml.BeanType;
 import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
@@ -173,6 +174,7 @@ public class ItemTypeDefinitionUtil {
 
 		final Map<String, ItemType> itemDefs = typeDefinitions.getItemTypes();
 		final Map<String, EnumType> enumsDefs = typeDefinitions.getEnumTypes();
+		final Map<String, BeanType> beanDefs = typeDefinitions.getBeanTypes();
 		final Map<String, AtomicType> atomicDefs = typeDefinitions.getAtomicTypes();
 		final Map<String, CollectionType> collectionDefs = typeDefinitions.getCollectionTypes();
 		final Map<String, MapType> mapDefs = typeDefinitions.getMapTypes();
@@ -216,7 +218,29 @@ public class ItemTypeDefinitionUtil {
 				}
 			}
 
-			// handle types
+			// handle bean types
+			for (final BeanType typeDef : typesDefs.getBean()) {
+				BeanType existingType = beanDefs.get(typeDef.getName());
+
+				if (existingType == null) {
+					existingType = typeDef;
+					beanDefs.put(existingType.getName(), existingType);
+				} else {
+					if (typeDef.getProperties() != null
+							&& CollectionUtils.isNotEmpty(typeDef.getProperties().getProperty())) {
+						for (final Property p : typeDef.getProperties().getProperty()) {
+							final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
+									.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
+
+							if (!existingProp.isPresent()) {
+								existingType.getProperties().getProperty().add(p);
+							}
+						}
+					}
+				}
+			}
+
+			// handle item types
 			for (final ItemType typeDef : typesDefs.getType()) {
 				ItemType existingType = itemDefs.get(typeDef.getName());
 

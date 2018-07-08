@@ -1,10 +1,11 @@
 package at.spot.core.infrastructure.type;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class LocalizedString implements java.io.Serializable {
+public class LocalizedString implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	final Map<Locale, String> strings = new HashMap<>();;
