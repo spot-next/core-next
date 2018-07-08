@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import at.spot.spring.web.http.HttpResponse;
 import at.spot.spring.web.http.Status;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @ControllerAdvice
+@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 public abstract class AbstractBaseRestController extends AbstractBaseController {
 
 	/**

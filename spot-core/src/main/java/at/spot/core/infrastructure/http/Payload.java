@@ -66,4 +66,9 @@ public class Payload<T> {
 	public boolean equals(final Object obj) {
 		return Objects.equals(this, obj);
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(data, errors, warnings);
+	}
 }

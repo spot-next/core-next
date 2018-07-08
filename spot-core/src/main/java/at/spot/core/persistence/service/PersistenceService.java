@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +25,10 @@ import at.spot.core.persistence.exception.QueryException;
 @Service
 public interface PersistenceService {
 
-	static final List<Class<?>> NATIVE_DATATYPES = java.util.Arrays.asList(Boolean.class, String.class, Integer.class,
-			Long.class, Double.class, Float.class, Byte.class, Short.class, BigDecimal.class, BigInteger.class,
-			Character.class, Date.class, java.sql.Date.class, Time.class, Timestamp.class, Calendar.class);
+	static final List<Class<?>> NATIVE_DATATYPES = Collections
+			.unmodifiableList(java.util.Arrays.asList(Boolean.class, String.class, Integer.class, Long.class,
+					Double.class, Float.class, Byte.class, Short.class, BigDecimal.class, BigInteger.class,
+					Character.class, Date.class, java.sql.Date.class, Time.class, Timestamp.class, Calendar.class));
 
 	/**
 	 * Saves the given models and all of its dependent models.

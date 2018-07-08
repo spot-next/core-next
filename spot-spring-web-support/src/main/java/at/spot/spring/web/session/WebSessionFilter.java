@@ -17,15 +17,16 @@ import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.spring.web.constants.SpringWebSupportConstants;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Sets the current session calling
  * {@link SessionService#setCurrentSession(Session)}.
  */
+@SuppressFBWarnings("MS_PKGPROTECT")
 public class WebSessionFilter extends OncePerRequestFilter {
 
-	protected final static String[] RESOURCE_SUFFIXES = { ".map", ".css", ".js", ".jpg", ".jpeg", ".gif", ".png",
-			".txt" };
+	public final static String[] RESOURCE_SUFFIXES = { ".map", ".css", ".js", ".jpg", ".jpeg", ".gif", ".png", ".txt" };
 
 	@Override
 	protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
@@ -64,7 +65,7 @@ public class WebSessionFilter extends OncePerRequestFilter {
 		boolean ret = false;
 
 		// firefox requests css source maps and doesn't send the cookie and no mime type
-		// this results in a new http session (and therefore a new spot session) 
+		// this results in a new http session (and therefore a new spot session)
 		if (StringUtils.equals(request.getHeader("Accept"), "*/*")) {
 			ret = true;
 		}
