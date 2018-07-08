@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,13 +44,16 @@ import org.apache.maven.project.MavenProject;
 import at.spot.core.support.util.FileUtils;
 import at.spot.instrumentation.transformer.AbstractBaseClassTransformer;
 import at.spot.maven.Constants;
+import at.spot.maven.util.JarTransformer;
 import ch.qos.logback.core.util.CloseUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @see <a href="http://marcosemiao4j.wordpress.com">Marco4J</a>
  *
  * @author Marco Semiao
  */
+@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 @Mojo(name = "transform", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
 public class TransformMojo extends AbstractMojo {
 
@@ -62,10 +66,8 @@ public class TransformMojo extends AbstractMojo {
 	@Parameter
 	private boolean includeJars;
 
+	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		final String packaging = project.getPackaging();
-		final Artifact artifact = project.getArtifact();
-
 		final ClassLoader cl = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
 
@@ -116,29 +118,30 @@ public class TransformMojo extends AbstractMojo {
 				}
 			}
 
-			// if (includeJars) {
-			// try {
-			// if ("jar".equals(packaging) && artifact != null) {
-			// final File source = artifact.getFile();
-			// final File destination = new File(source.getParent(), "instrument.jar");
-			//
-			// final JarTransformer transform = new JarTransformer(getLog(), cl,
-			// Arrays.asList(source),
-			// transformers);
-			// transform.transform(destination);
-			//
-			// final File sourceRename = new File(source.getParent(), "notransform-" +
-			// source.getName());
-			//
-			// source.renameTo(sourceRename);
-			// destination.renameTo(source);
-			// } else {
-			// getLog().debug("Not a jar file");
-			// }
-			// } catch (final Exception e) {
-			// throw new MojoExecutionException(e.getMessage(), e);
-			// }
-			// }
+			if (includeJars) {
+				final String packaging = project.getPackaging();
+				final Artifact artifact = project.getArtifact();
+
+				try {
+					if ("jar".equals(packaging) && artifact != null) {
+						final File source = artifact.getFile();
+						final File destination = new File(source.getParent(), "instrument.jar");
+
+						final JarTransformer transform = new JarTransformer(getLog(), cl, Arrays.asList(source),
+								transformers);
+						transform.transform(destination);
+
+						final File sourceRename = new File(source.getParent(), "notransform-" + source.getName());
+
+						source.renameTo(sourceRename);
+						destination.renameTo(source);
+					} else {
+						getLog().debug("Not a jar file");
+					}
+				} catch (final Exception e) {
+					throw new MojoExecutionException(e.getMessage(), e);
+				}
+			}
 		}
 	}
 
@@ -164,19 +167,23 @@ public class TransformMojo extends AbstractMojo {
 	private List<ClassFileTransformer> getClassFileTransformers(final ClassLoader cl) throws MojoExecutionException {
 		try {
 			final List<String> compileClasspathElements = project.getCompileClasspathElements();
-			final List<URL> classPathUrls = new ArrayList<URL>();
+			final List<String> classPathUrls = new ArrayList<>();
 
 			for (final String path : compileClasspathElements) {
-				classPathUrls.add(new File(path).toURI().toURL());
+				classPathUrls.add(new File(path).toURI().toURL().getFile());
 			}
 
 			final List<ClassFileTransformer> list = new ArrayList<ClassFileTransformer>(classFileTransformers.length);
+
 			for (final String classFileTransformer : classFileTransformers) {
 				final Class<?> clazz = cl.loadClass(classFileTransformer);
 				final ClassFileTransformer transformer = (ClassFileTransformer) clazz.newInstance();
 
 				if (transformer instanceof AbstractBaseClassTransformer) {
-					((AbstractBaseClassTransformer) transformer).addClassPaths(project.getBuild().getOutputDirectory());
+					AbstractBaseClassTransformer baseClassTransformer = ((AbstractBaseClassTransformer) transformer);
+
+					baseClassTransformer.addClassPaths(project.getBuild().getOutputDirectory());
+					baseClassTransformer.addClassPaths(classPathUrls);
 				}
 
 				list.add(transformer);

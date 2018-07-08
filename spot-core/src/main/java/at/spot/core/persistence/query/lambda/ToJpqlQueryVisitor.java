@@ -45,13 +45,11 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 	private static final String SQL_LIKE = "LIKE";
 	private final PredicateTranslationResult sb = new PredicateTranslationResult();
 	private final ParametersNameGenerator paramGenerator;
-	private final ModelService modelService;
 	private final Deque<UnaryOperator<Object>> parameterModifiers = new LinkedList<>();
 	private boolean columnBlock = false;
 
 	public ToJpqlQueryVisitor(final ParametersNameGenerator paramGenerator, final ModelService modelService) {
 		this.paramGenerator = paramGenerator;
-		this.modelService = modelService;
 	}
 
 	private String toSqlOp(final int expressionType) {
@@ -151,7 +149,8 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 	private List<Expression> filterArgumentExpressions(final InvocableExpression expression,
 			final List<Expression> arguments) {
 		if (getParametersCount(expression) == 0) {
-			// if after arguments fix this expression has no parameters we have to remove
+			// if after arguments fix this expression has no parameters we have
+			// to remove
 			// all constant expression
 			// from its parameters because they are already inlined
 			return arguments.stream().filter(e -> !(e instanceof ConstantExpression)).collect(Collectors.toList());
@@ -195,7 +194,8 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 			addSqlOperator(e.getExpressionType());
 			return sb;
 		} else if (e.getExpressionType() == ExpressionType.Convert) {
-			// if its cast then we don do operation (its probable Integer to int or
+			// if its cast then we don do operation (its probable Integer to int
+			// or
 			// something like that)
 			return e.getFirst().accept(this);
 		} else if (e.getExpressionType() == ExpressionType.LogicalNot) {
@@ -231,7 +231,8 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 
 		final boolean oldColumnBlock = columnBlock;
 		if (isGetter) {
-			// if getter we only need the last getter so we block adding columns on
+			// if getter we only need the last getter so we block adding columns
+			// on
 			// recursive calls
 			columnBlock = true;
 		}

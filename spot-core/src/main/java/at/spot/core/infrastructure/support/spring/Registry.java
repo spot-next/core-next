@@ -113,6 +113,5 @@ public class Registry implements ApplicationContextAware {
 	public static void shutdown() {
 		getLoggingService().warn("SHUTTING DOWN!");
 		((AbstractApplicationContext) context).close();
-		System.exit(1);
 	}
 }

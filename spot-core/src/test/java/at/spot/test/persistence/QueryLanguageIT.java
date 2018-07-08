@@ -66,8 +66,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testDtoQuery() throws Exception {
-		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id",
-				UserData.class);
+		final JpqlQuery<UserData> query = new JpqlQuery<>(
+				"SELECT id as id, shortName as shortName FROM User u WHERE id = :id", UserData.class);
 		query.addParam("id", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
@@ -75,11 +75,12 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
 	}
 
-	// not yet working as the col7umn name is not automatically used as alias.
+	// not yet working as the column name is not automatically used as alias.
 	@Ignore
 	@Test
 	public void testDtoQueryWithoutAlias() throws Exception {
-		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id, shortName FROM User u WHERE id = :id", UserData.class);
+		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id, shortName FROM User u WHERE id = :id",
+				UserData.class);
 		query.addParam("id", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 

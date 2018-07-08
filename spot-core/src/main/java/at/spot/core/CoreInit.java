@@ -22,7 +22,6 @@ import at.spot.core.infrastructure.exception.ImportException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
-import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.ImportService;
 import at.spot.core.infrastructure.service.LoggingService;
@@ -60,9 +59,6 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected ModelService modelService;
-
-	@Autowired
-	protected ConfigurationService configurationService;
 
 	@Autowired
 	protected UserService<User, UserGroup> userService;

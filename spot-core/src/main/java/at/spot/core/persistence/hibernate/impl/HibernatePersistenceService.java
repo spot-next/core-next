@@ -59,12 +59,13 @@ import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-public class HibernatePersistenceService extends AbstractPersistenceService implements PersistenceService {
+@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
+public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	static final int JDBC_BATCH_SIZE = 20;
 
@@ -131,6 +132,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 		}
 	}
 
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
 	public <T> List<T> query(final at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 
@@ -141,8 +143,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 			// if this is an item type, we just load the entities
 			// if it is a "primitive" natively supported type we can also just
-			// let hibernate
-			// do the work
+			// let hibernate do the work
 			if (Item.class.isAssignableFrom(sourceQuery.getResultClass())
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
@@ -211,12 +212,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 					}
 				}
 			}
+		} catch (QueryException e) {
+			throw e;
 		} catch (final Exception e) {
-			if (e instanceof QueryException) {
-				throw (QueryException) e;
-			} else {
-				throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
-			}
+			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
 		}
 
 		return results;
@@ -385,7 +384,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 
 		try {
 			// ignore unpersisted or already attached items
-			if (item.getPk() == null | getSession().contains(item)) {
+			if (item.getPk() == null || getSession().contains(item)) {
 				return;
 			}
 
@@ -514,8 +513,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService impl
 	}
 
 	protected Session getSession() {
-		return ((EntityManagerHolder) TransactionSynchronizationManager.getResource(entityManagerFactory))
-				.getEntityManager().unwrap(Session.class);
+		EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
+				.getResource(entityManagerFactory));
+
+		if (holder != null) {
+			return holder.getEntityManager().unwrap(Session.class);
+		}
+
+		throw new IllegalStateException("Could not fetch persistence entity manager");
 	}
 
 	protected void bindSession() {

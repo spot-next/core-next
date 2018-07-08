@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.exception.ItemInterceptorException;
 import at.spot.core.infrastructure.interceptor.ItemPrepareInterceptor;
-import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.persistence.exception.SequenceAccessException;
 import at.spot.core.persistence.service.SequenceGenerator;
 import at.spot.itemtype.core.UniqueIdItem;
@@ -22,26 +21,24 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 	@Resource
 	protected SequenceGenerator sequenceGenerator;
 
-	@Resource
-	protected TypeService typeService;
-
 	@Override
 	public Class<UniqueIdItem> getItemType() {
 		return UniqueIdItem.class;
 	}
 
 	@Override
-	public void onPrepare(UniqueIdItem item) throws ItemInterceptorException {
+	public void onPrepare(final UniqueIdItem item) throws ItemInterceptorException {
 
 		try {
-			// only get a new sequence id if the id property is empty to save some ids
+			// only get a new sequence id if the id property is empty to save
+			// some ids
 			if (item.getId() == null) {
-				String typeCode = typeService.getTypeCodeForClass(item.getClass());
-				long nextVal = sequenceGenerator.getNextSequenceValue(typeCode + "_" + "id");
+				final String typeCode = typeService.getTypeCodeForClass(item.getClass());
+				final long nextVal = sequenceGenerator.getNextSequenceValue(typeCode + "_" + "id");
 
 				item.setId(typeCode + "-" + nextVal);
 			}
-		} catch (SequenceAccessException e) {
+		} catch (final SequenceAccessException e) {
 			throw new ItemInterceptorException("Could not generate unique id for item.", e);
 		}
 	}

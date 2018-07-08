@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 
@@ -31,13 +30,10 @@ import at.spot.core.model.Item;
 public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 
 	@Resource
-	protected TypeService typeService;
+	private TypeService typeService;
 
-	protected ObjectMapper jacksonMapper;
-	protected ObjectReader jacksonReader;
-	protected ObjectWriter jacksonWriter;
-	protected boolean serializeNulls = false;
-	protected boolean excludeFieldsWithoutExposeAnnotation = true;
+	private ObjectMapper jacksonMapper;
+	private ObjectWriter jacksonWriter;
 
 	@PostConstruct
 	public void init() throws ClassNotFoundException {
@@ -61,12 +57,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 			}
 		}).filter(Objects::nonNull).collect(Collectors.toList()));
 
-		// SimpleModule module = new SimpleModule("itemTypes");
-		// module.addDeserializer(User.class, new ItemDeserializer<>());
-		// jacksonMapper.registerModule(module);
-
-		jacksonReader = jacksonMapper.reader();
-		jacksonWriter = jacksonMapper.writer();
+		this.jacksonWriter = jacksonMapper.writer();
 	}
 
 	@Override
@@ -76,7 +67,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		}
 
 		try {
-			return jacksonWriter.writeValueAsString(object);
+			return this.jacksonWriter.writeValueAsString(object);
 		} catch (final JsonProcessingException e) {
 			throw new SerializationException("Cannot serialize object", e);
 		}
@@ -85,13 +76,10 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 	@Override
 	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
 		try {
-			return jacksonMapper.readValue(serializedObject, type);
+			return this.jacksonMapper.readValue(serializedObject, type);
 		} catch (final Exception e) {
 			throw new SerializationException("Cannot deserialize object", e);
 		}
 	}
 
-	public void setSerializeNulls(final boolean serializeNulls) {
-		this.serializeNulls = serializeNulls;
-	}
 }

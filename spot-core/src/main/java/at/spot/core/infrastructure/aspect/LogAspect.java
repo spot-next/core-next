@@ -10,8 +10,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 import at.spot.core.infrastructure.annotation.logging.Log;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Aspect
+@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
 
 	@PostConstruct
