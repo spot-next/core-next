@@ -18,6 +18,7 @@ public class TypeServicePersistenceUnitPostProcessor extends AbstractService imp
 	public void postProcessPersistenceUnitInfo(final MutablePersistenceUnitInfo pui) {
 		for (final ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
 			loggingService.debug(String.format("Register item type JPA entity %s", def.getTypeClass()));
+
 			pui.addManagedClassName(def.getTypeClass());
 		}
 	}

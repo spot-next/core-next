@@ -15,4 +15,12 @@ public abstract class AbstractService extends BeanAware {
 	@Autowired
 	protected ConfigurationService configurationService;
 
+	public LoggingService getLoggingService() {
+		return loggingService;
+	}
+
+	public ConfigurationService getConfigurationService() {
+		return configurationService;
+	}
+
 }

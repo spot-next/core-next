@@ -1,5 +1,5 @@
 INSERT_UPDATE User ; id[unique=true] ; password ;
-                   ; admin           ; nimda    ;
+                   ; testuser        ; test1234 ;
                    
 INSERT_UPDATE UserGroup ; id[unique=true] ;
-                         ; admin-group    ;
+                        ; test-group    ;
