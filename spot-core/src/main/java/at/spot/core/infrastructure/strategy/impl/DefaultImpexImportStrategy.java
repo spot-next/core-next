@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,14 @@ import com.opencsv.CSVReader;
 
 import at.spot.core.infrastructure.exception.ImpexImportException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
+import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
+import at.spot.core.infrastructure.resolver.impex.impl.PrimitiveValueResolver;
+import at.spot.core.infrastructure.resolver.impex.impl.ReferenceValueResolver;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.ImpexImportStrategy;
+import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
@@ -53,6 +58,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	@Resource
 	private ModelService modelService;
+
+	@Resource
+	private PrimitiveValueResolver primitiveValueResolver;
+
+	@Resource
+	private ReferenceValueResolver referenceValueResolver;
+
+	@Resource
+	private Map<String, ImpexValueResolver> impexValueResolvers;
 
 	@Override
 	public void importImpex(ImportConfiguration config, File file) throws ImpexImportException {
@@ -154,6 +168,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		for (WorkUnit unit : workUnits) {
 			try {
 				Item item = modelService.create(unit.getItemType());
+				String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
 
 				for (List<String> row : unit.getDataRows()) {
 					for (int x = 0; x < unit.getHeaderColumns().size(); x++) {
@@ -166,7 +181,10 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						ColumnDefinition col = unit.getHeaderColumns().get(x);
 						String val = row.get(x);
 
-						Object propertyValue = resolveValue(val, col);
+						ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
+								.get(col.getPropertyName());
+
+						Object propertyValue = resolveValue(val, propDef.getReturnType(), col);
 
 						modelService.setPropertyValue(item, col.getPropertyName(), val);
 					}
@@ -180,14 +198,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	private Object resolveValue(String val, ColumnDefinition col) {
-		if (StringUtils.isNotBlank(col.getValueResolutionDescriptor())) {
-
-			// TreeMap<String, V>
-
-			return null;
+	private Object resolveValue(String value, Class<?> type, ColumnDefinition columnDefinition) {
+		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
+			return referenceValueResolver.resolve(value, type, columnDefinition);
 		} else {
-			return val;
+			return primitiveValueResolver.resolve(value, type, columnDefinition);
 		}
 	}
 
@@ -229,20 +244,25 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	protected Map<String, String> parseModifiers(String modifiers) {
-		Map<String, String> parsedModifiers = new HashMap<>();
 
-		String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(",");
+		if (StringUtils.isNotBlank(modifiers)) {
+			Map<String, String> parsedModifiers = new HashMap<>();
 
-		if (kvPairs.length > 0) {
-			Stream.of(kvPairs).forEach(kv -> {
-				String[] kvSplit = StringUtils.split(kv, '=');
+			String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(",");
 
-				if (kvSplit.length == 2) {
-					parsedModifiers.put(kvSplit[0], kvSplit[1]);
-				}
-			});
+			if (kvPairs.length > 0) {
+				Stream.of(kvPairs).forEach(kv -> {
+					String[] kvSplit = StringUtils.split(kv, '=');
+
+					if (kvSplit.length == 2) {
+						parsedModifiers.put(kvSplit[0], kvSplit[1]);
+					}
+				});
+			}
+
+			return parsedModifiers;
 		}
 
-		return parsedModifiers;
+		return Collections.emptyMap();
 	}
 }
