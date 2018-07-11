@@ -69,11 +69,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	private Map<String, ImpexValueResolver> impexValueResolvers;
 
 	@Override
-	public void importImpex(ImportConfiguration config, File file) throws ImpexImportException {
+	public void importImpex(final ImportConfiguration config, final File file) throws ImpexImportException {
 		List<String> fileContent = null;
 
 		try {
-			URL resource = getClass().getResource(file.getPath());
+			final URL resource = getClass().getResource(file.getPath());
 			fileContent = Files.readAllLines(Paths.get(resource.toURI()));
 		} catch (IOException | URISyntaxException e) {
 			throw new ImpexImportException("Could not read impex file", e);
@@ -94,11 +94,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected List<WorkUnit> transformImpex(List<String> fileContent) throws ImpexImportException {
+	protected List<WorkUnit> transformImpex(final List<String> fileContent) throws ImpexImportException {
 		final List<WorkUnit> workUnits = new ArrayList<>();
 		WorkUnit current = null;
 
-		for (String line : fileContent) {
+		for (final String line : fileContent) {
 
 			// ignore empty lines or comments
 			if (StringUtils.isBlank(line) || StringUtils.startsWith(line, "#")) {
@@ -118,7 +118,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 				try {
 					current.setItemType(getItemType(line));
-				} catch (UnknownTypeException e) {
+				} catch (final UnknownTypeException e) {
 					throw new ImpexImportException(String.format("Cannot process ImpEx header: %s", line));
 				}
 
@@ -131,30 +131,30 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return workUnits;
 	}
 
-	protected Class<? extends Item> getItemType(String line) throws UnknownTypeException {
-		String typeName = StringUtils.substring(line, StringUtils.indexOf(line, " "), StringUtils.indexOf(line, ";"))
-				.trim().toLowerCase();
+	protected Class<? extends Item> getItemType(final String line) throws UnknownTypeException {
+		final String typeName = StringUtils
+				.substring(line, StringUtils.indexOf(line, " "), StringUtils.indexOf(line, ";")).trim().toLowerCase();
 
 		return typeService.getClassForTypeCode(typeName);
 	}
 
-	protected void processWorkUnits(List<WorkUnit> units) throws ImpexImportException {
-		for (WorkUnit unit : units) {
+	protected void processWorkUnits(final List<WorkUnit> units) throws ImpexImportException {
+		for (final WorkUnit unit : units) {
 			try {
 				final List<List<String>> parsedRows = parseRawRows(StringUtils.join(unit.getRawScriptRows(), "\n"));
 
 				unit.setHeaderColumns(parseHeaderColumns(parsedRows.get(0)));
 				unit.setDataRows(parsedRows.subList(1, parsedRows.size()));
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				throw new ImpexImportException(String.format("Cannot process work unit '%s' for type %s",
 						unit.getCommand(), unit.getItemType()), e);
 			}
 		}
 	}
 
-	protected List<List<String>> parseRawRows(String lines) throws IOException {
+	protected List<List<String>> parseRawRows(final String lines) throws IOException {
 		try (CSVReader reader = new CSVReader(new StringReader(lines), ';')) {
-			List<List<String>> rows = new ArrayList<>();
+			final List<List<String>> rows = new ArrayList<>();
 
 			reader.forEach(row -> {
 				rows.add(Stream.of(row).map(c -> c.trim()).collect(Collectors.toList()));
@@ -164,41 +164,41 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected void importWorkUnits(List<WorkUnit> workUnits) throws ImpexImportException {
-		for (WorkUnit unit : workUnits) {
+	protected void importWorkUnits(final List<WorkUnit> workUnits) throws ImpexImportException {
+		for (final WorkUnit unit : workUnits) {
 			try {
-				Item item = modelService.create(unit.getItemType());
-				String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
+				final Item item = modelService.create(unit.getItemType());
+				final String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
 
-				for (List<String> row : unit.getDataRows()) {
-					for (int x = 0; x < unit.getHeaderColumns().size(); x++) {
-
-						// ignore first column/ row value as it is always empty
-						if (x == 0) {
-							continue;
+				for (final List<String> row : unit.getDataRows()) {
+					// ignore first column/ row value as it is always empty
+					for (int x = 1; x < row.size(); x++) {
+						final int headerIndex = x - 1;
+						if (headerIndex >= unit.getHeaderColumns().size()) {
+							break;
 						}
 
-						ColumnDefinition col = unit.getHeaderColumns().get(x);
-						String val = row.get(x);
+						final ColumnDefinition col = unit.getHeaderColumns().get(headerIndex);
+						final String val = row.get(x);
 
-						ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
+						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
 								.get(col.getPropertyName());
 
-						Object propertyValue = resolveValue(val, propDef.getReturnType(), col);
+						final Object propertyValue = resolveValue(val, propDef.getReturnType(), col);
 
 						modelService.setPropertyValue(item, col.getPropertyName(), val);
 					}
 				}
 
 				modelService.save(item);
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
 			}
 		}
 	}
 
-	private Object resolveValue(String value, Class<?> type, ColumnDefinition columnDefinition) {
+	private Object resolveValue(final String value, final Class<?> type, final ColumnDefinition columnDefinition) {
 		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
 			return referenceValueResolver.resolve(value, type, columnDefinition);
 		} else {
@@ -206,12 +206,12 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected List<ColumnDefinition> parseHeaderColumns(List<String> columns) {
-		List<ColumnDefinition> parsedColumns = new ArrayList<>();
+	protected List<ColumnDefinition> parseHeaderColumns(final List<String> columns) {
+		final List<ColumnDefinition> parsedColumns = new ArrayList<>();
 
 		boolean isFirst = true;
 
-		for (String col : columns) {
+		for (final String col : columns) {
 			if (isFirst) {
 				isFirst = false;
 				continue;
@@ -221,14 +221,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				continue;
 			}
 
-			ColumnDefinition colDef = new ColumnDefinition();
+			final ColumnDefinition colDef = new ColumnDefinition();
 
-			Matcher m = PATTERN_COLUMN_DEFINITION.matcher(col);
+			final Matcher m = PATTERN_COLUMN_DEFINITION.matcher(col);
 
 			if (m.matches()) {
-				String propertyName = m.group(1);
-				String valueResolutionDescriptor = m.group(2);
-				String modifiers = m.group(3);
+				final String propertyName = m.group(1);
+				final String valueResolutionDescriptor = m.group(2);
+				final String modifiers = m.group(3);
 
 				colDef.setPropertyName(propertyName);
 				colDef.setValueResolutionDescriptor(valueResolutionDescriptor);
@@ -243,16 +243,16 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return parsedColumns;
 	}
 
-	protected Map<String, String> parseModifiers(String modifiers) {
+	protected Map<String, String> parseModifiers(final String modifiers) {
 
 		if (StringUtils.isNotBlank(modifiers)) {
-			Map<String, String> parsedModifiers = new HashMap<>();
+			final Map<String, String> parsedModifiers = new HashMap<>();
 
-			String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(",");
+			final String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(",");
 
 			if (kvPairs.length > 0) {
 				Stream.of(kvPairs).forEach(kv -> {
-					String[] kvSplit = StringUtils.split(kv, '=');
+					final String[] kvSplit = StringUtils.split(kv, '=');
 
 					if (kvSplit.length == 2) {
 						parsedModifiers.put(kvSplit[0], kvSplit[1]);
