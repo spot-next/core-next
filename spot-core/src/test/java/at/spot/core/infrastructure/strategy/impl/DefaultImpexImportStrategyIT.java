@@ -74,6 +74,9 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 		Assert.assertTrue(userGroupResult.count() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
+
+		// check if user is in group
+		Assert.assertEquals("testuser", userGroupResult.getResultList().get(0).getMembers().get(0).getId());
 	}
 
 }

@@ -28,8 +28,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BaseComplexType")
 @XmlSeeAlso({
-    BeanType.class,
     EnumType.class,
+    BeanType.class,
     ItemType.class
 })
 public abstract class BaseComplexType

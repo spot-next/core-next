@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -219,9 +221,21 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 			if (propertyAnn != null) {
 
+				final Type[] genericArguments;
+				Type genericType = m.getGenericType();
+
+				if (genericType instanceof ParameterizedType) {
+					genericArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+				} else if (genericType instanceof Class) {
+					genericArguments = ((Class<?>) genericType).getTypeParameters();
+				} else {
+					genericArguments = new Type[0];
+				}
+
 				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getType(),
-						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
-						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
+						genericArguments, propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(),
+						propertyAnn.unique(), propertyAnn.itemValueProvider(),
+						getRelationDefinition(itemType, m, m.getName()));
 
 				propertyMembers.put(m.getName(), def);
 			}
@@ -243,7 +257,8 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				name = Introspector.decapitalize(name);
 
 				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getReturnType(),
-						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
+						((Class<?>) m.getGenericReturnType()).getTypeParameters(), propertyAnn.readable(),
+						propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
 						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
 
 				propertyMembers.put(name, def);

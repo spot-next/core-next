@@ -87,7 +87,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		try {
 			// we only want to transform item types only ...
-			if (!clazz.isFrozen() && isItemType(clazz)) {
+			if (!clazz.isFrozen() && isItemType(clazz) && !alreadyTransformed(clazz)) {
 
 				// add JPA entity annotation
 				addEntityAnnotation(clazz);
@@ -149,6 +149,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		return Optional.empty();
+	}
+
+	protected boolean alreadyTransformed(CtClass clazz) throws IllegalClassTransformationException {
+		final Optional<Annotation> entityAnnotation = getAnnotation(clazz, Entity.class);
+
+		return entityAnnotation.isPresent();
 	}
 
 	protected void addEntityAnnotation(final CtClass clazz) throws IllegalClassTransformationException {

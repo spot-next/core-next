@@ -3,6 +3,8 @@ package at.spot.core.infrastructure.strategy.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -184,13 +186,36 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
 								.get(col.getPropertyName());
 
-						final Object propertyValue = resolveValue(val, propDef.getReturnType(), col);
+						Class<?> propertyType = propDef.getReturnType();
+
+						if (propDef.getGenericTypes() != null && propDef.getGenericTypes().length > 0) {
+							Type[] genericTypes = propDef.getGenericTypes();
+
+							// Only collections (1 generic type) and maps (1 key, 1 value) are supported. If
+							// it's a map, we just use the value type here.
+							Type genericType = genericTypes[genericTypes.length - 1];
+
+							if (genericType instanceof ParameterizedType) {
+								propertyType = (Class<?>) ((ParameterizedType) genericType).getRawType();
+							} else if (genericType instanceof Class) {
+								propertyType = (Class<?>) genericType;
+							} else {
+								throw new ImpexImportException(String.format("Cannot resolve type of property %s.%s",
+										unit.getItemType().getSimpleName(), propDef.getName()));
+							}
+
+						}
+
+						// handle collections and maps
+						final Object propertyValue = resolveValue(val, propertyType, col);
 
 						modelService.setPropertyValue(item, col.getPropertyName(), val);
 					}
 				}
 
 				modelService.save(item);
+			} catch (ImpexImportException e) {
+				throw e;
 			} catch (final Exception e) {
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
