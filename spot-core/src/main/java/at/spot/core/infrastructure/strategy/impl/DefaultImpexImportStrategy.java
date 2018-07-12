@@ -3,13 +3,12 @@ package at.spot.core.infrastructure.strategy.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,12 +39,17 @@ import at.spot.core.infrastructure.strategy.ImpexImportStrategy;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
+import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
 import at.spot.core.model.Item;
 import at.spot.itemtype.core.beans.ImportConfiguration;
 
 @Service
 public class DefaultImpexImportStrategy extends AbstractService implements ImpexImportStrategy {
+
+	public static final String MAP_ENTRY_SEPARATOR = "->";
+
+	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
 	// (^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\s]{0,}([a-zA-Z]{2,})[\s]{0,}(\[.*?\]){0,1}[\s]{0,}[;]{0,1}
 	protected Pattern PATTERN_COMMAND_AND_TYPE = Pattern.compile(
@@ -186,36 +190,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
 								.get(col.getPropertyName());
 
-						Class<?> propertyType = propDef.getReturnType();
-
-						if (propDef.getGenericTypes() != null && propDef.getGenericTypes().length > 0) {
-							Type[] genericTypes = propDef.getGenericTypes();
-
-							// Only collections (1 generic type) and maps (1 key, 1 value) are supported. If
-							// it's a map, we just use the value type here.
-							Type genericType = genericTypes[genericTypes.length - 1];
-
-							if (genericType instanceof ParameterizedType) {
-								propertyType = (Class<?>) ((ParameterizedType) genericType).getRawType();
-							} else if (genericType instanceof Class) {
-								propertyType = (Class<?>) genericType;
-							} else {
-								throw new ImpexImportException(String.format("Cannot resolve type of property %s.%s",
-										unit.getItemType().getSimpleName(), propDef.getName()));
-							}
-
-						}
+						final Class<?> returnType = propDef.getReturnType();
 
 						// handle collections and maps
-						final Object propertyValue = resolveValue(val, propertyType, col);
+						final Object propertyValue = resolveValue(val, returnType, propDef.getGenericTypeArguments(),
+								col);
 
-						modelService.setPropertyValue(item, col.getPropertyName(), val);
+						setValue(item, propDef, col, propertyValue);
 					}
 				}
 
 				modelService.save(item);
-			} catch (ImpexImportException e) {
-				throw e;
 			} catch (final Exception e) {
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
@@ -223,11 +208,110 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	private Object resolveValue(final String value, final Class<?> type, final ColumnDefinition columnDefinition) {
-		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
-			return referenceValueResolver.resolve(value, type, columnDefinition);
+	@SuppressWarnings("unchecked")
+	private void setValue(Item item, ItemTypePropertyDefinition property, ColumnDefinition columnDefinition,
+			Object propertyValue) {
+
+		if (Collection.class.isAssignableFrom(property.getReturnType())) {
+			Collection<? extends Object> colValue = (Collection<? extends Object>) modelService.getPropertyValue(item,
+					property.getName());
+
+			switch (getMergeMode(columnDefinition)) {
+			case ADD:
+				if (colValue == null) {
+					modelService.setPropertyValue(item, property.getName(), propertyValue);
+				}
+				colValue.addAll((Collection) propertyValue);
+				break;
+			case REMOVE:
+				if (colValue != null) {
+					colValue.removeAll((Collection) propertyValue);
+				}
+				break;
+			case REPLACE:
+				colValue = (Collection) propertyValue;
+				break;
+			}
+
+		} else if (Map.class.isAssignableFrom(property.getReturnType())) {
+			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item,
+					property.getName());
+
+			switch (getMergeMode(columnDefinition)) {
+			case ADD:
+				if (mapValue == null) {
+					modelService.setPropertyValue(item, property.getName(), propertyValue);
+				}
+				mapValue.putAll((Map) propertyValue);
+				break;
+			case REMOVE:
+				if (mapValue != null) {
+					for (Object key : ((Map) propertyValue).keySet()) {
+						mapValue.remove(key);
+					}
+				}
+				break;
+			case REPLACE:
+				mapValue = (Map) propertyValue;
+				break;
+			}
 		} else {
-			return primitiveValueResolver.resolve(value, type, columnDefinition);
+			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
+		}
+
+		modelService.save(item);
+	}
+
+	private ImpexMergeMode getMergeMode(ColumnDefinition columnDefinition) {
+		final String modeVal = columnDefinition.getModifiers().get("mode");
+		ImpexMergeMode mode = ImpexMergeMode.ADD;
+
+		if (modeVal != null) {
+			mode = ImpexMergeMode.valueOf(modeVal);
+		}
+
+		return mode;
+	}
+
+	private Object resolveValue(final String value, final Class<?> type, final List<Class<?>> genericArguments,
+			final ColumnDefinition columnDefinition) {
+
+		Object ret = null;
+
+		if (Collection.class.isAssignableFrom(type)) {
+			final String[] collectionValues = value.split(COLLECTION_VALUE_SEPARATOR);
+			final List<Object> resolvedValues = new ArrayList<>();
+			ret = resolvedValues;
+
+			for (final String v : collectionValues) {
+				resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition));
+			}
+		} else if (Map.class.isAssignableFrom(type)) {
+			final String[] mapEntryValues = value.split(COLLECTION_VALUE_SEPARATOR);
+			final Map<Object, Object> resolvedValues = new HashMap<>();
+			ret = resolvedValues;
+
+			// resolve both key and value of the map
+			for (final String v : mapEntryValues) {
+				final String[] splitEntry = StringUtils.split(v, MAP_ENTRY_SEPARATOR);
+				final Object entryKey = resolveSingleValue(splitEntry[0], genericArguments.get(0), columnDefinition);
+				final Object entryValue = resolveSingleValue(splitEntry[0], genericArguments.get(1), columnDefinition);
+				resolvedValues.put(entryKey, entryValue);
+			}
+		} else {
+			ret = resolveSingleValue(value, type, columnDefinition);
+		}
+
+		return ret;
+	}
+
+	private Object resolveSingleValue(final String value, final Class<?> type,
+			final ColumnDefinition columnDefinition) {
+
+		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
+			return referenceValueResolver.resolve(value, type, null, columnDefinition);
+		} else {
+			return primitiveValueResolver.resolve(value, type, null, columnDefinition);
 		}
 	}
 
@@ -273,7 +357,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		if (StringUtils.isNotBlank(modifiers)) {
 			final Map<String, String> parsedModifiers = new HashMap<>();
 
-			final String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(",");
+			final String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(COLLECTION_VALUE_SEPARATOR);
 
 			if (kvPairs.length > 0) {
 				Stream.of(kvPairs).forEach(kv -> {

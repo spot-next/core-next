@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.resolver.impex.impl;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,7 +19,8 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
-	public <T> T resolve(String value, Class<T> type, ColumnDefinition columnDefinition) throws ValueResolverException {
+	public <T> T resolve(String value, Class<T> type, List<Class<?>> genericArguments,
+			ColumnDefinition columnDefinition) throws ValueResolverException {
 		try {
 			if (type.isAssignableFrom(value.getClass())) {
 				return (T) value;

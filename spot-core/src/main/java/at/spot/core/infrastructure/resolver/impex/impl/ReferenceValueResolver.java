@@ -28,8 +28,8 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 	private QueryService queryService;
 
 	@Override
-	public <T> T resolve(String value, Class<T> targetType, ColumnDefinition columnDefinition)
-			throws ValueResolverException {
+	public <T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments,
+			ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		String[] inputParams = value.split(":");
 
