@@ -212,9 +212,12 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
 			}
+
+			// save each workunit so following units can reference items from before
+			modelService.saveAll(itemsToSave);
+			itemsToSave.clear();
 		}
 
-		modelService.saveAll(itemsToSave);
 	}
 
 	@SuppressWarnings("unchecked")

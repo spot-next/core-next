@@ -68,11 +68,13 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 
 		QueryResult<T> result = queryService.query(qry);
 
-		if (result.getResultList().size() == 1) {
-			return result.getResultList().get(0);
+		if (result.getResultList().size() > 1) {
+			throw new ValueResolverException("Ambiguous results found for given input values.");
+		} else if (result.getResultList().size() == 0) {
+			throw new ValueResolverException("No results found for given input values.");
 		}
 
-		throw new ValueResolverException("Ambiguous results found for given input values.");
+		return result.getResultList().get(0);
 	}
 
 	public List<Node> parse(String desc, int start, int end) {

@@ -16,11 +16,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import at.spot.core.constant.CoreConstants;
 import at.spot.core.infrastructure.annotation.logging.Log;
 import at.spot.core.infrastructure.exception.ImportException;
-import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.ImportService;
@@ -29,7 +26,6 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.support.init.ModuleInit;
-import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.itemtype.core.beans.ImportConfiguration;
@@ -119,33 +115,15 @@ public class CoreInit extends ModuleInit {
 	@Log(message = "Importing initial data ...")
 	protected void importInitialData() throws ModuleInitializationException {
 		try {
+			loggingService.debug("Importing countries");
 			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
 					Paths.get("/data/initial/countries.impex").toFile());
+
+			loggingService.debug("Importing users");
 			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
 					Paths.get("/data/initial/users.impex").toFile());
-		} catch (ImportException e1) {
-			loggingService.warn("Could not import initial data.");
-		}
-
-		final String adminUserName = configurationService.getString(CoreConstants.CONFIG_KEY_DEFAULT_ADMIN_USERNAME,
-				CoreConstants.DEFAULT_ADMIN_USERNAME);
-		final String adminPassword = configurationService.getString(CoreConstants.CONFIG_KEY_DEFAULT_ADMIN_PASSWORD,
-				CoreConstants.DEFAULT_ADMIN_PASSWORD);
-
-		User admin = userService.getUser(adminUserName);
-
-		if (admin == null) {
-			admin = modelService.create(User.class);
-			admin.setId(adminUserName);
-			admin.setPassword(adminPassword);
-
-			try {
-				modelService.save(admin);
-
-				loggingService.debug("Created admin user.");
-			} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-				throw new ModuleInitializationException("Couln't create admin user account.", e);
-			}
+		} catch (ImportException e) {
+			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}
 	}
 

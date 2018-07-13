@@ -142,15 +142,19 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-		final Class<? extends Item> type = typeService.getClassForTypeCode(request.params(":typecode"));
 
-		final ModelQuery<? extends Item> query = new ModelQuery<>(type, null);
-		query.setPage(page);
-		query.setPageSize(pageSize);
-		query.setEagerFetchRelations(true);
-		models = (List<T>) modelService.getAll(query);
+		try {
+			final Class<? extends Item> type = typeService.getClassForTypeCode(request.params(":typecode"));
+			final ModelQuery<? extends Item> query = new ModelQuery<>(type, null);
+			query.setPage(page);
+			query.setPageSize(pageSize);
+			query.setEagerFetchRelations(true);
+			models = (List<T>) modelService.getAll(query);
 
-		body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
+			body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
+		} catch (UnknownTypeException e) {
+			body.setStatusCode(HttpStatus.NOT_FOUND);
+		}
 
 		return body;
 	}
