@@ -106,31 +106,35 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		for (final String line : fileContent) {
 
+			// there might be some invisible unicode characters that might cause troubles
+			// furthermore all spaces
+			final String trimmedLine = StringUtils.trim(line);
+
 			// ignore empty lines or comments
-			if (StringUtils.isBlank(line) || StringUtils.startsWith(line, "#")) {
+			if (StringUtils.isBlank(trimmedLine) || StringUtils.startsWith(trimmedLine, "#")) {
 				continue;
 			}
 
 			// looks for commands
 			final Optional<ImpexCommand> command = Stream.of(ImpexCommand.values())
-					.filter(c -> StringUtils.startsWith(line, c.toString())).findFirst();
+					.filter(c -> StringUtils.startsWithIgnoreCase(trimmedLine, c.toString())).findFirst();
 
 			if (command.isPresent()) {
 				// start of a new import workunit
 
 				current = new WorkUnit();
 				current.setCommand(command.get());
-				current.addRawScriptRow(line);
+				current.addRawScriptRow(trimmedLine);
 
 				try {
-					current.setItemType(getItemType(line));
+					current.setItemType(getItemType(trimmedLine));
 				} catch (final UnknownTypeException e) {
-					throw new ImpexImportException(String.format("Cannot process ImpEx header: %s", line));
+					throw new ImpexImportException(String.format("Cannot process ImpEx header: %s", trimmedLine));
 				}
 
 				workUnits.add(current);
 			} else {
-				current.addRawScriptRow(line);
+				current.addRawScriptRow(trimmedLine);
 			}
 		}
 
@@ -171,12 +175,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	protected void importWorkUnits(final List<WorkUnit> workUnits) throws ImpexImportException {
+		List<Item> itemsToSave = new ArrayList<>();
+
 		for (final WorkUnit unit : workUnits) {
 			try {
-				final Item item = modelService.create(unit.getItemType());
-				final String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
-
 				for (final List<String> row : unit.getDataRows()) {
+
+					final Item item = modelService.create(unit.getItemType());
+					final String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
 					// ignore first column/ row value as it is always empty
 					for (int x = 1; x < row.size(); x++) {
 						final int headerIndex = x - 1;
@@ -198,14 +204,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 						setValue(item, propDef, col, propertyValue);
 					}
+
+					itemsToSave.add(item);
 				}
 
-				modelService.save(item);
 			} catch (final Exception e) {
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
 			}
 		}
+
+		modelService.saveAll(itemsToSave);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,8 +267,6 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		} else {
 			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
 		}
-
-		modelService.save(item);
 	}
 
 	private ImpexMergeMode getMergeMode(ColumnDefinition columnDefinition) {

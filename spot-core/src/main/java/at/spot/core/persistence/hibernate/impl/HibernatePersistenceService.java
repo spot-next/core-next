@@ -308,11 +308,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 				}
 
-				try {
-					refresh(items);
-				} catch (final ModelNotFoundException e) {
-					throw new ModelSaveException("Could not save given items", e);
-				}
+				// try {
+				// refresh(items);
+				// } catch (final ModelNotFoundException e) {
+				// throw new ModelSaveException("Could not save given items", e);
+				// }
 
 				return null;
 			});

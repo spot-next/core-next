@@ -1,5 +1,5 @@
-INSERT_UPDATE User ; id[unique=true] ; password ;
-                   ; admin           ; nimda    ;
+INSERT_UPDATE User ; id[unique=true] ; password                             ;
+                   ; admin           ; MD5:ee10c315eba2c75b403ea99136f5b48d ;
                    
 INSERT_UPDATE UserGroup ; id[unique=true] ;
                          ; admin-group    ;

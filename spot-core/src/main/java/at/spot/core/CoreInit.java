@@ -120,6 +120,8 @@ public class CoreInit extends ModuleInit {
 	protected void importInitialData() throws ModuleInitializationException {
 		try {
 			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
+					Paths.get("/data/initial/countries.impex").toFile());
+			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
 					Paths.get("/data/initial/users.impex").toFile());
 		} catch (ImportException e1) {
 			loggingService.warn("Could not import initial data.");
