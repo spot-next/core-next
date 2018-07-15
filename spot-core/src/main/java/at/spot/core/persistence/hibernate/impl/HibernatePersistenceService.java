@@ -92,6 +92,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			schemaExport.setOutputFile("db-schema.sql");
 
 			try {
+				// TODO will most likely fail, implement a pure JDBC "drop database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
 			} catch (Exception e) {
 				loggingService.warn("Could not drop type system schema.");
@@ -435,6 +436,30 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			} else {
 				query = session.createQuery(cq.select(r));
 			}
+
+			// String jpql = String.format("SELECT i FROM %s i ",
+			// sourceQuery.getResultClass().getSimpleName());
+			//
+			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
+			// jpql += " WHERE ";
+			//
+			// List<String> whereClauses = new LinkedList<>();
+			// for (Map.Entry<String, Object> entry :
+			// sourceQuery.getSearchParameters().entrySet()) {
+			// whereClauses.add(entry.getKey() + " = :" + entry.getKey());
+			// }
+			//
+			// jpql += StringUtils.join(whereClauses, " AND ");
+			// }
+			//
+			// query = session.createQuery(jpql);
+			//
+			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
+			// for (Map.Entry<String, Object> entry :
+			// sourceQuery.getSearchParameters().entrySet()) {
+			// query.setParameter(entry.getKey(), entry.getValue());
+			// }
+			// }
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
 

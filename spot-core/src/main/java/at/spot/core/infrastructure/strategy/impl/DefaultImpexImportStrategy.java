@@ -196,13 +196,18 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
 								.get(col.getPropertyName());
 
-						final Class<?> returnType = propDef.getReturnType();
+						if (propDef != null) {
+							final Class<?> returnType = propDef.getReturnType();
 
-						// handle collections and maps
-						final Object propertyValue = resolveValue(val, returnType, propDef.getGenericTypeArguments(),
-								col);
+							// handle collections and maps
+							final Object propertyValue = resolveValue(val, returnType,
+									propDef.getGenericTypeArguments(), col);
 
-						setValue(item, propDef, col, propertyValue);
+							setValue(item, propDef, col, propertyValue);
+						} else {
+							loggingService.warn(String.format("Ignoring unknown column %s for type %s",
+									col.getPropertyName(), item.getClass().getSimpleName()));
+						}
 					}
 
 					itemsToSave.add(item);

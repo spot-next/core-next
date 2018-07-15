@@ -119,9 +119,17 @@ public class CoreInit extends ModuleInit {
 			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
 					Paths.get("/data/initial/countries.impex").toFile());
 
+			loggingService.debug("Importing languages");
+			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
+					Paths.get("/data/initial/languages.impex").toFile());
+
 			loggingService.debug("Importing users");
 			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
 					Paths.get("/data/initial/users.impex").toFile());
+
+			loggingService.debug("Importing catalogs");
+			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
+					Paths.get("/data/initial/catalogs.impex").toFile());
 		} catch (ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}

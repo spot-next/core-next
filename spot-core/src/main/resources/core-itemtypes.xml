@@ -18,6 +18,7 @@
 
 	<collection name="StringList" elementType="String" />
 	<collection name="CountryList" elementType="Country" />
+	<collection name="LanguageList" elementType="Language" />
 
 	<!-- enums -->
 
@@ -26,22 +27,23 @@
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
 	</enum>
-	
+
 	<enum name="ImportFormat" package="at.spot.itemtype.core.enumeration">
 		<description>Formats that are supported for import of data.</description>
 		<value code="ImpEx" />
 		<value code="JSON" />
 		<value code="XML" />
 	</enum>
-	
+
 	<bean name="ImportConfiguration" package="at.spot.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
 	</bean>
-	
+
 	<!-- users and groups -->
 
-	<type name="UniqueIdItem" abstract="true" package="at.spot.itemtype.core" persistable="false">
-		<description>The base type all types that have a unique id property.</description>
+	<type name="UniqueIdItem" abstract="true" package="at.spot.itemtype.core"
+		persistable="false">
+		<description>The base type of all types that have a unique id property.</description>
 		<properties>
 			<property name="id" type="String">
 				<description>The unique id of the object.</description>
@@ -50,6 +52,20 @@
 					<validator javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 					</validator>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CatalogItem" abstract="true" package="at.spot.itemtype.core"
+		extends="UniqueIdItem" persistable="false">
+		<description>The base type all types that are catalogable.</description>
+		<properties>
+			<property name="catalogVersion" type="CatalogVersion">
+				<description>The catalog version this item belongs to.</description>
+				<modifiers unique="true" />
+				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
@@ -94,7 +110,8 @@
 
 	<!-- addresses -->
 
-	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user" abstract="true">
+	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user"
+		abstract="true">
 		<properties>
 			<property name="street" type="String" />
 			<property name="streetNumber" type="String" />
@@ -104,8 +121,9 @@
 			<property name="country" type="Country" />
 		</properties>
 	</type>
-	
-	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user" extends="Address">
+
+	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user"
+		extends="Address">
 		<properties></properties>
 	</type>
 
@@ -131,7 +149,7 @@
 
 	<type name="Catalog" typeCode="Catalog" package="at.spot.itemtype.core.catalog"
 		extends="UniqueIdItem">
-		<description>This is the container for all categories and products.</description>
+		<description>This is the container for all category and product-related types. It can have multiple catalog version.</description>
 		<properties>
 			<property name="name" type="String">
 				<description>The name of the catalog.</description>
@@ -139,10 +157,26 @@
 		</properties>
 	</type>
 
+	<type name="CatalogVersion" typeCode="CatalogVersion"
+		package="at.spot.itemtype.core.catalog" extends="UniqueIdItem">
+		<description>A catalog version holds catalogable types that can be synchronized into another catalog version.</description>
+		<properties>
+			<property name="name" type="String">
+				<description>The name of the catalog version.</description>
+			</property>
+			<property name="synchronizationTarget" type="CatalogVersion">
+				<description>The target catalog version to which all containing items will be synchronized..</description>
+			</property>
+			<property name="synchronizationLanguages" type="LanguageList">
+				<description>The languages that will be synchronized .</description>
+			</property>
+		</properties>
+	</type>
+
 	<!-- media objects -->
 
 	<type name="AbstractMedia" abstract="true" package="at.spot.itemtype.core.media"
-		extends="UniqueIdItem">
+		extends="CatalogItem">
 		<properties>
 			<property name="mimeType" type="String">
 				<description>The mime type of the content.</description>
@@ -174,7 +208,7 @@
 	</type>
 
 	<type name="MediaContainer" package="at.spot.itemtype.core.media"
-		extends="UniqueIdItem">
+		extends="CatalogItem">
 		<properties>
 		</properties>
 	</type>
@@ -258,7 +292,7 @@
 		</properties>
 	</type>
 
-	<type name="LocalizationKey" package="at.spot.itemtype.core.internationalization"
+	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
 		extends="UniqueIdItem">
 		<description>This type can be used to store localized values different languages/locales.</description>
 		<properties>
@@ -304,13 +338,27 @@
 		</properties>
 	</type>
 
+	<!-- RELATIONS -->
+
+	<relation name="Catalog2CatalogVersion">
+		<source itemType="Catalog" mappedBy="catalog" cardinality="one">
+			<description>The catalog this catalog version belongs to.</description>
+			<modifiers unique="true" />
+		</source>
+		<target itemType="CatalogVersion" mappedBy="versions"
+			cardinality="many" collectionType="Set">
+			<description>The catalog version of this catalog.</description>
+		</target>
+	</relation>
+
 	<relation name="PrincipalGroup2Principal">
 		<description>The relation between principal groups and principals</description>
-		<source itemType="PrincipalGroup" mappedBy="groups" collectionType="List"
-			cardinality="many">
+		<source itemType="PrincipalGroup" mappedBy="groups"
+			collectionType="List" cardinality="many">
 			<description>The principal groups assigned to the principal.</description>
 		</source>
-		<target itemType="Principal" mappedBy="members" cardinality="many" collectionType="List">
+		<target itemType="Principal" mappedBy="members" cardinality="many"
+			collectionType="List">
 			<description>The members of the group.</description>
 		</target>
 	</relation>
@@ -318,9 +366,10 @@
 	<relation name="User2Address">
 		<description>Defines a address ownership relation.</description>
 		<source itemType="User" mappedBy="owner" cardinality="one" />
-		<target itemType="UserAddress" mappedBy="addresses" cardinality="many" />
+		<target itemType="UserAddress" mappedBy="addresses"
+			cardinality="many" />
 	</relation>
-	
+
 	<relation name="Address2AddressType">
 		<description>Defines a address ownership relation.</description>
 		<source itemType="Address" cardinality="many" />
@@ -342,7 +391,7 @@
 
 	<relation name="Country2Language">
 		<description>The languages available for that country.</description>
-		<source itemType="Country" mappedBy="country" cardinality="many" />
+		<source itemType="Country" mappedBy="countries" cardinality="many" />
 		<target itemType="Language" mappedBy="languages" cardinality="many" />
 	</relation>
 

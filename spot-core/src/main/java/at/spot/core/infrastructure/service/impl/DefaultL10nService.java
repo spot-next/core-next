@@ -13,11 +13,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
-import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.infrastructure.service.I18nService;
 import at.spot.core.infrastructure.service.L10nService;
 import at.spot.core.infrastructure.service.ModelService;
-import at.spot.itemtype.core.internationalization.LocalizationKey;
+import at.spot.itemtype.core.internationalization.LocalizationValue;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings(value = { "NP_NONNULL_RETURN_VIOLATION", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" })
@@ -62,7 +61,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	public String getMessageFromStorage(final String key, final String defaultMessage, final Locale locale,
 			final Object... messageParams) throws NoSuchMessageException {
 
-		LocalizationKey locResult = new LocalizationKey();
+		LocalizationValue locResult = new LocalizationValue();
 		locResult.setId(key);
 		locResult.setLocale(locale);
 

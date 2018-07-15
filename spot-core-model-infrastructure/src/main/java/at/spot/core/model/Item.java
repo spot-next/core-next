@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -37,6 +38,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	// JPA
 	@Id
+	@Column(name = "pk")
 	final protected Long pk = IdGenerator.createLongId();
 
 	@Transient

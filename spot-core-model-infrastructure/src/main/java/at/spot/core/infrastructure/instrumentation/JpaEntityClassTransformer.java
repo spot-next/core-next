@@ -6,9 +6,14 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,6 +28,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,12 +50,14 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
+import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
+import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 /**
@@ -74,6 +83,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_TYPE = "type";
 	protected static final String MV_TYPE_CODE = "typeCode";
 	protected static final String MV_UNIQUE = "unique";
+	protected static final String MV_NULLABLE = "nullable";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
@@ -108,8 +118,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
 								propertyAnn.get());
 
-						// only add column annotation if there is not relation
-						// annotation
+						// only add column annotation if there is no relation
+						// annotation, as this is not allowed
 						if (CollectionUtils.isEmpty(fieldAnnotations)) {
 							// add column annotation used hold infos about
 							// unique constraints
@@ -123,6 +133,62 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 						// and add them to the clazz
 						addAnnotations(clazz, field, fieldAnnotations);
+					}
+				}
+
+				// create unique constraints
+				{
+					final Set<String> fieldNamesForUniqueConstraint = new HashSet<>();
+
+					CtClass currentClass = clazz;
+
+					while (currentClass != null) {
+						Map<CtField, Annotation> properties = Stream.of(currentClass.getFields()).filter(f -> {
+							try {
+								return f.getAnnotation(Property.class) != null;
+							} catch (ClassNotFoundException e) {
+								LOG.warn(e.getMessage());
+							}
+
+							return false;
+						}).collect(Collectors.toMap(Function.identity(), f -> getAnnotation(f, Property.class).get()));
+
+						for (Map.Entry<CtField, Annotation> propertyField : properties.entrySet()) {
+							BooleanMemberValue unique = (BooleanMemberValue) propertyField.getValue()
+									.getMemberValue(MV_UNIQUE);
+							if (unique != null && unique.getValue()) {
+								fieldNamesForUniqueConstraint.add(propertyField.getKey().getName());
+							}
+						}
+
+						currentClass = currentClass.getSuperclass();
+					}
+
+					if (fieldNamesForUniqueConstraint.size() > 0) {
+						ConstPool pool = clazz.getClassFile2().getConstPool();
+
+						// @Table
+						final Annotation tableAnnotation = createAnnotation(pool, Table.class);
+						// @Table(uniqueConstraints = { ... })
+						final ArrayMemberValue constraintsArrayVal = new ArrayMemberValue(pool);
+						tableAnnotation.addMemberValue("uniqueConstraints", constraintsArrayVal);
+
+						final AnnotationMemberValue actualUniqueConstraintVal = new AnnotationMemberValue(pool);
+						Annotation uniqueConstraintsAnnotation = createAnnotation(pool, UniqueConstraint.class);
+						actualUniqueConstraintVal.setValue(uniqueConstraintsAnnotation);
+						constraintsArrayVal.setValue(new MemberValue[] { actualUniqueConstraintVal });
+
+						ArrayMemberValue columns = new ArrayMemberValue(pool);
+						uniqueConstraintsAnnotation.addMemberValue("columnNames", columns);
+
+						// add column names
+						columns.setValue(fieldNamesForUniqueConstraint.stream().map(c -> {
+							StringMemberValue colVal = new StringMemberValue(pool);
+							colVal.setValue(c);
+							return colVal;
+						}).collect(Collectors.toList()).toArray(new MemberValue[] {}));
+
+						addAnnotations(clazz, Arrays.asList(tableAnnotation));
 					}
 				}
 
@@ -151,7 +217,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.empty();
 	}
 
-	protected boolean alreadyTransformed(CtClass clazz) throws IllegalClassTransformationException {
+	protected boolean alreadyTransformed(final CtClass clazz) throws IllegalClassTransformationException {
 		final Optional<Annotation> entityAnnotation = getAnnotation(clazz, Entity.class);
 
 		return entityAnnotation.isPresent();
@@ -206,14 +272,18 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
+		Annotation ann = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
 
-		Annotation ann = null;
+		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		columnName.setValue(field.getName());
+		ann.addMemberValue("name", columnName);
 
-		if (val != null) {
-			ann = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
-			ann.addMemberValue(MV_UNIQUE, val);
-		}
+		// final BooleanMemberValue unique = (BooleanMemberValue)
+		// propertyAnnotation.getMemberValue(MV_UNIQUE);
+		//
+		// if (unique != null) {
+		// ann.addMemberValue(MV_UNIQUE, unique);
+		// }
 
 		return Optional.ofNullable(ann);
 	}
@@ -257,6 +327,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
+				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -271,6 +342,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 													// field type is a subtype
 													// of Item
 			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
+			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 			// necessary for serialization
 			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -306,7 +378,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Necessary to prohibit infinite loops when serializating using Jackson
 	 */
 	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
-			String serializerClassName) throws IllegalClassTransformationException {
+			final String serializerClassName) throws IllegalClassTransformationException {
 
 		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
 
@@ -333,6 +405,45 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final Annotation ann = createAnnotation(clazz, annotationType);
 		addCascadeAnnotation(ann, field);
+
+		return ann;
+	}
+
+	/**
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
+	 * unique=true modifier.
+	 */
+	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
+			throws IllegalClassTransformationException {
+
+		final Annotation ann = createAnnotation(clazz, JoinColumn.class);
+
+		final Optional<Annotation> propAnnotation = getAnnotation(field, Property.class);
+
+		if (propAnnotation.isPresent()) {
+			final BooleanMemberValue uniqueVal = (BooleanMemberValue) propAnnotation.get().getMemberValue("unique");
+
+			if (uniqueVal != null && uniqueVal.getValue()) {
+				// unique value
+				// final BooleanMemberValue unique = new
+				// BooleanMemberValue(field.getFieldInfo2().getConstPool());
+				// unique.setValue(true);
+				//
+				// ann.addMemberValue(MV_UNIQUE, unique);
+
+				// nullable value
+				final BooleanMemberValue nullable = new BooleanMemberValue(field.getFieldInfo2().getConstPool());
+				nullable.setValue(false);
+
+				ann.addMemberValue(MV_NULLABLE, nullable);
+			}
+		}
+
+		// column name
+		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		columnName.setValue(field.getName());
+
+		ann.addMemberValue(MV_NAME, columnName);
 
 		return ann;
 	}

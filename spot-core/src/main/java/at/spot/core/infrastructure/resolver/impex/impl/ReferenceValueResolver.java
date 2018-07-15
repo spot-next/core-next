@@ -34,7 +34,7 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 		String[] inputParams = value.split(":");
 
 		String desc = columnDefinition.getValueResolutionDescriptor().replace(" ", "");
-		List<Node> nodes = parse(desc, 0, value.length());
+		List<Node> nodes = parse(desc, 0, desc.length());
 
 		String query = "SELECT i FROM " + targetType.getSimpleName() + " i";
 

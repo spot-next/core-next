@@ -54,6 +54,7 @@ import at.spot.core.infrastructure.maven.xml.RelationType;
 import at.spot.core.infrastructure.maven.xml.RelationshipCardinality;
 import at.spot.core.infrastructure.maven.xml.Validator;
 import at.spot.core.infrastructure.maven.xml.ValidatorArgument;
+import at.spot.core.infrastructure.maven.xml.Validators;
 import at.spot.core.infrastructure.type.AccessorType;
 import at.spot.core.infrastructure.type.RelationCollectionType;
 import at.spot.core.infrastructure.type.RelationNodeType;
@@ -276,7 +277,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 				field.setDescription(prop.getDescription());
 
 				populatePropertyAnnotation(prop, field);
-				populatePropertyValidators(prop, field);
+				populatePropertyValidators(prop.getValidators(), field);
 
 				javaClass.addField(field);
 
@@ -554,6 +555,9 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		final JavaAnnotation propAnn = new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class);
 		field.addAnnotation(propAnn);
 
+		boolean addGetter = at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE;
+		boolean addSetter = at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE;
+
 		if (propertyDefinition.getModifiers() != null) {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
@@ -567,23 +571,23 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						AnnotationValueType.LITERAL);
 			}
 
-			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE != propertyDefinition.getModifiers()
-					.isReadable()) {
-				propAnn.addParameter("readable", propertyDefinition.getModifiers().isReadable(),
-						AnnotationValueType.LITERAL);
-			}
+			addGetter = propertyDefinition.getModifiers().isReadable();
+			addSetter = propertyDefinition.getModifiers().isWritable();
+		}
 
-			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE != propertyDefinition.getModifiers()
-					.isWritable()) {
-				propAnn.addParameter("writable", propertyDefinition.getModifiers().isWritable(),
-						AnnotationValueType.LITERAL);
-			}
+		if (addGetter) {
+			propAnn.addParameter("readable", addGetter, AnnotationValueType.LITERAL);
+		}
 
-			if (propertyDefinition.getAccessors() != null
-					&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
-				propAnn.addParameter("itemValueProvider", propertyDefinition.getAccessors().getValueProvider(),
-						AnnotationValueType.STRING);
-			}
+		if (addSetter) {
+			propAnn.addParameter("writable", addSetter, AnnotationValueType.LITERAL);
+		}
+
+		if (propertyDefinition.getAccessors() != null
+				&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
+
+			propAnn.addParameter("itemValueProvider", propertyDefinition.getAccessors().getValueProvider(),
+					AnnotationValueType.STRING);
 		}
 	}
 
@@ -656,14 +660,39 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			property.setType(propType);
 
 			property.addAnnotation(relationAnn);
-			property.addAnnotation(new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class));
 			javaClass.addField(property);
 
-			// addGetter(property, javaClass, String.format("return
-			// Collections.this.%s;",
-			// field.getName()));
-			addGetter(property, javaClass);
-			addSetter(property, javaClass);
+			// add modifiers
+			final JavaAnnotation propAnn = new JavaAnnotation(at.spot.core.infrastructure.annotation.Property.class);
+			property.addAnnotation(propAnn);
+
+			populatePropertyValidators(to.getValidators(), property);
+
+			boolean addGetter = at.spot.core.infrastructure.annotation.Property.DEFAULT_READABLE;
+			boolean addSetter = at.spot.core.infrastructure.annotation.Property.DEFAULT_WRITABLE;
+
+			if (to.getModifiers() != null) {
+				if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers().isUnique()) {
+					propAnn.addParameter("unique", to.getModifiers().isUnique(), AnnotationValueType.LITERAL);
+				}
+
+				if (addGetter != to.getModifiers().isInitial()) {
+					propAnn.addParameter("initial", to.getModifiers().isInitial(), AnnotationValueType.LITERAL);
+				}
+
+				addGetter = to.getModifiers().isReadable();
+				addSetter = to.getModifiers().isWritable();
+			}
+
+			if (addGetter) {
+				propAnn.addParameter("readable", addGetter, AnnotationValueType.LITERAL);
+				addGetter(property, javaClass);
+			}
+
+			if (addSetter) {
+				propAnn.addParameter("writable", addSetter, AnnotationValueType.LITERAL);
+				addSetter(property, javaClass);
+			}
 
 			// add constant for each property
 			final JavaField constant = new JavaField();
@@ -676,6 +705,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 			javaClass.addField(constant);
 		}
+
 	}
 
 	protected at.spot.core.infrastructure.type.RelationType getRelationType(final RelationNode thisNode,
@@ -733,10 +763,10 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 * @param cls
 	 * @param vm
 	 */
-	protected void populatePropertyValidators(final Property property, final JavaField field) {
+	protected void populatePropertyValidators(final Validators validators, final JavaField field) {
 
-		if (property.getValidators() != null) {
-			for (final Validator v : property.getValidators().getValidator()) {
+		if (validators != null) {
+			for (final Validator v : validators.getValidator()) {
 				final JavaAnnotation ann = new JavaAnnotation(new JavaMemberType(v.getJavaClass()));
 
 				if (CollectionUtils.isNotEmpty(v.getArgument())) {
@@ -748,7 +778,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 						} else {
 							getLog().warn(String.format(
 									"Validator for property %s misconfigured, all attribute values are empty",
-									property.getName()));
+									field.getName()));
 						}
 					}
 				}

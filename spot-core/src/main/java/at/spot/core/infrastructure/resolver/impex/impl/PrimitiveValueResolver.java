@@ -2,6 +2,7 @@ package at.spot.core.infrastructure.resolver.impex.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -25,7 +26,13 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 			if (type.isAssignableFrom(value.getClass())) {
 				return (T) value;
 			} else {
-				return mapper.readValue(value, type);
+
+				// shortcut for locales
+				if (Locale.class.isAssignableFrom(type)) {
+					return (T) Locale.forLanguageTag(value);
+				} else {
+					return mapper.readValue(value, type);
+				}
 			}
 		} catch (IOException e) {
 			throw new ValueResolverException(e);
