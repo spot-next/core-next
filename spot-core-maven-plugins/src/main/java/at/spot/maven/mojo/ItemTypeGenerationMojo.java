@@ -34,7 +34,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.hibernate.mapping.Collection;
 
 import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.Relation;
@@ -451,13 +450,16 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		JavaMemberType ret = null;
 
-		if (CollectionsType.COLLECTION.equals(collectionType)) {
-			ret = new JavaMemberType(Collection.class);
-		} else if (CollectionsType.SET.equals(collectionType)) {
-			ret = new JavaMemberType(Set.class);
-		} else {
-			ret = new JavaMemberType(List.class);
-		}
+		// TODO: temporarily disabled, this would not work with hibernate FETCH JOINS!
+		// if (CollectionsType.COLLECTION.equals(collectionType)) {
+		// ret = new JavaMemberType(Collection.class);
+		// } else if (CollectionsType.SET.equals(collectionType)) {
+		// ret = new JavaMemberType(Set.class);
+		// } else {
+		// ret = new JavaMemberType(List.class);
+		// }
+
+		ret = new JavaMemberType(Set.class);
 
 		// add generic collection type
 		final JavaMemberType genType = createMemberType(elementType);

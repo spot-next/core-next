@@ -346,7 +346,7 @@
 			<modifiers unique="true" />
 		</source>
 		<target itemType="CatalogVersion" mappedBy="versions"
-			cardinality="many" collectionType="Set">
+			cardinality="many" collectionType="List">
 			<description>The catalog version of this catalog.</description>
 		</target>
 	</relation>

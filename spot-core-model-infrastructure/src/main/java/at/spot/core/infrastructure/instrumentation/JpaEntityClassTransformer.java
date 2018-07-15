@@ -27,7 +27,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -307,7 +306,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
-				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
+				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
 
 				// JoinTable annotation for bi-directional m-to-n relation table
 				jpaAnnotations
@@ -323,7 +322,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
-				jpaAnnotations.add(createOrderedListAnnotation(entityClass, field));
+				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
@@ -362,16 +361,25 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Annotates relation collections with an {@link OrderBy} annotation to make
 	 * FETCH JOINS work correctly.
 	 */
-	protected Annotation createOrderedListAnnotation(final CtClass entityClass, final CtField field)
+	protected List<Annotation> createOrderedListAnnotation(final CtClass entityClass, final CtField field)
 			throws IllegalClassTransformationException {
 
-		final Annotation jsonSerializeAnn = createAnnotation(entityClass, OrderColumn.class);
+		List<Annotation> annotations = new ArrayList<>();
 
-		final StringMemberValue val = new StringMemberValue(field.getFieldInfo2().getConstPool());
-		val.setValue("pk");
-		jsonSerializeAnn.addMemberValue("name", val);
+		// final Annotation orderColumnAnn = createAnnotation(entityClass,
+		// OrderColumn.class);
+		// annotations.add(orderColumnAnn);
 
-		return jsonSerializeAnn;
+		// final StringMemberValue val = new
+		// StringMemberValue(field.getFieldInfo2().getConstPool());
+		// val.setValue("pk ASC");
+		// orderColumnAnn.addMemberValue("value", val);
+
+		// final Annotation listIndexAnn = createAnnotation(entityClass,
+		// ListIndexBase.class);
+		// annotations.add(listIndexAnn);
+
+		return annotations;
 	}
 
 	/**

@@ -13,6 +13,7 @@ import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserGroup;
 
 public class QueryLanguageIT extends AbstractIntegrationTest {
 
@@ -29,7 +30,13 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		user.setPassword("test1234");
 		user.setShortName("tester");
 
-		modelService.save(user);
+		UserGroup group = modelService.create(UserGroup.class);
+		group.setId("testGroup");
+		group.setShortName("test-group");
+
+		group.getMembers().add(user);
+
+		modelService.save(group);
 	}
 
 	@Override
@@ -39,9 +46,9 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testFetchSubGraph() throws Exception {
-		final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u", User.class);
+		final JpqlQuery<UserGroup> query = new JpqlQuery<>("SELECT u FROM UserGroup u", UserGroup.class);
 		query.setEagerFetchRelations(true);
-		final QueryResult<User> result = queryService.query(query);
+		final QueryResult<UserGroup> result = queryService.query(query);
 
 		Assert.assertTrue(result.getResultList().size() > 0);
 	}
