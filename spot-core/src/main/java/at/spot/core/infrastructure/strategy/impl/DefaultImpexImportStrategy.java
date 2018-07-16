@@ -3,10 +3,8 @@ package at.spot.core.infrastructure.strategy.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,9 +78,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		try {
 			final URL resource = getClass().getResource(file.getPath());
-			fileContent = Files.readAllLines(Paths.get(resource.toURI()));
-		} catch (IOException | URISyntaxException e) {
-			throw new ImpexImportException("Could not read impex file", e);
+			fileContent = Files.readAllLines(file.toPath());
+		} catch (IOException e) {
+			throw new ImpexImportException(String.format("Could not read impex file %s", file.getPath()), e);
 		}
 
 		if (CollectionUtils.isNotEmpty(fileContent)) {

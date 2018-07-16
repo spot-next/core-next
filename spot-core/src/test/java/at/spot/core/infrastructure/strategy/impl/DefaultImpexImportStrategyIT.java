@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.strategy.impl;
 
-import java.nio.file.Paths;
+import java.io.File;
 
 import javax.annotation.Resource;
 
@@ -15,6 +15,7 @@ import at.spot.core.infrastructure.strategy.ImpexImportStrategy;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.beans.ImportConfiguration;
+import at.spot.itemtype.core.media.Media;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
 
@@ -39,9 +40,20 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	}
 
 	@Test
+	public void testNestedReference() throws ImpexImportException {
+		impexImportStrategy.importImpex(new ImportConfiguration(),
+				new File(getClass().getResource("/data/test/nested_reference.impex").getFile()));
+
+		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
+		QueryResult<Media> result = queryService.query(query);
+
+		Assert.assertTrue(result.count() == 1);
+	}
+
+	@Test
 	public void testMultipleItemsNoRelationImportImpex() throws ImpexImportException {
 		impexImportStrategy.importImpex(new ImportConfiguration(),
-				Paths.get("/data/test/multiple_items_no_relations.impex").toFile());
+				new File(getClass().getResource("/data/test/multiple_items_no_relations.impex").getFile()));
 
 		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		QueryResult<User> userResult = queryService.query(userQuery);
@@ -60,7 +72,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	@Test
 	public void testMultipleItemsWithRelationImportImpex() throws ImpexImportException {
 		impexImportStrategy.importImpex(new ImportConfiguration(),
-				Paths.get("/data/test/multiple_items_with_relations.impex").toFile());
+				new File(getClass().getResource("/data/test/multiple_items_with_relations.impex").getFile()));
 
 		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		QueryResult<User> userResult = queryService.query(userQuery);

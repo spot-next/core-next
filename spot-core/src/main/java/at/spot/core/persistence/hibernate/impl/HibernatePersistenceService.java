@@ -309,6 +309,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 				}
 
+				// session.flush();
+
 				// try {
 				// refresh(items);
 				// } catch (final ModelNotFoundException e) {
