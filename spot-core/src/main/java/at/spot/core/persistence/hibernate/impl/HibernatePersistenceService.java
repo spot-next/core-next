@@ -356,7 +356,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				for (final T item : items) {
 					try {
 						attach(item);
-
 						getSession().refresh(item);
 					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
@@ -380,26 +379,32 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
+	 * @return true if the item was successfully attached to the hibernate session.
 	 * @throws ModelNotFoundException
 	 */
-	protected <T extends Item> void attach(final T item) throws ModelNotFoundException {
+	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			// ignore unpersisted or already attached items
-			if (item.getPk() == null || getSession().contains(item)) {
-				return;
+			if (getSession().contains(item)) {
+				return true;
 			}
 
 			final T attached = (T) getSession().load(item.getClass(), item.getPk());
 			if (attached != null) {
 				getSession().evict(attached);
 				getSession().lock(item, LockMode.NONE);
+
+				return true;
 			}
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
-			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+			throw new ModelNotFoundException(
+					String.format("Could not attach item with pk=%s to the current session.", item.getPk()), e);
 		}
+
+		return false;
 	}
 
 	@Override

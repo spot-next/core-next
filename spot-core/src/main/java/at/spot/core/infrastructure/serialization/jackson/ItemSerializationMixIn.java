@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class ItemIgnorePropertiesMixIn {
+public abstract class ItemSerializationMixIn {
 	@JsonIgnore
 	public abstract Map<String, Object> getUniqueProperties();
 

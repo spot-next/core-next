@@ -32,6 +32,10 @@ import at.spot.core.support.util.ClassUtil;
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
+	public static final String TYPECODE = "item";
+	public static final String PROPERTY_PK = "pk";
+	public static final String PROPERTY_LAST_MODIFIED_AT = "lastModifiedAt";
+	public static final String PROPERTY_CREATED_AT = "createdAt";
 
 	// @Resource
 	// protected AuditingHandler auditingHandler;
@@ -56,6 +60,13 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@Version
 	protected long version = -1;
+
+	/**
+	 * A value of -1 indicates that this is an unpersisted item.
+	 */
+	public long getVersion() {
+		return version;
+	}
 
 	public Long getPk() {
 		return pk;

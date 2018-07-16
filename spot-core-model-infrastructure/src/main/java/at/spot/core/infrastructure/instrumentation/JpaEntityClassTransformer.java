@@ -383,7 +383,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Necessary to prohibit infinite loops when serializating using Jackson
+	 * Necessary to prohibit infinite loops when serializing using Jackson
 	 */
 	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
 			final String serializerClassName) throws IllegalClassTransformationException {
