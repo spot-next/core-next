@@ -138,6 +138,12 @@ public class CoreInit extends ModuleInit {
 	@Override
 	@Log(message = "Importing sample data ...")
 	protected void importSampleData() throws ModuleInitializationException {
-		//
+		try {
+			loggingService.debug("Importing countries");
+			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
+					Paths.get("/data/sample/users.impex").toFile());
+		} catch (ImportException e) {
+			loggingService.warn("Could not import initial data: " + e.getMessage());
+		}
 	}
 }

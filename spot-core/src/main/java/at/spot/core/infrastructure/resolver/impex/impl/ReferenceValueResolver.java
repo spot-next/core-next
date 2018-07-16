@@ -1,5 +1,6 @@
 package at.spot.core.infrastructure.resolver.impex.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,9 @@ import at.spot.core.infrastructure.exception.ValueResolverException;
 import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
+import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.support.util.ClassUtil;
 
 @Service
 public class ReferenceValueResolver implements ImpexValueResolver {
@@ -31,9 +34,17 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 	public <T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments,
 			ColumnDefinition columnDefinition) throws ValueResolverException {
 
-		String[] inputParams = value.split(":");
+		return resolve(value, targetType, genericArguments, columnDefinition.getValueResolutionDescriptor(), 0);
+	}
 
-		String desc = columnDefinition.getValueResolutionDescriptor().replace(" ", "");
+	protected <T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments, String desc,
+			int resolutionLevel) throws ValueResolverException {
+
+		// remove spaces in the string, makes it easier to parse
+		desc = desc.replace(" ", "");
+
+		final String[] inputParams = value.split(":");
+
 		List<Node> nodes = parse(desc, 0, desc.length());
 
 		String query = "SELECT i FROM " + targetType.getSimpleName() + " i";
@@ -46,8 +57,14 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 			// this is another complex resolver
 			if (node.getNodes().size() > 0) {
 
+				final Field propertyField = ClassUtil.getFieldDefinition(targetType, node.getPropertyName(), true);
+				Class<?> fieldType = propertyField.getType();
+				// String join = String.format(" JOIN %s ON i.%s = :%s",
+				// fieldType.getSimpleName(), );
+
+				// joinClauses.add(join);
 			} else {
-				whereClauses.add(node.getName() + " = ?" + paramIndex);
+				whereClauses.add(node.getPropertyName() + " = ?" + paramIndex);
 				paramIndex++;
 			}
 		}
@@ -135,12 +152,13 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 	public static class Node {
 		private String name;
 		private final List<Node> nodes = new ArrayList<>();
+		private Class<Item> itemType;
 
 		public Node(String name) {
 			this.name = name;
 		}
 
-		public String getName() {
+		public String getPropertyName() {
 			return name;
 		}
 
@@ -150,6 +168,14 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 
 		public List<Node> getNodes() {
 			return nodes;
+		}
+
+		public Class<Item> getItemType() {
+			return itemType;
+		}
+
+		public void setItemType(Class<Item> itemType) {
+			this.itemType = itemType;
 		}
 
 		@Override

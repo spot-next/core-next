@@ -1,6 +1,5 @@
-INSERT UserGroup ; id[unique=true] ;
-                 ; admin-group    ;
+INSERT UserGroup ; id[unique=true]    ;
+                 ; admin-group        ;
 
 INSERT User ; id[unique=true] ; password                             ; groups(id)
             ; admin           ; MD5:ee10c315eba2c75b403ea99136f5b48d ; admin-group
-                   
