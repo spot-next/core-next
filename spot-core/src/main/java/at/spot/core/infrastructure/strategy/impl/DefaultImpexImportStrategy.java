@@ -1,12 +1,9 @@
 package at.spot.core.infrastructure.strategy.impl;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +19,7 @@ import java.util.stream.Stream;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +40,7 @@ import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
 import at.spot.core.model.Item;
+import at.spot.core.support.util.ValidationUtil;
 import at.spot.itemtype.core.beans.ImportConfiguration;
 
 @Service
@@ -75,18 +74,23 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	private Map<String, ImpexValueResolver> impexValueResolvers;
 
 	@Override
-	public void importImpex(final ImportConfiguration config, final File file) throws ImpexImportException {
+	public void importImpex(final ImportConfiguration config, final InputStream inputStream)
+			throws ImpexImportException {
+
+		ValidationUtil.validateNotNull("Import config cannot be null", config);
+		ValidationUtil.validateNotNull("Script input stream cannot be null", inputStream);
+
 		List<String> fileContent = null;
 
 		try {
-			final URL resource = getClass().getResource(file.getPath());
-			fileContent = Files.readAllLines(Paths.get(resource.toURI()));
-		} catch (IOException | URISyntaxException e) {
-			throw new ImpexImportException(String.format("Could not read impex file %s", file.getPath()), e);
+			fileContent = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new ImpexImportException(String.format("Could not read impex file %s", config.getScriptIdentifier()),
+					e);
 		}
 
 		if (CollectionUtils.isNotEmpty(fileContent)) {
-			loggingService.debug(String.format("Transforming %s to work units", file.getPath()));
+			loggingService.debug(String.format("Transforming %s to work units", config.getScriptIdentifier()));
 			final List<WorkUnit> workUnits = transformImpex(fileContent);
 
 			loggingService.debug(String.format("Processing %s work units", workUnits.size()));
@@ -96,7 +100,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			importWorkUnits(workUnits);
 
 		} else {
-			loggingService.warn(String.format("Ignoring empty file %s", file.toString()));
+			loggingService.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
 		}
 	}
 

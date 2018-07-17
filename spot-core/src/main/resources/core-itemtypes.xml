@@ -37,6 +37,14 @@
 
 	<bean name="ImportConfiguration" package="at.spot.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
+		<properties>
+			<property name="scriptIdentifier" type="String">
+				<description>Holds the filename or abstract identifier of the import data</description>
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+		</properties>
 	</bean>
 
 	<!-- users and groups -->

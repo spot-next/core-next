@@ -31,9 +31,11 @@ public class JavaMemberType extends AbstractObject {
 		if (name.contains(".")) {
 			this.name = MiscUtil.getClassName(name);
 			this.packagePath = MiscUtil.getClassPackage(name);
+			getImports().add(name);
 		} else {
 			this.name = name;
 		}
+
 	}
 
 	public JavaMemberType(final String name, final String packagePath) {

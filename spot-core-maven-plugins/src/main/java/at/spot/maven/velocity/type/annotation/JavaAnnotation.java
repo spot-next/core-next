@@ -77,6 +77,8 @@ public class JavaAnnotation extends AbstractObject {
 	public Set<String> getImports() {
 		final Set<String> allImports = super.getImports();
 
+		allImports.addAll(type.getImports());
+
 		for (Object val : parameters.values()) {
 			if (val instanceof Class) {
 				allImports.add(((Class<?>) val).getName());

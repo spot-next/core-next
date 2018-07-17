@@ -45,7 +45,7 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 
 		final String[] inputParams = value.split(":");
 
-		List<Node> nodes = parse(desc, 0, desc.length());
+		List<Node> nodes = parse(desc, 0, desc.length(), (Class<Item>) targetType);
 
 		String query = "SELECT i FROM " + targetType.getSimpleName() + " i";
 
@@ -94,7 +94,7 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 		return result.getResultList().get(0);
 	}
 
-	public List<Node> parse(String desc, int start, int end) {
+	public List<Node> parse(String desc, int start, int end, Class<?> itemType) {
 		// I know .. it's not pretty ...
 		List<Node> nodes = new ArrayList<>();
 
@@ -110,7 +110,7 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 			if (c == ',') {
 				lastDelimiter = x;
 				if (StringUtils.isNotBlank(tempToken)) {
-					tempNode = new Node(tempToken);
+					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
 					System.out.println("Consumed: " + tempToken);
 					tempToken = "";
@@ -120,14 +120,15 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 			} else if (c == '(') {
 				// this is a tree node
 				if (StringUtils.isNotBlank(tempToken)) {
-					tempNode = new Node(tempToken);
+					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
 					System.out.println("Consumed: " + tempToken);
 					tempToken = "";
 
 					String subDesc = StringUtils.substring(desc, x + 1, desc.length());
+					Field propertyField = ClassUtil.getFieldDefinition(itemType, tempNode.getPropertyName(), true);
+					List<Node> children = parse(subDesc, 0, subDesc.length(), propertyField.getType());
 
-					List<Node> children = parse(subDesc, 0, subDesc.length());
 					tempNode.nodes.addAll(children);
 
 					// moves the cursor forward -> the node's toString() has to be the exact content
@@ -137,7 +138,7 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 			} else if (c == ')') {
 				if (StringUtils.isNotBlank(tempToken)) {
 					System.out.println("Consumed: " + tempToken);
-					tempNode = new Node(tempToken);
+					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
 				}
 				break;
@@ -152,10 +153,11 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 	public static class Node {
 		private String name;
 		private final List<Node> nodes = new ArrayList<>();
-		private Class<Item> itemType;
+		private final Class<?> itemType;
 
-		public Node(String name) {
+		public Node(String name, Class<?> itemType) {
 			this.name = name;
+			this.itemType = itemType;
 		}
 
 		public String getPropertyName() {
@@ -170,12 +172,8 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 			return nodes;
 		}
 
-		public Class<Item> getItemType() {
+		public Class<?> getItemType() {
 			return itemType;
-		}
-
-		public void setItemType(Class<Item> itemType) {
-			this.itemType = itemType;
 		}
 
 		@Override

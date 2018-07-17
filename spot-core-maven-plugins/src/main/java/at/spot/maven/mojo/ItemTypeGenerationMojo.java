@@ -219,6 +219,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 					field.setName(prop.getName());
 					field.setType(propType);
 					bean.addField(field);
+					populatePropertyValidators(prop.getValidators(), field);
 
 					addGetter(field, bean);
 					addSetter(field, bean);
@@ -759,14 +760,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 	/**
 	 * Adds JSR-303 validators to the property.
-	 *
-	 * @param field
-	 * @param property
-	 * @param cls
-	 * @param vm
 	 */
 	protected void populatePropertyValidators(final Validators validators, final JavaField field) {
-
 		if (validators != null) {
 			for (final Validator v : validators.getValidator()) {
 				final JavaAnnotation ann = new JavaAnnotation(new JavaMemberType(v.getJavaClass()));

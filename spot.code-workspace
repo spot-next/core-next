@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../plan"
+		},
+		{
+			"path": "../jfly"
+		},
+		{
+			"path": "../spot-instrumentation"
+		},
+		{
+			"path": "."
+		}
+		
+	]
+}

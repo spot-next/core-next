@@ -41,8 +41,9 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testNestedReference() throws ImpexImportException {
-		impexImportStrategy.importImpex(new ImportConfiguration(),
-				new File(getClass().getResource("/data/test/nested_reference.impex").getFile()));
+		final ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/nested_reference.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
 		QueryResult<Media> result = queryService.query(query);
@@ -52,8 +53,9 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testMultipleItemsNoRelationImportImpex() throws ImpexImportException {
-		impexImportStrategy.importImpex(new ImportConfiguration(),
-				new File(getClass().getResource("/data/test/multiple_items_no_relations.impex").getFile()));
+		final ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/multiple_items_no_relations.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		QueryResult<User> userResult = queryService.query(userQuery);
@@ -71,8 +73,9 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testMultipleItemsWithRelationImportImpex() throws ImpexImportException {
-		impexImportStrategy.importImpex(new ImportConfiguration(),
-				new File(getClass().getResource("/data/test/multiple_items_with_relations.impex").getFile()));
+		final ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/multiple_items_with_relations.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		QueryResult<User> userResult = queryService.query(userQuery);
