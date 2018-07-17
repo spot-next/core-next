@@ -82,7 +82,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@PostConstruct
 	public void initialize() {
-		if (configurationService.getBoolean("initializetypesystem", false)) {
+		if (configurationService.getBoolean("initializeTypeSystem", false)) {
 			loggingService.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
@@ -102,7 +102,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					metadataIntegrator.getMetadata());
 		}
 
-		if (configurationService.getBoolean("updatetypesystem", false)) {
+		if (configurationService.getBoolean("updateTypeSystem", false)) {
 			loggingService.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();

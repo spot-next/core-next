@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,16 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	@Override
 	public void debug(final String message) {
 		log(LogLevel.DEBUG, message, null, null, getCallingClass());
+	}
+
+	@Override
+	public void debug(Supplier<String> message) {
+		final Class<?> callingClass = getCallingClass();
+		final Logger logger = getLoggerForClass(getCallingClass());
+
+		if (logger.isDebugEnabled()) {
+			log(LogLevel.DEBUG, message.get(), null, null, callingClass);
+		}
 	}
 
 	@Override

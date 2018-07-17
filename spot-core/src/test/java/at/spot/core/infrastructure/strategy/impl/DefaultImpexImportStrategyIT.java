@@ -1,7 +1,5 @@
 package at.spot.core.infrastructure.strategy.impl;
 
-import java.io.File;
-
 import javax.annotation.Resource;
 
 import org.junit.Assert;

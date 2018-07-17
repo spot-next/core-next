@@ -1,6 +1,8 @@
 package at.spot.core.infrastructure.resolver.impex.impl;
 
 import java.lang.reflect.Field;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,13 +18,14 @@ import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.infrastructure.exception.ValueResolverException;
 import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ClassUtil;
 
 @Service
-public class ReferenceValueResolver implements ImpexValueResolver {
+public class ReferenceValueResolver extends AbstractService implements ImpexValueResolver {
 
 	@Resource
 	private TypeService typeService;
@@ -45,41 +48,17 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 
 		final String[] inputParams = value.split(":");
 
-		List<Node> nodes = parse(desc, 0, desc.length(), (Class<Item>) targetType);
+		List<Node> nodes = parse(new StringCharacterIterator(desc), (Class<Item>) targetType);
+		final QueryDefinition queryDef = new QueryDefinition((Class<Item>) targetType);
+		fillQuery(queryDef, (Class<Item>) targetType, nodes.toArray(new Node[0]));
 
-		String query = "SELECT i FROM " + targetType.getSimpleName() + " i";
-
-		int paramIndex = 0;
-		List<String> joinClauses = new ArrayList<>();
-		List<String> whereClauses = new ArrayList<>();
-
-		for (Node node : nodes) {
-			// this is another complex resolver
-			if (node.getNodes().size() > 0) {
-
-				final Field propertyField = ClassUtil.getFieldDefinition(targetType, node.getPropertyName(), true);
-				Class<?> fieldType = propertyField.getType();
-				// String join = String.format(" JOIN %s ON i.%s = :%s",
-				// fieldType.getSimpleName(), );
-
-				// joinClauses.add(join);
-			} else {
-				whereClauses.add(node.getPropertyName() + " = ?" + paramIndex);
-				paramIndex++;
-			}
-		}
-
-		if (inputParams.length != paramIndex) {
+		if (inputParams.length != queryDef.getParamCount()) {
 			throw new ValueResolverException("Input values doesn't match expected header column definition.");
 		}
 
-		if (whereClauses.size() > 0) {
-			query += " WHERE " + whereClauses.stream().collect(Collectors.joining(" AND "));
-		}
+		JpqlQuery<T> qry = new JpqlQuery<>(queryDef.toString(), targetType);
 
-		JpqlQuery<T> qry = new JpqlQuery<>(query, targetType);
-
-		for (int x = 0; x < paramIndex; x++) {
+		for (int x = 0; x < queryDef.getParamCount(); x++) {
 			qry.addParam("" + x, inputParams[x]);
 		}
 
@@ -94,25 +73,41 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 		return result.getResultList().get(0);
 	}
 
-	public List<Node> parse(String desc, int start, int end, Class<?> itemType) {
+	private void fillQuery(QueryDefinition queryDef, Class<Item> type, Node... nodes) {
+		for (Node node : nodes) {
+			if (node.getNodes().size() > 0) {
+
+				final Field propertyField = ClassUtil.getFieldDefinition(type, node.getPropertyName(), true);
+				final Class<?> fieldType = propertyField.getType();
+
+				String fieldTypeName = fieldType.getSimpleName();
+
+				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeName + " ON "
+						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".pk ");
+
+				fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
+
+			} else {
+				queryDef.getWhereClauses().add(
+						type.getSimpleName() + "." + node.getPropertyName() + " = ?" + queryDef.getNextParamIndex());
+			}
+		}
+	}
+
+	private List<Node> parse(StringCharacterIterator descIterator, Class<?> itemType) {
 		// I know .. it's not pretty ...
-		List<Node> nodes = new ArrayList<>();
+		final List<Node> nodes = new ArrayList<>();
 
 		Node tempNode = null;
 		String tempToken = "";
 
-		int lastDelimiter = 0;
-
-		for (int x = start; x < end; x++) {
-			char c = desc.charAt(x);
-
+		char c;
+		while ((c = descIterator.next()) != CharacterIterator.DONE) {
 			// we found a simple leave node
 			if (c == ',') {
-				lastDelimiter = x;
 				if (StringUtils.isNotBlank(tempToken)) {
 					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
-					System.out.println("Consumed: " + tempToken);
 					tempToken = "";
 				} else {
 					continue;
@@ -122,22 +117,15 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 				if (StringUtils.isNotBlank(tempToken)) {
 					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
-					System.out.println("Consumed: " + tempToken);
 					tempToken = "";
 
-					String subDesc = StringUtils.substring(desc, x + 1, desc.length());
 					Field propertyField = ClassUtil.getFieldDefinition(itemType, tempNode.getPropertyName(), true);
-					List<Node> children = parse(subDesc, 0, subDesc.length(), propertyField.getType());
+					List<Node> children = parse(descIterator, propertyField.getType());
 
 					tempNode.nodes.addAll(children);
-
-					// moves the cursor forward -> the node's toString() has to be the exact content
-					// of it's consumed text parts
-					x = lastDelimiter + tempNode.toString().length() - 1;
 				}
 			} else if (c == ')') {
 				if (StringUtils.isNotBlank(tempToken)) {
-					System.out.println("Consumed: " + tempToken);
 					tempNode = new Node(tempToken, itemType);
 					nodes.add(tempNode);
 				}
@@ -148,6 +136,46 @@ public class ReferenceValueResolver implements ImpexValueResolver {
 		}
 
 		return nodes;
+	}
+
+	public static class QueryDefinition {
+		final Class<Item> rootType;
+		final List<String> joinClauses = new ArrayList<>();
+		final List<String> whereClauses = new ArrayList<>();
+		int paramCount = 0;
+
+		public QueryDefinition(Class<Item> rootType) {
+			this.rootType = rootType;
+		}
+
+		public Class<Item> getRootType() {
+			return rootType;
+		}
+
+		public List<String> getJoinClauses() {
+			return joinClauses;
+		}
+
+		public List<String> getWhereClauses() {
+			return whereClauses;
+		}
+
+		public int getNextParamIndex() {
+			return paramCount++;
+		}
+
+		public int getParamCount() {
+			return paramCount;
+		}
+
+		@Override
+		public String toString() {
+			String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
+					+ rootType.getSimpleName() + " " + joinClauses.stream().collect(Collectors.joining(" ")) + " WHERE "
+					+ whereClauses.stream().collect(Collectors.joining(" AND "));
+
+			return query;
+		}
 	}
 
 	public static class Node {

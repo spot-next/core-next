@@ -1,6 +1,5 @@
 package at.spot.core;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -116,20 +115,29 @@ public class CoreInit extends ModuleInit {
 	protected void importInitialData() throws ModuleInitializationException {
 		try {
 			loggingService.debug("Importing countries");
-			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
-					Paths.get("/data/initial/countries.impex").toFile());
+
+			ImportConfiguration conf = new ImportConfiguration();
+			conf.setScriptIdentifier("/data/initial/countries.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 			loggingService.debug("Importing languages");
-			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
-					Paths.get("/data/initial/languages.impex").toFile());
+
+			conf.setScriptIdentifier("/data/initial/languages.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 			loggingService.debug("Importing users");
-			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
-					Paths.get("/data/initial/users.impex").toFile());
+
+			conf.setScriptIdentifier("/data/initial/users.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 			loggingService.debug("Importing catalogs");
-			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
-					Paths.get("/data/initial/catalogs.impex").toFile());
+
+			conf.setScriptIdentifier("/data/initial/catalogs.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 		} catch (ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}
@@ -140,8 +148,11 @@ public class CoreInit extends ModuleInit {
 	protected void importSampleData() throws ModuleInitializationException {
 		try {
 			loggingService.debug("Importing countries");
-			importService.importItems(ImportFormat.ImpEx, new ImportConfiguration(),
-					Paths.get("/data/sample/users.impex").toFile());
+
+			ImportConfiguration conf = new ImportConfiguration();
+			conf.setScriptIdentifier("/data/sample/users.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 		} catch (ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}

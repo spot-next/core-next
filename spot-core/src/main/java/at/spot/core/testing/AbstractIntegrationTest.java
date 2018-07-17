@@ -26,7 +26,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * This is the base class for all integration tasks. Database access will be
  * reverted after the each test using a transaction rollback.
  */
-@TestPropertySource(properties = { "initializetypesystem = true" })
+@TestPropertySource(properties = { "initializetypesystem = true", "importinitialdata = true",
+		"importInitialData = true" })
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })

@@ -55,8 +55,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			"(^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\\s]{0,}([a-zA-Z]{2,})[\\s]{0,}(\\[.*?\\]){0,1}[\\s]{0,}[;]{0,1}");
 
 	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\(.*?\)){0,1}(\[.*?\]){0,1}.*$
-	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern
-			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\(.*?\\)){0,1}(\\[.*?\\]){0,1}.*$");
+	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
+			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,\\=]{0,}\\]{0,1})");
 
 	@Resource
 	private TypeService typeService;

@@ -1,8 +1,6 @@
 package at.spot.core.infrastructure.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 import javax.annotation.Resource;
 
@@ -21,13 +19,10 @@ public class DefaultImportService implements ImportService {
 	protected ImpexImportStrategy impexImportStrategy;
 
 	@Override
-	public void importItems(ImportFormat format, ImportConfiguration config, File file) throws ImportException {
+	public void importItems(ImportFormat format, ImportConfiguration config, InputStream inputStream)
+			throws ImportException {
 		if (ImportFormat.ImpEx.equals(format)) {
-			try {
-				impexImportStrategy.importImpex(config, new FileInputStream(file));
-			} catch (FileNotFoundException e) {
-				throw new ImportException(String.format("Cannot read file %s", file.toString()), e);
-			}
+			impexImportStrategy.importImpex(config, inputStream);
 		} else {
 			throw new ImportException(String.format("Format %s is currently not implemented", format));
 		}
