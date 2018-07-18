@@ -1,3 +1,0 @@
-INSERT Media ; id[unique=true] ; catalogVersion(catalog(id),id)[unique=true] ;
-             ; testMedia       ; Media:Staged                                ;
-                   

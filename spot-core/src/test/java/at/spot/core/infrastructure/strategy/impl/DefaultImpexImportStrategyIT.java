@@ -27,13 +27,12 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {
-
+		//
 	}
 
 	@Override
 	protected void teardownTest() {
-		// TODO Auto-generated method stub
-
+		//
 	}
 
 	// INSERT
@@ -108,14 +107,19 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	// REMOVE
 	@Test
 	public void testRemoveNestedReference() throws ImpexImportException {
-		// check if sample data media is there
+		// import test media
+		ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/nested_reference.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+		// check if test data media is there
 		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
 		QueryResult<Media> result = queryService.query(query);
 
 		Assert.assertTrue(result.count() == 1);
 
 		// and them remove it again
-		final ImportConfiguration conf = new ImportConfiguration();
+		conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/remove_nested_reference.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
