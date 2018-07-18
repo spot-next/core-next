@@ -5,16 +5,17 @@ import java.util.Map;
 
 public class ColumnDefinition {
 
-	private String propertyName;
+	private String columnName;
 	private final Map<String, String> modifiers = new HashMap<>();
 	private String valueResolutionDescriptor;
+	private Class<?> columnType;
 
 	public String getPropertyName() {
-		return propertyName;
+		return columnName;
 	}
 
 	public void setPropertyName(String propertyName) {
-		this.propertyName = propertyName;
+		this.columnName = propertyName;
 	}
 
 	public Map<String, String> getModifiers() {
@@ -35,6 +36,17 @@ public class ColumnDefinition {
 
 	public String getValueResolutionDescriptor() {
 		return valueResolutionDescriptor;
+	}
+
+	/**
+	 * Can be null, as this is most likely not initially filled
+	 */
+	public Class<?> getColumnType() {
+		return columnType;
+	}
+
+	public void setColumnType(Class<?> columnType) {
+		this.columnType = columnType;
 	}
 
 }

@@ -27,7 +27,6 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -37,53 +36,55 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	}
 
+	// INSERT
+
 	@Test
-	public void testNestedReference() throws ImpexImportException {
+	public void testInsertNestedReference() throws ImpexImportException {
 		final ImportConfiguration conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/nested_reference.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
-		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
-		QueryResult<Media> result = queryService.query(query);
+		final LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
+		final QueryResult<Media> result = queryService.query(query);
 
 		Assert.assertTrue(result.count() == 1);
 	}
 
 	@Test
-	public void testMultipleItemsNoRelationImportImpex() throws ImpexImportException {
+	public void testInsertMultipleItemsNoRelationImportImpex() throws ImpexImportException {
 		final ImportConfiguration conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/multiple_items_no_relations.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
-		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
-		QueryResult<User> userResult = queryService.query(userQuery);
+		final LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
+		final QueryResult<User> userResult = queryService.query(userQuery);
 
 		Assert.assertTrue(userResult.count() == 1);
 		Assert.assertEquals("testuser", userResult.getResultList().get(0).getId());
 
-		LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
+		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
 				.filter(u -> u.getId().equals("test-group"));
-		QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
+		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
 		Assert.assertTrue(userGroupResult.count() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
 	}
 
 	@Test
-	public void testMultipleItemsWithRelationImportImpex() throws ImpexImportException {
+	public void testInsertMultipleItemsWithRelationImportImpex() throws ImpexImportException {
 		final ImportConfiguration conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/multiple_items_with_relations.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
-		LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
-		QueryResult<User> userResult = queryService.query(userQuery);
+		final LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
+		final QueryResult<User> userResult = queryService.query(userQuery);
 
 		Assert.assertTrue(userResult.count() == 1);
 		Assert.assertEquals("testuser", userResult.getResultList().get(0).getId());
 
-		LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
+		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
 				.filter(u -> u.getId().equals("test-group"));
-		QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
+		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
 		Assert.assertTrue(userGroupResult.count() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
@@ -92,4 +93,36 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		Assert.assertEquals("testuser", userGroupResult.getResultList().get(0).getMembers().iterator().next().getId());
 	}
 
+	// INSERT_UPDATE
+	@Test
+	public void testInsertUpdateNestedReference() throws ImpexImportException {
+		//
+	}
+
+	// UPDATE
+	@Test
+	public void testUpdateNestedReference() throws ImpexImportException {
+		//
+	}
+
+	// REMOVE
+	@Test
+	public void testRemoveNestedReference() throws ImpexImportException {
+		// check if sample data media is there
+		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
+		QueryResult<Media> result = queryService.query(query);
+
+		Assert.assertTrue(result.count() == 1);
+
+		// and them remove it again
+		final ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/remove_nested_reference.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+		// and check if it's realy gone
+		query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
+		result = queryService.query(query);
+
+		Assert.assertTrue(result.count() == 0);
+	}
 }

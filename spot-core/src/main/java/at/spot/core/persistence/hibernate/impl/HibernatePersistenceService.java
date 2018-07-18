@@ -137,7 +137,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T> List<T> query(final at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 
-		List<T> results;
+		List<T> results = null;
 
 		try {
 			final Session session = getSession();
@@ -148,8 +148,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			if (Item.class.isAssignableFrom(sourceQuery.getResultClass())
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
-				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass())
-						.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
+				query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
 				setFetchSubGraphsHint(session, sourceQuery, query);
 				setParameters(sourceQuery.getParams(), query);
@@ -165,55 +165,69 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// columns' types, as
 				// otherwise we cannot map the row values to properties.
 
-				final Query<Tuple> query = session.createQuery(sourceQuery.getQuery(), Tuple.class).setReadOnly(true)
-						.setHint(QueryHints.HINT_CACHEABLE, true);
+				final Query<Tuple> query;
+				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
+					query = session.createQuery(sourceQuery.getQuery());
+				} else {
+					query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
+				}
+
+				// optimize query
+				query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
 				setPageSize(query, sourceQuery.getPageSize());
 
-				final List<Tuple> resultList = query.list();
-				results = new ArrayList<>();
+				// only try to load results if the result type is not Void
+				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
+					query.executeUpdate();
+				} else {
+					final List<Tuple> resultList = query.list();
+					results = new ArrayList<>();
 
-				for (final Tuple t : resultList) {
-					final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
-							.collect(Collectors.toList());
+					for (final Tuple t : resultList) {
+						final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
+								.collect(Collectors.toList());
 
-					// first try to create the pojo using a constructor that
-					// matches the result's
-					// column types
+						// first try to create the pojo using a constructor that
+						// matches the result's
+						// column types
 
-					final List<Object> values = t.getElements().stream().map(e -> t.get(e))
-							.collect(Collectors.toList());
-					Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
+						final List<Object> values = t.getElements().stream().map(e -> t.get(e))
+								.collect(Collectors.toList());
+						Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-					// if the pojo can't be instantated, we try to create it
-					// manually and inject the
-					// data using reflection
-					// for this to work, each selected column has to have the
-					// same alias as the
-					// pojo's property!
-					if (!pojo.isPresent()) {
-						final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+						// if the pojo can't be instantated, we try to create it
+						// manually and inject the
+						// data using reflection
+						// for this to work, each selected column has to have the
+						// same alias as the
+						// pojo's property!
+						if (!pojo.isPresent()) {
+							final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
 
-						if (obj.isPresent()) {
-							final Object o = obj.get();
-							t.getElements().stream()
-									.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+							if (obj.isPresent()) {
+								final Object o = obj.get();
+								t.getElements().stream()
+										.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+							}
+
+							pojo = obj;
 						}
 
-						pojo = obj;
-					}
-
-					if (pojo.isPresent()) {
-						results.add(pojo.get());
-					} else {
-						throw new InstantiationException(
-								String.format("Could not instantiate result type '%s'", sourceQuery.getResultClass()));
+						if (pojo.isPresent()) {
+							results.add(pojo.get());
+						} else {
+							throw new InstantiationException(String.format("Could not instantiate result type '%s'",
+									sourceQuery.getResultClass()));
+						}
 					}
 				}
 			}
-		} catch (QueryException e) {
+		} catch (
+
+		QueryException e) {
 			throw e;
 		} catch (final Exception e) {
 			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);

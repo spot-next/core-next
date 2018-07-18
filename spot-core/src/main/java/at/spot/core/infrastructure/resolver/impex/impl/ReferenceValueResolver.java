@@ -45,7 +45,6 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 
 		// remove spaces in the string, makes it easier to parse
 		desc = desc.replace(" ", "");
-
 		final String[] inputParams = value.split(":");
 
 		List<Node> nodes = parse(new StringCharacterIterator(desc), (Class<Item>) targetType);
@@ -62,7 +61,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 			qry.addParam("" + x, inputParams[x]);
 		}
 
-		QueryResult<T> result = queryService.query(qry);
+		final QueryResult<T> result = queryService.query(qry);
 
 		if (result.getResultList().size() > 1) {
 			throw new ValueResolverException("Ambiguous results found for given input values.");

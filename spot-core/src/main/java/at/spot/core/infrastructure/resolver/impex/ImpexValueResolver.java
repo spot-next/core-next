@@ -11,4 +11,5 @@ public interface ImpexValueResolver {
 	 */
 	<T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments, ColumnDefinition columnDefinition)
 			throws ValueResolverException;
+
 }

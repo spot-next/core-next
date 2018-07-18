@@ -11,4 +11,5 @@ public interface ImportService {
 	 * Imports the item models of the given file based on the chosen file format.
 	 */
 	void importItems(ImportFormat format, ImportConfiguration config, InputStream inputStream) throws ImportException;
+
 }

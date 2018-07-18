@@ -147,10 +147,12 @@ public class CoreInit extends ModuleInit {
 	@Log(message = "Importing sample data ...")
 	protected void importSampleData() throws ModuleInitializationException {
 		try {
-			loggingService.debug("Importing countries");
-
-			ImportConfiguration conf = new ImportConfiguration();
+			final ImportConfiguration conf = new ImportConfiguration();
 			conf.setScriptIdentifier("/data/sample/users.impex");
+			importService.importItems(ImportFormat.ImpEx, conf,
+					getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+			conf.setScriptIdentifier("/data/sample/medias.impex");
 			importService.importItems(ImportFormat.ImpEx, conf,
 					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 		} catch (ImportException e) {

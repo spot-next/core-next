@@ -253,10 +253,13 @@
 				</validators>
 			</property>
 			<property name="shortName" type="String">
-				<description>The short name of the country, eg. "Austria"".</description>
+				<description>The short name of the country, eg. "Austria".</description>
 			</property>
 			<property name="longName" type="String">
 				<description>The long name of the country, eg. "Republic of Austria".</description>
+			</property>
+			<property name="phoneCountryCode" type="String">
+				<description>The phone country code, eg. +43 or 0043 for Austria</description>
 			</property>
 		</properties>
 	</type>
