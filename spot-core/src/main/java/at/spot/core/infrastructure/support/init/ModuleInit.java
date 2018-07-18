@@ -40,18 +40,18 @@ public abstract class ModuleInit implements ApplicationContextAware {
 			alreadyInitialized = true;
 		}
 
-		if (configurationService.getBoolean("importInitialData", false)) {
+		if (configurationService.getBoolean("core.setup.import.initialdata", false)) {
 			importInitialData();
 		}
 
-		if (configurationService.getBoolean("importSampleData", false)) {
+		if (configurationService.getBoolean("core.setup.import.sampledata", false)) {
 			importSampleData();
 		}
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called
-	 * after {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called after
+	 * {@link Bootstrap} all spring beans are initialized.
 	 */
 	protected abstract void initialize() throws ModuleInitializationException;
 
