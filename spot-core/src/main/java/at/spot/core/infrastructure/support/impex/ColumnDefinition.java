@@ -27,7 +27,7 @@ public class ColumnDefinition {
 	}
 
 	public void addModifiers(Map<String, String> parseModifiers) {
-		this.modifiers.putAll(modifiers);
+		this.modifiers.putAll(parseModifiers);
 	}
 
 	public void setValueResolutionDescriptor(String valueResolutionDescriptor) {

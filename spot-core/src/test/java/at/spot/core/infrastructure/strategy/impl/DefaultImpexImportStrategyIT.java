@@ -100,8 +100,26 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	// UPDATE
 	@Test
-	public void testUpdateNestedReference() throws ImpexImportException {
-		//
+	public void testUpdateById() throws ImpexImportException {
+		String groupId = "employee-group";
+		String groupShortName = "Employee Group";
+
+		// check if group has no shortName
+		LambdaQuery<UserGroup> query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals(groupId));
+		QueryResult<UserGroup> result = queryService.query(query);
+
+		Assert.assertNull(result.getResultList().get(0).getShortName());
+
+		// execute update
+		ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/update_employee_group.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+		// check if data has been updated
+		query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals(groupId));
+		result = queryService.query(query);
+
+		Assert.assertEquals(groupShortName, result.getResultList().get(0).getShortName());
 	}
 
 	// REMOVE

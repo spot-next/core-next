@@ -62,6 +62,13 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected long version = -1;
 
 	/**
+	 * Indicates that the given item is deleted. This property can be used to
+	 * implemented "soft-deletion"
+	 */
+	@Column
+	protected boolean deleted = false;
+
+	/**
 	 * A value of -1 indicates that this is an unpersisted item.
 	 */
 	public long getVersion() {

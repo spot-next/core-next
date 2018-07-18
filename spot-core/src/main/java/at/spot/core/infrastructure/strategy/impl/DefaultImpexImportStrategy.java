@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,7 +57,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	protected Pattern PATTERN_COMMAND_AND_TYPE = Pattern.compile(
 			"(^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\\s]{0,}([a-zA-Z]{2,})[\\s]{0,}(\\[.*?\\]){0,1}[\\s]{0,}[;]{0,1}");
 
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\(.*?\)){0,1}(\[.*?\]){0,1}.*$
+	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
 			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,\\=]{0,}\\]{0,1})");
 
@@ -238,7 +237,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						itemsToSave.add(insertItem(unit, rawItem));
 
 					} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
-						itemsToUpdate.add(createUpdateQuery(unit, rawItem));
+						Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem);
+
+						// First we fetch the item based on the unique columns
+						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
+						// if no matching item is found, we tread this the same way as an INSERT COMMAND
+						if (existingItem == null) {
+							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem));
+						} else {
+							throw new ImpexImportException(String
+									.format("Could not find item for update with unique properties: %s", uniqueParams));
+						}
 					} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
 						// for UDPATE we can create a JPQL query
 
@@ -251,7 +260,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							itemsToSave.add(insertItem(unit, rawItem));
 						} else {
 							// otherwise we create an update JPQL query
-							itemsToUpdate.add(createUpdateQuery(unit, rawItem));
+							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem));
 						}
 					} else if (ImpexCommand.REMOVE.equals(unit.getCommand())) {
 						itemsToRemove.add(createRemoveQuery(unit, rawItem));
@@ -289,10 +298,10 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return item;
 	}
 
-	private JpqlQuery<Void> createUpdateQuery(WorkUnit unit, Map<ColumnDefinition, Object> rawItem) {
+	private JpqlQuery<Void> createUpdateQuery(Item item, Map<ColumnDefinition, Object> rawItem) {
 		final List<String> whereClauses = new ArrayList<>();
 		final Map<String, Object> params = new HashMap<>();
-		final String typeName = unit.getItemType().getSimpleName();
+		final String typeName = item.getClass().getSimpleName();
 
 		for (Map.Entry<ColumnDefinition, Object> i : rawItem.entrySet()) {
 			whereClauses.add(typeName + "." + i.getKey().getPropertyName() + " = :" + i.getKey().getPropertyName());
@@ -301,8 +310,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final String whereClause = whereClauses.stream().collect(Collectors.joining(" AND "));
 
+		params.put("pk", item.getPk());
+
 		JpqlQuery<Void> query = new JpqlQuery<>(
-				String.format("UPDATE %s AS %s WHERE %s", typeName, typeName, whereClause), params, Void.class);
+				String.format("UPDATE %s AS %s SET %s WHERE %s.pk = ?pk", typeName, typeName, whereClause, typeName),
+				params, Void.class);
 
 		return query;
 	}
@@ -328,9 +340,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	private Map<String, Object> getUniqueAttributValues(List<ColumnDefinition> headerColumns,
 			Map<ColumnDefinition, Object> rawItem) {
 
-		headerColumns.stream().filter(c -> c.getModifiers().containsKey("unique"))
-				.collect(Collectors.toMap(c -> c.getPropertyName(), Function.identity()));
-		return null;
+		Map<String, Object> params = headerColumns.stream().filter(c -> c.getModifiers().containsKey("unique"))
+				.collect(Collectors.toMap(c -> c.getPropertyName(), c -> rawItem.get(c)));
+		return params;
 	}
 
 	@SuppressWarnings("unchecked")

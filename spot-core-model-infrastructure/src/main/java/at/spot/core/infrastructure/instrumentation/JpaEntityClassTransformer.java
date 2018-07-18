@@ -218,8 +218,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	protected boolean alreadyTransformed(final CtClass clazz) throws IllegalClassTransformationException {
 		final Optional<Annotation> entityAnnotation = getAnnotation(clazz, Entity.class);
+		final Optional<Annotation> mappedSuperclassAnnotation = getAnnotation(clazz, MappedSuperclass.class);
 
-		return entityAnnotation.isPresent();
+		return entityAnnotation.isPresent() || mappedSuperclassAnnotation.isPresent();
 	}
 
 	protected void addEntityAnnotation(final CtClass clazz) throws IllegalClassTransformationException {

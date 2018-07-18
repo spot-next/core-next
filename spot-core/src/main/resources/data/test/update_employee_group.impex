@@ -1,0 +1,2 @@
+UPDATE UserGroup ; id[unique=true]   ; shortName
+                 ; employee-group    ; Employee Group
