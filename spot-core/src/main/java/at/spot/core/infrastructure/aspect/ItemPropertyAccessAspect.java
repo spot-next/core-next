@@ -14,10 +14,10 @@ import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.persistence.valueprovider.ItemPropertyValueProvider;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 
 //@Aspect
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {

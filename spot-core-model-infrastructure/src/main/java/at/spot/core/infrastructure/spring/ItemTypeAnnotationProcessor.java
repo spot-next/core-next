@@ -7,8 +7,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.annotation.ItemType;
-import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 
 /**
  * Registers an alias for each {@link Item} bean using the

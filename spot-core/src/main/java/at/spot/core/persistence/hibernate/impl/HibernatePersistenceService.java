@@ -32,7 +32,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -49,6 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.ModelQuery;
 
 import at.spot.core.infrastructure.annotation.Property;
@@ -56,12 +56,12 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
@@ -82,7 +82,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@PostConstruct
 	public void initialize() {
-		if (configurationService.getBoolean("initializetypesystem", false)) {
+		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
 			loggingService.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
@@ -92,6 +92,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			schemaExport.setOutputFile("db-schema.sql");
 
 			try {
+				// TODO will most likely fail, implement a pure JDBC "drop database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
 			} catch (Exception e) {
 				loggingService.warn("Could not drop type system schema.");
@@ -101,7 +102,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					metadataIntegrator.getMetadata());
 		}
 
-		if (configurationService.getBoolean("updatetypesystem", false)) {
+		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
 			loggingService.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();
@@ -136,7 +137,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T> List<T> query(final at.spot.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 
-		List<T> results;
+		List<T> results = null;
 
 		try {
 			final Session session = getSession();
@@ -147,9 +148,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			if (Item.class.isAssignableFrom(sourceQuery.getResultClass())
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
-				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass())
-						.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
+				setCacheSettings(session, sourceQuery, query);
 				setFetchSubGraphsHint(session, sourceQuery, query);
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
@@ -164,61 +166,84 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// columns' types, as
 				// otherwise we cannot map the row values to properties.
 
-				final Query<Tuple> query = session.createQuery(sourceQuery.getQuery(), Tuple.class).setReadOnly(true)
-						.setHint(QueryHints.HINT_CACHEABLE, true);
+				final Query<Tuple> query;
+				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
+					query = session.createQuery(sourceQuery.getQuery());
+				} else {
+					query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
+				}
+
+				// optimize query
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
 				setPageSize(query, sourceQuery.getPageSize());
 
-				final List<Tuple> resultList = query.list();
-				results = new ArrayList<>();
+				// only try to load results if the result type is not Void
+				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
+					query.executeUpdate();
+					session.flush();
+				} else {
+					final List<Tuple> resultList = query.list();
+					results = new ArrayList<>();
 
-				for (final Tuple t : resultList) {
-					final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
-							.collect(Collectors.toList());
+					for (final Tuple t : resultList) {
+						final List<Class<?>> tupleElements = t.getElements().stream().map(e -> e.getJavaType())
+								.collect(Collectors.toList());
 
-					// first try to create the pojo using a constructor that
-					// matches the result's
-					// column types
+						// first try to create the pojo using a constructor that
+						// matches the result's
+						// column types
 
-					final List<Object> values = t.getElements().stream().map(e -> t.get(e))
-							.collect(Collectors.toList());
-					Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
+						final List<Object> values = t.getElements().stream().map(e -> t.get(e))
+								.collect(Collectors.toList());
+						Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-					// if the pojo can't be instantated, we try to create it
-					// manually and inject the
-					// data using reflection
-					// for this to work, each selected column has to have the
-					// same alias as the
-					// pojo's property!
-					if (!pojo.isPresent()) {
-						final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+						// if the pojo can't be instantated, we try to create it
+						// manually and inject the
+						// data using reflection
+						// for this to work, each selected column has to have the
+						// same alias as the
+						// pojo's property!
+						if (!pojo.isPresent()) {
+							final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
 
-						if (obj.isPresent()) {
-							final Object o = obj.get();
-							t.getElements().stream()
-									.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+							if (obj.isPresent()) {
+								final Object o = obj.get();
+								t.getElements().stream()
+										.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+							}
+
+							pojo = obj;
 						}
 
-						pojo = obj;
-					}
-
-					if (pojo.isPresent()) {
-						results.add(pojo.get());
-					} else {
-						throw new InstantiationException(
-								String.format("Could not instantiate result type '%s'", sourceQuery.getResultClass()));
+						if (pojo.isPresent()) {
+							results.add(pojo.get());
+						} else {
+							throw new InstantiationException(String.format("Could not instantiate result type '%s'",
+									sourceQuery.getResultClass()));
+						}
 					}
 				}
 			}
-		} catch (QueryException e) {
+		} catch (
+
+		QueryException e) {
 			throw e;
 		} catch (final Exception e) {
 			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
 		}
 
 		return results;
+	}
+
+	private <T, Q extends at.spot.core.persistence.query.Query<T>> void setCacheSettings(Session session,
+			JpqlQuery<T> sourceQuery, Query<T> query) {
+
+		if (sourceQuery.isIgnoreCache()) {
+			query.setHint("org.hibernate.cacheable", true);
+		}
 	}
 
 	protected <T, Q extends at.spot.core.persistence.query.Query<T>> void setFetchSubGraphsHint(final Session session,
@@ -308,11 +333,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 				}
 
-				try {
-					refresh(items);
-				} catch (final ModelNotFoundException e) {
-					throw new ModelSaveException("Could not save given items", e);
-				}
+				// session.flush();
+
+				// try {
+				// refresh(items);
+				// } catch (final ModelNotFoundException e) {
+				// throw new ModelSaveException("Could not save given items", e);
+				// }
 
 				return null;
 			});
@@ -353,7 +380,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				for (final T item : items) {
 					try {
 						attach(item);
-
 						getSession().refresh(item);
 					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
@@ -377,26 +403,32 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
+	 * @return true if the item was successfully attached to the hibernate session.
 	 * @throws ModelNotFoundException
 	 */
-	protected <T extends Item> void attach(final T item) throws ModelNotFoundException {
+	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			// ignore unpersisted or already attached items
-			if (item.getPk() == null || getSession().contains(item)) {
-				return;
+			if (getSession().contains(item)) {
+				return true;
 			}
 
 			final T attached = (T) getSession().load(item.getClass(), item.getPk());
 			if (attached != null) {
 				getSession().evict(attached);
 				getSession().lock(item, LockMode.NONE);
+
+				return true;
 			}
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
-			throw new ModelNotFoundException(String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+			throw new ModelNotFoundException(
+					String.format("Could not attach item with pk=%s to the current session.", item.getPk()), e);
 		}
+
+		return false;
 	}
 
 	@Override
@@ -435,6 +467,30 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			} else {
 				query = session.createQuery(cq.select(r));
 			}
+
+			// String jpql = String.format("SELECT i FROM %s i ",
+			// sourceQuery.getResultClass().getSimpleName());
+			//
+			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
+			// jpql += " WHERE ";
+			//
+			// List<String> whereClauses = new LinkedList<>();
+			// for (Map.Entry<String, Object> entry :
+			// sourceQuery.getSearchParameters().entrySet()) {
+			// whereClauses.add(entry.getKey() + " = :" + entry.getKey());
+			// }
+			//
+			// jpql += StringUtils.join(whereClauses, " AND ");
+			// }
+			//
+			// query = session.createQuery(jpql);
+			//
+			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
+			// for (Map.Entry<String, Object> entry :
+			// sourceQuery.getSearchParameters().entrySet()) {
+			// query.setParameter(entry.getKey(), entry.getValue());
+			// }
+			// }
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
 

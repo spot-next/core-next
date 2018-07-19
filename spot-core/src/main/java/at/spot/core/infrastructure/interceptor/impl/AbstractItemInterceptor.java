@@ -12,7 +12,7 @@ import at.spot.core.infrastructure.interceptor.ItemValidateInterceptor;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.ItemInterceptorRegistry;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * This is the base class for all {@link ItemInterceptor} implementations. It

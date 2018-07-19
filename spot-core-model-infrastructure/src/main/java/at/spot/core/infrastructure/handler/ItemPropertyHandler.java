@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.handler;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * Handles property access to {@link Item} objects.

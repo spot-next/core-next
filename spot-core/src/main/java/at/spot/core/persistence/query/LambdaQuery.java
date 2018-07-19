@@ -6,7 +6,7 @@ import java.util.List;
 
 import at.spot.core.persistence.query.lambda.SerializablePredicate;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class LambdaQuery<T extends Item> extends Query<T> {
 

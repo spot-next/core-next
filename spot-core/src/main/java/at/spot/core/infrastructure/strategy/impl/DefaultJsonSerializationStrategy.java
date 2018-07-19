@@ -1,7 +1,6 @@
 package at.spot.core.infrastructure.strategy.impl;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.lang.reflect.Modifier;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -15,19 +14,23 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import at.spot.core.infrastructure.serialization.jackson.ItemIgnorePropertiesMixIn;
+import at.spot.core.infrastructure.exception.UnknownTypeException;
+import at.spot.core.infrastructure.serialization.jackson.ItemDeserializer;
+import at.spot.core.infrastructure.serialization.jackson.ItemSerializationMixIn;
 import at.spot.core.infrastructure.serialization.jackson.ItemTypeResolver;
 import at.spot.core.infrastructure.serialization.jackson.ItemTypeResolverBuilder;
 import at.spot.core.infrastructure.service.TypeService;
+import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.
  */
 @Service
-public class DefaultJsonSerializationStrategy implements SerializationStrategy {
+public class DefaultJsonSerializationStrategy extends AbstractService implements SerializationStrategy {
 
 	@Resource
 	private TypeService typeService;
@@ -38,7 +41,7 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 	@PostConstruct
 	public void init() throws ClassNotFoundException {
 		jacksonMapper = new ObjectMapper();
-		jacksonMapper.addMixIn(Item.class, ItemIgnorePropertiesMixIn.class);
+		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 		TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
@@ -48,14 +51,23 @@ public class DefaultJsonSerializationStrategy implements SerializationStrategy {
 		typeResolver.typeIdVisibility(true);
 		jacksonMapper.setDefaultTyping(typeResolver);
 
-		jacksonMapper.registerSubtypes(typeService.getItemTypeDefinitions().values().stream().map(t -> {
+		final SimpleModule module = new SimpleModule();
+
+		typeService.getItemTypeDefinitions().values().stream().forEach(t -> {
 			try {
-				return Class.forName(t.getTypeClass());
-			} catch (ClassNotFoundException e) {
-				// log
-				return null;
+				Class<? extends Item> type = typeService.getClassForTypeCode(t.getTypeCode());
+
+				if (!Modifier.isAbstract(type.getModifiers())) {
+					module.addDeserializer(type, new ItemDeserializer(type));
+				}
+
+				jacksonMapper.registerSubtypes(type);
+			} catch (UnknownTypeException e) {
+				loggingService.warn(String.format("Could not load class for item type with code=%s", t.getTypeCode()));
 			}
-		}).filter(Objects::nonNull).collect(Collectors.toList()));
+		});
+
+		jacksonMapper.registerModule(module);
 
 		this.jacksonWriter = jacksonMapper.writer();
 	}

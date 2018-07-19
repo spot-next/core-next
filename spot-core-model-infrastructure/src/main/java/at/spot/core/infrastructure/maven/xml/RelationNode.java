@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="modifiers" type="{}Modifiers" minOccurs="0"/>
+ *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="itemType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="mappedBy" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -32,11 +34,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RelationNode", propOrder = {
-    "description"
+    "description",
+    "modifiers",
+    "validators"
 })
 public class RelationNode {
 
     protected String description;
+    protected Modifiers modifiers;
+    protected Validators validators;
     @XmlAttribute(name = "itemType", required = true)
     protected String itemType;
     @XmlAttribute(name = "mappedBy")
@@ -68,6 +74,54 @@ public class RelationNode {
      */
     public void setDescription(String value) {
         this.description = value;
+    }
+
+    /**
+     * Ruft den Wert der modifiers-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Modifiers }
+     *     
+     */
+    public Modifiers getModifiers() {
+        return modifiers;
+    }
+
+    /**
+     * Legt den Wert der modifiers-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Modifiers }
+     *     
+     */
+    public void setModifiers(Modifiers value) {
+        this.modifiers = value;
+    }
+
+    /**
+     * Ruft den Wert der validators-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Validators }
+     *     
+     */
+    public Validators getValidators() {
+        return validators;
+    }
+
+    /**
+     * Legt den Wert der validators-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Validators }
+     *     
+     */
+    public void setValidators(Validators value) {
+        this.validators = value;
     }
 
     /**

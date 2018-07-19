@@ -33,8 +33,8 @@ import com.trigersoft.jaque.expression.UnaryExpression;
 
 import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.impl.DefaultLambdaQueryTranslationService;
+import at.spot.core.types.Item;
 
 /**
  * Visitor which translates Predicate lambda into

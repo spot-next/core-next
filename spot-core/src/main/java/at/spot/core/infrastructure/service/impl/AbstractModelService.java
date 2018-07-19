@@ -23,10 +23,10 @@ import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.ValidationService;
 import at.spot.core.infrastructure.support.ItemInterceptorRegistry;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 
 @SuppressWarnings("unchecked")
 @Service

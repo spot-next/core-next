@@ -3,7 +3,7 @@ package at.spot.core.persistence.service;
 import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.LambdaQuery;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * Service designed to translate {@link LambdaQuery} to

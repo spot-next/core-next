@@ -6,7 +6,7 @@ import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public interface TypeService {
 

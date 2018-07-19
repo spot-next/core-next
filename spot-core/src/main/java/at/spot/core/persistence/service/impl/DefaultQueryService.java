@@ -12,10 +12,10 @@ import at.spot.core.persistence.query.QueryResult;
 
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.hibernate.impl.HibernatePersistenceService;
 import at.spot.core.persistence.service.LambdaQueryTranslationService;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.types.Item;
 
 @Service
 public class DefaultQueryService extends AbstractService implements QueryService {
@@ -52,6 +52,12 @@ public class DefaultQueryService extends AbstractService implements QueryService
 		final JpqlQuery<T> translated = lambdaQueryTranslationService.translate(query);
 
 		final List<T> resultList = query(translated).getResultList();
+
+		// TODO this is a pretty ugly hack, find a way to evict entities in the
+		// persistence context, when executing DLM queries.
+		if (query.isIgnoreCache()) {
+			persistenceService.refresh(resultList);
+		}
 
 		return new QueryResult<T>(resultList, query.getPage(), query.getPageSize());
 	}

@@ -14,20 +14,20 @@
             <!-- item type generation -->
             <plugin>
                 <groupId>at.spot</groupId>
-                <artifactId>spot-core-maven-plugins</artifactId>
+                <artifactId>spot-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>itemTypeGeneration</goal>
+                            <goal>generate-types</goal>
                         </goals>
                     </execution>
 					<execution>
 						<id>Item type post-processing</id>
 						<phase>process-classes</phase>
 						<goals>
-							<goal>transform</goal>
+							<goal>transform-types</goal>
 						</goals>
 						<configuration>
 							<includeJars>false</includeJars>

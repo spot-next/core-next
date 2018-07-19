@@ -12,7 +12,7 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ItemTypeResolver extends ClassNameIdResolver {
 
@@ -21,6 +21,16 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 
 	public ItemTypeResolver() {
 		super(TypeFactory.defaultInstance().constructType(Item.class), TypeFactory.defaultInstance());
+	}
+
+	@Override
+	public void init(JavaType bt) {
+		super.init(bt);
+	}
+
+	@Override
+	public String idFromBaseType() {
+		return Item.TYPECODE;
 	}
 
 	public JsonTypeInfo.Id getMechanism() {
@@ -52,6 +62,16 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 
 		TypeFactory typeFactory = (ctxt == null) ? _typeFactory : ctxt.getTypeFactory();
 		return typeFactory.constructSpecializedType(_baseType, itemType);
+	}
+
+	@Override
+	public JavaType typeFromId(DatabindContext context, String id) throws IOException {
+		return super.typeFromId(context, id);
+	}
+
+	@Override
+	protected String _idFrom(Object value, Class<?> cls, TypeFactory typeFactory) {
+		return super._idFrom(value, cls, typeFactory);
 	}
 
 	public TypeService getTypeService() {

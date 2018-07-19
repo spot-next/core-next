@@ -1,6 +1,5 @@
 package at.spot.core.infrastructure.service.impl;
 
-import java.beans.Introspector;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,11 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyRelationDefinition;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.core.support.util.ValidationUtil;
+import at.spot.core.types.Item;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -219,36 +220,66 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 			if (propertyAnn != null) {
 
+				final Type[] genericArguments;
+				Type genericType = m.getGenericType();
+
+				if (genericType instanceof ParameterizedType) {
+					genericArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+				} else if (genericType instanceof Class) {
+					genericArguments = ((Class<?>) genericType).getTypeParameters();
+				} else {
+					genericArguments = new Type[0];
+				}
+
+				// convert generic type arguments to class objects
+
+				List<Class<?>> genericTypeArguments = new ArrayList<>();
+
+				for (Type t : genericArguments) {
+					if (t instanceof ParameterizedType) {
+						genericTypeArguments.add((Class<?>) ((ParameterizedType) t).getRawType());
+					} else if (t instanceof Class) {
+						genericTypeArguments.add((Class<?>) t);
+					} else {
+						loggingService.warn(String.format("Unsupported generic argument type: %s", t.getClass()));
+					}
+				}
+
 				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getType(),
-						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
-						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
+						genericTypeArguments, propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(),
+						propertyAnn.unique(), propertyAnn.itemValueProvider(),
+						getRelationDefinition(itemType, m, m.getName()));
 
 				propertyMembers.put(m.getName(), def);
 			}
 		}
 
-		// add all the getter methods
-		for (final Method m : itemType.getMethods()) {
-			final Property propertyAnn = ClassUtil.getAnnotation(m, Property.class);
-
-			if (propertyAnn != null && m.getReturnType() != Void.class) {
-				String name = m.getName();
-
-				if (StringUtils.startsWithIgnoreCase(name, "get")) {
-					name = StringUtils.substring(name, 3);
-				} else if (StringUtils.startsWithIgnoreCase(name, "get")) {
-					name = StringUtils.substring(name, 2);
-				}
-
-				name = Introspector.decapitalize(name);
-
-				final ItemTypePropertyDefinition def = new ItemTypePropertyDefinition(m.getName(), m.getReturnType(),
-						propertyAnn.readable(), propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
-						propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m, m.getName()));
-
-				propertyMembers.put(name, def);
-			}
-		}
+		// // add all the getter methods
+		// for (final Method m : itemType.getMethods()) {
+		// final Property propertyAnn = ClassUtil.getAnnotation(m, Property.class);
+		//
+		// if (propertyAnn != null && m.getReturnType() != Void.class) {
+		// String name = m.getName();
+		//
+		// if (StringUtils.startsWithIgnoreCase(name, "get")) {
+		// name = StringUtils.substring(name, 3);
+		// } else if (StringUtils.startsWithIgnoreCase(name, "get")) {
+		// name = StringUtils.substring(name, 2);
+		// }
+		//
+		// name = Introspector.decapitalize(name);
+		//
+		// final ItemTypePropertyDefinition def = new
+		// ItemTypePropertyDefinition(m.getName(), m.getReturnType(),
+		// ((Class<?>) m.getGenericReturnType()).getTypeParameters(),
+		// propertyAnn.readable(),
+		// propertyAnn.writable(), propertyAnn.initial(), propertyAnn.unique(),
+		// propertyAnn.itemValueProvider(), getRelationDefinition(itemType, m,
+		// m.getName()));
+		//
+		// propertyMembers.put(name, def);
+		// }
+		// }
 
 		return propertyMembers;
 	}

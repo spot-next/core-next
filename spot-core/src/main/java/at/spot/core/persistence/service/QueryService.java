@@ -4,7 +4,7 @@ import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.QueryResult;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public interface QueryService {
 

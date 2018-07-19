@@ -1,9 +1,5 @@
 package at.spot.core.testing;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import javax.annotation.Resource;
 
 import org.junit.After;
@@ -26,7 +22,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * This is the base class for all integration tasks. Database access will be
  * reverted after the each test using a transaction rollback.
  */
-@TestPropertySource(properties = { "service.persistence.mapdb.filepath=" + AbstractIntegrationTest.MAPDB_FILE })
+@TestPropertySource(locations = "classpath:/core-testing.properties")
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = { CoreInit.class })
@@ -62,7 +58,6 @@ public abstract class AbstractIntegrationTest {
 	 */
 	@BeforeClass
 	public static void initialize() {
-		removeMapDbFile();
 	}
 
 	/**
@@ -70,7 +65,6 @@ public abstract class AbstractIntegrationTest {
 	 */
 	@AfterClass
 	public static void shutdown() {
-		removeMapDbFile();
 	}
 
 	/**
@@ -94,21 +88,10 @@ public abstract class AbstractIntegrationTest {
 	@After
 	public void afterTest() {
 		try {
-			transactionService.rollback();
 			teardownTest();
+			transactionService.rollback();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
-		}
-	}
-
-	/**
-	 * Removes the temporary MapDB database file.
-	 */
-	protected static void removeMapDbFile() {
-		try {
-			Files.deleteIfExists(Paths.get(MAPDB_FILE));
-		} catch (final IOException e) {
-			System.out.println("Could not remove temporary MapDB storage file.");
 		}
 	}
 

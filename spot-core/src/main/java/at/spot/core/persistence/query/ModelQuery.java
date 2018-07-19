@@ -3,7 +3,7 @@ package at.spot.core.persistence.query;
 import java.util.HashMap;
 import java.util.Map;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ModelQuery<T extends Item> extends Query<T> {
 	private final Map<String, Object> searchParameters = new HashMap<>();

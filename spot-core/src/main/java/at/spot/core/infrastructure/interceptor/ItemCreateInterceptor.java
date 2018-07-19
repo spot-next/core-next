@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.interceptor;
 
 import at.spot.core.infrastructure.exception.ModelCreationException;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T> {
 	/**
