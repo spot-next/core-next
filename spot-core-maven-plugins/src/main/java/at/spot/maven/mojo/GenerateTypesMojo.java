@@ -85,8 +85,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * @description Generates the java source code for the defined item types.
  */
-@Mojo(name = "itemTypeGeneration", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
-public class ItemTypeGenerationMojo extends AbstractMojo {
+@Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
+public class GenerateTypesMojo extends AbstractMojo {
 
 	protected Jalopy jalopy = new Jalopy();
 	protected VelocityEngine velocityEngine = new VelocityEngine();
@@ -372,8 +372,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		javaClass.setDescription(type.getDescription());
 		javaClass.setVisibility(Visibility.PUBLIC);
 
-		// add itemtype annotation
-		// ignore base item type
+		// add itemtype annotation, ignore base item type
 		final JavaAnnotation typeAnnotation = new JavaAnnotation(at.spot.core.infrastructure.annotation.ItemType.class);
 
 		if (StringUtils.isBlank(type.getTypeCode())) {
@@ -383,8 +382,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
 		javaClass.addAnnotation(typeAnnotation);
 
-		// typeAnnotation.addParameter("persistable", type.isPersistable(),
-		// AnnotationValueType.BOOLEAN);
+		typeAnnotation.addParameter("persistable", type.isPersistable(), AnnotationValueType.BOOLEAN);
 
 		if (type.isAbstract() != null && type.isAbstract()) {
 			javaClass.setAbstract(true);
@@ -402,8 +400,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	 *            is used when there is no superType given, can be null too
 	 */
 	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
-			at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
-			Class<?> defaultSuperclass) throws MojoExecutionException {
+			final at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
+			final Class<?> defaultSuperclass) throws MojoExecutionException {
 
 		final JavaInterface superClass = new JavaInterface();
 
@@ -466,7 +464,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 
 		JavaMemberType ret = null;
 
-		// TODO: temporarily disabled, this would not work with hibernate FETCH JOINS!
+		// TODO: temporarily disabled, this would not work with hibernate FETCH
+		// JOINS!
 		// if (CollectionsType.COLLECTION.equals(collectionType)) {
 		// ret = new JavaMemberType(Collection.class);
 		// } else if (CollectionsType.SET.equals(collectionType)) {

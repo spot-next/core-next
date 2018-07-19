@@ -17,7 +17,7 @@
             <!-- item type generation -->
             <plugin>
                 <groupId>at.spot</groupId>
-                <artifactId>spot-core-maven-plugins</artifactId>
+                <artifactId>spot-maven-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>

@@ -142,18 +142,18 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					CtClass currentClass = clazz;
 
 					while (currentClass != null) {
-						Map<CtField, Annotation> properties = Stream.of(currentClass.getFields()).filter(f -> {
+						final Map<CtField, Annotation> properties = Stream.of(currentClass.getFields()).filter(f -> {
 							try {
 								return f.getAnnotation(Property.class) != null;
-							} catch (ClassNotFoundException e) {
+							} catch (final ClassNotFoundException e) {
 								LOG.warn(e.getMessage());
 							}
 
 							return false;
 						}).collect(Collectors.toMap(Function.identity(), f -> getAnnotation(f, Property.class).get()));
 
-						for (Map.Entry<CtField, Annotation> propertyField : properties.entrySet()) {
-							BooleanMemberValue unique = (BooleanMemberValue) propertyField.getValue()
+						for (final Map.Entry<CtField, Annotation> propertyField : properties.entrySet()) {
+							final BooleanMemberValue unique = (BooleanMemberValue) propertyField.getValue()
 									.getMemberValue(MV_UNIQUE);
 							if (unique != null && unique.getValue()) {
 								fieldNamesForUniqueConstraint.add(propertyField.getKey().getName());
@@ -164,7 +164,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					}
 
 					if (fieldNamesForUniqueConstraint.size() > 0) {
-						ConstPool pool = clazz.getClassFile2().getConstPool();
+						final ConstPool pool = clazz.getClassFile2().getConstPool();
 
 						// @Table
 						final Annotation tableAnnotation = createAnnotation(pool, Table.class);
@@ -173,16 +173,16 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						tableAnnotation.addMemberValue("uniqueConstraints", constraintsArrayVal);
 
 						final AnnotationMemberValue actualUniqueConstraintVal = new AnnotationMemberValue(pool);
-						Annotation uniqueConstraintsAnnotation = createAnnotation(pool, UniqueConstraint.class);
+						final Annotation uniqueConstraintsAnnotation = createAnnotation(pool, UniqueConstraint.class);
 						actualUniqueConstraintVal.setValue(uniqueConstraintsAnnotation);
 						constraintsArrayVal.setValue(new MemberValue[] { actualUniqueConstraintVal });
 
-						ArrayMemberValue columns = new ArrayMemberValue(pool);
+						final ArrayMemberValue columns = new ArrayMemberValue(pool);
 						uniqueConstraintsAnnotation.addMemberValue("columnNames", columns);
 
 						// add column names
 						columns.setValue(fieldNamesForUniqueConstraint.stream().map(c -> {
-							StringMemberValue colVal = new StringMemberValue(pool);
+							final StringMemberValue colVal = new StringMemberValue(pool);
 							colVal.setValue(c);
 							return colVal;
 						}).collect(Collectors.toList()).toArray(new MemberValue[] {}));
@@ -272,7 +272,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		Annotation ann = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
+		final Annotation ann = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
 
 		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
 		columnName.setValue(field.getName());
@@ -365,7 +365,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected List<Annotation> createOrderedListAnnotation(final CtClass entityClass, final CtField field)
 			throws IllegalClassTransformationException {
 
-		List<Annotation> annotations = new ArrayList<>();
+		final List<Annotation> annotations = new ArrayList<>();
 
 		// final Annotation orderColumnAnn = createAnnotation(entityClass,
 		// OrderColumn.class);
@@ -419,8 +419,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
-	 * unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property
+	 * has a unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {

@@ -19,7 +19,7 @@
 
 	<modules>
 		<module>build-tools</module>
-		<module>spot-core-maven-plugins</module>
+		<module>spot-maven-plugin</module>
 		<module>spot-core-support</module>
 		<module>spot-core-model-infrastructure</module>
 		<module>spot-core-base-models</module>

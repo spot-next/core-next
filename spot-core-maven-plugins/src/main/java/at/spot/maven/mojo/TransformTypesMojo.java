@@ -27,6 +27,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,25 +55,26 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Marco Semiao
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
-public class TransformMojo extends AbstractMojo {
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+public class TransformTypesMojo extends AbstractMojo {
 
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
-	@Parameter
-	private String[] classFileTransformers;
+	@Parameter(property = "classFileTransformers", name = "classFileTransformers", alias = "transformers", required = true)
+	private List<String> classFileTransformers;
 
 	@Parameter
 	private boolean includeJars;
 
+	@Override
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		final ClassLoader cl = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
 
 		if (CollectionUtils.isNotEmpty(transformers)) {
-			for (File f : FileUtils.getFiles(project.getBuild().getOutputDirectory())) {
+			for (final File f : FileUtils.getFiles(project.getBuild().getOutputDirectory())) {
 				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
 					String relativeClassFilePath = StringUtils.remove(f.getPath(),
 							project.getBuild().getOutputDirectory());
@@ -83,17 +85,17 @@ public class TransformMojo extends AbstractMojo {
 					byte[] byteCode;
 					try {
 						byteCode = Files.readAllBytes(f.toPath());
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						throw new MojoExecutionException(String.format("Can't read bytecode for class %s", className),
 								e);
 					}
 
 					byte[] modifiedByteCode = byteCode;
 
-					for (ClassFileTransformer t : transformers) {
+					for (final ClassFileTransformer t : transformers) {
 						try {
 							modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
-						} catch (IllegalClassFormatException e) {
+						} catch (final IllegalClassFormatException e) {
 							getLog().warn(String.format("Can't transform class %s, transformer %s", className,
 									t.getClass().getSimpleName()));
 						}
@@ -107,7 +109,7 @@ public class TransformMojo extends AbstractMojo {
 						try {
 							fileWriter = new FileOutputStream(f);
 							fileWriter.write(modifiedByteCode);
-						} catch (IOException e) {
+						} catch (final IOException e) {
 							throw new MojoExecutionException(
 									"Could not write modified class: " + relativeClassFilePath);
 						} finally {
@@ -125,16 +127,19 @@ public class TransformMojo extends AbstractMojo {
 				try {
 					if ("jar".equals(packaging) && artifact != null) {
 						final File source = artifact.getFile();
-						final File destination = new File(source.getParent(), "instrument.jar");
 
-						final JarTransformer transform = new JarTransformer(getLog(), cl, Arrays.asList(source),
-								transformers);
-						transform.transform(destination);
+						if (source.isFile()) {
+							final File destination = new File(source.getParent(), "instrument.jar");
 
-						final File sourceRename = new File(source.getParent(), "notransform-" + source.getName());
+							final JarTransformer transform = new JarTransformer(getLog(), cl, Arrays.asList(source),
+									transformers);
+							transform.transform(destination);
 
-						source.renameTo(sourceRename);
-						destination.renameTo(source);
+							final File sourceRename = new File(source.getParent(), "notransform-" + source.getName());
+
+							source.renameTo(sourceRename);
+							destination.renameTo(source);
+						}
 					} else {
 						getLog().debug("Not a jar file");
 					}
@@ -173,23 +178,28 @@ public class TransformMojo extends AbstractMojo {
 				classPathUrls.add(new File(path).toURI().toURL().getFile());
 			}
 
-			final List<ClassFileTransformer> list = new ArrayList<ClassFileTransformer>(classFileTransformers.length);
+			if (CollectionUtils.isNotEmpty(classFileTransformers)) {
+				final List<ClassFileTransformer> list = new ArrayList<>(classFileTransformers.size());
 
-			for (final String classFileTransformer : classFileTransformers) {
-				final Class<?> clazz = cl.loadClass(classFileTransformer);
-				final ClassFileTransformer transformer = (ClassFileTransformer) clazz.newInstance();
+				for (final String classFileTransformer : classFileTransformers) {
+					final Class<?> clazz = cl.loadClass(classFileTransformer);
+					final ClassFileTransformer transformer = (ClassFileTransformer) clazz.newInstance();
 
-				if (transformer instanceof AbstractBaseClassTransformer) {
-					AbstractBaseClassTransformer baseClassTransformer = ((AbstractBaseClassTransformer) transformer);
+					if (transformer instanceof AbstractBaseClassTransformer) {
+						final AbstractBaseClassTransformer baseClassTransformer = ((AbstractBaseClassTransformer) transformer);
 
-					baseClassTransformer.addClassPaths(project.getBuild().getOutputDirectory());
-					baseClassTransformer.addClassPaths(classPathUrls);
+						baseClassTransformer.addClassPaths(project.getBuild().getOutputDirectory());
+						baseClassTransformer.addClassPaths(classPathUrls);
+					}
+
+					list.add(transformer);
 				}
 
-				list.add(transformer);
+				return list;
+			} else {
+				getLog().warn("No class file transformers configured!");
+				return Collections.emptyList();
 			}
-
-			return list;
 		} catch (final Exception e) {
 			throw new MojoExecutionException(e.getMessage(), e);
 		}
