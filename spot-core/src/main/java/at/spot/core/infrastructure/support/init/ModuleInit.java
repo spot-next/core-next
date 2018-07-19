@@ -14,6 +14,7 @@ import org.springframework.context.event.EventListener;
 
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.service.ConfigurationService;
+import at.spot.core.infrastructure.service.LoggingService;
 
 @Configuration
 @Priority(value = -1)
@@ -26,6 +27,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 	@Resource
 	protected ConfigurationService configurationService;
+
+	@Resource
+	protected LoggingService loggingService;
 
 	/**
 	 * Called when the spring application context has been initialized.
@@ -47,6 +51,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		if (configurationService.getBoolean("core.setup.import.sampledata", false)) {
 			importSampleData();
 		}
+
+		loggingService.info("Initialization complete");
 	}
 
 	/**

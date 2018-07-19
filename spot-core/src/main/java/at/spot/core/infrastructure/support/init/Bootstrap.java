@@ -128,11 +128,11 @@ public class Bootstrap {
 		builder.addCommandLineProperties(true);
 
 		final Map<String, Object> props = new HashMap<>();
-		props.put("initializeTypeSystem", options.isInitializeTypeSystem());
-		props.put("updateTypeSystem", options.isUpdateTypeSystem());
-		props.put("cleanTypeSystem", options.isCleanTypeSystem());
-		props.put("importInitialData", options.isImportInitialData());
-		props.put("importSampleData", options.isImportSampleData());
+		props.put("core.setup.typesystem.initialize", options.isInitializeTypeSystem());
+		props.put("core.setup.typesystem.update", options.isUpdateTypeSystem());
+		props.put("core.setup.typesystem.clean", options.isCleanTypeSystem());
+		props.put("core.setup.import.initialdata", options.isImportInitialData());
+		props.put("core.setup.import.sampledata", options.isImportSampleData());
 
 		builder.properties(props);
 	}

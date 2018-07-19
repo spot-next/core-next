@@ -285,8 +285,19 @@
 					</validator>
 				</validators>
 			</property>
-			<property name="locale" type="Locale">
-				<description>The java locale associated with this language.</description>
+			<property name="isoCode" type="String">
+				<description>
+                    The ISO-3 code of the language.
+                    @see https://en.wikipedia.org/wiki/ISO_639-1.
+                </description>
+				<validators>
+					<validator javaClass="org.hibernate.validator.constraints.Length">
+						<argument name="max" numberValue="2" />
+					</validator>
+				</validators>
+			</property>
+			<property name="name" type="String">
+				<description>The international name of the language.</description>
 			</property>
 		</properties>
 	</type>
