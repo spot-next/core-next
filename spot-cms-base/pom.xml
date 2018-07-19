@@ -20,14 +20,14 @@
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>itemTypeGeneration</goal>
+                            <goal>generate-types</goal>
                         </goals>
                     </execution>
 					<execution>
 						<id>Item type post-processing</id>
 						<phase>process-classes</phase>
 						<goals>
-							<goal>transform</goal>
+							<goal>transform-types</goal>
 						</goals>
 						<configuration>
 							<includeJars>false</includeJars>

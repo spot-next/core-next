@@ -11,6 +11,7 @@ public abstract class Query<T> {
 	protected int pageSize = Integer.MAX_VALUE;
 	protected final List<String> eagerFetchRelationProperties = new ArrayList<>();
 	protected boolean eagerFetchRelations = false;
+	protected boolean ignoreCache = false;
 
 	/**
 	 * @param resultClass
@@ -44,6 +45,14 @@ public abstract class Query<T> {
 
 	public List<String> getEagerFetchRelationProperties() {
 		return eagerFetchRelationProperties;
+	}
+
+	public boolean isIgnoreCache() {
+		return ignoreCache;
+	}
+
+	public void setIgnoreCache(boolean ignoreCache) {
+		this.ignoreCache = ignoreCache;
 	}
 
 	/**

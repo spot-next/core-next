@@ -102,8 +102,6 @@ public class TransformTypesMojo extends AbstractMojo {
 					}
 
 					if (modifiedByteCode != null && modifiedByteCode != byteCode) {
-						getLog().debug("Transformed: " + className);
-
 						OutputStream fileWriter = null;
 
 						try {
@@ -114,7 +112,10 @@ public class TransformTypesMojo extends AbstractMojo {
 									"Could not write modified class: " + relativeClassFilePath);
 						} finally {
 							CloseUtil.closeQuietly(fileWriter);
+							getLog().info("Applied transformation to type: " + f.getAbsolutePath());
 						}
+					} else {
+						getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
 					}
 
 				}

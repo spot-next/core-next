@@ -8,5 +8,4 @@ public enum ImpexMergeMode {
 	private ImpexMergeMode(String code) {
 		this.code = code;
 	}
-
 }

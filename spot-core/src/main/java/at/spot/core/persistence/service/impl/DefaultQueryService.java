@@ -53,6 +53,12 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 		final List<T> resultList = query(translated).getResultList();
 
+		// TODO this is a pretty ugly hack, find a way to evict entities in the
+		// persistence context, when executing DLM queries.
+		if (query.isIgnoreCache()) {
+			persistenceService.refresh(resultList);
+		}
+
 		return new QueryResult<T>(resultList, query.getPage(), query.getPageSize());
 	}
 }

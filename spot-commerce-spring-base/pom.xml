@@ -23,7 +23,7 @@
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>itemTypeGeneration</goal>
+                            <goal>generate-types</goal>
                         </goals>
                     </execution>
                 </executions>

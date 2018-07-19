@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -238,14 +239,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						itemsToSave.add(insertItem(unit, rawItem));
 
 					} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
-						Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem,
-								config);
-
 						// First we fetch the item based on the unique columns
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
+								rawItem, config);
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
+
 						// if no matching item is found, we tread this the same way as an INSERT COMMAND
-						if (existingItem == null) {
-							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem));
+						if (existingItem != null) {
+							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
 						} else {
 							throw new ImpexImportException(String
 									.format("Could not find item for update with unique properties: %s", uniqueParams));
@@ -255,15 +256,16 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						// for UDPATE we can create a JPQL query
 
 						// First we fetch the item based on the unique columns
-						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(),
-								getUniqueAttributValues(unit.getHeaderColumns(), rawItem, config)));
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
+								rawItem, config);
+						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
 
-						// if no matching item is found, we tread this the same way as an INSERT COMMAND
-						if (existingItem == null) {
-							itemsToSave.add(insertItem(unit, rawItem));
+						// if a matching item is found, we update it
+						if (existingItem != null) {
+							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
 						} else {
-							// otherwise we create an update JPQL query
-							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem));
+							// otherwise we create an INSERT JPQL query
+							itemsToSave.add(insertItem(unit, rawItem));
 						}
 
 					} else if (ImpexCommand.REMOVE.equals(unit.getCommand())) {
@@ -302,14 +304,19 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return item;
 	}
 
-	private JpqlQuery<Void> createUpdateQuery(Item item, Map<ColumnDefinition, Object> rawItem) {
+	private JpqlQuery<Void> createUpdateQuery(Item item, Map<ColumnDefinition, Object> rawItem,
+			Set<String> propertyToIgnore) {
+
 		final List<String> whereClauses = new ArrayList<>();
 		final Map<String, Object> params = new HashMap<>();
 		final String typeName = item.getClass().getSimpleName();
 
 		for (Map.Entry<ColumnDefinition, Object> i : rawItem.entrySet()) {
-			whereClauses.add(typeName + "." + i.getKey().getPropertyName() + " = :" + i.getKey().getPropertyName());
-			params.put(i.getKey().getPropertyName(), i.getValue());
+			// only add the column value if it is not to ignore
+			if (propertyToIgnore != null && !propertyToIgnore.contains(i.getKey().getPropertyName())) {
+				whereClauses.add(typeName + "." + i.getKey().getPropertyName() + " = :" + i.getKey().getPropertyName());
+				params.put(i.getKey().getPropertyName(), i.getValue());
+			}
 		}
 
 		final String whereClause = whereClauses.stream().collect(Collectors.joining(" AND "));
@@ -317,7 +324,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		params.put("pk", item.getPk());
 
 		JpqlQuery<Void> query = new JpqlQuery<>(
-				String.format("UPDATE %s AS %s SET %s WHERE %s.pk = ?pk", typeName, typeName, whereClause, typeName),
+				String.format("UPDATE %s AS %s SET %s WHERE %s.pk = :pk", typeName, typeName, whereClause, typeName),
 				params, Void.class);
 
 		return query;
@@ -439,7 +446,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		ImpexMergeMode mode = ImpexMergeMode.ADD;
 
 		if (modeVal != null) {
-			mode = ImpexMergeMode.valueOf(modeVal);
+			mode = ImpexMergeMode.valueOf(modeVal.toUpperCase());
 		}
 
 		return mode;

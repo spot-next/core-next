@@ -32,7 +32,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.jpa.QueryHints;
 import org.hibernate.query.Query;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
@@ -49,6 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.ModelQuery;
 
 import at.spot.core.infrastructure.annotation.Property;
@@ -149,8 +149,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
 				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
-				query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
+				setCacheSettings(session, sourceQuery, query);
 				setFetchSubGraphsHint(session, sourceQuery, query);
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
@@ -173,7 +174,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				}
 
 				// optimize query
-				query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
 
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
@@ -182,6 +183,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// only try to load results if the result type is not Void
 				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
 					query.executeUpdate();
+					session.flush();
 				} else {
 					final List<Tuple> resultList = query.list();
 					results = new ArrayList<>();
@@ -234,6 +236,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 
 		return results;
+	}
+
+	private <T, Q extends at.spot.core.persistence.query.Query<T>> void setCacheSettings(Session session,
+			JpqlQuery<T> sourceQuery, Query<T> query) {
+
+		if (sourceQuery.isIgnoreCache()) {
+			query.setHint("org.hibernate.cacheable", true);
+		}
 	}
 
 	protected <T, Q extends at.spot.core.persistence.query.Query<T>> void setFetchSubGraphsHint(final Session session,

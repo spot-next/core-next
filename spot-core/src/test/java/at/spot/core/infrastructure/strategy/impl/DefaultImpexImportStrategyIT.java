@@ -117,6 +117,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 		// check if data has been updated
 		query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals(groupId));
+		query.setIgnoreCache(true);
 		result = queryService.query(query);
 
 		Assert.assertEquals(groupShortName, result.getResultList().get(0).getShortName());
