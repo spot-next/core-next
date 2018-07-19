@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{}JavaType">
  *       &lt;attribute name="typeCode" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="persistable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,6 +33,8 @@ public class ItemType
 
     @XmlAttribute(name = "typeCode")
     protected String typeCode;
+    @XmlAttribute(name = "persistable")
+    protected Boolean persistable;
 
     /**
      * Ruft den Wert der typeCode-Eigenschaft ab.
@@ -55,6 +58,34 @@ public class ItemType
      */
     public void setTypeCode(String value) {
         this.typeCode = value;
+    }
+
+    /**
+     * Ruft den Wert der persistable-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isPersistable() {
+        if (persistable == null) {
+            return true;
+        } else {
+            return persistable;
+        }
+    }
+
+    /**
+     * Legt den Wert der persistable-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setPersistable(Boolean value) {
+        this.persistable = value;
     }
 
 }
