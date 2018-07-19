@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import at.spot.core.infrastructure.interceptor.ItemInterceptor;
 import at.spot.core.infrastructure.service.TypeService;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.types.Item;
 
 public class ItemInterceptorRegistry<I extends ItemInterceptor<Item>> implements MappingRegistry<String, I> {
 

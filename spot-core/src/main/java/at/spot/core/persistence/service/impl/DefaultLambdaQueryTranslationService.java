@@ -17,8 +17,8 @@ import at.spot.core.persistence.query.lambda.SerializablePredicate;
 import at.spot.core.persistence.query.lambda.ToJpqlQueryVisitor;
 
 import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.LambdaQueryTranslationService;
+import at.spot.core.types.Item;
 
 @Service
 public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslationService {

@@ -38,8 +38,8 @@ import at.spot.core.infrastructure.maven.xml.MapType;
 import at.spot.core.infrastructure.maven.xml.Property;
 import at.spot.core.infrastructure.maven.xml.RelationType;
 import at.spot.core.infrastructure.maven.xml.Types;
-import at.spot.core.model.Item;
 import at.spot.core.support.util.FileUtils;
+import at.spot.core.types.Item;
 import at.spot.maven.exception.IllegalItemTypeDefinitionException;
 
 public class ItemTypeDefinitionUtil {

@@ -56,12 +56,12 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")

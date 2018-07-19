@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Item>> {
 

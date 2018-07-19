@@ -18,9 +18,9 @@ import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.types.Item;
 
 @Service
 public interface PersistenceService {

@@ -3,7 +3,7 @@ package at.spot.core.infrastructure.service.impl;
 import org.springframework.stereotype.Service;
 
 import at.spot.core.infrastructure.service.AccessControlService;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * This is a dummy implementation of the {@link AccessControlService} that just

@@ -1,4 +1,4 @@
-package at.spot.core.model;
+package at.spot.core.types;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;

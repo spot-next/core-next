@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.service;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 import at.spot.itemtype.core.user.User;
 
 /**

@@ -57,9 +57,10 @@ import at.spot.core.infrastructure.maven.xml.Validators;
 import at.spot.core.infrastructure.type.AccessorType;
 import at.spot.core.infrastructure.type.RelationCollectionType;
 import at.spot.core.infrastructure.type.RelationNodeType;
-import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
+import at.spot.core.types.Bean;
+import at.spot.core.types.Item;
 import at.spot.maven.exception.IllegalItemTypeDefinitionException;
 import at.spot.maven.util.ItemTypeDefinitionUtil;
 import at.spot.maven.velocity.JavaMemberModifier;
@@ -210,6 +211,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		for (final BeanType beanType : typeDefinitions.getBeanTypes().values()) {
 			final JavaClass bean = new JavaClass(beanType.getName(), beanType.getPackage());
 			bean.setDescription(beanType.getDescription());
+			bean.setVisibility(Visibility.PUBLIC);
+			populateSuperType(beanType, typeDefinitions.getBeanTypes().get(beanType.getExtends()), bean, Bean.class);
 
 			if (beanType.getProperties() != null) {
 				for (final Property prop : beanType.getProperties().getProperty()) {
@@ -244,7 +247,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 			}
 
 			final JavaClass javaClass = createItemTypeClass(type);
-			populateSuperType(type, javaClass);
+			populateSuperType(type, typeDefinitions.getItemTypes().get(type.getExtends()), javaClass, Item.class);
 			populateProperties(type, javaClass);
 			populateRelationProperties(type, javaClass);
 
@@ -367,6 +370,7 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
 		final JavaClass javaClass = new JavaClass(type.getName(), type.getPackage());
 		javaClass.setDescription(type.getDescription());
+		javaClass.setVisibility(Visibility.PUBLIC);
 
 		// add itemtype annotation
 		// ignore base item type
@@ -379,7 +383,8 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		typeAnnotation.addParameter("typeCode", type.getTypeCode(), AnnotationValueType.STRING);
 		javaClass.addAnnotation(typeAnnotation);
 
-		typeAnnotation.addParameter("persistable", type.isPersistable(), AnnotationValueType.BOOLEAN);
+		// typeAnnotation.addParameter("persistable", type.isPersistable(),
+		// AnnotationValueType.BOOLEAN);
 
 		if (type.isAbstract() != null && type.isAbstract()) {
 			javaClass.setAbstract(true);
@@ -388,26 +393,36 @@ public class ItemTypeGenerationMojo extends AbstractMojo {
 		return javaClass;
 	}
 
-	protected void populateSuperType(final ItemType type, final JavaClass javaClass) throws MojoExecutionException {
+	/**
+	 * Populates the super class for the given JavaType.
+	 * 
+	 * @param javaClass
+	 *            the class to populate with a super types
+	 * @param defaultSuperclass
+	 *            is used when there is no superType given, can be null too
+	 */
+	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
+			at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
+			Class<?> defaultSuperclass) throws MojoExecutionException {
+
 		final JavaInterface superClass = new JavaInterface();
 
 		if (StringUtils.isNotBlank(type.getExtends())) {
-			final ItemType superItemType = typeDefinitions.getItemTypes().get(type.getExtends());
-
-			if (superItemType != null) {
-				superClass.setName(superItemType.getName());
-				superClass.setPackagePath(superItemType.getPackage());
+			if (superType != null) {
+				superClass.setName(superType.getName());
+				superClass.setPackagePath(superType.getPackage());
 			} else {
-				throw new MojoExecutionException(String.format("Super type %s not found for itemtype %s",
-						type.getExtends(), type.getTypeCode()));
+				throw new MojoExecutionException(
+						String.format("Super type %s not found for type %s", type.getExtends(), type.getName()));
 			}
 		} else {
-			superClass.setName("Item");
-			superClass.setPackagePath(Item.class.getPackage().getName());
+			if (defaultSuperclass != null) {
+				superClass.setName(defaultSuperclass.getSimpleName());
+				superClass.setPackagePath(defaultSuperclass.getPackage().getName());
+			}
 		}
 
 		javaClass.setSuperClass(superClass);
-		javaClass.setVisibility(Visibility.PUBLIC);
 	}
 
 	protected String generateMethodName(final String prefix, final String name) {

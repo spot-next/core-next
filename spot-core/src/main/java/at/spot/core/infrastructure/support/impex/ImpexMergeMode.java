@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.support.impex;
 
 public enum ImpexMergeMode {
-	ADD("add"), REMOVE("remove"), REPLACE("replace");
+	ADD("add"), APPEND("append"), REMOVE("remove"), REPLACE("replace");
 
 	private String code;
 

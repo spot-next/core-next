@@ -12,7 +12,7 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ItemTypeResolver extends ClassNameIdResolver {
 

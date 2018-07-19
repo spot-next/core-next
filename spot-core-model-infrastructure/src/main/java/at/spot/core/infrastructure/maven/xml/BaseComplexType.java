@@ -29,8 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BaseComplexType")
 @XmlSeeAlso({
     EnumType.class,
-    BeanType.class,
-    ItemType.class
+    JavaType.class
 })
 public abstract class BaseComplexType
     extends BaseType

@@ -44,6 +44,10 @@
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
+			<property name="ignoreErrors" type="Boolean">
+				<description>If true import errors are ignored are ignored and processing is continued</description>
+				<defaultValue>false</defaultValue>
+			</property>
 		</properties>
 	</bean>
 

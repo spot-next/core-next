@@ -30,22 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ItemType }
-     * 
-     */
-    public ItemType createItemType() {
-        return new ItemType();
-    }
-
-    /**
-     * Create an instance of {@link BeanType }
-     * 
-     */
-    public BeanType createBeanType() {
-        return new BeanType();
-    }
-
-    /**
      * Create an instance of {@link Types }
      * 
      */
@@ -83,6 +67,22 @@ public class ObjectFactory {
      */
     public EnumType createEnumType() {
         return new EnumType();
+    }
+
+    /**
+     * Create an instance of {@link BeanType }
+     * 
+     */
+    public BeanType createBeanType() {
+        return new BeanType();
+    }
+
+    /**
+     * Create an instance of {@link ItemType }
+     * 
+     */
+    public ItemType createItemType() {
+        return new ItemType();
     }
 
     /**
@@ -166,19 +166,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ItemType.Properties }
+     * Create an instance of {@link at.spot.core.infrastructure.maven.xml.JavaType.Properties }
      * 
      */
-    public ItemType.Properties createItemTypeProperties() {
-        return new ItemType.Properties();
-    }
-
-    /**
-     * Create an instance of {@link BeanType.Properties }
-     * 
-     */
-    public BeanType.Properties createBeanTypeProperties() {
-        return new BeanType.Properties();
+    public at.spot.core.infrastructure.maven.xml.JavaType.Properties createJavaTypeProperties() {
+        return new at.spot.core.infrastructure.maven.xml.JavaType.Properties();
     }
 
 }

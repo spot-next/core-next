@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ValueResolutionDescriptorParser {
 

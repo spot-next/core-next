@@ -9,7 +9,7 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.management.populator.Populator;
 import at.spot.core.management.support.data.GenericItemDefinitionData;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * Sets all properties of the source {@link Item} as property of the ItemData

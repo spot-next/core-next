@@ -9,9 +9,9 @@ import at.spot.core.infrastructure.exception.ModelCreationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.types.Item;
 
 public interface ModelService {
 	/**

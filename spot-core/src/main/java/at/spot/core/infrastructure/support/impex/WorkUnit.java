@@ -3,7 +3,7 @@ package at.spot.core.infrastructure.support.impex;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class WorkUnit {
 	private Class<? extends Item> itemType;

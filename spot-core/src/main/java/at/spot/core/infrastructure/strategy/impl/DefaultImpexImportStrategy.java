@@ -42,9 +42,9 @@ import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ValidationUtil;
+import at.spot.core.types.Item;
 import at.spot.itemtype.core.beans.ImportConfiguration;
 
 @Service
@@ -103,7 +103,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			processWorkUnits(workUnits);
 
 			loggingService.debug(String.format("Importing %s work units", workUnits.size()));
-			importWorkUnits(workUnits);
+			importWorkUnits(workUnits, config);
 
 		} else {
 			loggingService.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
@@ -184,7 +184,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected void importWorkUnits(final List<WorkUnit> workUnits) throws ImpexImportException {
+	protected void importWorkUnits(final List<WorkUnit> workUnits, ImportConfiguration config)
+			throws ImpexImportException {
 		final List<Item> itemsToSave = new ArrayList<>();
 		final List<JpqlQuery<Void>> itemsToUpdate = new ArrayList<>();
 		final List<JpqlQuery<Void>> itemsToRemove = new ArrayList<>();
@@ -237,7 +238,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						itemsToSave.add(insertItem(unit, rawItem));
 
 					} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
-						Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem);
+						Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem,
+								config);
 
 						// First we fetch the item based on the unique columns
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
@@ -248,12 +250,13 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							throw new ImpexImportException(String
 									.format("Could not find item for update with unique properties: %s", uniqueParams));
 						}
+
 					} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
 						// for UDPATE we can create a JPQL query
 
 						// First we fetch the item based on the unique columns
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(),
-								getUniqueAttributValues(unit.getHeaderColumns(), rawItem)));
+								getUniqueAttributValues(unit.getHeaderColumns(), rawItem, config)));
 
 						// if no matching item is found, we tread this the same way as an INSERT COMMAND
 						if (existingItem == null) {
@@ -262,6 +265,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							// otherwise we create an update JPQL query
 							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem));
 						}
+
 					} else if (ImpexCommand.REMOVE.equals(unit.getCommand())) {
 						itemsToRemove.add(createRemoveQuery(unit, rawItem));
 					}
@@ -337,22 +341,55 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return query;
 	}
 
+	/**
+	 * Return the unique resolved (!) properties.
+	 * 
+	 * @throws ImpexImportException
+	 *             if one of the given columns is a collection or a map, as this is
+	 *             not supported.
+	 */
 	private Map<String, Object> getUniqueAttributValues(List<ColumnDefinition> headerColumns,
-			Map<ColumnDefinition, Object> rawItem) {
+			Map<ColumnDefinition, Object> rawItem, ImportConfiguration config) throws ImpexImportException {
 
-		Map<String, Object> params = headerColumns.stream().filter(c -> c.getModifiers().containsKey("unique"))
-				.collect(Collectors.toMap(c -> c.getPropertyName(), c -> rawItem.get(c)));
-		return params;
+		final Map<String, Object> ret = new HashMap<>();
+
+		for (ColumnDefinition col : headerColumns) {
+			if (isCollectionType(col) || isMapType(col)) {
+				final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
+
+				if (config.getIgnoreErrors()) {
+					loggingService.warn(message);
+				} else {
+					throw new ImpexImportException(message);
+				}
+			}
+
+			// only look at the unique properties
+			if (col.getModifiers().containsKey("unique")) {
+				ret.put(col.getPropertyName(), rawItem.get(col));
+			}
+		}
+
+		return ret;
+	}
+
+	private boolean isCollectionType(ColumnDefinition columnDefinition) {
+		return Collection.class.isAssignableFrom(columnDefinition.getColumnType());
+	}
+
+	private boolean isMapType(ColumnDefinition columnDefinition) {
+		return Map.class.isAssignableFrom(columnDefinition.getColumnType());
 	}
 
 	@SuppressWarnings("unchecked")
 	private void setItemPropertyValue(Item item, ColumnDefinition columnDefinition, Object propertyValue) {
 
-		if (Collection.class.isAssignableFrom(columnDefinition.getColumnType())) {
-			Collection<? extends Object> colValue = (Collection<? extends Object>) modelService.getPropertyValue(item,
+		if (isCollectionType(columnDefinition)) {
+			Collection<?> colValue = (Collection<?>) modelService.getPropertyValue(item,
 					columnDefinition.getPropertyName());
 
 			switch (getMergeMode(columnDefinition)) {
+			case APPEND:
 			case ADD:
 				if (colValue == null) {
 					modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
@@ -361,28 +398,29 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				break;
 			case REMOVE:
 				if (colValue != null) {
-					colValue.removeAll((Collection) propertyValue);
+					colValue.removeAll((Collection<?>) propertyValue);
 				}
 				break;
 			case REPLACE:
-				colValue = (Collection) propertyValue;
+				colValue = (Collection<?>) propertyValue;
 				break;
 			}
 
-		} else if (Map.class.isAssignableFrom(columnDefinition.getColumnType())) {
+		} else if (isMapType(columnDefinition)) {
 			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item,
 					columnDefinition.getPropertyName());
 
 			switch (getMergeMode(columnDefinition)) {
+			case APPEND:
 			case ADD:
 				if (mapValue == null) {
 					modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
 				}
-				mapValue.putAll((Map) propertyValue);
+				mapValue.putAll((Map<?, ?>) propertyValue);
 				break;
 			case REMOVE:
 				if (mapValue != null) {
-					for (Object key : ((Map) propertyValue).keySet()) {
+					for (Object key : ((Map<?, ?>) propertyValue).keySet()) {
 						mapValue.remove(key);
 					}
 				}

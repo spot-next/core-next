@@ -3,7 +3,7 @@ package at.spot.core.persistence.valueprovider;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.NotWritablePropertyException;
 
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public interface ItemPropertyValueProvider<I extends Item, V> {
 

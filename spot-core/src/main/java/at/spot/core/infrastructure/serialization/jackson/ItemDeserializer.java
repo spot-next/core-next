@@ -19,7 +19,7 @@ import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 

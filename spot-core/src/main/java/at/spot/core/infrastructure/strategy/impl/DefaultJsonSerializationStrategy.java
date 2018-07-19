@@ -24,7 +24,7 @@ import at.spot.core.infrastructure.serialization.jackson.ItemTypeResolverBuilder
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.SerializationStrategy;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.

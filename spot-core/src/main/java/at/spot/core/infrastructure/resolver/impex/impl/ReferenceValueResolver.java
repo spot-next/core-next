@@ -20,9 +20,9 @@ import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ClassUtil;
+import at.spot.core.types.Item;
 
 @Service
 public class ReferenceValueResolver extends AbstractService implements ImpexValueResolver {

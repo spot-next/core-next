@@ -41,11 +41,11 @@ import at.spot.core.infrastructure.support.ItemTypeDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.infrastructure.support.ItemTypePropertyRelationDefinition;
 import at.spot.core.infrastructure.support.spring.Registry;
-import at.spot.core.model.Item;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.FileUtils;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.core.support.util.ValidationUtil;
+import at.spot.core.types.Item;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

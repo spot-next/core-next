@@ -1,7 +1,7 @@
 package at.spot.core.infrastructure.interceptor;
 
 import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.model.Item;
+import at.spot.core.types.Item;
 
 public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor<T> {
 	/**

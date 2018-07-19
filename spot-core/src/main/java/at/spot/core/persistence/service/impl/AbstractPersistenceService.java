@@ -15,8 +15,8 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
-import at.spot.core.model.Item;
 import at.spot.core.persistence.service.PersistenceService;
+import at.spot.core.types.Item;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
