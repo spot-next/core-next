@@ -123,6 +123,7 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 		if (object != null) {
 			try {
 				objectJson = "\nObject: " + serializationService.toJson(object);
+				objectJson = StringUtils.removeAll(objectJson, "\\s");
 			} catch (final SerializationException e) {
 				objectJson = "Could not convert info object to JSON";
 			}

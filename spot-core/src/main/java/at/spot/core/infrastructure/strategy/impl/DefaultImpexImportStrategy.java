@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,6 +41,7 @@ import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.strategy.ImpexImportStrategy;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
+import at.spot.core.infrastructure.support.LogLevel;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
@@ -279,7 +282,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 			// save each workunit so following units can reference items from before
 			loggingService.debug(() -> String.format("Saving %s new items", itemsToSave.size()));
-			modelService.saveAll(itemsToSave);
+
+			if (config.getIgnoreErrors()) {
+				executeWithIgnoreErrors(itemsToSave, (i) -> modelService.save(i),
+						(i, e) -> loggingService.log(LogLevel.WARN, "Could not save item %s - ignoring", null, i));
+			} else {
+				modelService.saveAll(itemsToSave);
+			}
+
 			itemsToSave.clear();
 
 			loggingService.debug(() -> String.format("Removing %s items", itemsToRemove.size()));
@@ -290,6 +300,21 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			loggingService.debug(() -> String.format("Updating %s items", itemsToUpdate.size()));
 			for (JpqlQuery<Void> q : itemsToUpdate) {
 				queryService.query(q);
+			}
+		}
+	}
+
+	private <T, E extends Exception> void executeWithIgnoreErrors(Collection<T> objects, Consumer<T> consumer,
+			BiConsumer<T, E> exceptionHandler) {
+
+		loggingService.debug(
+				() -> "Import config is set to 'ignoreErrors' - this might negativly influence persistence operations!");
+
+		for (T o : objects) {
+			try {
+				consumer.accept(o);
+			} catch (Exception e) {
+				exceptionHandler.accept(o, (E) e);
 			}
 		}
 	}
