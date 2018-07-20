@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.Set;
 
 import at.spot.maven.velocity.type.AbstractObject;
-import at.spot.maven.velocity.type.parts.Expression;
+import at.spot.maven.velocity.type.parts.JavaExpression;
 import at.spot.maven.velocity.type.parts.JavaMemberType;
 
 public class JavaAnnotation extends AbstractObject {
 	private static final long serialVersionUID = 1L;
 
 	protected JavaMemberType type;
-	protected Map<String, Object> parameters = new HashMap<>();
+	protected Map<String, JavaExpression> parameters = new HashMap<>();
 
 	public JavaAnnotation(final Class<? extends Annotation> type) {
 		super(type.getSimpleName());
@@ -21,7 +21,7 @@ public class JavaAnnotation extends AbstractObject {
 		this.imports.add(type.getName());
 	}
 
-	public JavaAnnotation(JavaMemberType type) {
+	public JavaAnnotation(final JavaMemberType type) {
 		super(type.getName());
 		this.type = type;
 	}
@@ -35,20 +35,20 @@ public class JavaAnnotation extends AbstractObject {
 		return type;
 	}
 
-	public Map<String, Object> getParameters() {
+	public Map<String, JavaExpression> getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(final Map<String, Object> parameters) {
+	public void setParameters(final Map<String, JavaExpression> parameters) {
 		this.parameters = parameters;
 	}
 
 	public void addParameter(final String key, final Class<?> value) {
-		addParameter(key, value.getName(), ValueType.CLASS);
+		addParameter(key, value.getName(), JavaValueType.CLASS);
 	}
 
-	public void addParameter(final String key, final Object value, final ValueType valueType) {
-		Expression val = new Expression(value, valueType);
+	public void addParameter(final String key, final Object value, final JavaValueType valueType) {
+		final JavaExpression val = new JavaExpression(value, valueType);
 		this.parameters.put(key, val);
 	}
 
@@ -58,12 +58,8 @@ public class JavaAnnotation extends AbstractObject {
 
 		allImports.addAll(type.getImports());
 
-		for (Object val : parameters.values()) {
-			if (val instanceof Class) {
-				allImports.add(((Class<?>) val).getName());
-			} else {
-				allImports.add(val.getClass().getName());
-			}
+		for (final JavaExpression val : parameters.values()) {
+			allImports.add(val.getValue().getClass().getName());
 		}
 
 		return allImports;

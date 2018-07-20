@@ -69,12 +69,12 @@ import at.spot.maven.velocity.Visibility;
 import at.spot.maven.velocity.type.AbstractComplexJavaType;
 import at.spot.maven.velocity.type.AbstractJavaObject;
 import at.spot.maven.velocity.type.annotation.JavaAnnotation;
-import at.spot.maven.velocity.type.annotation.ValueType;
+import at.spot.maven.velocity.type.annotation.JavaValueType;
 import at.spot.maven.velocity.type.base.JavaClass;
 import at.spot.maven.velocity.type.base.JavaEnum;
 import at.spot.maven.velocity.type.base.JavaInterface;
-import at.spot.maven.velocity.type.parts.Expression;
 import at.spot.maven.velocity.type.parts.JavaEnumValue;
+import at.spot.maven.velocity.type.parts.JavaExpression;
 import at.spot.maven.velocity.type.parts.JavaField;
 import at.spot.maven.velocity.type.parts.JavaGenericTypeArgument;
 import at.spot.maven.velocity.type.parts.JavaMemberType;
@@ -221,6 +221,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
+
+					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
+						try {
+							field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
+						} catch (final ClassNotFoundException e) {
+							throw new MojoExecutionException(String
+									.format(String.format("Could not set default value for property %s of bean type %s",
+											field.getName(), bean.getFullyQualifiedName())),
+									e);
+						}
+					}
+
 					field.setType(propType);
 					bean.addField(field);
 					populatePropertyValidators(prop.getValidators(), field);
@@ -264,7 +276,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		typeCodeConstant.setVisibility(Visibility.PUBLIC);
 		typeCodeConstant.addModifier(JavaMemberModifier.STATIC);
 		typeCodeConstant.addModifier(JavaMemberModifier.FINAL);
-		typeCodeConstant.setAssignement(new Expression(type.getTypeCode(), ValueType.STRING));
+		typeCodeConstant.setAssignement(new JavaExpression(type.getTypeCode(), JavaValueType.STRING));
 		typeCodeConstant.setType(new JavaMemberType(String.class));
 		typeCodeConstant.setName("TYPECODE");
 
@@ -280,13 +292,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 				field.setName(prop.getName());
 				field.setDescription(prop.getDescription());
 
-				if (prop.getDefaultValue() != null) {
+				if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 					try {
-						field.setAssignement(new Expression(prop.getDefaultValue()));
-					} catch (ClassNotFoundException e) {
-						throw new MojoExecutionException(
-								String.format("Could not create assignment expression for field %s of type",
-										type.getName(), field.getName()),
+						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
+					} catch (final ClassNotFoundException e) {
+						throw new MojoExecutionException(String
+								.format(String.format("Could not set default value for property %s of item type %s",
+										field.getName(), javaClass.getFullyQualifiedName())),
 								e);
 					}
 				}
@@ -317,7 +329,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 				constant.setVisibility(Visibility.PUBLIC);
 				constant.addModifier(JavaMemberModifier.STATIC);
 				constant.addModifier(JavaMemberModifier.FINAL);
-				constant.setAssignement(new Expression(prop.getName(), ValueType.STRING));
+				constant.setAssignement(new JavaExpression(prop.getName(), JavaValueType.STRING));
 				constant.setType(new JavaMemberType(String.class));
 				constant.setName("PROPERTY_" + generateConstantName(prop.getName()));
 
@@ -355,8 +367,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		getter.setCodeBlock(codeBlock);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
-		accessorAnnotation.addParameter("propertyName", field.getName(), ValueType.STRING);
-		accessorAnnotation.addParameter("type", AccessorType.get, ValueType.ENUM_VALUE);
+		accessorAnnotation.addParameter("propertyName", field.getName(), JavaValueType.STRING);
+		accessorAnnotation.addParameter("type", AccessorType.get, JavaValueType.ENUM_VALUE);
 		getter.addAnnotation(accessorAnnotation);
 
 		javaClass.addMethod(getter);
@@ -372,8 +384,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		setter.setVisibility(Visibility.PUBLIC);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
-		accessorAnnotation.addParameter("propertyName", field.getName(), ValueType.STRING);
-		accessorAnnotation.addParameter("type", AccessorType.set, ValueType.ENUM_VALUE);
+		accessorAnnotation.addParameter("propertyName", field.getName(), JavaValueType.STRING);
+		accessorAnnotation.addParameter("type", AccessorType.set, JavaValueType.ENUM_VALUE);
 		setter.addAnnotation(accessorAnnotation);
 
 		javaClass.addMethod(setter);
@@ -391,10 +403,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
 		}
 
-		typeAnnotation.addParameter("typeCode", type.getTypeCode(), ValueType.STRING);
+		typeAnnotation.addParameter("typeCode", type.getTypeCode(), JavaValueType.STRING);
 		javaClass.addAnnotation(typeAnnotation);
 
-		typeAnnotation.addParameter("persistable", type.isPersistable(), ValueType.BOOLEAN);
+		typeAnnotation.addParameter("persistable", type.isPersistable(), JavaValueType.BOOLEAN);
 
 		if (type.isAbstract() != null && type.isAbstract()) {
 			javaClass.setAbstract(true);
@@ -590,12 +602,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (propertyDefinition.getModifiers() != null) {
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
-				propAnn.addParameter("unique", propertyDefinition.getModifiers().isUnique(), ValueType.LITERAL);
+				propAnn.addParameter("unique", propertyDefinition.getModifiers().isUnique(), JavaValueType.LITERAL);
 			}
 
 			if (at.spot.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
 					.isInitial()) {
-				propAnn.addParameter("initial", propertyDefinition.getModifiers().isInitial(), ValueType.LITERAL);
+				propAnn.addParameter("initial", propertyDefinition.getModifiers().isInitial(), JavaValueType.LITERAL);
 			}
 
 			addGetter = propertyDefinition.getModifiers().isReadable();
@@ -603,18 +615,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		if (addGetter) {
-			propAnn.addParameter("readable", addGetter, ValueType.LITERAL);
+			propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 		}
 
 		if (addSetter) {
-			propAnn.addParameter("writable", addSetter, ValueType.LITERAL);
+			propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
 		}
 
 		if (propertyDefinition.getAccessors() != null
 				&& StringUtils.isNotBlank(propertyDefinition.getAccessors().getValueProvider())) {
 
 			propAnn.addParameter("itemValueProvider", propertyDefinition.getAccessors().getValueProvider(),
-					ValueType.STRING);
+					JavaValueType.STRING);
 		}
 	}
 
@@ -646,7 +658,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 				final JavaField property = new JavaField();
 				property.setDescription(rel.getDescription());
 
-				relationAnn.addParameter("relationName", rel.getName(), ValueType.STRING);
+				relationAnn.addParameter("relationName", rel.getName(), JavaValueType.STRING);
 
 				// use the mappedBy value of the other node as the property name
 				if (sourceNode != null) {
@@ -670,13 +682,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
-			relationAnn.addParameter("type", getRelationType(from, to), ValueType.ENUM_VALUE);
-			relationAnn.addParameter("mappedTo", from.getMappedBy(), ValueType.STRING);
-			relationAnn.addParameter("nodeType", nodeType, ValueType.ENUM_VALUE);
+			relationAnn.addParameter("type", getRelationType(from, to), JavaValueType.ENUM_VALUE);
+			relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
+			relationAnn.addParameter("nodeType", nodeType, JavaValueType.ENUM_VALUE);
 
 			if (to.getCardinality().equals(RelationshipCardinality.MANY)) {
 				collectionType = getCollectionType(to.getCollectionType());
-				relationAnn.addParameter("collectionType", collectionType, ValueType.ENUM_VALUE);
+				relationAnn.addParameter("collectionType", collectionType, JavaValueType.ENUM_VALUE);
 			}
 
 			// always use Sets for now, because hibernate can't handle multiple
@@ -700,11 +712,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			if (to.getModifiers() != null) {
 				if (at.spot.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers().isUnique()) {
-					propAnn.addParameter("unique", to.getModifiers().isUnique(), ValueType.LITERAL);
+					propAnn.addParameter("unique", to.getModifiers().isUnique(), JavaValueType.LITERAL);
 				}
 
 				if (addGetter != to.getModifiers().isInitial()) {
-					propAnn.addParameter("initial", to.getModifiers().isInitial(), ValueType.LITERAL);
+					propAnn.addParameter("initial", to.getModifiers().isInitial(), JavaValueType.LITERAL);
 				}
 
 				addGetter = to.getModifiers().isReadable();
@@ -712,12 +724,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 			}
 
 			if (addGetter) {
-				propAnn.addParameter("readable", addGetter, ValueType.LITERAL);
+				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 				addGetter(property, javaClass);
 			}
 
 			if (addSetter) {
-				propAnn.addParameter("writable", addSetter, ValueType.LITERAL);
+				propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
 				addSetter(property, javaClass);
 			}
 
@@ -726,7 +738,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			constant.setVisibility(Visibility.PUBLIC);
 			constant.addModifier(JavaMemberModifier.STATIC);
 			constant.addModifier(JavaMemberModifier.FINAL);
-			constant.setAssignement(new Expression(property.getName(), ValueType.STRING));
+			constant.setAssignement(new JavaExpression(property.getName(), JavaValueType.STRING));
 			constant.setType(new JavaMemberType(String.class));
 			constant.setName("PROPERTY_" + generateConstantName(property.getName()));
 
@@ -793,9 +805,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 				if (CollectionUtils.isNotEmpty(v.getArgument())) {
 					for (final ValidatorArgument a : v.getArgument()) {
 						if (a.getNumberValue() != null) {
-							ann.addParameter(a.getName(), a.getNumberValue(), ValueType.LITERAL);
+							ann.addParameter(a.getName(), a.getNumberValue(), JavaValueType.LITERAL);
 						} else if (a.getStringValue() != null) {
-							ann.addParameter(a.getName(), a.getStringValue(), ValueType.STRING);
+							ann.addParameter(a.getName(), a.getStringValue(), JavaValueType.STRING);
 						} else {
 							getLog().warn(String.format(
 									"Validator for property %s misconfigured, all attribute values are empty",

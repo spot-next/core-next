@@ -1,9 +1,9 @@
 package at.spot.maven.velocity.type.annotation;
 
-public enum ValueType {
+public enum JavaValueType {
 	BOOLEAN, STRING, LITERAL, CLASS, ENUM_VALUE, STRING_ARRAY, LITERAL_ARRAY;
 
-	public static ValueType forType(Class<?> type) {
+	public static JavaValueType forType(Class<?> type) {
 		if (Boolean.class.isAssignableFrom(type)) {
 			return BOOLEAN;
 		} else if (String.class.isAssignableFrom(type)) {
@@ -19,7 +19,7 @@ public enum ValueType {
 		return null;
 	}
 
-	public static ValueType forValue(Object instance) {
+	public static JavaValueType forValue(Object instance) {
 		if (instance instanceof Boolean) {
 			return BOOLEAN;
 		} else if (instance instanceof String) {

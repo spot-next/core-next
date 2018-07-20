@@ -3,13 +3,13 @@ package at.spot.maven.velocity.type.parts;
 public class JavaField extends JavaMember {
 	private static final long serialVersionUID = 1L;
 
-	protected Expression assignement;
+	protected JavaExpression assignement;
 
-	public Expression getAssignement() {
+	public JavaExpression getAssignement() {
 		return assignement;
 	}
 
-	public void setAssignement(Expression assignement) {
+	public void setAssignement(JavaExpression assignement) {
 		this.assignement = assignement;
 	}
 }

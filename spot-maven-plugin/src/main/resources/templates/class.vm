@@ -33,7 +33,7 @@
 			#if($ann.parameters)
 				(
 				#foreach($entry in $ann.parameters.entrySet())
-					$entry.key = $entry.value
+					$entry.key = $entry.value.value
 					#if( $foreach.hasNext ), #end
 				#end
 				)
@@ -73,7 +73,7 @@ $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superCla
 	#foreach ($field in $fields)
 		#javadoc($field.javadoc)
 		#annotations($field.annotations)
-		$field.visibility.toLowerCase() #modifiers($field.modifiers) $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement #end;
+		$field.visibility.toLowerCase() #modifiers($field.modifiers) $field.type.name#if($field.type.array) []#end#genericTypeArguments($field.type.genericArguments) $field.name #if($field.assignement) = $field.assignement.value #end;
 	#end
 
 ##    @Property(isReference = true)
