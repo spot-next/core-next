@@ -48,9 +48,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -58,6 +55,8 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
@@ -92,14 +91,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			schemaExport.setOutputFile("db-schema.sql");
 
 			try {
-				// TODO will most likely fail, implement a pure JDBC "drop database" approach?
+				// TODO will most likely fail, implement a pure JDBC "drop
+				// database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				loggingService.warn("Could not drop type system schema.");
 			}
 
-			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT),
-					metadataIntegrator.getMetadata());
+			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
@@ -110,7 +109,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			schemaExport.setFormat(true);
 			schemaExport.setDelimiter(";");
 			schemaExport.setOutputFile("db-schema.sql");
-			schemaExport.execute(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+			schemaExport.execute(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 		}
 
 		// validate schema
@@ -118,13 +117,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				.getService(SchemaManagementTool.class);
 
 		try {
-			SchemaValidator validator = tool.getSchemaValidator(entityManagerFactory.getProperties());
+			final SchemaValidator validator = tool.getSchemaValidator(entityManagerFactory.getProperties());
 			validator.doValidation(metadataIntegrator.getMetadata(), SchemaManagementToolCoordinator
 					.buildExecutionOptions(entityManagerFactory.getProperties(), ExceptionHandlerLoggedImpl.INSTANCE));
 
 			loggingService.debug("Type system schema seems to be OK");
 
-		} catch (SchemaManagementException e) {
+		} catch (final SchemaManagementException e) {
 			loggingService.warn("Type system schema needs to be initialized/updated");
 		}
 
@@ -149,7 +148,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
 				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
-				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
+				// true);
 
 				setCacheSettings(session, sourceQuery, query);
 				setFetchSubGraphsHint(session, sourceQuery, query);
@@ -174,7 +174,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				}
 
 				// optimize query
-				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE, true);
+				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
+				// true);
 
 				setParameters(sourceQuery.getParams(), query);
 				setPage(query, sourceQuery.getPage());
@@ -203,7 +204,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						// if the pojo can't be instantated, we try to create it
 						// manually and inject the
 						// data using reflection
-						// for this to work, each selected column has to have the
+						// for this to work, each selected column has to have
+						// the
 						// same alias as the
 						// pojo's property!
 						if (!pojo.isPresent()) {
@@ -229,7 +231,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			}
 		} catch (
 
-		QueryException e) {
+		final QueryException e) {
 			throw e;
 		} catch (final Exception e) {
 			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
@@ -238,8 +240,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return results;
 	}
 
-	private <T, Q extends at.spot.core.persistence.query.Query<T>> void setCacheSettings(Session session,
-			JpqlQuery<T> sourceQuery, Query<T> query) {
+	private <T, Q extends at.spot.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
+			final JpqlQuery<T> sourceQuery, final Query<T> query) {
 
 		if (sourceQuery.isIgnoreCache()) {
 			query.setHint("org.hibernate.cacheable", true);
@@ -338,7 +340,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// try {
 				// refresh(items);
 				// } catch (final ModelNotFoundException e) {
-				// throw new ModelSaveException("Could not save given items", e);
+				// throw new ModelSaveException("Could not save given items",
+				// e);
 				// }
 
 				return null;
@@ -403,7 +406,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
-	 * @return true if the item was successfully attached to the hibernate session.
+	 * @return true if the item was successfully attached to the hibernate
+	 *         session.
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
@@ -569,7 +573,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	protected Session getSession() {
-		EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
+		final EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
 				.getResource(entityManagerFactory));
 
 		if (holder != null) {
