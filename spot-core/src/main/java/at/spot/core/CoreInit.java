@@ -116,7 +116,8 @@ public class CoreInit extends ModuleInit {
 		try {
 			loggingService.debug("Importing countries");
 
-			ImportConfiguration conf = new ImportConfiguration();
+			final ImportConfiguration conf = new ImportConfiguration();
+			conf.setIgnoreErrors(true);
 			conf.setScriptIdentifier("/data/initial/countries.impex");
 			importService.importItems(ImportFormat.ImpEx, conf,
 					getClass().getResourceAsStream(conf.getScriptIdentifier()));
@@ -138,7 +139,7 @@ public class CoreInit extends ModuleInit {
 			conf.setScriptIdentifier("/data/initial/catalogs.impex");
 			importService.importItems(ImportFormat.ImpEx, conf,
 					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-		} catch (ImportException e) {
+		} catch (final ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}
 	}
@@ -149,13 +150,14 @@ public class CoreInit extends ModuleInit {
 		try {
 			final ImportConfiguration conf = new ImportConfiguration();
 			conf.setScriptIdentifier("/data/sample/users.impex");
+			conf.setIgnoreErrors(true);
 			importService.importItems(ImportFormat.ImpEx, conf,
 					getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 			conf.setScriptIdentifier("/data/sample/medias.impex");
 			importService.importItems(ImportFormat.ImpEx, conf,
 					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-		} catch (ImportException e) {
+		} catch (final ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}
 	}
