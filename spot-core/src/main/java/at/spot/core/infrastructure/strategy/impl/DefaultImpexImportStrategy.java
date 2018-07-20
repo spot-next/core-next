@@ -288,7 +288,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 			if (config.getIgnoreErrors()) {
 				executeWithIgnoreErrors(itemsToSave, (i) -> modelService.save(i), (i, e) -> loggingService
-						.log(LogLevel.WARN, String.format("Could not save item %s - ignoring", i), null, e));
+						.log(LogLevel.WARN, String.format("Could not save item %s: %s", i, e.getMessage()), null, e));
 			} else {
 				modelService.saveAll(itemsToSave);
 			}

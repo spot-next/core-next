@@ -11,20 +11,18 @@ INSERT Language;iso3Code ;isoCode ;name
                ;ain      ;        ;Ainu                                                       
                ;aka      ;ak      ;Akan                                                       
                ;akk      ;        ;Akkadian                                                   
-               ;alb      
-               ;sqi      ;sq      ;Albanian                                                   
+               ;alb      ;        ;Albanian                                                           
                ;ale      ;        ;Aleut                                                      
                ;alg      ;        ;Algonquian languages                                       
                ;alt      ;        ;Southern Altai                                             
                ;amh      ;am      ;Amharic                                                    
-               ;ang      ;        ;   English; Old (ca.450-1100)                                  
+               ;ang      ;        ;English                                                 
                ;anp      ;        ;Angika                                                     
                ;apa      ;        ;Apache languages                                           
                ;ara      ;ar      ;Arabic                                                     
                ;arc      ;        ;Official Aramaic (700-300 BCE)                             
                ;arg      ;an      ;Aragonese                                                  
-               ;arm      
-               ;hye      ;hy      ;Armenian                                                   
+               ;arm      ;        ;Armenian                                                          
                ;arn      ;        ;Mapudungun                                                 
                ;arp      ;        ;Arapaho                                                    
                ;art      ;        ;Artificial languages                                       
@@ -44,8 +42,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;bal      ;        ;Baluchi                                                    
                ;bam      ;bm      ;Bambara                                                    
                ;ban      ;        ;Balinese                                                   
-               ;baq      
-               ;eus      ;eu      ;Basque                                                     
+               ;baq      ;        ;Basque                                                           
                ;bas      ;        ;Basa                                                       
                ;bat      ;        ;Baltic languages                                           
                ;bej      ;        ;Beja                                                       
@@ -60,7 +57,6 @@ INSERT Language;iso3Code ;isoCode ;name
                ;bis      ;bi      ;Bislama                                                    
                ;bla      ;        ;Siksika                                                    
                ;bnt      ;        ;Bantu languages                                            
-               ;tib      
                ;bod      ;bo      ;Tibetan                                                    
                ;bos      ;bs      ;Bosnian                                                    
                ;bra      ;        ;Braj                                                       
@@ -69,8 +65,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;bua      ;        ;Buriat                                                     
                ;bug      ;        ;Buginese                                                   
                ;bul      ;bg      ;Bulgarian                                                  
-               ;bur      
-               ;mya      ;my      ;Burmese                                                    
+               ;bur      ;        ;Burmese                                                           
                ;byn      ;        ;Blin                                                       
                ;cad      ;        ;Caddo                                                      
                ;cai      ;        ;Central American Indian languages                          
@@ -79,14 +74,12 @@ INSERT Language;iso3Code ;isoCode ;name
                ;cau      ;        ;Caucasian languages                                        
                ;ceb      ;        ;Cebuano                                                    
                ;cel      ;        ;Celtic languages                                           
-               ;cze      
                ;ces      ;cs      ;Czech                                                      
                ;cha      ;ch      ;Chamorro                                                   
                ;chb      ;        ;Chibcha                                                    
                ;che      ;ce      ;Chechen                                                    
                ;chg      ;        ;Chagatai                                                   
-               ;chi      
-               ;zho      ;zh      ;Chinese                                                    
+               ;chi      ;        ;Chinese                                                           
                ;chk      ;        ;Chuukese                                                   
                ;chm      ;        ;Mari                                                       
                ;chn      ;        ;Chinook jargon                                             
@@ -101,25 +94,22 @@ INSERT Language;iso3Code ;isoCode ;name
                ;cop      ;        ;Coptic                                                     
                ;cor      ;kw      ;Cornish                                                    
                ;cos      ;co      ;Corsican                                                   
-               ;cpe      ;        ;   Creoles and pidgins; English based                          
-               ;cpf      ;        ;   Creoles and pidgins; French-based                           
-               ;cpp      ;        ;   Creoles and pidgins; Portuguese-based                       
+               ;cpe      ;        ;Creoles and pidgins                                     
+               ;cpf      ;        ;Creoles and pidgins                                     
+               ;cpp      ;        ;Creoles and pidgins                                     
                ;cre      ;cr      ;Cree                                                       
                ;crh      ;        ;Crimean Tatar                                              
                ;crp      ;        ;Creoles and pidgins                                        
                ;csb      ;        ;Kashubian                                                  
                ;cus      ;        ;Cushitic languages                                         
-               ;wel      
                ;cym      ;cy      ;Welsh                                                      
-               ;cze      
-               ;ces      ;cs      ;Czech                                                      
+               ;cze      ;        ;Czech                                                           
                ;dak      ;        ;Dakota                                                     
                ;dan      ;da      ;Danish                                                     
                ;dar      ;        ;Dargwa                                                     
                ;day      ;        ;Land Dayak languages                                       
                ;del      ;        ;Delaware                                                   
                ;den      ;        ;Slave (Athapascan)                                         
-               ;ger      
                ;deu      ;de      ;German                                                     
                ;dgr      ;        ;Dogrib                                                     
                ;din      ;        ;Dinka                                                      
@@ -128,41 +118,34 @@ INSERT Language;iso3Code ;isoCode ;name
                ;dra      ;        ;Dravidian languages                                        
                ;dsb      ;        ;Lower Sorbian                                              
                ;dua      ;        ;Duala                                                      
-               ;dum      ;        ;   Dutch; Middle (ca.1050-1350)                                
-               ;dut      
-               ;nld      ;nl      ;Dutch                                                      
+               ;dum      ;        ;Dutch                                                   
+               ;dut      ;        ;Dutch                                                           
                ;dyu      ;        ;Dyula                                                      
                ;dzo      ;dz      ;Dzongkha                                                   
                ;efi      ;        ;Efik                                                       
                ;egy      ;        ;Egyptian (Ancient)                                         
                ;eka      ;        ;Ekajuk                                                     
-               ;gre      
-               ;ell      ;el      ;   Greek; Modern (1453-)                                       
+               ;ell      ;el      ;Greek                                                   
                ;elx      ;        ;Elamite                                                    
                ;eng      ;en      ;English                                                    
-               ;enm      ;        ;   English; Middle (1100-1500)                                 
+               ;enm      ;        ;English                                                 
                ;epo      ;eo      ;Esperanto                                                  
                ;est      ;et      ;Estonian                                                   
-               ;baq      
                ;eus      ;eu      ;Basque                                                     
                ;ewe      ;ee      ;Ewe                                                        
                ;ewo      ;        ;Ewondo                                                     
                ;fan      ;        ;Fang                                                       
                ;fao      ;fo      ;Faroese                                                    
-               ;per      
                ;fas      ;fa      ;Persian                                                    
                ;fat      ;        ;Fanti                                                      
                ;fij      ;fj      ;Fijian                                                     
                ;fil      ;        ;Filipino                                                   
                ;fin      ;fi      ;Finnish                                                    
                ;fiu      ;        ;Finno-Ugrian languages                                     
-               ;fon      ;        ;Fon                                                        
-               ;fre      
                ;fra      ;fr      ;French                                                     
-               ;fre      
-               ;fra      ;fr      ;French                                                     
-               ;frm      ;        ;   French; Middle (ca.1400-1600)                               
-               ;fro      ;        ;   French; Old (842-ca.1400)                                   
+               ;fre      ;        ;French                                                          
+               ;frm      ;        ;French                                                  
+               ;fro      ;        ;French                                                  
                ;frr      ;        ;Northern Frisian                                           
                ;frs      ;        ;Eastern Frisian                                            
                ;fry      ;fy      ;Western Frisian                                            
@@ -172,25 +155,22 @@ INSERT Language;iso3Code ;isoCode ;name
                ;gay      ;        ;Gayo                                                       
                ;gba      ;        ;Gbaya                                                      
                ;gem      ;        ;Germanic languages                                         
-               ;geo      
-               ;kat      ;ka      ;Georgian                                                   
-               ;ger      
-               ;deu      ;de      ;German                                                     
+               ;geo      ;        ;Georgian                                                           
+               ;ger      ;        ;German                                                           
                ;gez      ;        ;Geez                                                       
                ;gil      ;        ;Gilbertese                                                 
                ;gla      ;gd      ;Gaelic                                                     
                ;gle      ;ga      ;Irish                                                      
                ;glg      ;gl      ;Galician                                                   
                ;glv      ;gv      ;Manx                                                       
-               ;gmh      ;        ;   German; Middle High (ca.1050-1500)                          
-               ;goh      ;        ;   German; Old High (ca.750-1050)                              
+               ;gmh      ;        ;German                                                  
+               ;goh      ;        ;German                                                  
                ;gon      ;        ;Gondi                                                      
                ;gor      ;        ;Gorontalo                                                  
                ;got      ;        ;Gothic                                                     
                ;grb      ;        ;Grebo                                                      
-               ;grc      ;        ;   Greek; Ancient (to 1453)                                    
-               ;gre      
-               ;ell      ;el      ;   Greek; Modern (1453-)                                       
+               ;grc      ;        ;Greek                                                   
+               ;gre      ;        ;Greek, Modern                                                           
                ;grn      ;gn      ;Guarani                                                    
                ;gsw      ;        ;Swiss German                                               
                ;guj      ;gu      ;Gujarati                                                   
@@ -211,12 +191,10 @@ INSERT Language;iso3Code ;isoCode ;name
                ;hsb      ;        ;Upper Sorbian                                              
                ;hun      ;hu      ;Hungarian                                                  
                ;hup      ;        ;Hupa                                                       
-               ;arm      
                ;hye      ;hy      ;Armenian                                                   
                ;iba      ;        ;Iban                                                       
                ;ibo      ;ig      ;Igbo                                                       
-               ;ice      
-               ;isl      ;is      ;Icelandic                                                  
+               ;ice      ;        ;Icelandic                                                           
                ;ido      ;io      ;Ido                                                        
                ;iii      ;ii      ;Sichuan Yi                                                 
                ;ijo      ;        ;Ijo languages                                              
@@ -231,7 +209,6 @@ INSERT Language;iso3Code ;isoCode ;name
                ;ipk      ;ik      ;Inupiaq                                                    
                ;ira      ;        ;Iranian languages                                          
                ;iro      ;        ;Iroquoian languages                                        
-               ;ice      
                ;isl      ;is      ;Icelandic                                                  
                ;ita      ;it      ;Italian                                                    
                ;jav      ;jv      ;Javanese                                                   
@@ -247,7 +224,6 @@ INSERT Language;iso3Code ;isoCode ;name
                ;kan      ;kn      ;Kannada                                                    
                ;kar      ;        ;Karen languages                                            
                ;kas      ;ks      ;Kashmiri                                                   
-               ;geo      
                ;kat      ;ka      ;Georgian                                                   
                ;kau      ;kr      ;Kanuri                                                     
                ;kaw      ;        ;Kawi                                                       
@@ -295,8 +271,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;lun      ;        ;Lunda                                                      
                ;luo      ;        ;Luo (Kenya and Tanzania)                                   
                ;lus      ;        ;Lushai                                                     
-               ;mac      
-               ;mkd      ;mk      ;Macedonian                                                 
+               ;mac      ;        ;Macedonian                                                           
                ;mad      ;        ;Madurese                                                   
                ;mag      ;        ;Magahi                                                     
                ;mah      ;mh      ;Marshallese                                                
@@ -304,21 +279,18 @@ INSERT Language;iso3Code ;isoCode ;name
                ;mak      ;        ;Makasar                                                    
                ;mal      ;ml      ;Malayalam                                                  
                ;man      ;        ;Mandingo                                                   
-               ;mao      
-               ;mri      ;mi      ;Maori                                                      
+               ;mao      ;        ;Māori                                                           
                ;map      ;        ;Austronesian languages                                     
                ;mar      ;mr      ;Marathi                                                    
                ;mas      ;        ;Masai                                                      
-               ;may      
-               ;msa      ;ms      ;Malay                                                      
+               ;may      ;        ;Malay                                                           
                ;mdf      ;        ;Moksha                                                     
                ;mdr      ;        ;Mandar                                                     
                ;men      ;        ;Mende                                                      
-               ;mga      ;        ;   Irish; Middle (900-1200)                                    
+               ;mga      ;        ;Irish                                                   
                ;mic      ;        ;Mi'kmaq                                                    
                ;min      ;        ;Minangkabau                                                
                ;mis      ;        ;Uncoded languages                                          
-               ;mac      
                ;mkd      ;mk      ;Macedonian                                                 
                ;mkh      ;        ;Mon-Khmer languages                                        
                ;mlg      ;mg      ;Malagasy                                                   
@@ -329,16 +301,13 @@ INSERT Language;iso3Code ;isoCode ;name
                ;moh      ;        ;Mohawk                                                     
                ;mon      ;mn      ;Mongolian                                                  
                ;mos      ;        ;Mossi                                                      
-               ;mao      
                ;mri      ;mi      ;Maori                                                      
-               ;may      
                ;msa      ;ms      ;Malay                                                      
                ;mul      ;        ;Multiple languages                                         
                ;mun      ;        ;Munda languages                                            
                ;mus      ;        ;Creek                                                      
                ;mwl      ;        ;Mirandese                                                  
                ;mwr      ;        ;Marwari                                                    
-               ;bur      
                ;mya      ;my      ;Burmese                                                    
                ;myn      ;        ;Mayan languages                                            
                ;myv      ;        ;Erzya                                                      
@@ -347,8 +316,8 @@ INSERT Language;iso3Code ;isoCode ;name
                ;nap      ;        ;Neapolitan                                                 
                ;nau      ;na      ;Nauru                                                      
                ;nav      ;nv      ;Navajo                                                     
-               ;nbl      ;nr      ;   Ndebele; South                                              
-               ;nde      ;nd      ;   Ndebele; North                                              
+               ;nbl      ;nr      ;Ndebele                                                 
+               ;nde      ;nd      ;Ndebele                                                 
                ;ndo      ;ng      ;Ndonga                                                     
                ;nds      ;        ;Low German                                                 
                ;nep      ;ne      ;Nepali                                                     
@@ -356,12 +325,11 @@ INSERT Language;iso3Code ;isoCode ;name
                ;nia      ;        ;Nias                                                       
                ;nic      ;        ;Niger-Kordofanian languages                                
                ;niu      ;        ;Niuean                                                     
-               ;dut      
                ;nld      ;nl      ;Dutch                                                      
                ;nno      ;nn      ;Norwegian Nynorsk                                          
-               ;nob      ;nb      ;   Bokmål; Norwegian                                           
+               ;nob      ;nb      ;Bokmål                                                  
                ;nog      ;        ;Nogai                                                      
-               ;non      ;        ;   Norse; Old                                                  
+               ;non      ;        ;Norse                                                   
                ;nor      ;no      ;Norwegian                                                  
                ;nqo      ;        ;N'Ko                                                       
                ;nso      ;        ;Pedi                                                       
@@ -378,7 +346,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;orm      ;om      ;Oromo                                                      
                ;osa      ;        ;Osage                                                      
                ;oss      ;os      ;Ossetian                                                   
-               ;ota      ;        ;   Turkish; Ottoman (1500-1928)                                
+               ;ota      ;        ;Turkish                                                 
                ;oto      ;        ;Otomian languages                                          
                ;paa      ;        ;Papuan languages                                           
                ;pag      ;        ;Pangasinan                                                 
@@ -387,9 +355,8 @@ INSERT Language;iso3Code ;isoCode ;name
                ;pan      ;pa      ;Panjabi                                                    
                ;pap      ;        ;Papiamento                                                 
                ;pau      ;        ;Palauan                                                    
-               ;peo      ;        ;   Persian; Old (ca.600-400 B.C.)                              
-               ;per      
-               ;fas      ;fa      ;Persian                                                    
+               ;peo      ;        ;Persian                                                 
+               ;per      ;        ;Persian                                                           
                ;phi      ;        ;Philippine languages                                       
                ;phn      ;        ;Phoenician                                                 
                ;pli      ;pi      ;Pali                                                       
@@ -397,7 +364,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;pon      ;        ;Pohnpeian                                                  
                ;por      ;pt      ;Portuguese                                                 
                ;pra      ;        ;Prakrit languages                                          
-               ;pro      ;        ;   Provençal; Old (to 1500)                                    
+               ;pro      ;        ;Provençal                                               
                ;pus      ;ps      ;Pushto                                                     
                ;que      ;qu      ;Quechua                                                    
                ;raj      ;        ;Rajasthani                                                 
@@ -406,10 +373,8 @@ INSERT Language;iso3Code ;isoCode ;name
                ;roa      ;        ;Romance languages                                          
                ;roh      ;rm      ;Romansh                                                    
                ;rom      ;        ;Romany                                                     
-               ;rum      
                ;ron      ;ro      ;Romanian                                                   
-               ;rum      
-               ;ron      ;ro      ;Romanian                                                   
+               ;rum      ;        ;Romanian                                                           
                ;run      ;rn      ;Rundi                                                      
                ;rup      ;        ;Aromanian                                                  
                ;rus      ;ru      ;Russian                                                    
@@ -426,7 +391,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;sco      ;        ;Scots                                                      
                ;sel      ;        ;Selkup                                                     
                ;sem      ;        ;Semitic languages                                          
-               ;sga      ;        ;   Irish; Old (to 900)                                         
+               ;sga      ;        ;Irish                                                   
                ;sgn      ;        ;Sign Languages                                             
                ;shn      ;        ;Shan                                                       
                ;sid      ;        ;Sidamo                                                     
@@ -434,10 +399,8 @@ INSERT Language;iso3Code ;isoCode ;name
                ;sio      ;        ;Siouan languages                                           
                ;sit      ;        ;Sino-Tibetan languages                                     
                ;sla      ;        ;Slavic languages                                           
-               ;slo      
                ;slk      ;sk      ;Slovak                                                     
-               ;slo      
-               ;slk      ;sk      ;Slovak                                                     
+               ;slo      ;        ;Slovak                                                           
                ;slv      ;sl      ;Slovenian                                                  
                ;sma      ;        ;Southern Sami                                              
                ;sme      ;se      ;Northern Sami                                              
@@ -452,9 +415,8 @@ INSERT Language;iso3Code ;isoCode ;name
                ;sog      ;        ;Sogdian                                                    
                ;som      ;so      ;Somali                                                     
                ;son      ;        ;Songhai languages                                          
-               ;sot      ;st      ;   Sotho; Southern                                             
+               ;sot      ;st      ;Sotho                                                   
                ;spa      ;es      ;Spanish                                                    
-               ;alb      
                ;sqi      ;sq      ;Albanian                                                   
                ;srd      ;sc      ;Sardinian                                                  
                ;srn      ;        ;Sranan Tongo                                               
@@ -481,8 +443,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;tgk      ;tg      ;Tajik                                                      
                ;tgl      ;tl      ;Tagalog                                                    
                ;tha      ;th      ;Thai                                                       
-               ;tib      
-               ;bod      ;bo      ;Tibetan                                                    
+               ;tib      ;        ;Tibetan Standard                                                           
                ;tig      ;        ;Tigre                                                      
                ;tir      ;ti      ;Tigrinya                                                   
                ;tiv      ;        ;Tiv                                                        
@@ -505,7 +466,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;twi      ;tw      ;Twi                                                        
                ;tyv      ;        ;Tuvinian                                                   
                ;udm      ;        ;Udmurt                                                     
-               ;uga      ;        ;Ugaritic
+               ;uga      ;        ;Ugaritic                                                   
                ;uig      ;ug      ;Uighur                                                     
                ;ukr      ;uk      ;Ukrainian                                                  
                ;umb      ;        ;Umbundu                                                    
@@ -521,8 +482,7 @@ INSERT Language;iso3Code ;isoCode ;name
                ;wal      ;        ;Wolaitta                                                   
                ;war      ;        ;Waray                                                      
                ;was      ;        ;Washo                                                      
-               ;wel      ;cy      ;Welsh
-               ;cym      ;cy      ;Welsh                                                      
+               ;wel      ;        ;Welsh                                                           
                ;wen      ;        ;Sorbian languages                                          
                ;wln      ;wa      ;Walloon                                                    
                ;wol      ;wo      ;Wolof                                                      
@@ -538,11 +498,9 @@ INSERT Language;iso3Code ;isoCode ;name
                ;zen      ;        ;Zenaga                                                     
                ;zgh      ;        ;Standard Moroccan Tamazight                                
                ;zha      ;za      ;Zhuang                                                     
-               ;chi      
                ;zho      ;zh      ;Chinese                                                    
                ;znd      ;        ;Zande languages                                            
                ;zul      ;zu      ;Zulu                                                       
                ;zun      ;        ;Zuni                                                       
                ;zxx      ;        ;No linguistic content                                      
                ;zza      ;        ;Zaza                                                       
-               

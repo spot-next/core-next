@@ -29,8 +29,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest {
 
-	public static final String MAPDB_FILE = "/var/tmp/spot-core.test.db";
-
 	@Resource
 	protected PersistenceService persistenceService;
 
