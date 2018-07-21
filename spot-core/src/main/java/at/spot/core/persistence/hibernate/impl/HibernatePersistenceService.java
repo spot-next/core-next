@@ -185,6 +185,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
 					query.executeUpdate();
 					session.flush();
+					session.clear();
 				} else {
 					final List<Tuple> resultList = query.list();
 					results = new ArrayList<>();
@@ -243,9 +244,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	private <T, Q extends at.spot.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
 			final JpqlQuery<T> sourceQuery, final Query<T> query) {
 
-		if (sourceQuery.isIgnoreCache()) {
-			query.setHint("org.hibernate.cacheable", true);
-		}
+		query.setHint("org.hibernate.cacheable", !sourceQuery.isIgnoreCache());
 	}
 
 	protected <T, Q extends at.spot.core.persistence.query.Query<T>> void setFetchSubGraphsHint(final Session session,
@@ -315,11 +314,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						session.saveOrUpdate(item);
 						// getSession().merge(item);
 
-						if (i % JDBC_BATCH_SIZE == 0) { // use same as the JDBC
-														// batch size
+						// use same as the JDBC batch size
+						if (i > JDBC_BATCH_SIZE && i % JDBC_BATCH_SIZE == 0) {
 							// flush a batch of inserts and release memory:
 							session.flush();
-							session.clear();
 						}
 						i++;
 					} catch (final DataIntegrityViolationException | TransactionRequiredException
@@ -335,7 +333,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 				}
 
-				// session.flush();
+				session.flush();
+				items.stream().forEach(o -> session.evict(o));
+				// session.clear();
 
 				// try {
 				// refresh(items);

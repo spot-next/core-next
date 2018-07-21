@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 
 import com.trigersoft.jaque.expression.LambdaExpression;
 
+import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.lambda.ParametersNameGenerator;
 import at.spot.core.persistence.query.lambda.PredicateTranslationResult;
 import at.spot.core.persistence.query.lambda.SerializablePredicate;
 import at.spot.core.persistence.query.lambda.ToJpqlQueryVisitor;
-
-import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.persistence.service.LambdaQueryTranslationService;
 import at.spot.core.types.Item;
 
@@ -56,6 +55,10 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 		if (query.getLimit() > 0) {
 			jpqlQuery.setLimit(query.getLimit());
 		}
+		jpqlQuery.setIgnoreCache(query.isIgnoreCache());
+		jpqlQuery.setEagerFetchRelationProperties(query.getEagerFetchRelationProperties());
+		jpqlQuery.setPage(query.getPage());
+		jpqlQuery.setPageSize(query.getPageSize());
 		return jpqlQuery;
 	}
 

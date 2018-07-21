@@ -111,7 +111,7 @@ public class CoreInit extends ModuleInit {
 	}
 
 	@Override
-	@Log(message = "Importing initial data ...")
+	@Log(message = "Importing initial data ...", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		try {
 			loggingService.debug("Importing countries");
@@ -145,7 +145,7 @@ public class CoreInit extends ModuleInit {
 	}
 
 	@Override
-	@Log(message = "Importing sample data ...")
+	@Log(message = "Importing sample data ...", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		try {
 			final ImportConfiguration conf = new ImportConfiguration();

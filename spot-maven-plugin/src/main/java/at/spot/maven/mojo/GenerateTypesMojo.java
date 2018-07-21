@@ -406,7 +406,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		typeAnnotation.addParameter("typeCode", type.getTypeCode(), JavaValueType.STRING);
 		javaClass.addAnnotation(typeAnnotation);
 
-		typeAnnotation.addParameter("persistable", type.isPersistable(), JavaValueType.BOOLEAN);
+		typeAnnotation.addParameter("persistable", type.isPersistable(), JavaValueType.LITERAL);
 
 		if (type.isAbstract() != null && type.isAbstract()) {
 			javaClass.setAbstract(true);

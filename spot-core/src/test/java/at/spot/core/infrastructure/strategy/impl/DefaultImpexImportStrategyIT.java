@@ -2,14 +2,14 @@ package at.spot.core.infrastructure.strategy.impl;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import at.spot.core.persistence.query.LambdaQuery;
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.exception.ImpexImportException;
 import at.spot.core.infrastructure.strategy.ImpexImportStrategy;
+import at.spot.core.persistence.query.LambdaQuery;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.beans.ImportConfiguration;
@@ -75,16 +75,16 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		conf.setScriptIdentifier("/data/test/multiple_items_with_relations.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
+		// query user and user group
 		final LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		final QueryResult<User> userResult = queryService.query(userQuery);
+		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
+				.filter(u -> u.getId().equals("test-group"));
+		userGroupQuery.setIgnoreCache(true);
+		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
 		Assert.assertTrue(userResult.count() == 1);
 		Assert.assertEquals("testuser", userResult.getResultList().get(0).getId());
-
-		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class)
-				.filter(u -> u.getId().equals("test-group"));
-		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
-
 		Assert.assertTrue(userGroupResult.count() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
 
@@ -101,8 +101,8 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	// UPDATE
 	@Test
 	public void testUpdateById() throws ImpexImportException {
-		String groupId = "employee-group";
-		String groupShortName = "Employee Group";
+		final String groupId = "employee-group";
+		final String groupShortName = "Employee Group";
 
 		// check if group has no shortName
 		LambdaQuery<UserGroup> query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals(groupId));
@@ -111,16 +111,16 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		Assert.assertNull(result.getResultList().get(0).getShortName());
 
 		// execute update
-		ImportConfiguration conf = new ImportConfiguration();
+		final ImportConfiguration conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/update_employee_group.impex");
 		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
 
 		// check if data has been updated
 		query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals(groupId));
-		query.setIgnoreCache(true);
 		result = queryService.query(query);
 
 		Assert.assertEquals(groupShortName, result.getResultList().get(0).getShortName());
+		Assert.assertTrue(CollectionUtils.isEmpty(result.getResultList().get(0).getGroups()));
 	}
 
 	// REMOVE

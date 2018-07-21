@@ -29,9 +29,7 @@ public class JavaExpression implements Serializable {
 			throw new IllegalArgumentException("Value type cannot be null");
 		}
 
-		if (JavaValueType.BOOLEAN.equals(valueType)) {
-			this.value = value.toString();
-		} else if (JavaValueType.STRING.equals(valueType)) {
+		if (JavaValueType.STRING.equals(valueType)) {
 			this.value = "\"" + value + "\"";
 		} else if (JavaValueType.CLASS.equals(valueType)) {
 			this.value = value + ".class";

@@ -300,10 +300,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				queryService.query(q);
 			}
 
+			itemsToRemove.clear();
+
 			loggingService.debug(() -> String.format("Updating %s items", itemsToUpdate.size()));
 			for (final JpqlQuery<Void> q : itemsToUpdate) {
 				queryService.query(q);
 			}
+
+			itemsToUpdate.clear();
 		}
 	}
 
