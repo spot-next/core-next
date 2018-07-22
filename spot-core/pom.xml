@@ -205,6 +205,11 @@
 			<artifactId>gson-fire</artifactId>
 			<version>1.8.3</version>
 		</dependency>
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>1.8.13</version>
+		</dependency>
 
 		<!-- spring -->
 		<dependency>

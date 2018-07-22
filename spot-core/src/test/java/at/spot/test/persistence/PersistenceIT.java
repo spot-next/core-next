@@ -3,7 +3,6 @@ package at.spot.test.persistence;
 import java.util.Locale;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import at.spot.core.testing.AbstractIntegrationTest;
@@ -25,17 +24,10 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	// TODO: manytoone mapping not working yet
-	@Ignore
 	@Test
-	public void testBidirectionalMany2OneRelation() throws Exception {
-		final UserGroup group = modelService.create(UserGroup.class);
-		group.setId("testGroup");
-
+	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSide() throws Exception {
 		final User user = modelService.create(User.class);
 		user.setId("testUser");
-		user.getGroups().add(group);
-
-		modelService.save(user);
 
 		final UserAddress address = modelService.create(UserAddress.class);
 		address.setStreet("asf");
