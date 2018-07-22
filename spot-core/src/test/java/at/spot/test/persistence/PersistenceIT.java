@@ -3,11 +3,13 @@ package at.spot.test.persistence;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
 import at.spot.itemtype.core.user.User;
+import at.spot.itemtype.core.user.UserAddress;
 import at.spot.itemtype.core.user.UserGroup;
 
 public class PersistenceIT extends AbstractIntegrationTest {
@@ -22,8 +24,48 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// TODO Auto-generated method stub
 	}
 
+	// TODO: manytoone mapping not working yet
+	@Ignore
 	@Test
-	public void testBidirectionalRelations() throws Exception {
+	public void testBidirectionalMany2OneRelation() throws Exception {
+		final UserGroup group = modelService.create(UserGroup.class);
+		group.setId("testGroup");
+
+		final User user = modelService.create(User.class);
+		user.setId("testUser");
+		user.getGroups().add(group);
+
+		modelService.save(user);
+
+		final UserAddress address = modelService.create(UserAddress.class);
+		address.setStreet("asf");
+		user.getAddresses().add(address);
+
+		modelService.save(user);
+
+		final User loadedUser = modelService.get(User.class, user.getPk());
+
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+	}
+
+	@Test
+	public void testBidirectionalOne2ManyRelation() throws Exception {
+		final User user = modelService.create(User.class);
+		user.setId("testUser");
+
+		final UserAddress address = modelService.create(UserAddress.class);
+		address.setStreet("asf");
+		address.setOwner(user);
+
+		modelService.save(address);
+
+		final User loadedUser = modelService.get(User.class, user.getPk());
+
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+	}
+
+	@Test
+	public void testBidirectionalMany2ManyRelations() throws Exception {
 		final UserGroup group = modelService.create(UserGroup.class);
 		group.setId("testGroup");
 
@@ -35,9 +77,6 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 		final UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
-
-		modelService.refresh(loadedGroup);
-		modelService.refresh(loadedUser);
 
 		Assert.assertEquals(loadedUser.getGroups().iterator().next().getPk(), loadedGroup.getPk());
 		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().iterator().next().getPk());

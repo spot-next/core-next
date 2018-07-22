@@ -185,7 +185,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
 					query.executeUpdate();
 					session.flush();
-					session.clear();
+					if (sourceQuery.isClearCaches()) {
+						session.clear();
+					}
 				} else {
 					final List<Tuple> resultList = query.list();
 					results = new ArrayList<>();

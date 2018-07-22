@@ -32,6 +32,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.CollectionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -328,6 +329,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
+				jpaAnnotations.add(createCollectionTypeAnnotation(entityClass, field));
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -416,6 +418,17 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		addCascadeAnnotation(ann, field);
 
 		return ann;
+	}
+
+	protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
+			throws IllegalClassTransformationException {
+
+		final Annotation ann = createAnnotation(clazz, CollectionType.class);
+		final StringMemberValue val = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		val.setValue("at.spot.core.persistence.hibernate.support.RelationshipMaintainingListType");
+
+		return ann;
+
 	}
 
 	/**

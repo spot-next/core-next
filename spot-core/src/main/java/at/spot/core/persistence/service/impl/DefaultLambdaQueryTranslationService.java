@@ -59,6 +59,7 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 		jpqlQuery.setEagerFetchRelationProperties(query.getEagerFetchRelationProperties());
 		jpqlQuery.setPage(query.getPage());
 		jpqlQuery.setPageSize(query.getPageSize());
+		jpqlQuery.setClearCaches(query.isClearCaches());
 		return jpqlQuery;
 	}
 
