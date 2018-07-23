@@ -392,13 +392,49 @@ public class ClassUtil {
 			constructorArgValues.add(0, null);
 		}
 
+		Constructor<T> matchingConstructor = null;
+
+		for (Constructor<?> c : type.getDeclaredConstructors()) {
+			boolean found = true;
+
+			for (int i = 0; i < c.getParameterTypes().length; i++) {
+				if (c.getParameterCount() != constructorArgTypes.size()) {
+					found = false;
+					continue;
+				}
+
+				Class<?> paramType = c.getParameterTypes()[i];
+
+				if (i < constructorArgTypes.size()) {
+					Class<?> argumentType = constructorArgTypes.get(i);
+
+					if (!paramType.isAssignableFrom(argumentType)) {
+						found = false;
+						break;
+					}
+				} else {
+					break;
+				}
+
+			}
+
+			if (found) {
+				matchingConstructor = (Constructor<T>) c;
+				break;
+			} else {
+				continue;
+			}
+		}
+
 		try {
-			final Constructor<T> ctor = type
-					.getDeclaredConstructor(constructorArgTypes.toArray(new Class<?>[constructorArgTypes.size()]));
-			ctor.setAccessible(true);
-			instance = ctor.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
+			// final Constructor<T> ctor = type
+			// .getDeclaredConstructor(constructorArgTypes.toArray(new
+			// Class<?>[constructorArgTypes.size()]));
+			matchingConstructor.setAccessible(true);
+			instance = matchingConstructor
+					.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
+		} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 			LOG.debug(e.getMessage());
 			// silently ignore
 		}

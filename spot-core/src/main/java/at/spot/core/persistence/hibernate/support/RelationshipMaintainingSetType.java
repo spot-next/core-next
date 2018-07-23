@@ -8,21 +8,21 @@ import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.persister.collection.CollectionPersister;
 
-public class RelationshipMaintainingSetType extends AbstractCollectionType<PersistentSet> {
+public class RelationshipMaintainingSetType extends AbstractCollectionType {
 	@Override
 	public PersistentCollection instantiate(final SharedSessionContractImplementor session,
 			final CollectionPersister persister) {
 
-		return super.instantiate(session, PersistentSet.class, null);
+		return super.instantiateProxy(PersistentSet.class, session);
 	}
 
 	@Override
 	public Object instantiate(final int anticipatedSize) {
-		return new HashSet<>();
+		return super.instantiateProxy(HashSet.class);
 	}
 
 	@Override
 	public PersistentCollection wrap(final SharedSessionContractImplementor session, final Object collection) {
-		return super.instantiate(session, PersistentSet.class, (Collection) collection);
+		return super.instantiateProxy(PersistentSet.class, session, (Collection) collection);
 	}
 }
