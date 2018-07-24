@@ -434,11 +434,11 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// TODO change to list?
 			if (val == null || RelationCollectionType.List.toString().equals(val.getValue())) {
-				typeVal.setValue("at.spot.core.persistence.hibernate.support.RelationshipMaintainingSetType");
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			} else if (RelationCollectionType.Set.toString().equals(val.getValue())) {
-				typeVal.setValue("at.spot.core.persistence.hibernate.support.RelationshipMaintainingSetType");
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			} else {
-				typeVal.setValue("at.spot.core.persistence.hibernate.support.RelationshipMaintainingSetType");
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			}
 
 			ann.addMemberValue("type", typeVal);
