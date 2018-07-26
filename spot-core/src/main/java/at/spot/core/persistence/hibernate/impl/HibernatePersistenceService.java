@@ -49,18 +49,16 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.hibernate.support.proxy.ProxyList;
-import at.spot.core.persistence.hibernate.support.proxy.ProxySet;
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
@@ -412,8 +410,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
-	 * @return true if the item was successfully attached to the hibernate
-	 *         session.
+	 * @return true if the item was successfully attached to the hibernate session.
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
@@ -560,34 +557,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			Object instanceValue = null;
 
 			if (field.getType().isAssignableFrom(Set.class)) {
-				if (ClassUtil.hasAnnotation(field, Relation.class)) {
-					instanceValue = new ProxySet<>(new HashSet<>(), (e) -> updateOwnerReference(field, item, e),
-							(e) -> updateOwnerReference(field, null, e));
-				} else {
-					instanceValue = new HashSet<>();
-				}
+				instanceValue = new HashSet<>();
 			} else if (field.getType().isAssignableFrom(List.class)
 					|| field.getType().isAssignableFrom(Collection.class)) {
-
-				if (ClassUtil.hasAnnotation(field, Relation.class)) {
-					instanceValue = new ProxyList<>(new ArrayList<>(), (e) -> updateOwnerReference(field, item, e),
-							(e) -> updateOwnerReference(field, null, e));
-				} else {
-					instanceValue = new ArrayList<>();
-				}
+				instanceValue = new ArrayList<>();
 			} else if (field.getType().isAssignableFrom(Map.class)) {
 				instanceValue = new HashMap<>();
 			}
 
 			ClassUtil.setField(item, field.getName(), instanceValue);
 		}
-	}
-
-	private void updateOwnerReference(final Field collectionPropertyField, final Item owner, final Object ownedItem) {
-		final Relation relation = ClassUtil.getAnnotation(collectionPropertyField, Relation.class);
-
-		final String mappedTo = relation.mappedTo();
-		ClassUtil.setField(ownedItem, mappedTo, owner);
 	}
 
 	@Override

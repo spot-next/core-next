@@ -418,10 +418,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 	/**
 	 * Populates the super class for the given JavaType.
 	 * 
-	 * @param javaClass
-	 *            the class to populate with a super types
-	 * @param defaultSuperclass
-	 *            is used when there is no superType given, can be null too
+	 * @param javaClass         the class to populate with a super types
+	 * @param defaultSuperclass is used when there is no superType given, can be
+	 *                          null too
 	 */
 	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
 			final at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
@@ -682,7 +681,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
-			relationAnn.addParameter("type", getRelationType(from, to), JavaValueType.ENUM_VALUE);
+			at.spot.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
+			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 			relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
 			relationAnn.addParameter("nodeType", nodeType, JavaValueType.ENUM_VALUE);
 
@@ -725,7 +725,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			if (addGetter) {
 				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
-				addGetter(property, javaClass);
+
+				if (at.spot.core.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
+					// wrap the collection into proxy collection that allows us to intercept
+					// mutating calls (like add, remove) -> needed to update relation infos
+					javaClass.getImports().add("at.spot.core.infrastructure.support.ItemCollectionFactory");
+					addGetter(property, javaClass,
+							String.format("return ItemCollectionFactory.wrap(this, \"%s\", this.%s);",
+									property.getName(), property.getName()));
+
+				} else {
+					addGetter(property, javaClass);
+				}
 			}
 
 			if (addSetter) {

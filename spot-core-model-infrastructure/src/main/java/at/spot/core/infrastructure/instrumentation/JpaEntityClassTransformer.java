@@ -323,7 +323,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
 						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
-				jpaAnnotations.add(createCollectionTypeAnnotation(entityClass, field));
+//				jpaAnnotations.add(createCollectionTypeAnnotation(entityClass, field));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
@@ -449,8 +449,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property
-	 * has a unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
+	 * unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
