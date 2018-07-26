@@ -28,6 +28,9 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.exception.ImpexImportException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
@@ -43,8 +46,6 @@ import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
@@ -251,7 +252,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						// if no matching item is found, we tread this the same
 						// way as an INSERT COMMAND
 						if (existingItem != null) {
-							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
+//							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
+							updateItem(existingItem, rawItem);
+							itemsToSave.add(existingItem);
 						} else {
 							throw new ImpexImportException(String
 									.format("Could not find item for update with unique properties: %s", uniqueParams));
@@ -267,7 +270,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 						// if a matching item is found, we update it
 						if (existingItem != null) {
-							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
+//							itemsToUpdate.add(createUpdateQuery(existingItem, rawItem, uniqueParams.keySet()));
+							updateItem(existingItem, rawItem);
+							itemsToSave.add(existingItem);
 						} else {
 							// otherwise we create an INSERT JPQL query
 							itemsToSave.add(insertItem(unit, rawItem));
@@ -329,11 +334,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	private Item insertItem(final WorkUnit unit, final Map<ColumnDefinition, Object> rawItem) {
 		final Item item = modelService.create(unit.getItemType());
 
+		updateItem(item, rawItem);
+
+		return item;
+	}
+
+	private void updateItem(final Item item, final Map<ColumnDefinition, Object> rawItem) {
 		for (final Map.Entry<ColumnDefinition, Object> property : rawItem.entrySet()) {
 			setItemPropertyValue(item, property.getKey(), property.getValue());
 		}
-
-		return item;
 	}
 
 	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem,
@@ -385,9 +394,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/**
 	 * Return the unique resolved (!) properties.
 	 * 
-	 * @throws ImpexImportException
-	 *             if one of the given columns is a collection or a map, as this
-	 *             is not supported.
+	 * @throws ImpexImportException if one of the given columns is a collection or a
+	 *                              map, as this is not supported.
 	 */
 	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns,
 			final Map<ColumnDefinition, Object> rawItem, final ImportConfiguration config) throws ImpexImportException {
