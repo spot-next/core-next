@@ -1,5 +1,6 @@
 package at.spot.test.persistence;
 
+import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -21,6 +22,21 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Override
 	protected void teardownTest() {
 		// TODO Auto-generated method stub
+	}
+
+	@Test
+	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSideWithLoadedUser() throws Exception {
+		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+
+		final UserAddress address = modelService.create(UserAddress.class);
+		address.setStreet("asf");
+		user.getAddresses().add(address);
+
+		modelService.save(user);
+
+		final User loadedUser = modelService.get(User.class, user.getPk());
+
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
 	}
 
 	// TODO: manytoone mapping not working yet
