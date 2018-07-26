@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import at.spot.core.infrastructure.maven.xml.DatabaseColumnType;
+
 /**
  * Defines an item property. Without this annotation, the values are not stored
  * in the database.
@@ -28,7 +30,16 @@ public @interface Property {
 
 	boolean initial() default DEFAULT_INITIAL;
 
-	boolean isReference() default DEFAULT_IS_REFERENCE;
-
+	/**
+	 * The value provider implementation that provides the actualy property value
+	 * (instead of the persistence layer).
+	 */
 	String itemValueProvider() default "";
+
+	/**
+	 * The column type the persistence layer is instructed to use instead of the
+	 * default value. Keep in mind that the actual property type and the column type
+	 * have to be compatible.
+	 */
+	DatabaseColumnType columnType() default DatabaseColumnType.DEFAULT;
 }

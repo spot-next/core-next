@@ -627,6 +627,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 			propAnn.addParameter("itemValueProvider", propertyDefinition.getAccessors().getValueProvider(),
 					JavaValueType.STRING);
 		}
+
+		if (propertyDefinition.getPersistence() != null
+				&& propertyDefinition.getPersistence().getColumnType() != null) {
+			propAnn.addParameter("columnType", propertyDefinition.getPersistence().getColumnType(),
+					JavaValueType.ENUM_VALUE);
+		}
 	}
 
 	protected void populateRelationProperties(final ItemType type, final JavaClass javaClass)

@@ -29,7 +29,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		user.getAddresses().add(address);
 
 		modelService.save(user);
@@ -46,7 +46,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.setId("testUser");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		user.getAddresses().add(address);
 
 		modelService.save(user);
@@ -62,7 +62,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.setId("testUser");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		address.setOwner(user);
 
 		modelService.save(address);

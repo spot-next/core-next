@@ -126,6 +126,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Persistence }
+     * 
+     */
+    public Persistence createPersistence() {
+        return new Persistence();
+    }
+
+    /**
      * Create an instance of {@link DefaultValue }
      * 
      */

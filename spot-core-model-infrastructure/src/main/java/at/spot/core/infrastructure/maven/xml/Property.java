@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="accessors" type="{}Accessors" minOccurs="0"/>
  *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
  *         &lt;element name="defaultValue" type="{}DefaultValue" minOccurs="0"/>
+ *         &lt;element name="persistence" type="{}Persistence" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "modifiers",
     "accessors",
     "validators",
-    "defaultValue"
+    "defaultValue",
+    "persistence"
 })
 public class Property {
 
@@ -47,6 +49,7 @@ public class Property {
     protected Accessors accessors;
     protected Validators validators;
     protected DefaultValue defaultValue;
+    protected Persistence persistence;
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "type", required = true)
@@ -170,6 +173,30 @@ public class Property {
      */
     public void setDefaultValue(DefaultValue value) {
         this.defaultValue = value;
+    }
+
+    /**
+     * Ruft den Wert der persistence-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Persistence }
+     *     
+     */
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    /**
+     * Legt den Wert der persistence-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Persistence }
+     *     
+     */
+    public void setPersistence(Persistence value) {
+        this.persistence = value;
     }
 
     /**

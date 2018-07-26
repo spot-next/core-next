@@ -125,7 +125,7 @@
 	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user"
 		abstract="true">
 		<properties>
-			<property name="street" type="String" />
+			<property name="streetName" type="String" />
 			<property name="streetNumber" type="String" />
 			<property name="city" type="String" />
 			<property name="postalCode" type="String" />
@@ -136,7 +136,10 @@
 
 	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user"
 		extends="Address">
-		<properties></properties>
+		<properties>
+			<property name="emailAddress" type="String" />
+			<property name="phone" type="String" />
+		</properties>
 	</type>
 
 	<type name="AddressType" typeCode="AddressType" package="at.spot.itemtype.core.user"
@@ -203,6 +206,7 @@
 		<properties>
 			<property name="data" type="ByteArray">
 				<description>The content of the data object.</description>
+				<persistence columnType="BLOB" />
 			</property>
 		</properties>
 	</type>
