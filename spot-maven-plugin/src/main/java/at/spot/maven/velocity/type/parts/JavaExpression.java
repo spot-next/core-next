@@ -42,6 +42,8 @@ public class JavaExpression implements Serializable {
 					.join(Stream.of((String[]) value).map(e -> "\"" + e + "\"").collect(Collectors.toList()), ","));
 		} else if (JavaValueType.LITERAL_ARRAY.equals(valueType)) {
 			this.value = String.format("{%s}", StringUtils.join((String[]) value));
+		} else {
+			this.value = StringUtils.EMPTY;
 		}
 	}
 
@@ -51,6 +53,6 @@ public class JavaExpression implements Serializable {
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return value;
 	}
 }

@@ -42,9 +42,8 @@ public class ClassUtil {
 	 *
 	 * @param type
 	 * @param fieldName
-	 * @param includeSuperTypes
-	 *            if this is true all super classes till and including
-	 *            {@link Object} will be invoked.
+	 * @param includeSuperTypes if this is true all super classes till and including
+	 *                          {@link Object} will be invoked.
 	 * @return
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
@@ -80,12 +79,11 @@ public class ClassUtil {
 	 * concrete class> to {@link Object}.
 	 *
 	 * @param type
-	 * @param stopClass
-	 *            {@link Object} if null
-	 * @param includeStopClass
-	 *            if this is true, the stop class will be included. defaults to
-	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the result
+	 * @param stopClass         {@link Object} if null
+	 * @param includeStopClass  if this is true, the stop class will be included.
+	 *                          defaults to
+	 * @param includeStartClass if this is true, the given {@link Class} is included
+	 *                          in the result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -426,17 +424,16 @@ public class ClassUtil {
 			}
 		}
 
-		try {
-			// final Constructor<T> ctor = type
-			// .getDeclaredConstructor(constructorArgTypes.toArray(new
-			// Class<?>[constructorArgTypes.size()]));
-			matchingConstructor.setAccessible(true);
-			instance = matchingConstructor
-					.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
-		} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			LOG.debug(e.getMessage());
-			// silently ignore
+		if (matchingConstructor != null) {
+			try {
+				matchingConstructor.setAccessible(true);
+				instance = matchingConstructor
+						.newInstance(constructorArgValues.toArray(new Object[constructorArgValues.size()]));
+			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+				LOG.debug(e.getMessage());
+				// silently ignore
+			}
 		}
 
 		return Optional.ofNullable(instance);

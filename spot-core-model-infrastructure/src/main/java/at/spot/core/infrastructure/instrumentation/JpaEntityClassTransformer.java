@@ -420,6 +420,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return ann;
 	}
 
+	@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
 	protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
 

@@ -3,7 +3,7 @@ package at.spot.maven.velocity.type.annotation;
 import java.math.BigDecimal;
 
 public enum JavaValueType {
-	STRING, LITERAL, CLASS, ENUM_VALUE, STRING_ARRAY, LITERAL_ARRAY;
+	STRING, LITERAL, CLASS, ENUM_VALUE, STRING_ARRAY, LITERAL_ARRAY, NULL;
 
 	public static JavaValueType forType(final Class<?> type) {
 		if (Integer.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type)
