@@ -553,7 +553,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			final String property = field.getName();
 			Object instanceValue = null;
 
 			if (field.getType().isAssignableFrom(Set.class)) {

@@ -25,6 +25,10 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 		try {
 			if (type.isAssignableFrom(value.getClass())) {
 				return (T) value;
+			} else if (type.isAssignableFrom(Boolean.class) && isBoolean(value)) {
+				return (T) toBoolean(value);
+			} else if (type.isAssignableFrom(Number.class) && NumberUtils.isCreatable(value)) {
+				return (T) toNumber(value);
 			} else {
 
 				// shortcut for locales
@@ -39,15 +43,15 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 		}
 	}
 
+	private boolean isBoolean(String value) {
+		return BooleanUtils.toBooleanObject(value) != null;
+	}
+
 	private Boolean toBoolean(String value) {
 		return BooleanUtils.toBooleanObject(value);
 	}
 
 	private Number toNumber(String value) {
-		if (NumberUtils.isCreatable(value)) {
-			return NumberUtils.createNumber(value);
-		}
-
-		return null;
+		return NumberUtils.createNumber(value);
 	}
 }

@@ -1,5 +1,6 @@
 package at.spot.core;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +21,6 @@ import at.spot.core.infrastructure.exception.ImportException;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.service.EventService;
 import at.spot.core.infrastructure.service.ImportService;
-import at.spot.core.infrastructure.service.LoggingService;
 import at.spot.core.infrastructure.service.ModelService;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.UserService;
@@ -31,6 +31,7 @@ import at.spot.itemtype.core.beans.ImportConfiguration;
 import at.spot.itemtype.core.enumeration.ImportFormat;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserGroup;
+import ch.qos.logback.core.util.CloseUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -57,9 +58,6 @@ public class CoreInit extends ModuleInit {
 
 	@Autowired
 	protected UserService<User, UserGroup> userService;
-
-	@Autowired
-	protected LoggingService loggingService;
 
 	@Autowired
 	protected PersistenceService persistenceService;
@@ -114,51 +112,40 @@ public class CoreInit extends ModuleInit {
 	@Log(message = "Importing initial data ...", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		try {
-			loggingService.debug("Importing countries");
-
-			final ImportConfiguration conf = new ImportConfiguration();
-			conf.setIgnoreErrors(true);
-			conf.setScriptIdentifier("/data/initial/countries.impex");
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-
-			loggingService.debug("Importing languages");
-
-			conf.setScriptIdentifier("/data/initial/languages.impex");
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-
-			loggingService.debug("Importing users");
-
-			conf.setScriptIdentifier("/data/initial/users.impex");
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-
-			loggingService.debug("Importing catalogs");
-
-			conf.setScriptIdentifier("/data/initial/catalogs.impex");
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
+			importScript("/data/initial/countries.impex", "Importing countries");
+			importScript("/data/initial/languages.impex", "Importing languages");
+			importScript("/data/initial/users.impex", "Importing users");
+			importScript("/data/initial/catalogs.impex", "Importing catalogs");
 		} catch (final ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
 		}
 	}
 
+	@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
 	@Override
 	@Log(message = "Importing sample data ...", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		try {
-			final ImportConfiguration conf = new ImportConfiguration();
-			conf.setScriptIdentifier("/data/sample/users.impex");
-			conf.setIgnoreErrors(true);
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
-
-			conf.setScriptIdentifier("/data/sample/medias.impex");
-			importService.importItems(ImportFormat.ImpEx, conf,
-					getClass().getResourceAsStream(conf.getScriptIdentifier()));
+			importScript("/data/sample/users.impex", "Importing sample users");
+			importScript("/data/sample/medias.impex", "Importing sample medias");
 		} catch (final ImportException e) {
 			loggingService.warn("Could not import initial data: " + e.getMessage());
+		}
+	}
+
+	private void importScript(String path, String logMessage) throws ImportException {
+		loggingService.debug(logMessage);
+
+		InputStream stream = null;
+		try {
+			final ImportConfiguration conf = new ImportConfiguration();
+			conf.setIgnoreErrors(true);
+			conf.setScriptIdentifier(path);
+
+			stream = CoreInit.class.getResourceAsStream(conf.getScriptIdentifier());
+			importService.importItems(ImportFormat.ImpEx, conf, stream);
+		} finally {
+			CloseUtil.closeQuietly(stream);
 		}
 	}
 }

@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings(value = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION", justification = "The casts are necessary. A typecheck safeguards is implemented as well.")
 public class ProxyCollection<E> implements List<E>, Set<E> {
 	private static final long serialVersionUID = 1L;
 
@@ -114,7 +117,11 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 
 	@Override
 	public boolean retainAll(final Collection<?> c) {
-		return ((List<E>) proxiedCollection).retainAll(c);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).retainAll(c);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -134,7 +141,11 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 			beforeAdd.accept(element);
 		}
 
-		((List<E>) proxiedCollection).add(index, element);
+		if (proxiedCollection instanceof List) {
+			((List<E>) proxiedCollection).add(index, element);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -143,7 +154,11 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 			beforeRemove.accept(get(index));
 		}
 
-		return ((List<E>) proxiedCollection).remove(index);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).remove(index);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -183,32 +198,56 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 
 	@Override
 	public E get(final int index) {
-		return ((List<E>) proxiedCollection).get(index);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).get(index);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
 	public int indexOf(final Object o) {
-		return ((List<E>) proxiedCollection).indexOf(o);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).indexOf(o);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
 	public int lastIndexOf(final Object o) {
-		return ((List<E>) proxiedCollection).lastIndexOf(o);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).lastIndexOf(o);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
 	public ListIterator<E> listIterator() {
-		return ((List<E>) proxiedCollection).listIterator();
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).listIterator();
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
 	public ListIterator<E> listIterator(final int index) {
-		return ((List<E>) proxiedCollection).listIterator(index);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).listIterator(index);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
 	public List<E> subList(final int fromIndex, final int toIndex) {
-		return ((List<E>) proxiedCollection).subList(fromIndex, toIndex);
+		if (proxiedCollection instanceof List) {
+			return ((List<E>) proxiedCollection).subList(fromIndex, toIndex);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override

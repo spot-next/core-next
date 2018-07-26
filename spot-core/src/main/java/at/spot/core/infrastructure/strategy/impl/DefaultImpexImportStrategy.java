@@ -50,6 +50,7 @@ import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
 import at.spot.itemtype.core.beans.ImportConfiguration;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Service
 public class DefaultImpexImportStrategy extends AbstractService implements ImpexImportStrategy {
@@ -58,8 +59,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
 	// (^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\s]{0,}([a-zA-Z]{2,})[\s]{0,}(\[.*?\]){0,1}[\s]{0,}[;]{0,1}
-	protected Pattern PATTERN_COMMAND_AND_TYPE = Pattern.compile(
-			"(^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\\s]{0,}([a-zA-Z]{2,})[\\s]{0,}(\\[.*?\\]){0,1}[\\s]{0,}[;]{0,1}");
+	// protected Pattern PATTERN_COMMAND_AND_TYPE = Pattern.compile(
+	// "(^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\\s]{0,}([a-zA-Z]{2,})[\\s]{0,}(\\[.*?\\]){0,1}[\\s]{0,}[;]{0,1}");
 
 	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
@@ -157,8 +158,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	protected Class<? extends Item> getItemType(final String line) throws UnknownTypeException {
-		final String typeName = StringUtils
-				.substring(line, StringUtils.indexOf(line, " "), StringUtils.indexOf(line, ";")).trim().toLowerCase();
+		String typeName = StringUtils.substring(line, StringUtils.indexOf(line, " "), StringUtils.indexOf(line, ";"));
+		typeName = StringUtils.lowerCase(StringUtils.trim(typeName));
 
 		return typeService.getClassForTypeCode(typeName);
 	}
@@ -282,7 +283,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						itemsToRemove.add(createRemoveQuery(unit, rawItem));
 					}
 				}
-			} catch (final Exception e) {
+			} catch (final Throwable e) {
 				throw new ImpexImportException(
 						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
 			}
@@ -345,6 +346,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
+	@SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
 	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem,
 			final Set<String> propertyToIgnore) {
 
@@ -442,9 +444,10 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			case APPEND:
 			case ADD:
 				if (colValue == null) {
-					modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
+					colValue = (Collection) propertyValue;
+				} else {
+					colValue.addAll((Collection) propertyValue);
 				}
-				colValue.addAll((Collection) propertyValue);
 				break;
 			case REMOVE:
 				if (colValue != null) {
@@ -453,8 +456,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				break;
 			case REPLACE:
 				colValue = (Collection<?>) propertyValue;
+
 				break;
 			}
+
+			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), colValue);
 
 		} else if (isMapType(columnDefinition)) {
 			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item,
@@ -464,9 +470,10 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			case APPEND:
 			case ADD:
 				if (mapValue == null) {
-					modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
+					mapValue = (Map<Object, Object>) propertyValue;
+				} else {
+					mapValue.putAll((Map<Object, Object>) propertyValue);
 				}
-				mapValue.putAll((Map<?, ?>) propertyValue);
 				break;
 			case REMOVE:
 				if (mapValue != null) {
@@ -479,6 +486,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				mapValue = (Map) propertyValue;
 				break;
 			}
+
+			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), mapValue);
 		} else {
 			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
 		}
@@ -488,8 +497,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		final String modeVal = columnDefinition.getModifiers().get("mode");
 		ImpexMergeMode mode = ImpexMergeMode.ADD;
 
-		if (modeVal != null) {
-			mode = ImpexMergeMode.valueOf(modeVal.toUpperCase());
+		if (StringUtils.isNotBlank(modeVal)) {
+			mode = ImpexMergeMode.forCode(modeVal);
 		}
 
 		return mode;
