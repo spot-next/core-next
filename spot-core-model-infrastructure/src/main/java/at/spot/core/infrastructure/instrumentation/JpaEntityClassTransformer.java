@@ -32,6 +32,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.CollectionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
+import at.spot.core.infrastructure.type.RelationCollectionType;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
 import at.spot.instrumentation.ClassTransformer;
@@ -321,6 +323,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
 						"at.spot.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
+//				jpaAnnotations.add(createCollectionTypeAnnotation(entityClass, field));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
@@ -334,7 +337,6 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						"at.spot.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 			} else {
 				// one to one in case the field type is a subtype of Item
-
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
 			}
 
@@ -418,9 +420,37 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return ann;
 	}
 
+	protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
+			throws IllegalClassTransformationException {
+
+		final Annotation ann = createAnnotation(clazz, CollectionType.class);
+
+		final Optional<Annotation> relationCollectionType = getAnnotation(field, Relation.class);
+
+		if (relationCollectionType.isPresent()) {
+			final EnumMemberValue val = (EnumMemberValue) relationCollectionType.get().getMemberValue("collectionType");
+
+			final StringMemberValue typeVal = new StringMemberValue(field.getFieldInfo2().getConstPool());
+
+			// TODO change to list?
+			if (val == null || RelationCollectionType.List.toString().equals(val.getValue())) {
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+			} else if (RelationCollectionType.Set.toString().equals(val.getValue())) {
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+			} else {
+				typeVal.setValue("at.spot.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+			}
+
+			ann.addMemberValue("type", typeVal);
+		}
+
+		return ann;
+
+	}
+
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property
-	 * has a unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
+	 * unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {

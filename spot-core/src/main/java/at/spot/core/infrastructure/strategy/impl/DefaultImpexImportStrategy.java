@@ -358,6 +358,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		final JpqlQuery<Void> query = new JpqlQuery<>(
 				String.format("UPDATE %s AS %s SET %s WHERE %s.pk = :pk", typeName, typeName, whereClause, typeName),
 				params, Void.class);
+		query.setClearCaches(true);
 
 		return query;
 	}
@@ -376,6 +377,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final JpqlQuery<Void> query = new JpqlQuery<>(
 				String.format("DELETE FROM %s AS %s WHERE %s", typeName, typeName, whereClause), params, Void.class);
+		query.setClearCaches(true);
 
 		return query;
 	}

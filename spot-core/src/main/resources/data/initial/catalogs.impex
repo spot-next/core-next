@@ -2,9 +2,9 @@ INSERT Catalog ; id[unique=true] ; name
                ; Default         ; Default catalog
                ; Media           ; Media catalog
 
-INSERT CatalogVersion ; id[unique=true] ; catalog(id) ; name
-                      ; Staged          ; Default     ; Default Staged catalog version
-                      ; Online          ; Default     ; Default Online catalog version
-                      ; Staged          ; Media       ; Media Staged catalog version
-                      ; Online          ; Media       ; Media Online catalog version
+INSERT CatalogVersion ; id[unique=true] ; catalog(id)[unique=true] ; name
+                      ; Staged          ; Default                  ; Default Staged catalog version
+                      ; Online          ; Default                  ; Default Online catalog version
+                      ; Staged          ; Media                    ; Media Staged catalog version
+                      ; Online          ; Media                    ; Media Online catalog version
                    

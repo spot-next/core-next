@@ -2,6 +2,7 @@ package at.spot.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,6 +49,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -55,8 +59,6 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
@@ -185,7 +187,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
 					query.executeUpdate();
 					session.flush();
-					session.clear();
+					if (sourceQuery.isClearCaches()) {
+						session.clear();
+					}
 				} else {
 					final List<Tuple> resultList = query.list();
 					results = new ArrayList<>();
@@ -406,8 +410,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
-	 * @return true if the item was successfully attached to the hibernate
-	 *         session.
+	 * @return true if the item was successfully attached to the hibernate session.
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
@@ -550,13 +553,19 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			if (field.getType().isAssignableFrom(List.class)) {
-				ClassUtil.setField(item, field.getName(), new ArrayList<>());
-			} else if (field.getType().isAssignableFrom(Set.class)) {
-				ClassUtil.setField(item, field.getName(), new HashSet<>());
+			final String property = field.getName();
+			Object instanceValue = null;
+
+			if (field.getType().isAssignableFrom(Set.class)) {
+				instanceValue = new HashSet<>();
+			} else if (field.getType().isAssignableFrom(List.class)
+					|| field.getType().isAssignableFrom(Collection.class)) {
+				instanceValue = new ArrayList<>();
 			} else if (field.getType().isAssignableFrom(Map.class)) {
-				ClassUtil.setField(item, field.getName(), new HashMap<>());
+				instanceValue = new HashMap<>();
 			}
+
+			ClassUtil.setField(item, field.getName(), instanceValue);
 		}
 	}
 
