@@ -14,7 +14,8 @@
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
-	<atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" />
+	<!-- <atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" 
+		/> -->
 
 	<collection name="StringList" elementType="String" />
 	<collection name="CountryList" elementType="Country" />
@@ -318,22 +319,15 @@
 		</properties>
 	</type>
 
-	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
-		extends="UniqueIdItem">
-		<description>This type can be used to store localized values different languages/locales.</description>
+	<type name="LocalizedString" package="at.spot.itemtype.core.internationalization">
+		<description>This type can be used to store localized strings.</description>
 		<properties>
-			<property name="locale" type="Locale">
-				<description>
-				The locale of the translation key.
-			</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
-			<property name="value" type="String">
-				<description>The localized value of the key.</description>
-			</property>
+			<property name="en_GB" type="String" />
+			<property name="de_DE" type="String" />
+			<property name="fr_FR" type="String" />
+			<property name="es_ES" type="String" />
+			<property name="it_IT" type="String" />
+			<property name="ja_JP" type="String" />
 		</properties>
 	</type>
 
