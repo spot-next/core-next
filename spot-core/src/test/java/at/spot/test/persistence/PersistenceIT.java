@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import at.spot.core.testing.AbstractIntegrationTest;
+import at.spot.itemtype.core.internationalization.Currency;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserAddress;
@@ -22,6 +23,23 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Override
 	protected void teardownTest() {
 		// TODO Auto-generated method stub
+	}
+
+	@Test
+	public void testLocalizedString() {
+		Currency currency = modelService.create(Currency.class);
+		currency.setIsoCode("EUR");
+
+//		LocalizedString name = new LocalizedString();
+//		name.set("Euro", Locale.ENGLISH);
+//		name.set("Euro", Locale.GERMAN);
+		currency.setName(Collections.singletonMap(Locale.ENGLISH, "EURO"));
+
+		modelService.save(currency);
+
+		Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
+
+		Assert.assertEquals(currency.getName().get(Locale.ENGLISH), loadedCurrency.getName().get(Locale.ENGLISH));
 	}
 
 	@Test

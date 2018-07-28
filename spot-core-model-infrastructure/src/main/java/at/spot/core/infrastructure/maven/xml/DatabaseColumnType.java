@@ -6,9 +6,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für DatabaseColumnType.
+ * <p>Java class for DatabaseColumnType.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
  * &lt;simpleType name="DatabaseColumnType">
@@ -42,7 +42,9 @@ public enum DatabaseColumnType {
 
 
     /**
-     * Empty placeholder, type will be automatically detected.
+     * Empty placeholder, type will be automatically
+     * 						detected.
+     * 					
      * 
      */
     DEFAULT,

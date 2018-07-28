@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für DefaultValue complex type.
+ * <p>Java class for DefaultValue complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="DefaultValue">
@@ -37,7 +37,7 @@ public class DefaultValue {
     protected String value;
 
     /**
-     * Ruft den Wert der content-Eigenschaft ab.
+     * Gets the value of the content property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class DefaultValue {
     }
 
     /**
-     * Legt den Wert der content-Eigenschaft fest.
+     * Sets the value of the content property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class DefaultValue {
     }
 
     /**
-     * Ruft den Wert der value-Eigenschaft ab.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class DefaultValue {
     }
 
     /**
-     * Legt den Wert der value-Eigenschaft fest.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is

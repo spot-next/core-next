@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java-Klasse für Persistence complex type.
+ * <p>Java class for Persistence complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Persistence">
@@ -37,7 +37,7 @@ public class Persistence {
     protected DatabaseColumnType columnType;
 
     /**
-     * Ruft den Wert der content-Eigenschaft ab.
+     * Gets the value of the content property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class Persistence {
     }
 
     /**
-     * Legt den Wert der content-Eigenschaft fest.
+     * Sets the value of the content property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class Persistence {
     }
 
     /**
-     * Ruft den Wert der columnType-Eigenschaft ab.
+     * Gets the value of the columnType property.
      * 
      * @return
      *     possible object is
@@ -73,7 +73,7 @@ public class Persistence {
     }
 
     /**
-     * Legt den Wert der columnType-Eigenschaft fest.
+     * Sets the value of the columnType property.
      * 
      * @param value
      *     allowed object is

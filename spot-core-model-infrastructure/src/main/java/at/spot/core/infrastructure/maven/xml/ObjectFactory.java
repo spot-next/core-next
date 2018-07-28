@@ -94,11 +94,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RelationNode }
+     * Create an instance of {@link Argument }
      * 
      */
-    public RelationNode createRelationNode() {
-        return new RelationNode();
+    public Argument createArgument() {
+        return new Argument();
     }
 
     /**
@@ -110,27 +110,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ValidatorArgument }
-     * 
-     */
-    public ValidatorArgument createValidatorArgument() {
-        return new ValidatorArgument();
-    }
-
-    /**
      * Create an instance of {@link Accessors }
      * 
      */
     public Accessors createAccessors() {
         return new Accessors();
-    }
-
-    /**
-     * Create an instance of {@link Persistence }
-     * 
-     */
-    public Persistence createPersistence() {
-        return new Persistence();
     }
 
     /**
@@ -142,19 +126,51 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Validators }
-     * 
-     */
-    public Validators createValidators() {
-        return new Validators();
-    }
-
-    /**
      * Create an instance of {@link Property }
      * 
      */
     public Property createProperty() {
         return new Property();
+    }
+
+    /**
+     * Create an instance of {@link RelationNode }
+     * 
+     */
+    public RelationNode createRelationNode() {
+        return new RelationNode();
+    }
+
+    /**
+     * Create an instance of {@link ValidatorArgument }
+     * 
+     */
+    public ValidatorArgument createValidatorArgument() {
+        return new ValidatorArgument();
+    }
+
+    /**
+     * Create an instance of {@link Persistence }
+     * 
+     */
+    public Persistence createPersistence() {
+        return new Persistence();
+    }
+
+    /**
+     * Create an instance of {@link at.spot.core.infrastructure.maven.xml.Interfaces }
+     * 
+     */
+    public at.spot.core.infrastructure.maven.xml.Interfaces createInterfaces() {
+        return new at.spot.core.infrastructure.maven.xml.Interfaces();
+    }
+
+    /**
+     * Create an instance of {@link Validators }
+     * 
+     */
+    public Validators createValidators() {
+        return new Validators();
     }
 
     /**
@@ -166,11 +182,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Interface }
+     * 
+     */
+    public Interface createInterface() {
+        return new Interface();
+    }
+
+    /**
      * Create an instance of {@link Modifiers }
      * 
      */
     public Modifiers createModifiers() {
         return new Modifiers();
+    }
+
+    /**
+     * Create an instance of {@link at.spot.core.infrastructure.maven.xml.BaseComplexType.Interfaces }
+     * 
+     */
+    public at.spot.core.infrastructure.maven.xml.BaseComplexType.Interfaces createBaseComplexTypeInterfaces() {
+        return new at.spot.core.infrastructure.maven.xml.BaseComplexType.Interfaces();
     }
 
     /**

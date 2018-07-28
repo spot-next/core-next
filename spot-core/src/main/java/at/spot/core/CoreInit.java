@@ -114,6 +114,8 @@ public class CoreInit extends ModuleInit {
 		try {
 			importScript("/data/initial/countries.impex", "Importing countries");
 			importScript("/data/initial/languages.impex", "Importing languages");
+			// importScript("/data/initial/currencies.impex", "Importing
+			// currencies");
 			importScript("/data/initial/users.impex", "Importing users");
 			importScript("/data/initial/catalogs.impex", "Importing catalogs");
 		} catch (final ImportException e) {
@@ -133,7 +135,7 @@ public class CoreInit extends ModuleInit {
 		}
 	}
 
-	private void importScript(String path, String logMessage) throws ImportException {
+	private void importScript(final String path, final String logMessage) throws ImportException {
 		loggingService.debug(logMessage);
 
 		InputStream stream = null;

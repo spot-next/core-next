@@ -14,7 +14,8 @@
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
-	<atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" />
+	<!-- <atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" 
+		/> -->
 
 	<collection name="StringList" elementType="String" />
 	<collection name="CountryList" elementType="Country" />
@@ -322,21 +323,31 @@
 		</properties>
 	</type>
 
-	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
-		extends="UniqueIdItem">
-		<description>This type can be used to store localized values different languages/locales.</description>
+	<type name="LocalizedString" package="at.spot.itemtype.core.internationalization">
+		<description>This type can be used to store localized strings.</description>
+		<interfaces>
+			<interface javaClass="at.spot.core.types.Localizable">
+				<genericType value="String" />
+			</interface>
+		</interfaces>
 		<properties>
-			<property name="locale" type="Locale">
-				<description>
-				The locale of the translation key.
-			</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+			<property name="en_GB" type="String">
+				<modifiers writable="false" readable="false" />
 			</property>
-			<property name="value" type="String">
-				<description>The localized value of the key.</description>
+			<property name="de_DE" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="fr_FR" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="es_ES" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="it_IT" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="ja_JP" type="String">
+				<modifiers writable="false" readable="false" />
 			</property>
 		</properties>
 	</type>

@@ -1,0 +1,2 @@
+INSERT Currency ; isoCode  ; name(de_DE)[translator=localizedString] ; name(en_GB)[translator=localizedString] 
+                ; aar      ; Euro                                    ; Euro

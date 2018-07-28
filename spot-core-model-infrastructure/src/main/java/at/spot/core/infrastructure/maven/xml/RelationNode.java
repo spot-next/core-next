@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für RelationNode complex type.
+ * <p>Java class for RelationNode complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="RelationNode">
@@ -53,7 +53,7 @@ public class RelationNode {
     protected CollectionsType collectionType;
 
     /**
-     * Ruft den Wert der description-Eigenschaft ab.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -65,7 +65,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der description-Eigenschaft fest.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
@@ -77,7 +77,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der modifiers-Eigenschaft ab.
+     * Gets the value of the modifiers property.
      * 
      * @return
      *     possible object is
@@ -89,7 +89,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der modifiers-Eigenschaft fest.
+     * Sets the value of the modifiers property.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +101,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der validators-Eigenschaft ab.
+     * Gets the value of the validators property.
      * 
      * @return
      *     possible object is
@@ -113,7 +113,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der validators-Eigenschaft fest.
+     * Sets the value of the validators property.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der itemType-Eigenschaft ab.
+     * Gets the value of the itemType property.
      * 
      * @return
      *     possible object is
@@ -137,7 +137,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der itemType-Eigenschaft fest.
+     * Sets the value of the itemType property.
      * 
      * @param value
      *     allowed object is
@@ -149,7 +149,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der mappedBy-Eigenschaft ab.
+     * Gets the value of the mappedBy property.
      * 
      * @return
      *     possible object is
@@ -161,7 +161,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der mappedBy-Eigenschaft fest.
+     * Sets the value of the mappedBy property.
      * 
      * @param value
      *     allowed object is
@@ -173,7 +173,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der cardinality-Eigenschaft ab.
+     * Gets the value of the cardinality property.
      * 
      * @return
      *     possible object is
@@ -185,7 +185,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der cardinality-Eigenschaft fest.
+     * Sets the value of the cardinality property.
      * 
      * @param value
      *     allowed object is
@@ -197,7 +197,7 @@ public class RelationNode {
     }
 
     /**
-     * Ruft den Wert der collectionType-Eigenschaft ab.
+     * Gets the value of the collectionType property.
      * 
      * @return
      *     possible object is
@@ -213,7 +213,7 @@ public class RelationNode {
     }
 
     /**
-     * Legt den Wert der collectionType-Eigenschaft fest.
+     * Sets the value of the collectionType property.
      * 
      * @param value
      *     allowed object is
