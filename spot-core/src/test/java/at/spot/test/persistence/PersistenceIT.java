@@ -9,7 +9,6 @@ import org.junit.Test;
 import at.spot.core.testing.AbstractIntegrationTest;
 import at.spot.itemtype.core.internationalization.Currency;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
-import at.spot.itemtype.core.internationalization.LocalizedString;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserAddress;
 import at.spot.itemtype.core.user.UserGroup;
@@ -31,18 +30,21 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Currency currency = modelService.create(Currency.class);
 		currency.setIsoCode("EUR");
 
-//		LocalizedString name = new LocalizedString();
-//		name.set("Euro", Locale.ENGLISH);
-//		name.set("Euro", Locale.GERMAN);
-//		currency.setName(Collections.singletonMap(Locale.ENGLISH, "EURO"));
-		currency.setName(new LocalizedString());
-		currency.getName().set(Locale.UK, "EURO");
+		String german = "german";
+		String english = "english";
+
+		currency.setName(english, Locale.UK);
+		currency.setName(german, Locale.GERMANY);
 
 		modelService.save(currency);
 
 		Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
 
-		Assert.assertEquals(currency.getName().get(Locale.ENGLISH), loadedCurrency.getName().get(Locale.ENGLISH));
+		// these locales are not the same as the locales with country codes!
+		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
+		Assert.assertNull(loadedCurrency.getName(Locale.GERMAN));
+		Assert.assertEquals(english, loadedCurrency.getName(Locale.UK));
+		Assert.assertEquals(german, loadedCurrency.getName(Locale.GERMANY));
 	}
 
 	@Test

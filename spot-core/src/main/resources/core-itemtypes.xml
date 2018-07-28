@@ -315,7 +315,7 @@
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="name" type="LocalizedString">
+			<property name="name" type="LocalizedString" localized="true">
 				<description>The localized name of the currency.</description>
 			</property>
 		</properties>
