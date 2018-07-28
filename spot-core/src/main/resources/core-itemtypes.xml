@@ -367,6 +367,25 @@
 			</property>
 		</properties>
 	</type>
+	
+	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
+		extends="UniqueIdItem">
+		<description>This type can be used to store localized values different languages/locales.</description>
+		<properties>
+			<property name="locale" type="Locale">
+				<description>
+				The locale of the translation key.
+			</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="value" type="String">
+				<description>The localized value of the key.</description>
+			</property>
+		</properties>
+	</type>
 
 	<!-- configuration -->
 
