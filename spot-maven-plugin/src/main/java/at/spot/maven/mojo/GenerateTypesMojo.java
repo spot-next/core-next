@@ -45,6 +45,7 @@ import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.CollectionsType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
+import at.spot.core.infrastructure.maven.xml.Interface;
 import at.spot.core.infrastructure.maven.xml.ItemType;
 import at.spot.core.infrastructure.maven.xml.MapType;
 import at.spot.core.infrastructure.maven.xml.Property;
@@ -192,6 +193,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
 			enumeration.setDescription(enumType.getDescription());
 
+			populateInterfaces(enumType.getInterfaces().getInterface(), enumeration);
+
 			for (final EnumValue value : enumType.getValue()) {
 				final JavaEnumValue v = new JavaEnumValue();
 				v.setName(value.getCode());
@@ -204,6 +207,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		return ret;
+	}
+
+	private void populateInterfaces(final List<Interface> interfaces, final AbstractComplexJavaType javaType) {
+		if (CollectionUtils.isNotEmpty(interfaces)) {
+			for (final Interface i : interfaces) {
+				final int split = StringUtils.lastIndexOf(i.getJavaClass(), ".");
+				final JavaInterface iface = new JavaInterface(StringUtils.substring(i.getJavaClass(), 0, split),
+						StringUtils.substring(i.getJavaClass(), split, i.getJavaClass().length()));
+
+				javaType.addInterface(iface);
+			}
+		}
 	}
 
 	protected List<JavaClass> generateBeans() throws MojoExecutionException {
@@ -418,9 +433,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 	/**
 	 * Populates the super class for the given JavaType.
 	 * 
-	 * @param javaClass         the class to populate with a super types
-	 * @param defaultSuperclass is used when there is no superType given, can be
-	 *                          null too
+	 * @param javaClass
+	 *            the class to populate with a super types
+	 * @param defaultSuperclass
+	 *            is used when there is no superType given, can be null too
 	 */
 	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
 			final at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
@@ -681,7 +697,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
-			at.spot.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
+			final at.spot.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 			relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
 			relationAnn.addParameter("nodeType", nodeType, JavaValueType.ENUM_VALUE);
@@ -727,8 +743,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 
 				if (at.spot.core.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
-					// wrap the collection into proxy collection that allows us to intercept
-					// mutating calls (like add, remove) -> needed to update relation infos
+					// wrap the collection into proxy collection that allows us
+					// to intercept
+					// mutating calls (like add, remove) -> needed to update
+					// relation infos
 					javaClass.getImports().add("at.spot.core.infrastructure.support.ItemCollectionFactory");
 					addGetter(property, javaClass,
 							String.format("return ItemCollectionFactory.wrap(this, \"%s\", this.%s);",

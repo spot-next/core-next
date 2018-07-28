@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Validator complex type.
+ * <p>Java class for Interface complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Validator">
+ * &lt;complexType name="Interface">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="argument" type="{}ValidatorArgument" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="genericType" type="{}Argument" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="javaClass" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -30,42 +30,42 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Validator", propOrder = {
-    "argument"
+@XmlType(name = "Interface", propOrder = {
+    "genericType"
 })
-public class Validator {
+public class Interface {
 
-    protected List<ValidatorArgument> argument;
+    protected List<Argument> genericType;
     @XmlAttribute(name = "javaClass", required = true)
     protected String javaClass;
 
     /**
-     * Gets the value of the argument property.
+     * Gets the value of the genericType property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the argument property.
+     * This is why there is not a <CODE>set</CODE> method for the genericType property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getArgument().add(newItem);
+     *    getGenericType().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ValidatorArgument }
+     * {@link Argument }
      * 
      * 
      */
-    public List<ValidatorArgument> getArgument() {
-        if (argument == null) {
-            argument = new ArrayList<ValidatorArgument>();
+    public List<Argument> getGenericType() {
+        if (genericType == null) {
+            genericType = new ArrayList<Argument>();
         }
-        return this.argument;
+        return this.genericType;
     }
 
     /**

@@ -9,15 +9,15 @@ import javax.xml.bind.annotation.XmlValue;
 
 
 /**
- * <p>Java class for DefaultValue complex type.
+ * <p>Java class for Persistence complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DefaultValue">
+ * &lt;complexType name="Persistence">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="columnType" use="required" type="{}DatabaseColumnType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -26,15 +26,15 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DefaultValue", propOrder = {
+@XmlType(name = "Persistence", propOrder = {
     "content"
 })
-public class DefaultValue {
+public class Persistence {
 
     @XmlValue
     protected String content;
-    @XmlAttribute(name = "value")
-    protected String value;
+    @XmlAttribute(name = "columnType", required = true)
+    protected DatabaseColumnType columnType;
 
     /**
      * Gets the value of the content property.
@@ -61,27 +61,27 @@ public class DefaultValue {
     }
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the columnType property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link DatabaseColumnType }
      *     
      */
-    public String getValue() {
-        return value;
+    public DatabaseColumnType getColumnType() {
+        return columnType;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the columnType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link DatabaseColumnType }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setColumnType(DatabaseColumnType value) {
+        this.columnType = value;
     }
 
 }

@@ -65,7 +65,7 @@ import java.io.Serializable;
 @SuppressWarnings("unchecked")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 #annotations($annotations)
-$visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
+$visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #end implements Serializable {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
  		private static final long serialVersionUID = 1L;
  	#end

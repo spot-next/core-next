@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für ValidatorArgument complex type.
+ * <p>Java class for ValidatorArgument complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="ValidatorArgument">
@@ -42,7 +42,7 @@ public class ValidatorArgument {
     protected String stringValue;
 
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
@@ -54,7 +54,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Legt den Wert der name-Eigenschaft fest.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
@@ -66,7 +66,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Ruft den Wert der numberValue-Eigenschaft ab.
+     * Gets the value of the numberValue property.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Legt den Wert der numberValue-Eigenschaft fest.
+     * Sets the value of the numberValue property.
      * 
      * @param value
      *     allowed object is
@@ -90,7 +90,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Ruft den Wert der stringValue-Eigenschaft ab.
+     * Gets the value of the stringValue property.
      * 
      * @return
      *     possible object is
@@ -102,7 +102,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Legt den Wert der stringValue-Eigenschaft fest.
+     * Sets the value of the stringValue property.
      * 
      * @param value
      *     allowed object is

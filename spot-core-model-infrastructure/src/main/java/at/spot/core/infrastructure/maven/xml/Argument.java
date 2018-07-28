@@ -8,15 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Accessors complex type.
+ * <p>Java class for Argument complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Accessors">
+ * &lt;complexType name="Argument">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="valueProvider" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -25,34 +25,34 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Accessors")
-public class Accessors {
+@XmlType(name = "Argument")
+public class Argument {
 
-    @XmlAttribute(name = "valueProvider")
-    protected String valueProvider;
+    @XmlAttribute(name = "value", required = true)
+    protected String value;
 
     /**
-     * Gets the value of the valueProvider property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValueProvider() {
-        return valueProvider;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the valueProvider property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValueProvider(String value) {
-        this.valueProvider = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

@@ -321,13 +321,30 @@
 
 	<type name="LocalizedString" package="at.spot.itemtype.core.internationalization">
 		<description>This type can be used to store localized strings.</description>
+		<interfaces>
+			<interface javaClass="at.spot.core.types.Localizable">
+				<genericType value="String" />
+			</interface>
+		</interfaces>
 		<properties>
-			<property name="en_GB" type="String" />
-			<property name="de_DE" type="String" />
-			<property name="fr_FR" type="String" />
-			<property name="es_ES" type="String" />
-			<property name="it_IT" type="String" />
-			<property name="ja_JP" type="String" />
+			<property name="en_GB" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="de_DE" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="fr_FR" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="es_ES" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="it_IT" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="ja_JP" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
 		</properties>
 	</type>
 

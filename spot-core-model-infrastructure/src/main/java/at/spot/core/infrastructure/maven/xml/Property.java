@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Property complex type.
+ * <p>Java class for Property complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Property">
@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="accessors" type="{}Accessors" minOccurs="0"/>
  *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
  *         &lt;element name="defaultValue" type="{}DefaultValue" minOccurs="0"/>
+ *         &lt;element name="persistence" type="{}Persistence" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "modifiers",
     "accessors",
     "validators",
-    "defaultValue"
+    "defaultValue",
+    "persistence"
 })
 public class Property {
 
@@ -47,13 +49,14 @@ public class Property {
     protected Accessors accessors;
     protected Validators validators;
     protected DefaultValue defaultValue;
+    protected Persistence persistence;
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "type", required = true)
     protected String type;
 
     /**
-     * Ruft den Wert der description-Eigenschaft ab.
+     * Gets the value of the description property.
      * 
      * @return
      *     possible object is
@@ -65,7 +68,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der description-Eigenschaft fest.
+     * Sets the value of the description property.
      * 
      * @param value
      *     allowed object is
@@ -77,7 +80,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der modifiers-Eigenschaft ab.
+     * Gets the value of the modifiers property.
      * 
      * @return
      *     possible object is
@@ -89,7 +92,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der modifiers-Eigenschaft fest.
+     * Sets the value of the modifiers property.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +104,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der accessors-Eigenschaft ab.
+     * Gets the value of the accessors property.
      * 
      * @return
      *     possible object is
@@ -113,7 +116,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der accessors-Eigenschaft fest.
+     * Sets the value of the accessors property.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +128,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der validators-Eigenschaft ab.
+     * Gets the value of the validators property.
      * 
      * @return
      *     possible object is
@@ -137,7 +140,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der validators-Eigenschaft fest.
+     * Sets the value of the validators property.
      * 
      * @param value
      *     allowed object is
@@ -149,7 +152,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der defaultValue-Eigenschaft ab.
+     * Gets the value of the defaultValue property.
      * 
      * @return
      *     possible object is
@@ -161,7 +164,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der defaultValue-Eigenschaft fest.
+     * Sets the value of the defaultValue property.
      * 
      * @param value
      *     allowed object is
@@ -173,7 +176,31 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der name-Eigenschaft ab.
+     * Gets the value of the persistence property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Persistence }
+     *     
+     */
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    /**
+     * Sets the value of the persistence property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Persistence }
+     *     
+     */
+    public void setPersistence(Persistence value) {
+        this.persistence = value;
+    }
+
+    /**
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
@@ -185,7 +212,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der name-Eigenschaft fest.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
@@ -197,7 +224,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der type-Eigenschaft ab.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
@@ -209,7 +236,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der type-Eigenschaft fest.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
