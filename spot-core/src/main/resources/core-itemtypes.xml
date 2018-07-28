@@ -14,8 +14,6 @@
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
-	<!-- <atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" 
-		/> -->
 
 	<collection name="StringList" elementType="String" />
 	<collection name="CountryList" elementType="Country" />
@@ -331,19 +329,37 @@
 			</interface>
 		</interfaces>
 		<properties>
+			<property name="en" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
 			<property name="en_GB" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="de" type="String">
 				<modifiers writable="false" readable="false" />
 			</property>
 			<property name="de_DE" type="String">
 				<modifiers writable="false" readable="false" />
 			</property>
+			<property name="fr" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
 			<property name="fr_FR" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="es" type="String">
 				<modifiers writable="false" readable="false" />
 			</property>
 			<property name="es_ES" type="String">
 				<modifiers writable="false" readable="false" />
 			</property>
+			<property name="it" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
 			<property name="it_IT" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="ja" type="String">
 				<modifiers writable="false" readable="false" />
 			</property>
 			<property name="ja_JP" type="String">
