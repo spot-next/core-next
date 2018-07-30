@@ -11,13 +11,17 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -48,15 +52,19 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Transient
 	protected String typeCode;
 
-	@Property
+	@CreationTimestamp
+	@CreatedDate
+	protected Date createdAt;
+
+	@CreatedBy
+	protected String createdBy;
+
 	@UpdateTimestamp
 	@LastModifiedDate
 	protected Date lastModifiedAt;
 
-	@Property
-	@CreationTimestamp
-	@CreatedDate
-	protected Date createdAt;
+	@LastModifiedBy
+	protected String lastModifiedBy;
 
 	@Version
 	protected long version = -1;
@@ -69,6 +77,15 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected boolean deleted = false;
 
 	/**
+	 * Returns a hash code calculated of all properties that are defined as
+	 * unique (with the {@link Property} annotation). This is necessary to
+	 * implement extendible combined unique constraints, regardless of which JPA
+	 * inheritance strategy is used
+	 */
+	@Column(name = "uniquenessHash", unique = true, nullable = false)
+	private Integer uniquenessHash = null;
+
+	/**
 	 * A value of -1 indicates that this is an unpersisted item.
 	 */
 	public long getVersion() {
@@ -79,18 +96,55 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return pk;
 	}
 
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = new Date();
+		uptedateUniquenessHash();
+	}
+
+	protected void uptedateUniquenessHash() {
+		// update uniqueness hash. This is the only column that has unique-key
+		// constraint!
+		this.uniquenessHash = Objects.hash(getUniqueProperties().values().toArray());
+	}
+
+	@PreUpdate
+	protected void preUpdate() {
+		setLastModifiedAt();
+		uptedateUniquenessHash();
+	}
+
+	protected void setLastModifiedAt() {
+		this.lastModifiedAt = new Date();
+	}
+
+	public int uniquenessHash() {
+		return getUniqueProperties().hashCode();
+	}
+
+	public void setCreatedBy(final String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setLastModifiedBy(final String lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+
 	public Date getLastModifiedAt() {
-		return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) : null;
+		// return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) :
+		// null;
+		return lastModifiedAt;
 	}
 
 	public Date getCreatedAt() {
-		return createdAt != null ? new Date(createdAt.getTime()) : null;
+		// return createdAt != null ? new Date(createdAt.getTime()) : null;
+		return createdAt;
 	}
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing item
-	 *         with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing
+	 *         item with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -101,11 +155,12 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 */
 	public void markAsDirty() {
 		// auditingHandler.markModified(this);
-		this.lastModifiedAt = new Date();
+		setLastModifiedAt();
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated with @Unique.
+	 * Returns the names and the values of all properties annotated
+	 * with @Unique.
 	 *
 	 * @return
 	 */
@@ -130,22 +185,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation).
-	 *
-	 * @return
-	 */
-	public int uniquenessHash() {
-		int hash = 0;
-
-		hash = getUniqueProperties().hashCode();
-
-		return hash;
-	}
-
-	/**
-	 * If the type and the pk of the given object is the same as the current object,
-	 * both are equal.
+	 * If the type and the pk of the given object is the same as the current
+	 * object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

@@ -6,7 +6,10 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.testing.AbstractIntegrationTest;
+import at.spot.itemtype.core.catalog.Catalog;
+import at.spot.itemtype.core.catalog.CatalogVersion;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserAddress;
@@ -22,6 +25,23 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Override
 	protected void teardownTest() {
 		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * The catalogVersion Default:Online already be available through the
+	 * initial data. Therefore saving a second item will cause a uniqueness
+	 * constraint violation.
+	 */
+	@Test(expected = ModelSaveException.class)
+	public void testUniqueConstraintOfSubclass() {
+		final Catalog catalog = modelService.get(Catalog.class,
+				Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
+
+		final CatalogVersion version = modelService.create(CatalogVersion.class);
+		version.setCatalog(catalog);
+		version.setId("Online");
+
+		modelService.save(version);
 	}
 
 	@Test

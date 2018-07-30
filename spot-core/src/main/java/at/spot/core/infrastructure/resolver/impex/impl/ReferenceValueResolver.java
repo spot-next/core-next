@@ -12,14 +12,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.exception.ValueResolverException;
 import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
 import at.spot.core.infrastructure.support.impex.ColumnDefinition;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.types.Item;
@@ -34,20 +33,24 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 	private QueryService queryService;
 
 	@Override
-	public <T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments,
-			ColumnDefinition columnDefinition) throws ValueResolverException {
+	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+			final ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		return resolve(value, targetType, genericArguments, columnDefinition.getValueResolutionDescriptor(), 0);
 	}
 
-	protected <T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments, String desc,
-			int resolutionLevel) throws ValueResolverException {
+	protected <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+			String desc, final int resolutionLevel) throws ValueResolverException {
+
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
 
 		// remove spaces in the string, makes it easier to parse
 		desc = desc.replace(" ", "");
 		final String[] inputParams = value.split(":");
 
-		List<Node> nodes = parse(new StringCharacterIterator(desc), (Class<Item>) targetType);
+		final List<Node> nodes = parse(new StringCharacterIterator(desc), targetType);
 		final QueryDefinition queryDef = new QueryDefinition((Class<Item>) targetType);
 		fillQuery(queryDef, (Class<Item>) targetType, nodes.toArray(new Node[0]));
 
@@ -55,7 +58,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 			throw new ValueResolverException("Input values doesn't match expected header column definition.");
 		}
 
-		JpqlQuery<T> qry = new JpqlQuery<>(queryDef.toString(), targetType);
+		final JpqlQuery<T> qry = new JpqlQuery<>(queryDef.toString(), targetType);
 
 		for (int x = 0; x < queryDef.getParamCount(); x++) {
 			qry.addParam("" + x, inputParams[x]);
@@ -72,14 +75,14 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 		return result.getResultList().get(0);
 	}
 
-	private void fillQuery(QueryDefinition queryDef, Class<Item> type, Node... nodes) {
-		for (Node node : nodes) {
+	private void fillQuery(final QueryDefinition queryDef, final Class<Item> type, final Node... nodes) {
+		for (final Node node : nodes) {
 			if (node.getNodes().size() > 0) {
 
 				final Field propertyField = ClassUtil.getFieldDefinition(type, node.getPropertyName(), true);
 				final Class<?> fieldType = propertyField.getType();
 
-				String fieldTypeName = fieldType.getSimpleName();
+				final String fieldTypeName = fieldType.getSimpleName();
 
 				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeName + " ON "
 						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".pk ");
@@ -93,7 +96,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 		}
 	}
 
-	private List<Node> parse(StringCharacterIterator descIterator, Class<?> itemType) {
+	private List<Node> parse(final StringCharacterIterator descIterator, final Class<?> itemType) {
 		// I know .. it's not pretty ...
 		final List<Node> nodes = new ArrayList<>();
 
@@ -118,8 +121,9 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 					nodes.add(tempNode);
 					tempToken = "";
 
-					Field propertyField = ClassUtil.getFieldDefinition(itemType, tempNode.getPropertyName(), true);
-					List<Node> children = parse(descIterator, propertyField.getType());
+					final Field propertyField = ClassUtil.getFieldDefinition(itemType, tempNode.getPropertyName(),
+							true);
+					final List<Node> children = parse(descIterator, propertyField.getType());
 
 					tempNode.nodes.addAll(children);
 				}
@@ -143,7 +147,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 		final List<String> whereClauses = new ArrayList<>();
 		int paramCount = 0;
 
-		public QueryDefinition(Class<Item> rootType) {
+		public QueryDefinition(final Class<Item> rootType) {
 			this.rootType = rootType;
 		}
 
@@ -169,7 +173,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 
 		@Override
 		public String toString() {
-			String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
+			final String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
 					+ rootType.getSimpleName() + " " + joinClauses.stream().collect(Collectors.joining(" ")) + " WHERE "
 					+ whereClauses.stream().collect(Collectors.joining(" AND "));
 
@@ -182,7 +186,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 		private final List<Node> nodes = new ArrayList<>();
 		private final Class<?> itemType;
 
-		public Node(String name, Class<?> itemType) {
+		public Node(final String name, final Class<?> itemType) {
 			this.name = name;
 			this.itemType = itemType;
 		}
@@ -191,7 +195,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 			return name;
 		}
 
-		public void setName(String name) {
+		public void setName(final String name) {
 			this.name = name;
 		}
 

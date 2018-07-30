@@ -193,7 +193,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
 			enumeration.setDescription(enumType.getDescription());
 
-			populateInterfaces(enumType.getInterfaces().getInterface(), enumeration);
+			if (enumType.getInterfaces() != null) {
+				populateInterfaces(enumType.getInterfaces().getInterface(), enumeration);
+			}
 
 			for (final EnumValue value : enumType.getValue()) {
 				final JavaEnumValue v = new JavaEnumValue();
