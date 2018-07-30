@@ -3,8 +3,8 @@ INSERT Catalog ; id[unique=true] ; name
                ; Media           ; Media catalog
 
 INSERT CatalogVersion ; id[unique=true] ; catalog(id)[unique=true] ; name
-                      ; Staged          ; Default                  ; Default Staged catalog version
                       ; Online          ; Default                  ; Default Online catalog version
-                      ; Staged          ; Media                    ; Media Staged catalog version
                       ; Online          ; Media                    ; Media Online catalog version
+                      ; Staged          ; Default                  ; Default Staged catalog version
+                      ; Staged          ; Media                    ; Media Staged catalog version
                    
