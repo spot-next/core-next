@@ -7,12 +7,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
@@ -40,6 +39,7 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
+		super.setUserInformation(models);
 		super.applyPrepareInterceptors(models);
 		super.validateModels(models);
 

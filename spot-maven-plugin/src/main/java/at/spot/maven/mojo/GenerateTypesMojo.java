@@ -537,10 +537,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	/**
 	 * Populates the super class for the given JavaType.
-	 *
-	 * @param javaClass         the class to populate with a super types
-	 * @param defaultSuperclass is used when there is no superType given, can be
-	 *                          null too
+	 * 
+	 * @param javaClass
+	 *            the class to populate with a super types
+	 * @param defaultSuperclass
+	 *            is used when there is no superType given, can be null too
 	 */
 	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
 			final at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
