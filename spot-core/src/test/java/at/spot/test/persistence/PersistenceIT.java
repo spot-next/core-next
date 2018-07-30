@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.testing.AbstractIntegrationTest;
+import at.spot.itemtype.core.internationalization.Currency;
 import at.spot.itemtype.core.catalog.Catalog;
 import at.spot.itemtype.core.catalog.CatalogVersion;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
@@ -45,11 +46,33 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	@Test
+	public void testLocalizedString() {
+		Currency currency = modelService.create(Currency.class);
+		currency.setIsoCode("EUR");
+
+		String german = "german";
+		String english = "english";
+
+		currency.setName(english, Locale.UK);
+		currency.setName(german, Locale.GERMANY);
+
+		modelService.save(currency);
+
+		Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
+
+		// these locales are not the same as the locales with country codes!
+		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
+		Assert.assertNull(loadedCurrency.getName(Locale.GERMAN));
+		Assert.assertEquals(english, loadedCurrency.getName(Locale.UK));
+		Assert.assertEquals(german, loadedCurrency.getName(Locale.GERMANY));
+	}
+
+	@Test
 	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSideWithLoadedUser() throws Exception {
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		user.getAddresses().add(address);
 
 		modelService.save(user);
@@ -66,7 +89,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.setId("testUser");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		user.getAddresses().add(address);
 
 		modelService.save(user);
@@ -82,7 +105,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.setId("testUser");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreet("asf");
+		address.setStreetName("asf");
 		address.setOwner(user);
 
 		modelService.save(address);

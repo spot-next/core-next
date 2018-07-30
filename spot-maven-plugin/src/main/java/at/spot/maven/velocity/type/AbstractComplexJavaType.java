@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import at.spot.maven.velocity.type.annotation.JavaAnnotation;
 import at.spot.maven.velocity.type.base.JavaInterface;
+import at.spot.maven.velocity.type.parts.JavaGenericTypeArgument;
 import at.spot.maven.velocity.type.parts.JavaMethod;
 import at.spot.maven.velocity.type.parts.JavaMethodArgument;
 
@@ -15,6 +16,7 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 
 	protected final Set<JavaInterface> interfaces = new HashSet<>();
 	protected final Set<JavaMethod> methods = new HashSet<>();
+	protected final Set<JavaGenericTypeArgument> genericArguments = new HashSet<>();
 
 	protected String packagePath;
 	protected JavaInterface superClass;
@@ -77,6 +79,14 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 		if (method.getType().isComplexType()) {
 			this.imports.add(method.getType().getFullyQualifiedName());
 		}
+	}
+
+	public Set<JavaGenericTypeArgument> getGenericArguments() {
+		return genericArguments;
+	}
+
+	public void addGenericArgument(final JavaGenericTypeArgument argument) {
+		this.genericArguments.add(argument);
 	}
 
 	@Override

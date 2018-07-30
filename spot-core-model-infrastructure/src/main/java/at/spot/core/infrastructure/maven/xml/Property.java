@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="localized" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,6 +55,8 @@ public class Property {
     protected String name;
     @XmlAttribute(name = "type", required = true)
     protected String type;
+    @XmlAttribute(name = "localized")
+    protected Boolean localized;
 
     /**
      * Gets the value of the description property.
@@ -245,6 +248,34 @@ public class Property {
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Ruft den Wert der localized-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isLocalized() {
+        if (localized == null) {
+            return false;
+        } else {
+            return localized;
+        }
+    }
+
+    /**
+     * Legt den Wert der localized-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setLocalized(Boolean value) {
+        this.localized = value;
     }
 
 }

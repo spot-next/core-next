@@ -557,18 +557,22 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			Object instanceValue = null;
+			Object instanceValue = ClassUtil.getField(item, field.getName(), true);
 
-			if (field.getType().isAssignableFrom(Set.class)) {
-				instanceValue = new HashSet<>();
-			} else if (field.getType().isAssignableFrom(List.class)
-					|| field.getType().isAssignableFrom(Collection.class)) {
-				instanceValue = new ArrayList<>();
-			} else if (field.getType().isAssignableFrom(Map.class)) {
-				instanceValue = new HashMap<>();
+			if (instanceValue == null) {
+				if (field.getType().isAssignableFrom(Set.class)) {
+					instanceValue = new HashSet<>();
+				} else if (field.getType().isAssignableFrom(List.class)
+						|| field.getType().isAssignableFrom(Collection.class)) {
+					instanceValue = new ArrayList<>();
+				} else if (field.getType().isAssignableFrom(Map.class)) {
+					instanceValue = new HashMap<>();
+				}
+
+				if (instanceValue != null) {
+					ClassUtil.setField(item, field.getName(), instanceValue);
+				}
 			}
-
-			ClassUtil.setField(item, field.getName(), instanceValue);
 		}
 	}
 

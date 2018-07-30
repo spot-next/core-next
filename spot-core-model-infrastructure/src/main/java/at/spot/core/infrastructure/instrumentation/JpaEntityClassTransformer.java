@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CollectionType;
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.annotation.Relation;
+import at.spot.core.infrastructure.maven.xml.DatabaseColumnType;
 import at.spot.core.infrastructure.type.RelationCollectionType;
 import at.spot.core.infrastructure.type.RelationNodeType;
 import at.spot.core.infrastructure.type.RelationType;
@@ -80,6 +82,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_NULLABLE = "nullable";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
+	protected static final String MV_COLUMN_TYPE = "columnType";
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
 	protected static final String RELATION_TARGET_COLUMN = "target_pk";
 
@@ -120,17 +123,11 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 							}
 						}
 
-						// only add column annotation if there is no relation
-						// annotation, as this is not allowed
+						// only add column annotation if there is no relation annotation, as this is not
+						// allowed
 						if (CollectionUtils.isEmpty(fieldAnnotations)) {
-							// add column annotation used hold infos about
-							// unique constraints
-							final Optional<Annotation> columnAnn = createColumnAnnotation(clazz, field,
-									propertyAnn.get());
-
-							if (columnAnn.isPresent()) {
-								fieldAnnotations.add(columnAnn.get());
-							}
+							final List<Annotation> columnAnn = createColumnAnnotation(clazz, field, propertyAnn.get());
+							fieldAnnotations.addAll(columnAnn);
 						}
 
 						// and add them to the clazz
@@ -216,28 +213,55 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return null;
 	}
 
-	protected Optional<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
+	protected List<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		final Annotation ann = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
+		List<Annotation> ret = new ArrayList<>();
+
+		final Annotation columnAnn = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
 
 		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
 		columnName.setValue(field.getName());
-		ann.addMemberValue("name", columnName);
+		columnAnn.addMemberValue("name", columnName);
 
 		if (isUniqueProperty(field, propertyAnnotation)) {
 			final BooleanMemberValue nullable = new BooleanMemberValue(field.getFieldInfo2().getConstPool());
 			nullable.setValue(false);
-			ann.addMemberValue("nullable", nullable);
+			columnAnn.addMemberValue("nullable", nullable);
 		}
 
-		return Optional.ofNullable(ann);
+		ret.add(columnAnn);
+
+		// add the type information, if available
+
+		EnumMemberValue colTypeVal = (EnumMemberValue) propertyAnnotation.getMemberValue(MV_COLUMN_TYPE);
+
+		if (colTypeVal != null) {
+			DatabaseColumnType columnTypeEnumVal;
+			try {
+				columnTypeEnumVal = DatabaseColumnType.valueOf(colTypeVal.getValue());
+			} catch (Exception e) {
+				columnTypeEnumVal = DatabaseColumnType.DEFAULT;
+			}
+
+			if (!DatabaseColumnType.DEFAULT.equals(columnTypeEnumVal)) {
+				final Annotation typeAnn = createAnnotation(field.getFieldInfo2().getConstPool(), Type.class);
+
+				final StringMemberValue typeName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+				typeName.setValue(mapColumnTypeToHibernate(columnTypeEnumVal));
+				typeAnn.addMemberValue("type", typeName);
+
+				ret.add(typeAnn);
+			}
+		}
+
+		return ret;
 	}
 
 	/**
-	 * Checks if the field has the {@link Property#unique()} annotation value
-	 * set. If yes, then a {@link NotNull} is added. The real uniqueness
-	 * constraint is checked using {@link Item#uniquenessHash()}.
+	 * Checks if the field has the {@link Property#unique()} annotation value set.
+	 * If yes, then a {@link NotNull} is added. The real uniqueness constraint is
+	 * checked using {@link Item#uniquenessHash()}.
 	 */
 	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
@@ -420,8 +444,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property
-	 * has a unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
+	 * unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
@@ -520,4 +544,44 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
 	}
 
+	private String mapColumnTypeToHibernate(DatabaseColumnType columnType) {
+		switch (columnType) {
+		case CHAR:
+			return "char";
+		case VARCHAR:
+			return "characters";
+		case LONGVARCHAR:
+			return "text";
+		case CLOB:
+			return "clob";
+		case BLOB:
+			return "blob";
+		case TINYINT:
+			return "byte";
+		case SMALLINT:
+			return "short";
+		case INTEGER:
+			return "int";
+		case BIGINT:
+			return "long";
+		case DOUBLE:
+			return "double";
+		case FLOAT:
+			return "float";
+		case NUMERIC:
+			return "big_decimal";
+		case BIT:
+			return "boolean";
+		case DATE:
+			return "date";
+		case TIME:
+			return "calendar_time";
+		case TIMESTAMP:
+			return "calendar";
+		case VARBINARY:
+			return "binary";
+		default:
+			return null;
+		}
+	}
 }
