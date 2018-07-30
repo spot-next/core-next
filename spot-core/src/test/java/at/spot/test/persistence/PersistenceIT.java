@@ -2,15 +2,16 @@ package at.spot.test.persistence;
 
 import java.util.Collections;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.testing.AbstractIntegrationTest;
-import at.spot.itemtype.core.internationalization.Currency;
 import at.spot.itemtype.core.catalog.Catalog;
 import at.spot.itemtype.core.catalog.CatalogVersion;
+import at.spot.itemtype.core.internationalization.Currency;
 import at.spot.itemtype.core.internationalization.LocalizationValue;
 import at.spot.itemtype.core.user.User;
 import at.spot.itemtype.core.user.UserAddress;
@@ -20,18 +21,16 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void teardownTest() {
-		// TODO Auto-generated method stub
 	}
 
 	/**
-	 * The catalogVersion Default:Online already be available through the
-	 * initial data. Therefore saving a second item will cause a uniqueness
-	 * constraint violation.
+	 * The catalogVersion Default:Online already be available through the initial
+	 * data. Therefore saving a second item will cause a uniqueness constraint
+	 * violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
@@ -72,40 +71,53 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreetName("asf");
+		address.setStreetName("Test street");
 		user.getAddresses().add(address);
 
 		modelService.save(user);
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
+		Assert.assertEquals(1, loadedUser.getAddresses().size());
 		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
 	}
 
-	// TODO: manytoone mapping not working yet
 	@Test
 	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSide() throws Exception {
 		final User user = modelService.create(User.class);
-		user.setId("testUser");
+		user.setId("testUser1");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreetName("asf");
+		address.setStreetName("Test");
 		user.getAddresses().add(address);
+
+		loggingService.debug("Addresses before save: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
+						.collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
+		loggingService.debug("Addresses after save: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
+						.collect(Collectors.joining(",")));
+
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
+		loggingService.debug("Addresses after load: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
+						.collect(Collectors.joining(",")));
+
+		Assert.assertEquals(1, loadedUser.getAddresses().size());
 		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
 	}
 
 	@Test
 	public void testBidirectionalOne2ManyRelation() throws Exception {
 		final User user = modelService.create(User.class);
-		user.setId("testUser");
+		user.setId("testUser2");
 
 		final UserAddress address = modelService.create(UserAddress.class);
-		address.setStreetName("asf");
+		address.setStreetName("Test2");
 		address.setOwner(user);
 
 		modelService.save(address);

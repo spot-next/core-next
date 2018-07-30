@@ -29,6 +29,9 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
+
 import at.spot.core.infrastructure.exception.ImpexImportException;
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.resolver.impex.ImpexValueResolver;
@@ -44,8 +47,6 @@ import at.spot.core.infrastructure.support.impex.ColumnDefinition;
 import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
@@ -121,8 +122,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		for (final String line : fileContent) {
 
-			// there might be some invisible unicode characters that might cause
-			// troubles
+			// there might be some invisible unicode characters that might cause troubles
 			// furthermore all spaces
 			final String trimmedLine = StringUtils.trim(line);
 
@@ -237,10 +237,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 						// insert/update/remove items
 						if (ImpexCommand.INSERT.equals(unit.getCommand())) {
-							// there is no JPA INSERT command, so we just create
-							// a
-							// new item and save it the regular way
-							// itemsToSave.add(insertItem(unit, rawItem));
+							// there is no JPA INSERT command, so we just create a new item and save it the
+							// regular way itemsToSave.add(insertItem(unit, rawItem));
 							saveItem(config, insertItem(unit, rawItem));
 
 						} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
@@ -251,9 +249,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							final Item existingItem = modelService
 									.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
 
-							// if no matching item is found, we tread this the
-							// same
-							// way as an INSERT COMMAND
+							// if no matching item is found, we tread this the same way as an INSERT COMMAND
 							if (existingItem != null) {
 								setItemValues(existingItem, rawItem);
 								// itemsToSave.add(existingItem);
@@ -270,8 +266,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							}
 
 						} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
-							// First we fetch the item based on the unique
-							// columns
+							// First we fetch the item based on the unique columns
 							final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
 									rawItem, config);
 							final Item existingItem = modelService
@@ -283,8 +278,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 								// itemsToSave.add(existingItem);
 								saveItem(config, existingItem);
 							} else {
-								// otherwise we create an new item
-								// itemsToSave.add(insertItem(unit, rawItem));
+								// otherwise we create an new item itemsToSave.add(insertItem(unit, rawItem));
 								saveItem(config, insertItem(unit, rawItem));
 							}
 
@@ -419,9 +413,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/**
 	 * Return the unique resolved (!) properties.
 	 * 
-	 * @throws ImpexImportException
-	 *             if one of the given columns is a collection or a map, as this
-	 *             is not supported.
+	 * @throws ImpexImportException if one of the given columns is a collection or a
+	 *                              map, as this is not supported.
 	 */
 	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns,
 			final Map<ColumnDefinition, Object> rawItem, final ImportConfiguration config) throws ImpexImportException {
