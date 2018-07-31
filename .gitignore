@@ -1,3 +1,7 @@
+*.orig
+*~
+.DS_Store
+*.log
 *.db
 .metadata
 bin
@@ -18,10 +22,13 @@ gensrc
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-spot-core/log
 Servers
 spot-management-console/gwt-unitCache
-spot-core/gensrc
-/spot/build-tools/target/
-/spot/target/
+target
 **/src/gen
+
+node
+node_modules
+local.properties
+spot-core/data
+data
