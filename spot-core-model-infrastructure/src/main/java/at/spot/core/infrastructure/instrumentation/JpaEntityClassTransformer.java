@@ -107,7 +107,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 					// process item type property annotation
-					if (propertyAnn.isPresent()) {
+					if (propertyAnn.isPresent() && isValidClass(field.getType().getName())) {
 						// create the necessary JPA annotations based on
 						// Relation and Property annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
