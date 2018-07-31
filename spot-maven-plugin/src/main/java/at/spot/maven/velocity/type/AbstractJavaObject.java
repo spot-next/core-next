@@ -18,6 +18,7 @@ public abstract class AbstractJavaObject extends AbstractObject {
 	protected final Set<JavaAnnotation> annotations = new HashSet<>();
 
 	public void addAnnotation(JavaAnnotation annotation) {
+		getImports().add(annotation.getType().getFullyQualifiedName());
 		this.annotations.add(annotation);
 	}
 
