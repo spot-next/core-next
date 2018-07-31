@@ -18,7 +18,7 @@
 		<File>log/console.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover -->
-			<FileNamePattern>core.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>data/log/core.%d{yyyy-MM-dd}.log</FileNamePattern>
 
 			<!-- keep 30 days' worth of history -->
 			<maxHistory>30</maxHistory>

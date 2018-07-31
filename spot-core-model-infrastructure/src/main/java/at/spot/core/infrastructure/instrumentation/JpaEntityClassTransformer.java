@@ -1,7 +1,5 @@
 package at.spot.core.infrastructure.instrumentation;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,18 +133,18 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					}
 				}
 
-				try {
-					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
-
-					if (file.exists()) {
-						file.delete();
-					}
-
-					writeClass(clazz, file);
-				} catch (final IOException e) {
-					throw new IllegalClassTransformationException(
-							String.format("Unable to write class file %s", clazz.getName()), e);
-				}
+//				try {
+//					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
+//
+//					if (file.exists()) {
+//						file.delete();
+//					}
+//
+//					writeClass(clazz, file);
+//				} catch (final IOException e) {
+//					throw new IllegalClassTransformationException(
+//							String.format("Unable to write class file %s", clazz.getName()), e);
+//				}
 
 				return Optional.of(clazz);
 			}

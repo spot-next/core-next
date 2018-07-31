@@ -62,11 +62,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	public static final String MAP_ENTRY_SEPARATOR = "->";
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-	// (^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\s]{0,}([a-zA-Z]{2,})[\s]{0,}(\[.*?\]){0,1}[\s]{0,}[;]{0,1}
-	// protected Pattern PATTERN_COMMAND_AND_TYPE = Pattern.compile(
-	// "(^INSERT_UPDATE|^UPDATE|^INSERT|^UPSERT|^REMOVE)[\\s]{0,}([a-zA-Z]{2,})[\\s]{0,}(\\[.*?\\]){0,1}[\\s]{0,}[;]{0,1}");
-
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,\=]{0,}\]{0,1})
+	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
 			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\=]{0,}\\]{0,1})");
 
@@ -201,9 +197,6 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		final List<JpqlQuery<Void>> itemsToRemove = new ArrayList<>();
 
 		for (final WorkUnit unit : workUnits) {
-			// holds a list all raw resolved property values for each row
-			final List<Map<ColumnDefinition, Object>> resolvedRawItemsToSave = new ArrayList<>();
-
 			List<String> currentRow = null;
 
 			try {
@@ -213,7 +206,6 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 					currentRow = row;
 
 					final Map<ColumnDefinition, Object> rawItem = new HashMap<>();
-					resolvedRawItemsToSave.add(rawItem);
 
 					final String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
 
@@ -295,36 +287,12 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						unit.getItemType().getName(), StringUtils.join(currentRow, ", ")), e);
 			}
 
-			// save each workunit so following units can reference items from
-			// before
-			// loggingService.debug(() -> String.format("Saving %s new items",
-			// itemsToSave.size()));
-			//
-			// if (config.getIgnoreErrors()) {
-			// executeWithIgnoreErrors(itemsToSave, (i) -> modelService.save(i),
-			// (i, e) -> loggingService
-			// .log(LogLevel.WARN, String.format("Could not save item %s: %s",
-			// i, e.getMessage()), null, e));
-			// } else {
-			// modelService.saveAll(itemsToSave);
-			// }
-			//
-			// itemsToSave.clear();
-
 			loggingService.debug(() -> String.format("Removing %s items", itemsToRemove.size()));
 			for (final JpqlQuery<Void> q : itemsToRemove) {
 				queryService.query(q);
 			}
 
 			itemsToRemove.clear();
-
-			// loggingService.debug(() -> String.format("Updating %s items",
-			// itemsToUpdate.size()));
-			// for (final JpqlQuery<Void> q : itemsToUpdate) {
-			// queryService.query(q);
-			// }
-			//
-			// itemsToUpdate.clear();
 		}
 	}
 
