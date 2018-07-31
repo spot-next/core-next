@@ -1,4 +1,24 @@
-# spOt micro framework [![Build Status](https://travis-ci.org/mojo2012/spot-framework.svg?branch=master)](https://travis-ci.org/mojo2012/spot-framework) [![Code Coverage](https://scan.coverity.com/projects/13539/badge.svg)](https://scan.coverity.com/projects/mojo2012-spot-framework)
+```
+                                               ███████                         
+                                           ███████████████       ██████        
+                                         ███████████████████     ██████        
+                                        ████████     ████████    ██████        
+          ████████    ███████████      ███████         ███████   █████████     
+         █████████  ███████████████    ███████         ███████   █████████     
+        █████████  █████████████████   ███████         ███████   █████████     
+        ██████     ██████     ██████   ███████         ███████   ██████        
+        ██████     ██████    ███████    ████████     ████████    ███████       
+     █████████     ██████ ██████████     ███████████████████      ████████     
+    █████████      ██████ ████████         ███████████████        ███████     
+    ███████        ██████ ██████               ███████             █████     
+                   ██████                                  
+                   ██████  
+                   ██████                                INNOVATIVE CODING
+                                
+```
+
+# spOt micro framework
+[![Build Status](https://travis-ci.org/mojo2012/spot-framework.svg?branch=master)](https://travis-ci.org/mojo2012/spot-framework) [![Code Coverage](https://scan.coverity.com/projects/13539/badge.svg)](https://scan.coverity.com/projects/mojo2012-spot-framework) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
 
 The idea of the spOt micro framework is to take the good parts of the SAP Hybris framework and bring them to the next level.
 For those who don't know SAP Hybris: it's a enterprise-grade ecommerce framework with it's own custom object-oriented persistence layer.
