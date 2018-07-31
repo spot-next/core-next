@@ -12,6 +12,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -188,10 +189,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
-		// if the given class is a java base class it can't be unfrozen and it
-		// would
-		// throw an exception
-		// so we check for valid classes
+		// if the given class is a java base class it can't be unfrozen and it would
+		// throw an exception so we check for valid classes
 		if (isValidClass(clazz.getName())) {
 			return getAnnotation(clazz, ItemType.class);
 		}
@@ -397,8 +396,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 
-			annotation.addMemberValue(MV_MAPPED_BY,
-					createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
+			if (mappedTo != null && StringUtils.isNotBlank(mappedTo.getValue())) {
+				annotation.addMemberValue(MV_MAPPED_BY,
+						createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
+			}
 		}
 	}
 
@@ -408,6 +409,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final Annotation ann = createAnnotation(clazz, annotationType);
 		addCascadeAnnotation(ann, field);
+
+		// add fetch type
+		final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
+		fetchType.setType(FetchType.class.getName());
+		fetchType.setValue(FetchType.LAZY.name());
+		ann.addMemberValue("fetch", fetchType);
 
 		return ann;
 	}
