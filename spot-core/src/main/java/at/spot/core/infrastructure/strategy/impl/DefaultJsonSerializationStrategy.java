@@ -8,7 +8,9 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +45,12 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		jacksonMapper = new ObjectMapper();
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		// needed for localizedStrings, because otherwise the default locale value would
+		// be returned instead of the real item
+		jacksonMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+		jacksonMapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
+		jacksonMapper.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
 
 		TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
 		typeResolver.init(JsonTypeInfo.Id.CUSTOM, new ItemTypeResolver());

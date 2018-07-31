@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import at.spot.core.support.exception.UnsupportedLocale;
@@ -74,6 +75,30 @@ public class MiscUtil {
 		ret = collection.toArray((T[]) Array.newInstance(arrayType, 0));
 
 		return ret;
+	}
+
+	/**
+	 * @throws IllegalStateException if the locale can be parsed but is not
+	 *                               available/valid.
+	 */
+	public static Locale parseLocale(String localeString) throws IllegalStateException {
+		Locale locale = null;
+
+		if (StringUtils.isNotBlank(localeString)) {
+			String[] splitLocaleString = localeString.split("_");
+
+			if (splitLocaleString.length == 1) {
+				locale = new Locale(localeString);
+			} else if (splitLocaleString.length == 2) {
+				locale = new Locale(splitLocaleString[0], splitLocaleString[1]);
+			}
+
+			if (!LocaleUtils.isAvailableLocale(locale)) {
+				throw new IllegalStateException(String.format("Unknown locale %s", locale));
+			}
+		}
+
+		return locale;
 	}
 
 	/**

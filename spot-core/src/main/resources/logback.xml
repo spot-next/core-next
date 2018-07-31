@@ -25,7 +25,7 @@
 		</rollingPolicy>
 	</appender>
 
-	<logger name="at.spot" level="DEBUG" />
+	<logger name="at.spot" level="INFO" />
 	<logger name="at.spot.core.persistence.instrumentation" level="WARN" />
 
 	<!-- framework logs -->
@@ -39,7 +39,7 @@
 	<logger name="com.zaxxer.hikari" level="WARN" />
 	<logger name="org.eclipse.jetty" level="INFO" />
 
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>

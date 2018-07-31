@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +49,8 @@ import at.spot.core.infrastructure.support.impex.ImpexCommand;
 import at.spot.core.infrastructure.support.impex.ImpexMergeMode;
 import at.spot.core.infrastructure.support.impex.WorkUnit;
 import at.spot.core.persistence.service.QueryService;
+import at.spot.core.persistence.service.TransactionService;
+import at.spot.core.support.util.MiscUtil;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
 import at.spot.itemtype.core.beans.ImportConfiguration;
@@ -65,7 +68,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
-			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,\\=]{0,}\\]{0,1})");
+			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\=]{0,}\\]{0,1})");
 
 	@Resource
 	private TypeService typeService;
@@ -81,6 +84,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	@Resource
 	private ReferenceValueResolver referenceValueResolver;
+
+	@Resource
+	private TransactionService transactionService;
 
 	@Resource
 	private Map<String, ImpexValueResolver> impexValueResolvers;
@@ -109,8 +115,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			processWorkUnits(workUnits);
 
 			loggingService.debug(String.format("Importing %s work units", workUnits.size()));
-			importWorkUnits(workUnits, config);
-
+			transactionService.executeWithoutResult(() -> importWorkUnits(workUnits, config));
 		} else {
 			loggingService.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
 		}
@@ -192,17 +197,21 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	protected void importWorkUnits(final List<WorkUnit> workUnits, final ImportConfiguration config)
 			throws ImpexImportException {
-		// final List<Item> itemsToSave = new ArrayList<>();
-		// final List<JpqlQuery<Void>> itemsToUpdate = new ArrayList<>();
+
 		final List<JpqlQuery<Void>> itemsToRemove = new ArrayList<>();
 
 		for (final WorkUnit unit : workUnits) {
+			// holds a list all raw resolved property values for each row
+			final List<Map<ColumnDefinition, Object>> resolvedRawItemsToSave = new ArrayList<>();
+
+			List<String> currentRow = null;
+
 			try {
-				// holds a list all raw resolved property values for each row
-				final List<Map<ColumnDefinition, Object>> resolvedRawItemsToSave = new ArrayList<>();
 
 				// resolve and collect all the property values
 				for (final List<String> row : unit.getDataRows()) {
+					currentRow = row;
+
 					final Map<ColumnDefinition, Object> rawItem = new HashMap<>();
 					resolvedRawItemsToSave.add(rawItem);
 
@@ -225,7 +234,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							final Class<?> returnType = propDef.getReturnType();
 							col.setColumnType(returnType);
 
-							// handle collections and maps
+							// resolve values using the default or the configured value resolvers
 							final Object propertyValue = resolveValue(val, returnType,
 									propDef.getGenericTypeArguments(), col);
 
@@ -234,62 +243,56 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							loggingService.warn(String.format("Ignoring unknown column %s for type %s",
 									col.getPropertyName(), unit.getItemType().getSimpleName()));
 						}
+					}
 
-						// insert/update/remove items
-						if (ImpexCommand.INSERT.equals(unit.getCommand())) {
-							// there is no JPA INSERT command, so we just create a new item and save it the
-							// regular way itemsToSave.add(insertItem(unit, rawItem));
-							saveItem(config, insertItem(unit, rawItem));
+					// insert/update/remove items
+					if (ImpexCommand.INSERT.equals(unit.getCommand())) {
+						saveItem(config, insertItem(unit, rawItem));
 
-						} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
-							// First we fetch the item based on the unique
-							// columns
-							final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
-									rawItem, config);
-							final Item existingItem = modelService
-									.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
+					} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
 
-							// if no matching item is found, we tread this the same way as an INSERT COMMAND
-							if (existingItem != null) {
-								setItemValues(existingItem, rawItem);
-								// itemsToSave.add(existingItem);
-								saveItem(config, existingItem);
+						// First we fetch the item based on the unique columns
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
+								rawItem, config);
+						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
+
+						// if no matching item is found, we tread this the same way as an INSERT COMMAND
+						if (existingItem != null) {
+							setItemValues(existingItem, rawItem);
+							saveItem(config, existingItem);
+						} else {
+							final String message = String
+									.format("Could not find item for update with unique properties: %s", uniqueParams);
+
+							if (config.getIgnoreErrors()) {
+								loggingService.warn(message);
 							} else {
-								final String message = String.format(
-										"Could not find item for update with unique properties: %s", uniqueParams);
-
-								if (config.getIgnoreErrors()) {
-									loggingService.warn(message);
-								} else {
-									throw new ImpexImportException(message);
-								}
+								throw new ImpexImportException(message);
 							}
-
-						} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
-							// First we fetch the item based on the unique columns
-							final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
-									rawItem, config);
-							final Item existingItem = modelService
-									.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
-
-							// if a matching item is found, we update it
-							if (existingItem != null) {
-								setItemValues(existingItem, rawItem);
-								// itemsToSave.add(existingItem);
-								saveItem(config, existingItem);
-							} else {
-								// otherwise we create an new item itemsToSave.add(insertItem(unit, rawItem));
-								saveItem(config, insertItem(unit, rawItem));
-							}
-
-						} else if (ImpexCommand.REMOVE.equals(unit.getCommand())) {
-							itemsToRemove.add(createRemoveQuery(unit, rawItem));
 						}
+
+					} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
+						// First we fetch the item based on the unique columns
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
+								rawItem, config);
+						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
+
+						// if a matching item is found, we update it
+						if (existingItem != null) {
+							setItemValues(existingItem, rawItem);
+							saveItem(config, existingItem);
+						} else {
+							// otherwise we create an new item
+							saveItem(config, insertItem(unit, rawItem));
+						}
+
+					} else if (ImpexCommand.REMOVE.equals(unit.getCommand())) {
+						itemsToRemove.add(createRemoveQuery(unit, rawItem));
 					}
 				}
 			} catch (final Throwable e) {
-				throw new ImpexImportException(
-						String.format("Could not import item of type %s", unit.getItemType().getName()), e);
+				throw new ImpexImportException(String.format("Could not import item of type %s, line: %s",
+						unit.getItemType().getName(), StringUtils.join(currentRow, ", ")), e);
 			}
 
 			// save each workunit so following units can reference items from
@@ -477,7 +480,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				break;
 			}
 
-			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), colValue);
+			setPropertyValue(item, columnDefinition, colValue);
 
 		} else if (isMapType(columnDefinition)) {
 			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item,
@@ -504,9 +507,29 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				break;
 			}
 
-			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), mapValue);
+			setPropertyValue(item, columnDefinition, mapValue);
+
 		} else {
-			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), propertyValue);
+			setPropertyValue(item, columnDefinition, propertyValue);
+		}
+	}
+
+	private void setPropertyValue(Item item, ColumnDefinition columnDefinition, Object value) {
+		String localeString = columnDefinition.getModifiers().get("lang");
+		Locale locale = null;
+
+		if (StringUtils.isNotBlank(localeString)) {
+			try {
+				locale = MiscUtil.parseLocale(localeString);
+			} catch (IllegalStateException e) {
+				loggingService.warn(String.format("Unknown locale %s", localeString));
+			}
+		}
+
+		if (locale != null) {
+			modelService.setLocalizedPropertyValue(item, columnDefinition.getPropertyName(), value, locale);
+		} else {
+			modelService.setPropertyValue(item, columnDefinition.getPropertyName(), value);
 		}
 	}
 

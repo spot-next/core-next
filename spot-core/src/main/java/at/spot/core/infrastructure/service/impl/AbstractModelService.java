@@ -3,6 +3,7 @@ package at.spot.core.infrastructure.service.impl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -67,7 +68,6 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		final String typeCode = typeService.getTypeCodeForClass(type);
 
 		final T item = getApplicationContext().getBean(typeCode, type);
-		setTypeCode(item);
 		persistenceService.initItem(item);
 
 		for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
@@ -155,7 +155,14 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 
 		if (!errors.isEmpty()) {
-			throw new ModelValidationException(errors.iterator().next().getMessage(), errors);
+			final ConstraintViolation<?> violation = errors.iterator().next();
+
+			final String message = errors.stream()
+					.map(v -> String.format("%s.%s %s", violation.getRootBeanClass().getSimpleName(),
+							violation.getPropertyPath().toString(), violation.getMessage()))
+					.collect(Collectors.joining(", "));
+
+			throw new ModelValidationException(message, errors);
 		}
 	}
 

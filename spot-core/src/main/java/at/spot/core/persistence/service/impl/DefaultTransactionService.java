@@ -60,6 +60,14 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	}
 
 	@Override
+	public void executeWithoutResult(Runnable body) throws TransactionException {
+		execute(() -> {
+			body.run();
+			return null;
+		});
+	}
+
+	@Override
 	public void start() throws TransactionException {
 		if (currentTransaction.get() == null) {
 			TransactionDefinition def = new DefaultTransactionDefinition();

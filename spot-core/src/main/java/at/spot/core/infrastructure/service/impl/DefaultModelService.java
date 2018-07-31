@@ -3,18 +3,21 @@ package at.spot.core.infrastructure.service.impl;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+
+import at.spot.core.persistence.query.ModelQuery;
 
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.ValidationUtil;
 import at.spot.core.types.Item;
+import at.spot.core.types.Localizable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
@@ -157,12 +160,38 @@ public class DefaultModelService extends AbstractModelService {
 	}
 
 	@Override
-	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
-		// final ELParser<T, V> transformer = new ELParser<>(propertyName);
-		//
-		// return transformer.transform(item);
+	public <T extends Item, V> V getLocalizedPropertyValue(T item, String propertyName, Class<V> valueType,
+			Locale locale) {
 
+		final Localizable<V> localizable = (Localizable<V>) ClassUtil.getField(item, propertyName, true);
+
+		if (localizable != null) {
+			return localizable.get(locale);
+		} else {
+			loggingService.warn(String.format("Localized property %s on type %s not found", propertyName,
+					item.getClass().getSimpleName()));
+		}
+
+		return null;
+	}
+
+	@Override
+	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
 		return (V) ClassUtil.getField(item, propertyName, true);
+	}
+
+	@Override
+	public <T extends Item> void setLocalizedPropertyValue(T item, String propertyName, Object propertyValue,
+			Locale locale) {
+
+		final Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+
+		if (localizable != null) {
+			localizable.set(locale, propertyValue);
+		} else {
+			loggingService.warn(String.format("Localized property %s on type %s not found", propertyName,
+					item.getClass().getSimpleName()));
+		}
 	}
 
 	@Override

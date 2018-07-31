@@ -259,10 +259,10 @@
 					</validator>
 				</validators>
 			</property>
-			<property name="shortName" type="String">
+			<property name="shortName" type="LocalizedString" localized="true">
 				<description>The short name of the country, eg. "Austria".</description>
 			</property>
-			<property name="longName" type="String">
+			<property name="longName" type="LocalizedString" localized="true">
 				<description>The long name of the country, eg. "Republic of Austria".</description>
 			</property>
 			<property name="phoneCountryCode" type="String">
@@ -299,7 +299,7 @@
 					</validator>
 				</validators>
 			</property>
-			<property name="name" type="String">
+			<property name="name" type="LocalizedString" localized="true">
 				<description>The international name of the language.</description>
 			</property>
 		</properties>
@@ -368,25 +368,6 @@
 		</properties>
 	</type>
 	
-	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
-		extends="UniqueIdItem">
-		<description>This type can be used to store localized values different languages/locales.</description>
-		<properties>
-			<property name="locale" type="Locale">
-				<description>
-				The locale of the translation key.
-			</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
-			<property name="value" type="String">
-				<description>The localized value of the key.</description>
-			</property>
-		</properties>
-	</type>
-
 	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
 		extends="UniqueIdItem">
 		<description>This type can be used to store localized values different languages/locales.</description>

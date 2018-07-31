@@ -15,6 +15,15 @@ public interface TransactionService {
 	<R> R execute(Callable<R> body) throws TransactionException;
 
 	/**
+	 * Starts a transaction and runs the given runnable. After the work has been
+	 * done, {@link #commit()} is automatically called. If there is an exception,
+	 * {@link #rollback()} is automatically invoked.
+	 * 
+	 * @param body
+	 */
+	void executeWithoutResult(Runnable body) throws TransactionException;
+
+	/**
 	 * Starts a transaction in the given thread context. After the work has been
 	 * done, either {@link #rollback()} or {@link #commit()} have to be invoked.
 	 * Otherwise data might not be persisted.

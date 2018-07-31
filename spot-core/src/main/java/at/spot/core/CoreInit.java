@@ -114,8 +114,7 @@ public class CoreInit extends ModuleInit {
 		try {
 			importScript("/data/initial/countries.impex", "Importing countries");
 			importScript("/data/initial/languages.impex", "Importing languages");
-			// importScript("/data/initial/currencies.impex", "Importing
-			// currencies");
+			importScript("/data/initial/currencies.impex", "Importing currencies");
 			importScript("/data/initial/users.impex", "Importing users");
 			importScript("/data/initial/catalogs.impex", "Importing catalogs");
 		} catch (final ImportException e) {
