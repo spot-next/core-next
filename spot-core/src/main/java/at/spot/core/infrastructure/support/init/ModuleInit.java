@@ -15,9 +15,6 @@ import org.springframework.context.event.EventListener;
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
-import at.spot.core.infrastructure.service.UserService;
-import at.spot.itemtype.core.user.User;
-import at.spot.itemtype.core.user.UserGroup;
 
 @Configuration
 @Priority(value = -1)
@@ -33,9 +30,6 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 	@Resource
 	protected LoggingService loggingService;
-
-	@Resource
-	protected UserService<User, UserGroup> userService;
 
 	/**
 	 * Called when the spring application context has been initialized.
@@ -62,8 +56,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called
-	 * after {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called after
+	 * {@link Bootstrap} all spring beans are initialized.
 	 */
 	protected abstract void initialize() throws ModuleInitializationException;
 

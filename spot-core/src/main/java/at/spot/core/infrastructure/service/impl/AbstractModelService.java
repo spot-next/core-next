@@ -40,7 +40,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	protected TypeService typeService;
 
 	@Resource
-	protected UserService<User, UserGroup> UserService;
+	protected UserService<User, UserGroup> userService;
 
 	@Resource
 	protected PersistenceService persistenceService;
@@ -185,7 +185,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	 * {@link Item#setLastModifiedBy(String)}.
 	 */
 	public <T extends Item> void setUserInformation(final List<T> models) {
-		final User currentUser = UserService.getCurrentUser();
+		final User currentUser = userService.getCurrentUser();
 
 		if (currentUser == null) {
 			loggingService.debug(() -> "Could not determine current session user");

@@ -136,14 +136,13 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	public Date getLastModifiedAt() {
-		// return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) :
-		// null;
-		return lastModifiedAt;
+		// hide internal state, findbugs problem
+		return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) : null;
 	}
 
 	public Date getCreatedAt() {
-		// return createdAt != null ? new Date(createdAt.getTime()) : null;
-		return createdAt;
+		// hide internal state, findbugs problem
+		return createdAt != null ? new Date(createdAt.getTime()) : null;
 	}
 
 	/**
