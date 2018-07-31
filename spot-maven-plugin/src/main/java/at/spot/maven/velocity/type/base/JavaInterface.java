@@ -10,11 +10,11 @@ public class JavaInterface extends AbstractComplexJavaType {
 	public JavaInterface() {
 	}
 
-	public JavaInterface(String name, String packagePath) {
+	public JavaInterface(final String name, final String packagePath) {
 		super(name, packagePath);
 	}
 
-	public JavaInterface(Class<?> clazz) {
+	public JavaInterface(final Class<?> clazz) {
 		super(clazz);
 	}
 

@@ -1,4 +1,4 @@
-INSERT Country ;iso3Code;isoCode;shortName                       ;phoneCountryCode     
+INSERT Country ;iso3Code;isoCode;shortName[lang=en_GB]           ;phoneCountryCode
                ;AFG     ;AF     ;Afghanistan                     ;93                   
                ;ALB     ;AL     ;Albania                         ;355                  
                ;DZA     ;DZ     ;Algeria                         ;213                  

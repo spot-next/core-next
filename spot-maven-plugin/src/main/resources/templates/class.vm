@@ -50,6 +50,14 @@
 	#end
 #end
 
+#macro( interfaces $interfaces )
+	#if ($interfaces)
+		#foreach($interface in $interfaces)
+			$interface.name #genericTypeArguments($interface.genericArguments) #if( $foreach.hasNext ), #end
+		#end
+	#end
+#end
+
 /**
  * This file is auto-generated. All changes will be overwritten.
  */
@@ -65,7 +73,7 @@ import java.io.Serializable;
 @SuppressWarnings("unchecked")
 @SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 #annotations($annotations)
-$visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #else implements Serializable #end {
+$visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #end #if($interfaces) implements #interfaces($interfaces) #end  {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
  		private static final long serialVersionUID = 1L;
  	#end

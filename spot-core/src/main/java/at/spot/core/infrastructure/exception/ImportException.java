@@ -1,6 +1,6 @@
 package at.spot.core.infrastructure.exception;
 
-public class ImportException extends Exception {
+public class ImportException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public ImportException(final String message) {

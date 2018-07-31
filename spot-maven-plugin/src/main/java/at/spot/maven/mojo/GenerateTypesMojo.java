@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,13 +39,16 @@ import org.apache.velocity.context.Context;
 import at.spot.core.infrastructure.annotation.Accessor;
 import at.spot.core.infrastructure.annotation.Relation;
 import at.spot.core.infrastructure.maven.TypeDefinitions;
+import at.spot.core.infrastructure.maven.xml.Argument;
 import at.spot.core.infrastructure.maven.xml.AtomicType;
+import at.spot.core.infrastructure.maven.xml.BaseComplexType.Interfaces;
 import at.spot.core.infrastructure.maven.xml.BaseType;
 import at.spot.core.infrastructure.maven.xml.BeanType;
 import at.spot.core.infrastructure.maven.xml.CollectionType;
 import at.spot.core.infrastructure.maven.xml.CollectionsType;
 import at.spot.core.infrastructure.maven.xml.EnumType;
 import at.spot.core.infrastructure.maven.xml.EnumValue;
+import at.spot.core.infrastructure.maven.xml.Interface;
 import at.spot.core.infrastructure.maven.xml.ItemType;
 import at.spot.core.infrastructure.maven.xml.MapType;
 import at.spot.core.infrastructure.maven.xml.Property;
@@ -61,6 +65,7 @@ import at.spot.core.support.util.ClassUtil;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.core.types.Bean;
 import at.spot.core.types.Item;
+import at.spot.core.types.Localizable;
 import at.spot.maven.exception.IllegalItemTypeDefinitionException;
 import at.spot.maven.util.ItemTypeDefinitionUtil;
 import at.spot.maven.velocity.JavaMemberModifier;
@@ -192,6 +197,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
 			enumeration.setDescription(enumType.getDescription());
 
+			populateInterfaces(enumType.getInterfaces(), enumeration);
+
 			for (final EnumValue value : enumType.getValue()) {
 				final JavaEnumValue v = new JavaEnumValue();
 				v.setName(value.getCode());
@@ -206,6 +213,26 @@ public class GenerateTypesMojo extends AbstractMojo {
 		return ret;
 	}
 
+	protected void populateInterfaces(final Interfaces interfaces, final AbstractComplexJavaType javaType) {
+		if (interfaces != null && CollectionUtils.isNotEmpty(interfaces.getInterface())) {
+			for (final Interface i : interfaces.getInterface()) {
+				final int split = StringUtils.lastIndexOf(i.getJavaClass(), ".");
+				final JavaInterface iface = new JavaInterface(
+						StringUtils.substring(i.getJavaClass(), split + 1, i.getJavaClass().length()),
+						StringUtils.substring(i.getJavaClass(), 0, split));
+
+				if (i.getGenericType() != null && CollectionUtils.isNotEmpty(i.getGenericType())) {
+					for (final Argument a : i.getGenericType()) {
+						final JavaMemberType argumentType = new JavaMemberType(a.getValue());
+						iface.addGenericArgument(new JavaGenericTypeArgument(argumentType, false));
+					}
+				}
+
+				javaType.addInterface(iface);
+			}
+		}
+	}
+
 	protected List<JavaClass> generateBeans() throws MojoExecutionException {
 		final List<JavaClass> ret = new ArrayList<>();
 
@@ -214,6 +241,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			bean.setDescription(beanType.getDescription());
 			bean.setVisibility(Visibility.PUBLIC);
 			populateSuperType(beanType, typeDefinitions.getBeanTypes().get(beanType.getExtends()), bean, Bean.class);
+			populateInterfaces(beanType.getInterfaces(), bean);
 
 			if (beanType.getProperties() != null) {
 				for (final Property prop : beanType.getProperties().getProperty()) {
@@ -252,19 +280,21 @@ public class GenerateTypesMojo extends AbstractMojo {
 		final List<JavaClass> ret = new ArrayList<>();
 
 		for (final Map.Entry<String, ItemType> typeEntry : typeDefinitions.getItemTypes().entrySet()) {
-			final ItemType type = typeEntry.getValue();
+			final ItemType itemType = typeEntry.getValue();
 
 			// don't generate the base Item type
-			if (StringUtils.equals(Item.class.getSimpleName(), type.getName())) {
+			if (StringUtils.equals(Item.class.getSimpleName(), itemType.getName())) {
 				continue;
 			}
 
-			final JavaClass javaClass = createItemTypeClass(type);
-			populateSuperType(type, typeDefinitions.getItemTypes().get(type.getExtends()), javaClass, Item.class);
-			populateProperties(type, javaClass);
-			populateRelationProperties(type, javaClass);
+			final JavaClass itemTypeClass = createItemTypeClass(itemType);
+			populateSuperType(itemType, typeDefinitions.getItemTypes().get(itemType.getExtends()), itemTypeClass,
+					Item.class);
+			populateInterfaces(itemType.getInterfaces(), itemTypeClass);
+			populateProperties(itemType, itemTypeClass);
+			populateRelationProperties(itemType, itemTypeClass);
 
-			ret.add(javaClass);
+			ret.add(itemTypeClass);
 		}
 
 		return ret;
@@ -292,6 +322,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 				field.setName(prop.getName());
 				field.setDescription(prop.getDescription());
 
+				if (prop.isLocalized()) {
+					field.setAssignement(new JavaExpression("new " + prop.getType() + "()", JavaValueType.LITERAL));
+				}
+
 				if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 					try {
 						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
@@ -317,11 +351,19 @@ public class GenerateTypesMojo extends AbstractMojo {
 				}
 
 				if (isReadable) {
-					addGetter(field, javaClass);
+					if (prop.isLocalized()) {
+						addLocalizedGetters(prop, field, javaClass);
+					} else {
+						addGetter(field, javaClass);
+					}
 				}
 
 				if (isWritable) {
-					addSetter(field, javaClass);
+					if (prop.isLocalized()) {
+						addLocalizedSetters(prop, field, javaClass);
+					} else {
+						addSetter(field, javaClass);
+					}
 				}
 
 				// add constant for each property
@@ -354,11 +396,53 @@ public class GenerateTypesMojo extends AbstractMojo {
 		return builder.toString().toUpperCase(Locale.ENGLISH);
 	}
 
+	private Optional<String> getLocalizedType(String localizableTypeCode) {
+		final ItemType localizableType = typeDefinitions.getItemTypes().get(localizableTypeCode);
+
+		if (localizableType.getInterfaces() != null
+				&& CollectionUtils.isNotEmpty(localizableType.getInterfaces().getInterface())) {
+			final Optional<String> genericType = localizableType.getInterfaces().getInterface().stream()//
+					.filter(i -> Localizable.class.getName().equals(i.getJavaClass())) //
+					.map(i -> i.getGenericType() != null ? i.getGenericType().get(0).getValue() : null).findFirst();
+
+			return genericType;
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * This generates 2 getters, one with a {@link Locale} as single parameter.
+	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
+	 * that the field type is implementing {@link Localizable}!
+	 *
+	 * @throws MojoExecutionException
+	 */
+	protected void addLocalizedGetters(final Property prop, final JavaField field, final JavaClass javaClass)
+			throws MojoExecutionException {
+
+		// TODO: needs refactoring
+		final Optional<String> localizedType = getLocalizedType(prop.getType());
+
+		if (!localizedType.isPresent()) {
+			throw new MojoExecutionException(
+					"Cannot generate localized getters because field type is not of type Localizable");
+		}
+
+		final JavaMethod getter = addGetter(field, javaClass, String.format("return this.%s.get();", field.getName()));
+		getter.setType(new JavaMemberType(localizedType.get()));
+
+		final JavaMethod locGetter = addGetter(field, javaClass,
+				String.format("return this.%s.get(locale);", field.getName()));
+		locGetter.addArgument("locale", new JavaMemberType(Locale.class));
+		locGetter.setType(getter.getType());
+	}
+
 	protected void addGetter(final JavaField field, final JavaClass javaClass) {
 		addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
 	}
 
-	protected void addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
 		final JavaMethod getter = new JavaMethod();
 		getter.setName(generateMethodName("get", field.getName()));
 		getter.setType(field.getType());
@@ -372,15 +456,49 @@ public class GenerateTypesMojo extends AbstractMojo {
 		getter.addAnnotation(accessorAnnotation);
 
 		javaClass.addMethod(getter);
+
+		return getter;
+	}
+
+	/**
+	 * This generates 2 getters, one with a {@link Locale} as single parameter.
+	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
+	 * that the field type is implementing {@link Localizable}!
+	 *
+	 * @param prop
+	 * @throws MojoExecutionException
+	 */
+	protected void addLocalizedSetters(final Property prop, final JavaField field, final JavaClass javaClass)
+			throws MojoExecutionException {
+		// TODO: needs refactoring
+		final Optional<String> localizedType = getLocalizedType(prop.getType());
+
+		if (!localizedType.isPresent()) {
+			throw new MojoExecutionException(
+					"Cannot generate localized setters because field type is not of type Localizable");
+		}
+
+		final JavaMethod setter = addSetter(field, javaClass,
+				String.format("this.%s.set(%s);", field.getName(), field.getName()));
+		setter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
+
+		final JavaMethod locSetter = addSetter(field, javaClass,
+				String.format("this.%s.set(locale, %s);", field.getName(), field.getName()));
+		locSetter.addArgument("locale", new JavaMemberType(Locale.class));
+		locSetter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 	}
 
 	protected void addSetter(final JavaField field, final JavaClass javaClass) {
+		addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()));
+	}
+
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
 		final JavaMethod setter = new JavaMethod();
 		setter.setName(generateMethodName("set", field.getName()));
 		setter.setType(JavaMemberType.VOID);
 		setter.setDescription(field.getDescription());
 		setter.addArgument(field.getName(), field.getType());
-		setter.setCodeBlock(String.format("this.%s = %s;", field.getName(), field.getName()));
+		setter.setCodeBlock(codeBlock);
 		setter.setVisibility(Visibility.PUBLIC);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
@@ -389,6 +507,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		setter.addAnnotation(accessorAnnotation);
 
 		javaClass.addMethod(setter);
+
+		return setter;
 	}
 
 	protected JavaClass createItemTypeClass(final ItemType type) throws MojoExecutionException {
@@ -418,9 +538,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 	/**
 	 * Populates the super class for the given JavaType.
 	 * 
-	 * @param javaClass         the class to populate with a super types
-	 * @param defaultSuperclass is used when there is no superType given, can be
-	 *                          null too
+	 * @param javaClass
+	 *            the class to populate with a super types
+	 * @param defaultSuperclass
+	 *            is used when there is no superType given, can be null too
 	 */
 	protected void populateSuperType(final at.spot.core.infrastructure.maven.xml.JavaType type,
 			final at.spot.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
@@ -627,6 +748,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 			propAnn.addParameter("itemValueProvider", propertyDefinition.getAccessors().getValueProvider(),
 					JavaValueType.STRING);
 		}
+
+		if (propertyDefinition.getPersistence() != null
+				&& propertyDefinition.getPersistence().getColumnType() != null) {
+			propAnn.addParameter("columnType", propertyDefinition.getPersistence().getColumnType(),
+					JavaValueType.ENUM_VALUE);
+		}
 	}
 
 	protected void populateRelationProperties(final ItemType type, final JavaClass javaClass)
@@ -681,7 +808,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
-			at.spot.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
+			final at.spot.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 			relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
 			relationAnn.addParameter("nodeType", nodeType, JavaValueType.ENUM_VALUE);
@@ -727,8 +854,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 
 				if (at.spot.core.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
-					// wrap the collection into proxy collection that allows us to intercept
-					// mutating calls (like add, remove) -> needed to update relation infos
+					// wrap the collection into proxy collection that allows us
+					// to intercept
+					// mutating calls (like add, remove) -> needed to update
+					// relation infos
 					javaClass.getImports().add("at.spot.core.infrastructure.support.ItemCollectionFactory");
 					addGetter(property, javaClass,
 							String.format("return ItemCollectionFactory.wrap(this, \"%s\", this.%s);",

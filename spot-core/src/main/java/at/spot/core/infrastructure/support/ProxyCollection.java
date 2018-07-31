@@ -15,8 +15,8 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	private static final long serialVersionUID = 1L;
 
 	private Collection<E> proxiedCollection;
-	private Consumer<E> beforeAdd;
-	private Consumer<E> beforeRemove;
+	private transient Consumer<E> beforeAdd;
+	private transient Consumer<E> beforeRemove;
 
 	public ProxyCollection(final Collection<E> proxiedColletion, final Consumer<E> beforeAdd,
 			final Consumer<E> beforeRemove) {

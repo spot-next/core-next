@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für AtomicType complex type.
+ * <p>Java class for AtomicType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="AtomicType">
@@ -37,7 +37,7 @@ public class AtomicType
     protected Boolean array;
 
     /**
-     * Ruft den Wert der className-Eigenschaft ab.
+     * Gets the value of the className property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class AtomicType
     }
 
     /**
-     * Legt den Wert der className-Eigenschaft fest.
+     * Sets the value of the className property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class AtomicType
     }
 
     /**
-     * Ruft den Wert der array-Eigenschaft ab.
+     * Gets the value of the array property.
      * 
      * @return
      *     possible object is
@@ -77,7 +77,7 @@ public class AtomicType
     }
 
     /**
-     * Legt den Wert der array-Eigenschaft fest.
+     * Sets the value of the array property.
      * 
      * @param value
      *     allowed object is

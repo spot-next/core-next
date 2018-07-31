@@ -2,6 +2,7 @@ package at.spot.core.types;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,17 +12,21 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import at.spot.core.infrastructure.IdGenerator;
+import at.spot.core.infrastructure.annotation.ItemType;
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.support.util.ClassUtil;
 
@@ -45,18 +50,19 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Column(name = "pk")
 	final protected Long pk = IdGenerator.createLongId();
 
-	@Transient
-	protected String typeCode;
+	@CreationTimestamp
+	@CreatedDate
+	protected Date createdAt;
 
-	@Property
+	@CreatedBy
+	protected String createdBy;
+
 	@UpdateTimestamp
 	@LastModifiedDate
 	protected Date lastModifiedAt;
 
-	@Property
-	@CreationTimestamp
-	@CreatedDate
-	protected Date createdAt;
+	@LastModifiedBy
+	protected String lastModifiedBy;
 
 	@Version
 	protected long version = -1;
@@ -69,6 +75,15 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected boolean deleted = false;
 
 	/**
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation). This is necessary to implement
+	 * extendible combined unique constraints, regardless of which JPA inheritance
+	 * strategy is used
+	 */
+	@Column(name = "uniquenessHash", unique = true, nullable = false)
+	private Integer uniquenessHash = null;
+
+	/**
 	 * A value of -1 indicates that this is an unpersisted item.
 	 */
 	public long getVersion() {
@@ -79,12 +94,56 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return pk;
 	}
 
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = new Date();
+		uptedateUniquenessHash();
+	}
+
+	protected void uptedateUniquenessHash() {
+		// update uniqueness hash. This is the only column that has unique-key
+		// constraint!
+
+		Collection<Object> uniquePropertyValues = getUniqueProperties().values();
+
+		if (uniquePropertyValues.size() > 0) {
+			this.uniquenessHash = Objects.hash(uniquePropertyValues.toArray());
+		} else {
+			this.uniquenessHash = Objects.hash(this.pk);
+		}
+	}
+
+	@PreUpdate
+	protected void preUpdate() {
+		setLastModifiedAt();
+		uptedateUniquenessHash();
+	}
+
+	protected void setLastModifiedAt() {
+		this.lastModifiedAt = new Date();
+	}
+
+	public int uniquenessHash() {
+		return getUniqueProperties().hashCode();
+	}
+
+	public void setCreatedBy(final String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public void setLastModifiedBy(final String lastModifiedBy) {
+		this.lastModifiedBy = lastModifiedBy;
+	}
+
 	public Date getLastModifiedAt() {
-		return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) : null;
+		// return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) :
+		// null;
+		return lastModifiedAt;
 	}
 
 	public Date getCreatedAt() {
-		return createdAt != null ? new Date(createdAt.getTime()) : null;
+		// return createdAt != null ? new Date(createdAt.getTime()) : null;
+		return createdAt;
 	}
 
 	/**
@@ -101,7 +160,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 */
 	public void markAsDirty() {
 		// auditingHandler.markModified(this);
-		this.lastModifiedAt = new Date();
+		setLastModifiedAt();
 	}
 
 	/**
@@ -127,20 +186,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		}
 
 		return uniqueProps;
-	}
-
-	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation).
-	 *
-	 * @return
-	 */
-	public int uniquenessHash() {
-		int hash = 0;
-
-		hash = getUniqueProperties().hashCode();
-
-		return hash;
 	}
 
 	/**
@@ -187,4 +232,10 @@ public abstract class Item implements Serializable, Comparable<Item> {
 			return 1;
 		}
 	}
+
+	public String getTypeCode() {
+		final ItemType ann = ClassUtil.getAnnotation(this.getClass(), ItemType.class);
+		return ann.typeCode();
+	}
+
 }

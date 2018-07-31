@@ -49,9 +49,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.annotation.Property;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -59,6 +56,8 @@ import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.support.ItemTypePropertyDefinition;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.TransactionService;
 import at.spot.core.persistence.service.impl.AbstractPersistenceService;
 import at.spot.core.support.util.ClassUtil;
@@ -95,7 +94,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			try {
 				// TODO will most likely fail, implement a pure JDBC "drop
 				// database" approach?
-				schemaExport.drop(EnumSet.of(TargetType.DATABASE, TargetType.STDOUT), metadataIntegrator.getMetadata());
+				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 			} catch (final Exception e) {
 				loggingService.warn("Could not drop type system schema.");
 			}
@@ -313,10 +312,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				final Session session = getSession();
 				int i = 0;
 
-				for (final T item : items) {
-					try {
-						session.saveOrUpdate(item);
-						// getSession().merge(item);
+				try {
+					for (final T item : items) {
+						if (item.getVersion() == -1) {
+							session.save(item);
+						} else {
+							session.saveOrUpdate(item);
+						}
 
 						// use same as the JDBC batch size
 						if (i > JDBC_BATCH_SIZE && i % JDBC_BATCH_SIZE == 0) {
@@ -324,29 +326,30 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 							session.flush();
 						}
 						i++;
-					} catch (final DataIntegrityViolationException | TransactionRequiredException
-							| IllegalArgumentException e) {
-
-						throw new ModelSaveException("Could not save given items: " + e.getMessage(), e);
-
-					} catch (final PersistenceException e) {
-						final Throwable rootCause = ExceptionUtils.getRootCause(e);
-						final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
-
-						throw new ModelSaveException(rootCauseMessage, e);
 					}
+
+					session.flush();
+					items.stream().forEach(o -> session.evict(o));
+					// session.clear();
+
+					// try {
+					// refresh(items);
+					// } catch (final ModelNotFoundException e) {
+					// throw new ModelSaveException("Could not save given
+					// items",
+					// e);
+					// }
+				} catch (final DataIntegrityViolationException | TransactionRequiredException
+						| IllegalArgumentException e) {
+
+					throw new ModelSaveException("Could not save given items: " + e.getMessage(), e);
+
+				} catch (final PersistenceException e) {
+					final Throwable rootCause = ExceptionUtils.getRootCause(e);
+					final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
+
+					throw new ModelSaveException(rootCauseMessage, e);
 				}
-
-				session.flush();
-				items.stream().forEach(o -> session.evict(o));
-				// session.clear();
-
-				// try {
-				// refresh(items);
-				// } catch (final ModelNotFoundException e) {
-				// throw new ModelSaveException("Could not save given items",
-				// e);
-				// }
 
 				return null;
 			});
@@ -410,7 +413,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
-	 * @return true if the item was successfully attached to the hibernate session.
+	 * @return true if the item was successfully attached to the hibernate
+	 *         session.
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
@@ -553,18 +557,22 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Override
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
-			Object instanceValue = null;
+			Object instanceValue = ClassUtil.getField(item, field.getName(), true);
 
-			if (field.getType().isAssignableFrom(Set.class)) {
-				instanceValue = new HashSet<>();
-			} else if (field.getType().isAssignableFrom(List.class)
-					|| field.getType().isAssignableFrom(Collection.class)) {
-				instanceValue = new ArrayList<>();
-			} else if (field.getType().isAssignableFrom(Map.class)) {
-				instanceValue = new HashMap<>();
+			if (instanceValue == null) {
+				if (field.getType().isAssignableFrom(Set.class)) {
+					instanceValue = new HashSet<>();
+				} else if (field.getType().isAssignableFrom(List.class)
+						|| field.getType().isAssignableFrom(Collection.class)) {
+					instanceValue = new ArrayList<>();
+				} else if (field.getType().isAssignableFrom(Map.class)) {
+					instanceValue = new HashMap<>();
+				}
+
+				if (instanceValue != null) {
+					ClassUtil.setField(item, field.getName(), instanceValue);
+				}
 			}
-
-			ClassUtil.setField(item, field.getName(), instanceValue);
 		}
 	}
 

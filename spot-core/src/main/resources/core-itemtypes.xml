@@ -14,7 +14,6 @@
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
-	<atomic name="LocalizedString" className="at.spot.core.infrastructure.type.LocalizedString" />
 
 	<collection name="StringList" elementType="String" />
 	<collection name="CountryList" elementType="Country" />
@@ -125,7 +124,7 @@
 	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user"
 		abstract="true">
 		<properties>
-			<property name="street" type="String" />
+			<property name="streetName" type="String" />
 			<property name="streetNumber" type="String" />
 			<property name="city" type="String" />
 			<property name="postalCode" type="String" />
@@ -136,7 +135,10 @@
 
 	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user"
 		extends="Address">
-		<properties></properties>
+		<properties>
+			<property name="emailAddress" type="String" />
+			<property name="phone" type="String" />
+		</properties>
 	</type>
 
 	<type name="AddressType" typeCode="AddressType" package="at.spot.itemtype.core.user"
@@ -203,6 +205,7 @@
 		<properties>
 			<property name="data" type="ByteArray">
 				<description>The content of the data object.</description>
+				<persistence columnType="BLOB" />
 			</property>
 		</properties>
 	</type>
@@ -256,10 +259,10 @@
 					</validator>
 				</validators>
 			</property>
-			<property name="shortName" type="String">
+			<property name="shortName" type="LocalizedString" localized="true">
 				<description>The short name of the country, eg. "Austria".</description>
 			</property>
-			<property name="longName" type="String">
+			<property name="longName" type="LocalizedString" localized="true">
 				<description>The long name of the country, eg. "Republic of Austria".</description>
 			</property>
 			<property name="phoneCountryCode" type="String">
@@ -296,7 +299,7 @@
 					</validator>
 				</validators>
 			</property>
-			<property name="name" type="String">
+			<property name="name" type="LocalizedString" localized="true">
 				<description>The international name of the language.</description>
 			</property>
 		</properties>
@@ -312,12 +315,59 @@
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="name" type="LocalizedString">
+			<property name="name" type="LocalizedString" localized="true">
 				<description>The localized name of the currency.</description>
 			</property>
 		</properties>
 	</type>
 
+	<type name="LocalizedString" package="at.spot.itemtype.core.internationalization">
+		<description>This type can be used to store localized strings.</description>
+		<interfaces>
+			<interface javaClass="at.spot.core.types.Localizable">
+				<genericType value="String" />
+			</interface>
+		</interfaces>
+		<properties>
+			<property name="en" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="en_GB" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="de" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="de_DE" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="fr" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="fr_FR" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="es" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="es_ES" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="it" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="it_IT" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="ja" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+			<property name="ja_JP" type="String">
+				<modifiers writable="false" readable="false" />
+			</property>
+		</properties>
+	</type>
+	
 	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
 		extends="UniqueIdItem">
 		<description>This type can be used to store localized values different languages/locales.</description>

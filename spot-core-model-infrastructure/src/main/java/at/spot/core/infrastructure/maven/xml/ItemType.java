@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für ItemType complex type.
+ * <p>Java class for ItemType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="ItemType">
@@ -37,7 +37,7 @@ public class ItemType
     protected Boolean persistable;
 
     /**
-     * Ruft den Wert der typeCode-Eigenschaft ab.
+     * Gets the value of the typeCode property.
      * 
      * @return
      *     possible object is
@@ -49,7 +49,7 @@ public class ItemType
     }
 
     /**
-     * Legt den Wert der typeCode-Eigenschaft fest.
+     * Sets the value of the typeCode property.
      * 
      * @param value
      *     allowed object is
@@ -61,7 +61,7 @@ public class ItemType
     }
 
     /**
-     * Ruft den Wert der persistable-Eigenschaft ab.
+     * Gets the value of the persistable property.
      * 
      * @return
      *     possible object is
@@ -77,7 +77,7 @@ public class ItemType
     }
 
     /**
-     * Legt den Wert der persistable-Eigenschaft fest.
+     * Sets the value of the persistable property.
      * 
      * @param value
      *     allowed object is

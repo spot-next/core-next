@@ -4,8 +4,12 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Locale;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import at.spot.core.support.exception.UnsupportedLocale;
 
 @SuppressWarnings({ "unchecked", "REC_CATCH_EXCEPTION" })
 public class MiscUtil {
@@ -69,6 +73,64 @@ public class MiscUtil {
 		T[] ret = null;
 
 		ret = collection.toArray((T[]) Array.newInstance(arrayType, 0));
+
+		return ret;
+	}
+
+	/**
+	 * @throws IllegalStateException if the locale can be parsed but is not
+	 *                               available/valid.
+	 */
+	public static Locale parseLocale(String localeString) throws IllegalStateException {
+		Locale locale = null;
+
+		if (StringUtils.isNotBlank(localeString)) {
+			String[] splitLocaleString = localeString.split("_");
+
+			if (splitLocaleString.length == 1) {
+				locale = new Locale(localeString);
+			} else if (splitLocaleString.length == 2) {
+				locale = new Locale(splitLocaleString[0], splitLocaleString[1]);
+			}
+
+			if (!LocaleUtils.isAvailableLocale(locale)) {
+				throw new IllegalStateException(String.format("Unknown locale %s", locale));
+			}
+		}
+
+		return locale;
+	}
+
+	/**
+	 * @param locale the locale that doesn't contain a country part, eg. for
+	 *               {@link Locale#ENGLISH}
+	 * @return a the corresponding locale with country part, eg. {@link Locale#UK}
+	 * @throws UnsupportedLocale when there is no country locale defined for the
+	 *                           given locale.
+	 */
+	public static Locale getCountryLocale(Locale locale) throws UnsupportedLocale {
+		Locale ret = locale;
+		if (StringUtils.isBlank(locale.getCountry())) {
+			if (Locale.ENGLISH.equals(locale)) {
+				ret = Locale.UK;
+			} else if (Locale.GERMAN.equals(locale)) {
+				ret = locale.GERMANY;
+			} else if (Locale.FRENCH.equals(locale)) {
+				ret = locale.FRANCE;
+			} else if (Locale.ITALIAN.equals(locale)) {
+				ret = locale.ITALY;
+			} else if (Locale.CHINESE.equals(locale)) {
+				ret = locale.CHINA;
+			} else if (Locale.JAPANESE.equals(locale)) {
+				ret = locale.JAPAN;
+			} else if (Locale.KOREAN.equals(locale)) {
+				ret = locale.KOREA;
+			} else if (Locale.forLanguageTag("es").equals(locale)) {
+				ret = new Locale(locale.getLanguage(), "ES");
+			} else {
+				throw new UnsupportedLocale(locale);
+			}
+		}
 
 		return ret;
 	}

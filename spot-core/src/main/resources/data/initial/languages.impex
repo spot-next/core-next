@@ -1,4 +1,4 @@
-INSERT Language;iso3Code ;isoCode ;name                                                       
+INSERT Language;iso3Code ;isoCode ;name[lang=en_GB]                                                       
                ;aar      ;aa      ;Afar                                                       
                ;abk      ;ab      ;Abkhazian                                                  
                ;ace      ;        ;Achinese                                                   

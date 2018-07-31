@@ -1,6 +1,7 @@
 package at.spot.core.infrastructure.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import at.spot.core.persistence.query.ModelQuery;
@@ -46,8 +47,7 @@ public interface ModelService {
 	 * Returns the first {@link Item} based on the given search parameters (key =
 	 * property name, value = property value).
 	 * 
-	 * @throws ModelNotUniqueException
-	 *             if there is more than one matching item.
+	 * @throws ModelNotUniqueException if there is more than one matching item.
 	 */
 	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotUniqueException;
 
@@ -56,8 +56,7 @@ public interface ModelService {
 	 * {@link ModelQuery} allows you to set the fetching strategy, pagination and to
 	 * limit the result.
 	 * 
-	 * @throws ModelNotUniqueException
-	 *             if there is more than one matching item.
+	 * @throws ModelNotUniqueException if there is more than one matching item.
 	 */
 	<T extends Item> T get(ModelQuery<T> query) throws ModelNotUniqueException;;
 
@@ -65,8 +64,8 @@ public interface ModelService {
 	 * Returns an object based on the given search parameters (key = property name,
 	 * value = property value).
 	 * 
-	 * @param searchParameters
-	 *            if empty or null, all items of the given type will be returned.
+	 * @param searchParameters if empty or null, all items of the given type will be
+	 *                         returned.
 	 * @return
 	 */
 	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters);
@@ -80,8 +79,7 @@ public interface ModelService {
 	/**
 	 * Returns the first {@link Item} based on the given example item.
 	 * 
-	 * @param example
-	 *            the example item instance.
+	 * @param example the example item instance.
 	 * @return
 	 */
 	<T extends Item> T getByExample(T example);
@@ -89,8 +87,7 @@ public interface ModelService {
 	/**
 	 * Returns all {@link Item}s that match the given example item.
 	 * 
-	 * @param example
-	 *            the example item instance.
+	 * @param example the example item instance.
 	 * @return
 	 */
 	<T extends Item> List<T> getAllByExample(T example);
@@ -146,6 +143,17 @@ public interface ModelService {
 	<T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> valueType);
 
 	/**
+	 * Returns the item's value of the given property.
+	 * 
+	 * @param item
+	 * @param propertyName
+	 * @param valueType
+	 * @param locale
+	 * @return
+	 */
+	<T extends Item, V> V getLocalizedPropertyValue(T item, String propertyName, Class<V> valueType, Locale locale);
+
+	/**
 	 * Sets the {@link Item}'s property to the given value.
 	 * 
 	 * @param item
@@ -153,6 +161,16 @@ public interface ModelService {
 	 * @param propertyValue
 	 */
 	<T extends Item> void setPropertyValue(T item, String propertyName, Object propertyValue);
+
+	/**
+	 * Sets the {@link Item}'s property to the given value.
+	 * 
+	 * @param item
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param locale
+	 */
+	<T extends Item> void setLocalizedPropertyValue(T item, String propertyName, Object propertyValue, Locale locale);
 
 	/**
 	 * Detaches the given item models from the persistence context.

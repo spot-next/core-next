@@ -23,6 +23,7 @@ import at.spot.core.infrastructure.service.SerializationService;
 import at.spot.core.infrastructure.service.SessionService;
 import at.spot.core.infrastructure.service.UserService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
+import at.spot.core.infrastructure.support.MimeType;
 import at.spot.core.infrastructure.support.spring.Registry;
 import at.spot.core.management.annotation.Handler;
 import at.spot.core.management.exception.RemoteServiceInitException;
@@ -62,6 +63,9 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	@Resource
 	protected UserService<User, UserGroup> userService;
 
+	@Resource
+	protected ResponseTransformer jsonResponseTransformer;
+
 	protected Service service;
 
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
@@ -86,6 +90,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 					if (handler.responseTransformer() != null) {
 						transformer = Registry.getApplicationContext().getBean(handler.responseTransformer());
+					} else {
+						transformer = jsonResponseTransformer;
 					}
 
 					if (handler.method() == HttpMethod.get) {
@@ -148,7 +154,8 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 				final HttpResponse<?> status = new HttpResponse(HttpStatus.NOT_FOUND);
 				status.setBody(ret);
-				return ret;
+				response.type(MimeType.JSON.toString());
+				return jsonResponseTransformer.render(ret);
 			});
 
 			// after((request, response) -> {

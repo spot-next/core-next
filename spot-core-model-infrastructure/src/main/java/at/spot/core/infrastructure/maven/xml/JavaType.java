@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für JavaType complex type.
+ * <p>Java class for JavaType complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="JavaType">
@@ -60,7 +60,7 @@ public abstract class JavaType
     protected Boolean _abstract;
 
     /**
-     * Ruft den Wert der properties-Eigenschaft ab.
+     * Gets the value of the properties property.
      * 
      * @return
      *     possible object is
@@ -72,7 +72,7 @@ public abstract class JavaType
     }
 
     /**
-     * Legt den Wert der properties-Eigenschaft fest.
+     * Sets the value of the properties property.
      * 
      * @param value
      *     allowed object is
@@ -84,7 +84,7 @@ public abstract class JavaType
     }
 
     /**
-     * Ruft den Wert der extends-Eigenschaft ab.
+     * Gets the value of the extends property.
      * 
      * @return
      *     possible object is
@@ -96,7 +96,7 @@ public abstract class JavaType
     }
 
     /**
-     * Legt den Wert der extends-Eigenschaft fest.
+     * Sets the value of the extends property.
      * 
      * @param value
      *     allowed object is
@@ -108,7 +108,7 @@ public abstract class JavaType
     }
 
     /**
-     * Ruft den Wert der abstract-Eigenschaft ab.
+     * Gets the value of the abstract property.
      * 
      * @return
      *     possible object is
@@ -120,7 +120,7 @@ public abstract class JavaType
     }
 
     /**
-     * Legt den Wert der abstract-Eigenschaft fest.
+     * Sets the value of the abstract property.
      * 
      * @param value
      *     allowed object is
@@ -133,9 +133,9 @@ public abstract class JavaType
 
 
     /**
-     * <p>Java-Klasse für anonymous complex type.
+     * <p>Java class for anonymous complex type.
      * 
-     * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+     * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
      * &lt;complexType>

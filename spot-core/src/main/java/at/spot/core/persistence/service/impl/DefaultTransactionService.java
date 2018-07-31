@@ -12,7 +12,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionUsageException;
-import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -61,6 +60,14 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	}
 
 	@Override
+	public void executeWithoutResult(Runnable body) throws TransactionException {
+		execute(() -> {
+			body.run();
+			return null;
+		});
+	}
+
+	@Override
 	public void start() throws TransactionException {
 		if (currentTransaction.get() == null) {
 			TransactionDefinition def = new DefaultTransactionDefinition();
@@ -91,7 +98,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.commit(status);
 			currentTransaction.remove();
 		} else {
-			throw new TransactionUsageException("There is no active transaction.");
+			loggingService.warn("Cannot commit: no transaction active.");
 		}
 	}
 
@@ -102,7 +109,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.rollback(status);
 			currentTransaction.remove();
 		} else {
-			throw new UnexpectedRollbackException("There is no active transaction.");
+			loggingService.warn("Cannot roleback: no transaction active.");
 		}
 	}
 
