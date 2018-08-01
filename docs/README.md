@@ -1,5 +1,0 @@
-## Introduction
-
-## FAQ
-
-## Quick start
