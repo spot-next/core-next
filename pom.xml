@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -163,124 +164,28 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.11</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjtools</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.aspectj</groupId>
-						<artifactId>aspectjrt</artifactId>
-						<version>${aspectj.version}</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<complianceLevel>1.8</complianceLevel>
-					<source>1.8</source>
-					<target>1.8</target>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.springframework</groupId>
-							<artifactId>spring-aspects</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-					<!-- setting this to true can cause build errors im M2E -->
-					<showWeaveInfo>false</showWeaveInfo>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<Xlint>ignore</Xlint>
-					<XnoInline>true</XnoInline>
-					<complianceLevel>${java.version}</complianceLevel>
-					<encoding>UTF-8</encoding>
-					<verbose>false</verbose>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
-				<configuration>
-					<effort>Max</effort>
-					<!-- Enables analysis which takes more memory but finds more bugs. If 
-						you run out of memory, changes the value of the effort element to 'low'. -->
-					<effort>medium</effort>
-					<!-- Reports all bugs (other values are medium and max) -->
-					<threshold>Low</threshold>
-					<!-- Produces XML report -->
-					<xmlOutput>true</xmlOutput>
-					<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-				</configuration>
-				<executions>
-					<!-- Ensures that FindBugs inspects source code when project is deployed. -->
-					<execution>
-						<id>analyze-deploy</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.8</version>
-				<configuration>
-					<skip>true</skip>
-					<rulesets>
-						<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
-					</rulesets>
-					<printFailingErrors>true</printFailingErrors>
-					<verbose>true</verbose>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>deploy</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>at.spot</groupId>
-						<artifactId>build-tools</artifactId>
-						<version>1.0</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<failOnError>false</failOnError>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
+				<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
 		</plugins>
 
 		<pluginManagement>
@@ -293,6 +198,114 @@
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>1.11</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjtools</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.aspectj</groupId>
+							<artifactId>aspectjrt</artifactId>
+							<version>${aspectj.version}</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<complianceLevel>1.8</complianceLevel>
+						<source>1.8</source>
+						<target>1.8</target>
+						<aspectLibraries>
+							<aspectLibrary>
+								<groupId>org.springframework</groupId>
+								<artifactId>spring-aspects</artifactId>
+							</aspectLibrary>
+						</aspectLibraries>
+						<!-- setting this to true can cause build errors im M2E -->
+						<showWeaveInfo>false</showWeaveInfo>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+						<Xlint>ignore</Xlint>
+						<XnoInline>false</XnoInline>
+						<complianceLevel>${java.version}</complianceLevel>
+						<encoding>UTF-8</encoding>
+						<verbose>false</verbose>
+						<forceAjcCompile>true</forceAjcCompile>
+						<preserveAllLocals>true</preserveAllLocals>
+						<proceedOnError>true</proceedOnError>
+						<Xreweavable>true</Xreweavable>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<!-- IMPORTANT -->
+								<phase>process-sources</phase>
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>findbugs-maven-plugin</artifactId>
+					<version>3.0.5</version>
+					<configuration>
+						<effort>Max</effort>
+						<!-- Enables analysis which takes more memory but finds more bugs. 
+							If you run out of memory, changes the value of the effort element to 'low'. -->
+						<effort>medium</effort>
+						<!-- Reports all bugs (other values are medium and max) -->
+						<threshold>Low</threshold>
+						<!-- Produces XML report -->
+						<xmlOutput>true</xmlOutput>
+						<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
+					</configuration>
+					<executions>
+						<!-- Ensures that FindBugs inspects source code when project is deployed. -->
+						<execution>
+							<id>analyze-deploy</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<version>3.8</version>
+					<configuration>
+						<skip>true</skip>
+						<rulesets>
+							<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
+						</rulesets>
+						<printFailingErrors>true</printFailingErrors>
+						<verbose>true</verbose>
+					</configuration>
+					<executions>
+						<execution>
+							<phase>deploy</phase>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>at.spot</groupId>
+							<artifactId>build-tools</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
