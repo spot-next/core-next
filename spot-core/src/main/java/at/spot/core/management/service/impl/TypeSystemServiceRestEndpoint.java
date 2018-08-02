@@ -153,7 +153,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 			body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
 		} catch (UnknownTypeException e) {
-			body.setStatusCode(HttpStatus.NOT_FOUND);
+			body.setStatusCode(HttpStatus.BAD_REQUEST);
+			body.getBody().addError(new Status("error.ongetall", "Unknown item type."));
 		}
 
 		return body;
@@ -177,14 +178,19 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-		final T model = modelService.get(type, pk);
+		if (pk > 0) {
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+			final T model = modelService.get(type, pk);
 
-		if (model == null) {
-			body.setStatusCode(HttpStatus.NOT_FOUND);
+			if (model == null) {
+				body.setStatusCode(HttpStatus.NOT_FOUND);
+			}
+
+			body.setBody(Payload.of(model));
+		} else {
+			body.setStatusCode(HttpStatus.BAD_REQUEST);
+			body.getBody().addError(new Status("error.onget", "No valid PK provided."));
 		}
-
-		body.setBody(Payload.of(model));
 
 		return body;
 	}
@@ -377,49 +383,57 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-		try {
-			// get body as json object
-			final JsonObject content = deserializeToJsonToken(request);
+		if (pk > 0) {
+			try {
+				// get body as json object
+				final JsonObject content = deserializeToJsonToken(request);
 
-			// search old item
-			final T oldItem = modelService.get(type, pk);
+				// search old item
+				final T oldItem = modelService.get(type, pk);
 
-			if (oldItem == null) {
-				throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
-			}
-
-			final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
-					.getItemTypeProperties(typeService.getTypeCodeForClass(type));
-
-			for (final Entry<String, JsonElement> prop : content.entrySet()) {
-				final String key = prop.getKey();
-				final JsonElement value = prop.getValue();
-
-				final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
-
-				// if the json property really exists on the item, then
-				// continue
-				if (propDef != null) {
-					final Object parsedValue = serializationService.fromJson(value.toString(), propDef.getReturnType());
-					modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
+				if (oldItem == null) {
+					throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
 				}
+
+				final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
+						.getItemTypeProperties(typeService.getTypeCodeForClass(type));
+
+				for (final Entry<String, JsonElement> prop : content.entrySet()) {
+					final String key = prop.getKey();
+					final JsonElement value = prop.getValue();
+
+					final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
+
+					// if the json property really exists on the item, then
+					// continue
+					if (propDef != null) {
+						final Object parsedValue = serializationService.fromJson(value.toString(),
+								propDef.getReturnType());
+						modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
+					}
+				}
+
+				oldItem.markAsDirty();
+
+				modelService.save(oldItem);
+
+				body.setStatusCode(HttpStatus.ACCEPTED);
+			} catch (final ModelNotUniqueException | ModelValidationException e) {
+				body.setStatusCode(HttpStatus.CONFLICT);
+				body.getBody().addError(new Status("error.onpartialupdate",
+						"Another item with the same uniqueness criteria (but a different PK) was found."));
+			} catch (final ModelNotFoundException e) {
+				body.setStatusCode(HttpStatus.NOT_FOUND);
+				body.getBody()
+						.addError(new Status("error.onpartialupdate", "No item with the given PK found to update."));
+			} catch (final DeserializationException e) {
+				body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
+				body.getBody()
+						.addError(new Status("error.onpartialupdate", "Could not deserialize body json content."));
 			}
-
-			oldItem.markAsDirty();
-
-			modelService.save(oldItem);
-
-			body.setStatusCode(HttpStatus.ACCEPTED);
-		} catch (final ModelNotUniqueException | ModelValidationException e) {
-			body.setStatusCode(HttpStatus.CONFLICT);
-			body.getBody().addError(new Status("error.onpartialupdate",
-					"Another item with the same uniqueness criteria (but a different PK) was found."));
-		} catch (final ModelNotFoundException e) {
-			body.setStatusCode(HttpStatus.NOT_FOUND);
-			body.getBody().addError(new Status("error.onpartialupdate", "No item with the given PK found to update."));
-		} catch (final DeserializationException e) {
-			body.setStatusCode(HttpStatus.PRECONDITION_FAILED);
-			body.getBody().addError(new Status("error.onpartialupdate", "Could not deserialize body json content."));
+		} else {
+			body.setStatusCode(HttpStatus.BAD_REQUEST);
+			body.getBody().addError(new Status("error.onpatch", "No valid PK provided."));
 		}
 
 		return body;

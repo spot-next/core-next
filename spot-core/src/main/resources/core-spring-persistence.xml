@@ -21,7 +21,6 @@
 	<tx:annotation-driven mode="proxy" proxy-target-class="true" />
 
 	<context:component-scan base-package="at.spot.core.persistence.hibernate.impl" />
-	<context:component-scan base-package="at.spot.core.persistence.hibernate.impl" />
 
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="driverClassName" value="${database.jdbc.driverClassName}" />

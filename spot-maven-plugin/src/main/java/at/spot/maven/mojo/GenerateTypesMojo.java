@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -320,7 +322,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 				field.setVisibility(Visibility.PROTECTED);
 				field.setType(propType);
 				field.setName(prop.getName());
-				field.setDescription(prop.getDescription());
+				field.setDescription(StringUtils.trim(prop.getDescription()));
 
 				if (prop.isLocalized()) {
 					field.setAssignement(new JavaExpression("new " + prop.getType() + "()", JavaValueType.LITERAL));
@@ -438,8 +440,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		locGetter.setType(getter.getType());
 	}
 
-	protected void addGetter(final JavaField field, final JavaClass javaClass) {
-		addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass) {
+		return addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
 	}
 
 	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
@@ -488,8 +490,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		locSetter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 	}
 
-	protected void addSetter(final JavaField field, final JavaClass javaClass) {
-		addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()));
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass) {
+		return addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()));
 	}
 
 	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
@@ -967,4 +969,24 @@ public class GenerateTypesMojo extends AbstractMojo {
 		return StringUtils.substring(className, start, end);
 	}
 
+	protected String getDefaultFieldAssignment(final JavaClass type, final JavaField field, final String typeName) {
+		final BaseType propType = typeDefinitions.getType(typeName);
+		String ret = null;
+
+		if (propType instanceof CollectionType) {
+			final CollectionType attrType = (CollectionType) propType;
+			if (CollectionsType.SET.equals(attrType.getCollectionType())) {
+				ret = "new HashSet<>();";
+				type.addImport(HashSet.class);
+			} else {
+				ret = "new ArrayList<>();";
+				type.addImport(ArrayList.class);
+			}
+		} else if (propType instanceof MapType) {
+			ret = "new HashMap<>();";
+			type.addImport(HashMap.class);
+		}
+
+		return ret;
+	}
 }
