@@ -6,21 +6,21 @@
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-core-support</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- dynamic load time weaving support -->
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-instrumentation</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
