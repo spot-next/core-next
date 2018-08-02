@@ -341,12 +341,11 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.5.3</version>
 				<configuration>
-					<pomFileName>${basedir}/pom.xml</pomFileName>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<tagNameFormat>release/@{project.artifactId}-@{project.version}</tagNameFormat>
-					<!-- <branchName>master</branchName> -->
-					<!-- <pushChanges>false</pushChanges> -->
-					<!-- <localCheckout>true</localCheckout> -->
+					<branchName>master</branchName>
+					<pushChanges>false</pushChanges>
+					<localCheckout>true</localCheckout>
 				</configuration>
 			</plugin>
 		</plugins>
