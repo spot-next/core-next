@@ -36,6 +36,7 @@
 		<module>spot-commerce-spring-base</module>
 		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
+		<module>spot-instrumentation</module>
 		<!-- <module>spot-mail</module> -->
 	</modules>
 
