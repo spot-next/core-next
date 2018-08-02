@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
@@ -17,7 +17,7 @@
 			<plugin>
 				<groupId>at.spot</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
-				<version>1.1-SNAPSHOT</version>
+				<version>1.0-SNAPSHOT</version>
 				<executions>
 					<execution>
 						<phase>generate-sources</phase>
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
