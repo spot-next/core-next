@@ -310,7 +310,7 @@
 						<autoVersionSubmodules>true</autoVersionSubmodules>
 						<tagNameFormat>release/@{project.artifactId}-@{project.version}</tagNameFormat>
 						<branchName>master</branchName>
-						<pushChanges>true</pushChanges>
+						<pushChanges>false</pushChanges>
 						<localCheckout>true</localCheckout>
 					</configuration>
 				</plugin>
