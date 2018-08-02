@@ -247,10 +247,10 @@
 						<complianceLevel>${java.version}</complianceLevel>
 						<encoding>UTF-8</encoding>
 						<verbose>false</verbose>
-<!-- 						<forceAjcCompile>true</forceAjcCompile> -->
-<!-- 						<preserveAllLocals>true</preserveAllLocals> -->
+						<!-- <forceAjcCompile>true</forceAjcCompile> -->
+						<!-- <preserveAllLocals>true</preserveAllLocals> -->
 						<proceedOnError>true</proceedOnError>
-<!-- 						<Xreweavable>true</Xreweavable> -->
+						<!-- <Xreweavable>true</Xreweavable> -->
 					</configuration>
 				</plugin>
 
@@ -318,6 +318,12 @@
 						<pushChanges>false</pushChanges>
 						<localCheckout>true</localCheckout>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
 				</plugin>
 
 				<!-- This plugin's configuration is used to store Eclipse m2e settings 
