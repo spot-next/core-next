@@ -1,33 +1,32 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spot-core-shell</artifactId>
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-beta2-SNAPSHOT</version>
 	</parent>
 
 	<properties>
-		<spring.shell.version>1.2.1.BUILD-SNAPSHOT</spring.shell.version>
+		<spring.shell.version>2.0.0.RELEASE</spring.shell.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0-beta2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-core-model-infrastructure</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0-beta2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- spring shell -->
 		<dependency>
 			<groupId>org.springframework.shell</groupId>
-			<artifactId>spring-shell</artifactId>
+			<artifactId>spring-shell-starter</artifactId>
 			<version>${spring.shell.version}</version>
 		</dependency>
 	</dependencies>

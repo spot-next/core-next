@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spot-core-model-infrastructure</artifactId>
 	<name>spOt core model infrastructure</name>
@@ -7,21 +6,21 @@
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-beta2-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-core-support</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0-beta2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- dynamic load time weaving support -->
 		<dependency>
 			<groupId>at.spot</groupId>
 			<artifactId>spot-instrumentation</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0-beta2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
