@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -12,6 +12,8 @@
 
 	<scm>
 		<url>https://github.com/mojo2012/spot-framework</url>
+		<connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
+		<developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
 	</scm>
 
 	<licenses>
@@ -265,22 +267,10 @@
 				</dependencies>
 			</plugin>
 
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<failOnError>false</failOnError>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
+				<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
 		</plugins>
 
 		<pluginManagement>
@@ -342,6 +332,20 @@
 				<version>3.8</version>
 				<configuration>
 					<configLocation>config/sun_checks.xml</configLocation>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<pomFileName>${basedir}/pom.xml</pomFileName>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagNameFormat>release/@{project.artifactId}-@{project.version}</tagNameFormat>
+					<!-- <branchName>master</branchName> -->
+					<!-- <pushChanges>false</pushChanges> -->
+					<!-- <localCheckout>true</localCheckout> -->
 				</configuration>
 			</plugin>
 		</plugins>
