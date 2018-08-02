@@ -18,7 +18,7 @@ public class LogAspect extends AbstractBaseAspect {
 
 	@PostConstruct
 	public void init() {
-		loggingService.debug("Initialized logging aspect.");
+		getLoggingService().debug("Initialized logging aspect.");
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class LogAspect extends AbstractBaseAspect {
 		final long startTime = System.currentTimeMillis();
 
 		if (ann != null && ann.before()) {
-			loggingService.log(ann.logLevel(),
+			getLoggingService().log(ann.logLevel(),
 					createLogMessage(joinPoint, "Before", ann.message(), ann.messageArguments(), null), null, null,
 					joinPoint.getTarget().getClass());
 		}
@@ -45,7 +45,7 @@ public class LogAspect extends AbstractBaseAspect {
 		if (ann != null && ann.after()) {
 			final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
 
-			loggingService.log(ann.logLevel(),
+			getLoggingService().log(ann.logLevel(),
 					createLogMessage(joinPoint, "After", null, ann.messageArguments(), runDuration), null, null,
 					joinPoint.getTarget().getClass());
 		}

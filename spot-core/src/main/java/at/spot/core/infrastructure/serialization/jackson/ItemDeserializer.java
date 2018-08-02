@@ -50,7 +50,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
 		final ObjectCodec oc = parser.getCodec();
 		final JsonNode node = oc.readTree(parser);
-		I deserializedUser = null;
+		I deserializedItem = null;
 
 		final JavaType type = typeDeserializer != null ? typeDeserializer.baseType()
 				: context.getTypeFactory().constructSimpleType(itemType, null);
@@ -70,15 +70,15 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 			treeParser.nextToken();
 		}
 
-		deserializedUser = (I) defaultDeserializer.deserialize(treeParser, context);
+		deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context);
 
 		try {
-			getModelService().refresh(deserializedUser);
+			getModelService().refresh(deserializedItem);
 		} catch (final ModelNotFoundException e) {
 			// ignore exception, as this just means that the item is most likely new
 		}
 
-		return deserializedUser;
+		return deserializedItem;
 	}
 
 	@Override

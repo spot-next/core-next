@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<groupId>at.spot</groupId>
 	<artifactId>spot-instrumentation</artifactId>
 	<version>1.0-beta2-SNAPSHOT</version>
@@ -11,6 +13,13 @@
 			<url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
 		</license>
 	</licenses>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>spot-nexus-snapshot</id>
+			<url>${nexus.snapshot.host}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -179,16 +188,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-		</repository>
-		<snapshotRepository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 </project>

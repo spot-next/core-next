@@ -9,14 +9,47 @@
 	<version>1.0-beta2-SNAPSHOT</version>
 	<name>spOt framework</name>
 	<packaging>pom</packaging>
-	<description>The spOt framework parent project</description>
+	<description>
+		The spOt framework parent POM project. It mainly contains build configurations.
+	</description>
 
 	<scm>
 		<url>https://github.com/mojo2012/spot-framework</url>
 		<connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
 		<developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
+
+	<ciManagement>
+		<system>travis-ci</system>
+		<url>https://travis-ci.org/mojo2012/spot-framework/</url>
+	</ciManagement>
+
+	<developers>
+		<developer>
+			<id>mojo2012</id>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<url>http://github.com/mojo2012/</url>
+		</developer>
+	</developers>
+
+	<inceptionYear>2016</inceptionYear>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/mojo2012/spot-framework/issues</url>
+	</issueManagement>
+
+	<url>https://mojo2012.github.io/spot-framework/</url>
+
+	<contributors>
+		<contributor>
+			<name>Thomas Rotter</name>
+		</contributor>
+	</contributors>
 
 	<licenses>
 		<license>
@@ -58,18 +91,14 @@
 	</properties>
 
 	<distributionManagement>
-		<repository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-		</repository>
 		<snapshotRepository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
+			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
 
 	<pluginRepositories>
-		<!-- spot -->
 		<pluginRepository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
@@ -78,17 +107,6 @@
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>interval:300</updatePolicy>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
 				<updatePolicy>interval:300</updatePolicy>
 			</snapshots>
 		</pluginRepository>
@@ -96,27 +114,23 @@
 
 	<repositories>
 		<!-- external repos -->
-		<repository>
-			<id>mvnrepository.com</id>
-			<name>MVN repository</name>
-			<url>http://mvnrepository.com/artifact</url>
-		</repository>
-		<repository>
-			<id>central</id>
-			<name>Central Repository</name>
-			<url>http://repo.maven.apache.org/maven2</url>
-		</repository>
+		<!-- <repository> -->
+		<!-- <id>mvnrepository.com</id> -->
+		<!-- <name>MVN repository</name> -->
+		<!-- <url>http://mvnrepository.com/artifact</url> -->
+		<!-- </repository> -->
+		<!-- <repository> -->
+		<!-- <id>central</id> -->
+		<!-- <name>Central Repository</name> -->
+		<!-- <url>http://repo.maven.apache.org/maven2</url> -->
+		<!-- </repository> -->
 
 		<!-- spot repos -->
-		<repository>
-			<id>spot-nexus-release</id>
-			<url>${nexus.release.host}</url>
-		</repository>
 		<repository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
 			<releases>
-				<enabled>true</enabled>
+				<enabled>false</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
@@ -127,36 +141,66 @@
 
 	<build>
 		<plugins>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>aspectj-maven-plugin</artifactId>
-				</plugin>
-			</plugins>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
+				<executions>
+					<!-- Ensures that FindBugs inspects source code when project is deployed. -->
+					<execution>
+						<id>analyze-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>deploy</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>at.spot</groupId>
+						<artifactId>build-tools</artifactId>
+						<version>1.0-beta2-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
 			</plugin>
-
 
 			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
 				<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
 				<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
 				</goals> </execution> </executions> </plugin> -->
+
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
+				<!-- RESOURCE GENERATION -->
+				<plugin>
+					<groupId>at.spot</groupId>
+					<artifactId>spot-maven-plugin</artifactId>
+					<version>1.0-beta2-SNAPSHOT</version>
+				</plugin>
+
+				<!-- COMPILATION -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.0</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
@@ -198,23 +242,14 @@
 						<complianceLevel>${java.version}</complianceLevel>
 						<encoding>UTF-8</encoding>
 						<verbose>false</verbose>
-						<forceAjcCompile>true</forceAjcCompile>
-						<preserveAllLocals>true</preserveAllLocals>
+<!-- 						<forceAjcCompile>true</forceAjcCompile> -->
+<!-- 						<preserveAllLocals>true</preserveAllLocals> -->
 						<proceedOnError>true</proceedOnError>
-						<Xreweavable>true</Xreweavable>
+<!-- 						<Xreweavable>true</Xreweavable> -->
 					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<!-- IMPORTANT -->
-								<phase>process-sources</phase>
-								<goal>compile</goal>
-								<goal>test-compile</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 
+				<!-- CODE ANALYSIS -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>
@@ -230,64 +265,42 @@
 						<xmlOutput>true</xmlOutput>
 						<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
 					</configuration>
-					<executions>
-						<!-- Ensures that FindBugs inspects source code when project is deployed. -->
-						<execution>
-							<id>analyze-deploy</id>
-							<phase>deploy</phase>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.8</version>
-				<configuration>
-					<skip>true</skip>
-					<rulesets>
-						<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
-					</rulesets>
-					<printFailingErrors>true</printFailingErrors>
-					<verbose>true</verbose>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>deploy</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>at.spot</groupId>
-						<artifactId>build-tools</artifactId>
-						<version>1.0-beta2-SNAPSHOT</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
-				<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
-				</goals> </execution> </executions> </plugin> -->
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<artifactId>maven-pmd-plugin</artifactId>
+					<version>3.8</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
+						<skip>true</skip>
+						<rulesets>
+							<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
+						</rulesets>
+						<printFailingErrors>true</printFailingErrors>
+						<verbose>true</verbose>
 					</configuration>
 				</plugin>
+
+				<!-- TESTING -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.22.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.22.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+
+
+				<!-- RELEASE -->
+				<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+					<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
+					<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
+					</goals> </execution> </executions> </plugin> -->
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -299,6 +312,70 @@
 						<branchName>master</branchName>
 						<pushChanges>true</pushChanges>
 						<localCheckout>true</localCheckout>
+					</configuration>
+				</plugin>
+
+				<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>at.spot</groupId>
+										<artifactId>spot-maven-plugin</artifactId>
+										<versionRange>
+											[1.0-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>generate-types</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>at.spot</groupId>
+										<artifactId>spot-maven-plugin</artifactId>
+										<versionRange>
+											[1.0-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>transform-types</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
+										<goals>
+											<goal>compile</goal>
+											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
 			</plugins>
