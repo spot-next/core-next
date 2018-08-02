@@ -91,6 +91,11 @@
 	</properties>
 
 	<distributionManagement>
+		<repository>
+			<id>maven-central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
 		<snapshotRepository>
 			<id>spot-nexus-snapshot</id>
 			<url>${nexus.snapshot.host}</url>
