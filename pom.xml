@@ -10,7 +10,7 @@
 	<name>spOt framework</name>
 	<packaging>pom</packaging>
 	<description>
-		The spOt framework parent POM project. It mainly contains build configurations.
+		The spOt microservice framework.
 	</description>
 
 	<scm>

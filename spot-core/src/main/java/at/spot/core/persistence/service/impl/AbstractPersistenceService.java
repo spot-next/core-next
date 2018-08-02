@@ -8,9 +8,6 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import at.spot.core.infrastructure.exception.UnknownTypeException;
 import at.spot.core.infrastructure.service.TypeService;
 import at.spot.core.infrastructure.service.impl.AbstractService;
@@ -33,9 +30,6 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 		try {
 			final Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeDefinition(typeCode)
 					.getProperties();
-			final ObjectMapper mapper = new ObjectMapper();
-			final Map<String, Object> map = mapper.convertValue(item, new TypeReference<Map<String, Object>>() {
-			});
 
 			for (final Map.Entry<String, ItemTypePropertyDefinition> prop : properties.entrySet()) {
 				if (isArrayOrCollection(prop.getValue().getReturnType())) {

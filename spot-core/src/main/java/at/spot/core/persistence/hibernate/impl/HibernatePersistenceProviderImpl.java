@@ -40,14 +40,25 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 		properties.put("hibernate.integrator_provider",
 				(IntegratorProvider) () -> Collections.singletonList(MetadataExtractorIntegrator.INSTANCE));
 
-		builder = new EntityManagerFactoryBuilderImpl(new PersistenceUnitInfoDescriptor(info) {
-			@Override
-			public List<String> getManagedClassNames() {
-				return mergedClassesAndPackages;
-			}
-		}, properties);
+		builder = new EntityManagerFactoryBuilderImpl(
+				new SpotPersistenceUnitInfoDescriptor(info, mergedClassesAndPackages), properties);
 
 		return builder.build();
 	}
 
+	public static class SpotPersistenceUnitInfoDescriptor extends PersistenceUnitInfoDescriptor {
+
+		final List<String> mergedClassesAndPackages;
+
+		public SpotPersistenceUnitInfoDescriptor(PersistenceUnitInfo persistenceUnitInfo,
+				List<String> mergedClassesAndPackages) {
+			super(persistenceUnitInfo);
+			this.mergedClassesAndPackages = mergedClassesAndPackages;
+		}
+
+		@Override
+		public List<String> getManagedClassNames() {
+			return mergedClassesAndPackages;
+		}
+	}
 }

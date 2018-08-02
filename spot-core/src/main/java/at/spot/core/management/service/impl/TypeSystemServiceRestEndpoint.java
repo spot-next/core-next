@@ -247,12 +247,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		final HttpResponse<List<T>> body = new HttpResponse<>();
 
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
-
-		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-
 		T example = null;
 
 		try {
