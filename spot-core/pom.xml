@@ -82,14 +82,20 @@
 			<!-- testing -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>at.spot.core.testing.SpotJunitRunListener</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>2.22.0</version>
-					</dependency>
-				</dependencies>
 				<executions>
 					<execution>
 						<goals>
@@ -106,9 +112,29 @@
 				<version>${spring.boot.version}</version>
 				<executions>
 					<execution>
+						<id>repackage</id>
 						<goals>
 							<goal>repackage</goal>
 						</goals>
+						<configuration>
+<!-- 							<attach>false</attach> -->
+<!-- 							<layout>JAR</layout> -->
+							<classifier>jar-with-dependencies</classifier>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build-info</id>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+						<configuration>
+							<additionalProperties>
+								<encoding.source>UTF-8</encoding.source>
+								<encoding.reporting>UTF-8</encoding.reporting>
+								<java.source>${java.version}</java.source>
+								<java.target>${java.version}</java.target>
+							</additionalProperties>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
