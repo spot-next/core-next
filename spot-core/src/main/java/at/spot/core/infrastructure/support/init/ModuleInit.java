@@ -10,12 +10,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 
 import at.spot.core.infrastructure.exception.ModuleInitializationException;
 import at.spot.core.infrastructure.service.ConfigurationService;
 import at.spot.core.infrastructure.service.LoggingService;
 
+@PropertySource(value = "classpath:/git.properties", ignoreResourceNotFound = true)
 @Configuration
 @Priority(value = -1)
 // needed to avoid some spring/hibernate problems

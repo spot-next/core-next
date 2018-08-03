@@ -114,4 +114,8 @@ public class Registry implements ApplicationContextAware {
 		getLoggingService().warn("SHUTTING DOWN!");
 		((AbstractApplicationContext) context).close();
 	}
+
+	public static BuildInfo getBuildInfos() {
+		return (BuildInfo) Registry.getApplicationContext().getBean("buildInfo");
+	}
 }

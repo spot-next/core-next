@@ -118,18 +118,6 @@
 	</pluginRepositories>
 
 	<repositories>
-		<!-- external repos -->
-		<!-- <repository> -->
-		<!-- <id>mvnrepository.com</id> -->
-		<!-- <name>MVN repository</name> -->
-		<!-- <url>http://mvnrepository.com/artifact</url> -->
-		<!-- </repository> -->
-		<!-- <repository> -->
-		<!-- <id>central</id> -->
-		<!-- <name>Central Repository</name> -->
-		<!-- <url>http://repo.maven.apache.org/maven2</url> -->
-		<!-- </repository> -->
-
 		<!-- spot repos -->
 		<repository>
 			<id>spot-nexus-snapshot</id>
@@ -199,9 +187,48 @@
 					<groupId>at.spot</groupId>
 					<artifactId>spot-maven-plugin</artifactId>
 					<version>1.0-beta2-SNAPSHOT</version>
+					<executions>
+						<execution>
+							<id>Item type generation</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>generate-types</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>Item type post-processing</id>
+							<phase>process-classes</phase>
+							<goals>
+								<goal>transform-types</goal>
+							</goals>
+							<configuration>
+								<includeJars>false</includeJars>
+								<classFileTransformers>
+									<classFileTransformer>
+										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+									</classFileTransformer>
+								</classFileTransformers>
+							</configuration>
+						</execution>
+						<execution>
+							<id>Item type post-processing (test)</id>
+							<phase>process-test-classes</phase>
+							<goals>
+								<goal>transform-types</goal>
+							</goals>
+							<configuration>
+								<includeJars>false</includeJars>
+								<classFileTransformers>
+									<classFileTransformer>
+										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+									</classFileTransformer>
+								</classFileTransformers>
+							</configuration>
+						</execution>
+					</executions>
 				</plugin>
 
-				<!-- COMPILATION -->
+				<!-- COMPILING -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -252,6 +279,16 @@
 						<proceedOnError>true</proceedOnError>
 						<!-- <Xreweavable>true</Xreweavable> -->
 					</configuration>
+					<executions>
+						<execution>
+							<phase>process-sources</phase>
+							<goals>
+								<!-- IMPORTANT -->
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 
 				<!-- CODE ANALYSIS -->
@@ -293,6 +330,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.18.1</version>
 				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
@@ -302,14 +340,52 @@
 							<include>**/*IT.java</include>
 						</includes>
 					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
-
 
 				<!-- RELEASE -->
 				<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
 					<version>2.9</version> <configuration> <failOnError>false</failOnError> </configuration> 
 					<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
 					</goals> </execution> </executions> </plugin> -->
+
+				<plugin>
+					<groupId>pl.project13.maven</groupId>
+					<artifactId>git-commit-id-plugin</artifactId>
+					<version>2.2.4</version>
+					<configuration>
+						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+						<injectAllReactorProjects>true</injectAllReactorProjects>
+						<failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
+						<failOnNoGitDirectory>true</failOnNoGitDirectory>
+						<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					</configuration>
+					<executions>
+						<execution>
+							<id>get-the-git-infos</id>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>validate-the-git-infos</id>
+							<goals>
+								<goal>validateRevision</goal>
+							</goals>
+							<!-- *NOTE*: The default phase of validateRevision is verify, but 
+								in case you want to change it, you can do so by adding the phase here -->
+							<phase>package</phase>
+						</execution>
+					</executions>
+				</plugin>
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -330,6 +406,8 @@
 					<version>1.6</version>
 				</plugin>
 
+
+				<!-- ECLIPSE FIX -->
 				<!-- This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
