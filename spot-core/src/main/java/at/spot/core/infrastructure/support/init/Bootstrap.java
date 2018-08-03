@@ -50,10 +50,6 @@ public class Bootstrap {
 
 	private final SpringApplicationBuilder builder;
 
-	// static {
-	// DynamicInstrumentationLoader.initialize();
-	// }
-
 	private Bootstrap() {
 		Registry.setMainThread(Thread.currentThread());
 		builder = new SpringApplicationBuilder();

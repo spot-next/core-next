@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spot-mail-server</artifactId>
 	<name>spOt mail server</name>
+	<packaging>jar</packaging>
 
 	<parent>
 		<groupId>at.spot</groupId>
