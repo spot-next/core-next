@@ -7,7 +7,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 */
 	String getString(String key);
 
@@ -16,7 +15,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 */
 	String getString(String key, String defaultValue);
 
@@ -25,7 +23,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 * @throws Exception
 	 */
 	Integer getInteger(String key);
@@ -35,7 +32,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 * @throws Exception
 	 */
 	Integer getInteger(String key, Integer defaultValue);
@@ -45,7 +41,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 * @throws Exception
 	 */
 	Double getDouble(String key);
@@ -55,7 +50,6 @@ public interface ConfigurationService {
 	 * exist.
 	 * 
 	 * @param key
-	 * @return
 	 * @throws Exception
 	 */
 	Double getDouble(String key, Double defaultValue);

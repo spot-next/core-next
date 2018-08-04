@@ -15,7 +15,6 @@ public interface PriceService {
 	 * @param product
 	 * @param user
 	 * @param userGroup
-	 * @return
 	 */
 	List<Price> getPrices(Product product, User user, UserGroup userGroup);
 }

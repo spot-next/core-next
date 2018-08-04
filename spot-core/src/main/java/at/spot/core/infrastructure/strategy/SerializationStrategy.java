@@ -7,7 +7,6 @@ public interface SerializationStrategy {
 	 * Serializes the given object to a string representation
 	 * 
 	 * @param object
-	 * @return
 	 */
 	<T extends Object> String serialize(T object) throws SerializationException;
 
@@ -15,7 +14,6 @@ public interface SerializationStrategy {
 	 * Deserializes the given string into the corresponding object.
 	 * 
 	 * @param serializedObject
-	 * @return
 	 */
 	<T extends Object> T deserialize(String serializedObject, Class<T> type) throws SerializationException;
 }

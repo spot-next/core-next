@@ -167,7 +167,6 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	 * internally and created if it doesn't exist yet.
 	 * 
 	 * @param type
-	 * @return
 	 */
 	protected Logger getLoggerForClass(final Class<?> type) {
 		Logger logger = loggers.get(type);

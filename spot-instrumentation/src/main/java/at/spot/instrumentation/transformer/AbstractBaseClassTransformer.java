@@ -161,7 +161,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * 
      * @param clazz
      * @param annotation
-     * @return
      * @throws IllegalClassTransformationException
      */
     protected List<Annotation> getAnnotations(final CtClass clazz) throws IllegalClassTransformationException {
@@ -208,7 +207,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * 
      * @param clazz
      * @param annotation
-     * @return
      * @throws IllegalClassTransformationException
      */
     protected Optional<Annotation> getAnnotation(final CtClass clazz,
@@ -224,7 +222,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * Returns all annotations of the given field.
      * 
      * @param field
-     * @return
      */
     protected List<Annotation> getAnnotations(final CtField field) {
         final FieldInfo info = field.getFieldInfo2();
@@ -243,7 +240,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * 
      * @param field
      * @param annotation
-     * @return
      */
     protected Optional<Annotation> getAnnotation(final CtField field,
             final Class<? extends java.lang.annotation.Annotation> annotation) {
@@ -257,7 +253,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * Returns all annotations of the given method.
      * 
      * @param field
-     * @return
      */
     protected List<Annotation> getAnnotations(final CtMethod method) {
         final MethodInfo info = method.getMethodInfo2();
@@ -276,7 +271,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * 
      * @param field
      * @param annotation
-     * @return
      */
     protected Optional<Annotation> getAnnotation(final CtMethod method,
             final Class<? extends java.lang.annotation.Annotation> annotation) {
@@ -291,7 +285,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * 
      * @param clazz
      * @param type
-     * @return
      * @throws IllegalClassTransformationException
      */
     protected Annotation createAnnotation(final CtClass clazz,
@@ -350,7 +343,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * Returns all accessible fields (even from super classes) for the given class.
      * 
      * @param clazz
-     * @return
      */
     protected List<CtField> getDeclaredFields(final CtClass clazz) {
         final List<CtField> fields = new ArrayList<>();
@@ -372,7 +364,6 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
      * Returns all accessible methods (even from super classes) for the given class.
      * 
      * @param clazz
-     * @return
      */
     protected List<CtMethod> getDeclaredMethods(final CtClass clazz) {
         final List<CtMethod> methods = new ArrayList<>();

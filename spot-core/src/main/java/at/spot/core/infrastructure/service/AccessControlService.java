@@ -14,7 +14,6 @@ public interface AccessControlService {
 	 * {@link Item} type.
 	 * 
 	 * @param type
-	 * @return
 	 */
 	<T extends Item> boolean accessAllowed(Class<T> type);
 
@@ -23,7 +22,6 @@ public interface AccessControlService {
 	 * property of the given {@link Item} type.
 	 * 
 	 * @param type
-	 * @return
 	 */
 	<T extends Item> boolean accessAllowed(Class<T> type, String property);
 
@@ -32,7 +30,6 @@ public interface AccessControlService {
 	 * {@link Item} instance.
 	 * 
 	 * @param type
-	 * @return
 	 */
 	<T extends Item> boolean accessAllowed(T type);
 
@@ -41,7 +38,6 @@ public interface AccessControlService {
 	 * property of the given {@link Item} instance.
 	 * 
 	 * @param type
-	 * @return
 	 */
 	<T extends Item> boolean accessAllowed(T type, String property);
 }

@@ -16,14 +16,12 @@ public @interface ModuleConfig {
 	/**
 	 * Returns the {@link Properties} for current {@link ModuleInit}.
 	 * 
-	 * @return
 	 */
 	String appConfigFile() default "";
 
 	/**
 	 * Returns the spring configuration file.
 	 * 
-	 * @return
 	 */
 	String springConfigFile() default "";
 
@@ -31,7 +29,6 @@ public @interface ModuleConfig {
 	 * Returns the spring configuration class. This overrides the
 	 * {@link ModuleConfig#springConfigFile()} property.
 	 * 
-	 * @return
 	 */
 	Class<?> springConfigClass() default ModuleInit.class;
 

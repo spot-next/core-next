@@ -23,7 +23,6 @@ public interface CacheService {
 	 * 
 	 * @param regionName
 	 * @param key
-	 * @return
 	 */
 	<K, V> V getCacheEntry(String regionName, K key);
 

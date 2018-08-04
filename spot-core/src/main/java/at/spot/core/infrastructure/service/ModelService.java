@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.exception.ModelCreationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
 import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.persistence.service.PersistenceService;
 import at.spot.core.types.Item;
 
@@ -26,14 +25,16 @@ public interface ModelService {
 	<T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Saves all the given Item models. Referenced Item models will not be saved.
+	 * Saves all the given Item models. Referenced Item models will not be
+	 * saved.
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends Item> void saveAll(T... items)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Saves all the given Item models. Referenced Item models will not be saved.
+	 * Saves all the given Item models. Referenced Item models will not be
+	 * saved.
 	 */
 	<T extends Item> void saveAll(List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
@@ -44,91 +45,79 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns the first {@link Item} based on the given search parameters (key =
-	 * property name, value = property value).
+	 * Returns the first {@link Item} based on the given search parameters (key
+	 * = property name, value = property value).
 	 * 
-	 * @throws ModelNotUniqueException if there is more than one matching item.
+	 * @throws ModelNotUniqueException
+	 *             if there is more than one matching item.
 	 */
 	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotUniqueException;
 
 	/**
-	 * Returns the first {@link Item} based on the given model query parameters. the
-	 * {@link ModelQuery} allows you to set the fetching strategy, pagination and to
-	 * limit the result.
+	 * Returns the first {@link Item} based on the given model query parameters.
+	 * the {@link ModelQuery} allows you to set the fetching strategy,
+	 * pagination and to limit the result.
 	 * 
-	 * @throws ModelNotUniqueException if there is more than one matching item.
+	 * @throws ModelNotUniqueException
+	 *             if there is more than one matching item.
 	 */
 	<T extends Item> T get(ModelQuery<T> query) throws ModelNotUniqueException;;
 
 	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
+	 * Returns an object based on the given search parameters (key = property
+	 * name, value = property value).
 	 * 
-	 * @param searchParameters if empty or null, all items of the given type will be
-	 *                         returned.
-	 * @return
+	 * @param searchParameters
+	 *            if empty or null, all items of the given type will be
+	 *            returned.
 	 */
 	<T extends Item> List<T> getAll(Class<T> type, Map<String, Object> searchParameters);
 
 	/**
-	 * Returns an object based on the given search parameters (key = property name,
-	 * value = property value).
+	 * Returns an object based on the given search parameters (key = property
+	 * name, value = property value).
 	 */
 	<T extends Item> List<T> getAll(ModelQuery<T> query);
 
 	/**
 	 * Returns the first {@link Item} based on the given example item.
 	 * 
-	 * @param example the example item instance.
-	 * @return
+	 * @param example
+	 *            the example item instance.
 	 */
 	<T extends Item> T getByExample(T example);
 
 	/**
 	 * Returns all {@link Item}s that match the given example item.
 	 * 
-	 * @param example the example item instance.
-	 * @return
+	 * @param example
+	 *            the example item instance.
 	 */
 	<T extends Item> List<T> getAllByExample(T example);
 
 	/**
 	 * Removes the given item.
-	 * 
-	 * @param item
 	 */
 	<T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given items.
-	 * 
-	 * @param items
 	 */
 	<T extends Item> void removeAll(List<T> items) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given item.
-	 * 
-	 * @param item
 	 */
 	@SuppressWarnings("unchecked")
 	<T extends Item> void remove(T... items) throws ModelNotFoundException;
 
 	/**
 	 * Refreshes the given model's properties.
-	 * 
-	 * @param pk
-	 * @return
-	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(T item) throws ModelNotFoundException;
 
 	/**
 	 * Returns the item's value of the given property.
-	 * 
-	 * @param item
-	 * @param propertyName
-	 * @return
 	 */
 	<T extends Item> Object getPropertyValue(T item, String propertyName);
 
@@ -138,7 +127,6 @@ public interface ModelService {
 	 * @param item
 	 * @param propertyName
 	 * @param valueType
-	 * @return
 	 */
 	<T extends Item, V> V getPropertyValue(T item, String propertyName, Class<V> valueType);
 
@@ -149,7 +137,6 @@ public interface ModelService {
 	 * @param propertyName
 	 * @param valueType
 	 * @param locale
-	 * @return
 	 */
 	<T extends Item, V> V getLocalizedPropertyValue(T item, String propertyName, Class<V> valueType, Locale locale);
 
@@ -175,14 +162,14 @@ public interface ModelService {
 	/**
 	 * Detaches the given item models from the persistence context.
 	 * 
-	 * @see {@link PersistenceService#detach(Item...)}
+	 * @see PersistenceService#detach(List)
 	 * 
 	 * @param items
 	 */
 	<T extends Item> void detach(T... items);
 
 	/**
-	 * @see {@link ModelService#detach(Item...)}
+	 * @see ModelService#detach(Item...)
 	 * 
 	 * @param items
 	 */

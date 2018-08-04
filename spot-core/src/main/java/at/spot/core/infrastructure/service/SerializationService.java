@@ -13,7 +13,6 @@ public interface SerializationService {
 	 * Serializes the given object to JSON format.
 	 * 
 	 * @param object
-	 * @return
 	 * @throws SerializationException
 	 */
 	<T extends Object> String toJson(T object) throws SerializationException;
@@ -22,7 +21,6 @@ public interface SerializationService {
 	 * Serializes the given object to XML format.
 	 * 
 	 * @param object
-	 * @return
 	 * @throws SerializationException
 	 */
 	<T extends Object> String toXml(T object) throws SerializationException;
@@ -32,7 +30,6 @@ public interface SerializationService {
 	 * 
 	 * @param value
 	 * @param type
-	 * @return
 	 * @throws DeserializationException
 	 */
 	<T extends Object> T fromJson(String value, Class<T> type) throws DeserializationException;
@@ -42,7 +39,6 @@ public interface SerializationService {
 	 * 
 	 * @param value
 	 * @param type
-	 * @return
 	 * @throws DeserializationException
 	 */
 	<T extends Object> T fromXml(String value, Class<T> type) throws DeserializationException;

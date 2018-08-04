@@ -16,7 +16,6 @@ public interface ProductSearchService {
 	 * underlying implementation.
 	 * 
 	 * @param freeTextSearchTerm
-	 * @return
 	 */
 	List<Product> search(String freeTextSearchTerm);
 
@@ -24,7 +23,6 @@ public interface ProductSearchService {
 	 * Searches for products with the given properties.
 	 * 
 	 * @param freeTextSearchTerms
-	 * @return
 	 */
 	List<Product> search(Map<String, String> freeTextSearchTerms);
 }

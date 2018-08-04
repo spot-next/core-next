@@ -88,7 +88,7 @@ public abstract class Query<T> {
 
 	/**
 	 * Enable this to eagerly fetch ALL relation properties (item references) in
-	 * one query. This overrides the {@link #EagerFetchRelationProperties}
+	 * one query. This overrides the {@link #getEagerFetchRelationProperties()}
 	 * property. This can reduce stress on the database, although it increases
 	 * memory usage as all data is loaded at once.
 	 */

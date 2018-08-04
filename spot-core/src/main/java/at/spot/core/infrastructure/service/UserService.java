@@ -61,7 +61,6 @@ public interface UserService<U extends User, G extends UserGroup> {
 	/**
 	 * Returns the current user in the session.
 	 * 
-	 * @return
 	 */
 	U getCurrentUser();
 

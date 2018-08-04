@@ -21,7 +21,6 @@ public interface CatalogService {
 	/**
 	 * Returns the current active session catalogs.
 	 * 
-	 * @return
 	 */
 	List<Catalog> getSessionCatalogs();
 
@@ -29,7 +28,6 @@ public interface CatalogService {
 	 * Returns the catalog with the given id or null.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	Catalog getCatalog(String id);
 

@@ -11,7 +11,6 @@ public interface ItemPropertyHandler {
 	 * 
 	 * @param item
 	 * @param propertyName
-	 * @return
 	 */
 	<T extends Item> Object getProperty(T item, String propertyName);
 
@@ -20,7 +19,6 @@ public interface ItemPropertyHandler {
 	 * 
 	 * @param item
 	 * @param propertyName
-	 * @return
 	 */
 	<T extends Item, R> R getProperty(T item, String propertyName, Class<R> returnType);
 

@@ -13,7 +13,6 @@ public interface CartService {
 	 * Returns the cart of the current session. If no cart has been created yet,
 	 * a new one is created and added to the session.
 	 * 
-	 * @return
 	 */
 	Cart getSessionCart();
 
@@ -26,7 +25,6 @@ public interface CartService {
 	 * Create a new session cart, overriding the current cart in the session, if
 	 * existing.
 	 * 
-	 * @return
 	 */
 	Cart createNewSessionCart();
 
@@ -36,7 +34,6 @@ public interface CartService {
 	 * @param cart
 	 * @param product
 	 * @param quantity
-	 * @return
 	 */
 	CartEntry addToCart(Cart cart, Product product, int quantity);
 
@@ -45,7 +42,6 @@ public interface CartService {
 	 * 
 	 * @param cart
 	 * @param product
-	 * @return
 	 */
 	CartEntry reomveFromCart(Cart cart, Product product);
 
@@ -54,7 +50,6 @@ public interface CartService {
 	 * 
 	 * @param cart
 	 * @param entryNumber
-	 * @return
 	 */
 	CartEntry reomveFromCart(Cart cart, int entryNumber);
 
@@ -67,7 +62,6 @@ public interface CartService {
 	 * @param entryNumber
 	 * @param product
 	 * @param quantity
-	 * @return
 	 */
 	CartEntry updateCart(Cart cart, int entryNumber, Product product, int quantity);
 }

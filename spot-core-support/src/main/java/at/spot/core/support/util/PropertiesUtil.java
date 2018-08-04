@@ -40,7 +40,6 @@ public class PropertiesUtil {
 	 * Loads {@link Properties} from the classpath.
 	 *
 	 * @param classPathFileName
-	 * @return
 	 */
 	public static Properties loadPropertiesFromClasspath(final String classPathFileName) {
 		final InputStream input = PropertiesUtil.class.getClassLoader().getResourceAsStream(classPathFileName);

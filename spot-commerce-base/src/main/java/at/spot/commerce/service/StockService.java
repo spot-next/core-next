@@ -13,7 +13,6 @@ public interface StockService {
 	 * Returns the stock levels of the given product for the active base store.
 	 * 
 	 * @param product
-	 * @return
 	 */
 	List<Stock> getStocks(Product product);
 
@@ -22,7 +21,6 @@ public interface StockService {
 	 * base store.
 	 * 
 	 * @param product
-	 * @return
 	 */
 	List<Stock> getStocks(String productId);
 
@@ -30,7 +28,6 @@ public interface StockService {
 	 * Returns the stock levels of the given product for the given base store.
 	 * 
 	 * @param product
-	 * @return
 	 */
 	List<Stock> getStocks(Product product, BaseStore baseStore);
 
@@ -39,7 +36,6 @@ public interface StockService {
 	 * base store.
 	 * 
 	 * @param product
-	 * @return
 	 */
 	List<Stock> getStocks(String productId, BaseStore baseStore);
 
@@ -48,7 +44,6 @@ public interface StockService {
 	 * given base store.
 	 * 
 	 * @param product
-	 * @return
 	 */
 	List<FutureStock> getFutureStocks(String productId, BaseStore baseStore);
 

@@ -15,10 +15,9 @@ public interface AuthenticationService {
 	 * {@link PasswordEncryptionStrategy} it's not possible anymore, to
 	 * authenticate the user. In this case, the password has to be reset.
 	 * 
-	 * @param name
+	 * @param uid
 	 * @param password
 	 * @param isEncrypted
-	 * @return
 	 */
 	User getAuthenticatedUser(final String uid, final String password, boolean isEncrypted);
 
@@ -37,7 +36,6 @@ public interface AuthenticationService {
 	 * Encrypts the given plain text password with the default
 	 * {@link PasswordEncryptionStrategy}.
 	 * 
-	 * @param user
 	 * @param plainPassword
 	 * @throws ModelSaveException
 	 */

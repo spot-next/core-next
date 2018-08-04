@@ -23,7 +23,6 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	 * 
 	 * @param request
 	 * @param exception
-	 * @return
 	 */
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody

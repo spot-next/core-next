@@ -36,7 +36,6 @@ public class DynamicObject {
 	 * Returns the value of the given property or null.
 	 * 
 	 * @param propertyName
-	 * @return
 	 */
 	public Object prop(String propertyName) {
 		return properties.get(propertyName);
@@ -46,7 +45,6 @@ public class DynamicObject {
 	 * Invoke (= run) a {@link Callable} object and return the return value. If
 	 * 
 	 * @param propertyName
-	 * @return
 	 */
 	public <R extends Object> R invoke(String propertyName) throws CannotInvokeException {
 		Object callable = properties.get(propertyName);

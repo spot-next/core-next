@@ -170,7 +170,6 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * Returns the spot base spring context, registered in
 	 * {@link Registry#getApplicationContext()}.
 	 * 
-	 * @return
 	 */
 	default ApplicationContext getParentSpringContext() {
 		return Registry.getApplicationContext();
@@ -179,7 +178,6 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	/**
 	 * Returns the the {@link ModuleInit} class for this application.
 	 * 
-	 * @return
 	 */
 	<T extends ModuleInit> Class<T> getModuleInitClass();
 
@@ -187,14 +185,12 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * Returns the web spring context.
 	 * 
 	 * @param servletContext
-	 * @return
 	 */
 	WebApplicationContext getApplicationContext(final ServletContext servletContext);
 
 	/**
 	 * Returns the main properties file.
 	 * 
-	 * @return
 	 */
 	String getApplicationConfigProperties();
 

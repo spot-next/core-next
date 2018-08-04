@@ -57,7 +57,6 @@ public class ItemTypeDefinitionUtil {
 	 * Fetches all itemtype definition files available in the maven dependency
 	 * hierarchy.
 	 * 
-	 * @return
 	 * @throws IOException
 	 * @throws MojoExecutionException
 	 */
@@ -73,7 +72,6 @@ public class ItemTypeDefinitionUtil {
 	 * Search all dependencies and the current project's resource folders to get
 	 * item type definition files.
 	 *
-	 * @return
 	 * @throws IOException
 	 * @throws MojoExecutionException
 	 * @throws DependencyResolutionException1
@@ -164,7 +162,6 @@ public class ItemTypeDefinitionUtil {
 	 * Aggregate all item type definitions of all definition files.
 	 *
 	 * @param definitions
-	 * @return
 	 * @throws IllegalItemTypeDefinitionException
 	 */
 	protected TypeDefinitions aggregateTypeDefninitions(final List<InputStream> definitions)
@@ -295,7 +292,6 @@ public class ItemTypeDefinitionUtil {
 	 * {@link Types} object.
 	 *
 	 * @param file
-	 * @return
 	 */
 	protected Types loadTypeDefinition(final InputStream file) {
 		Types typeDef = null;
@@ -319,7 +315,6 @@ public class ItemTypeDefinitionUtil {
 	 * pattern.
 	 *
 	 * @param file
-	 * @return
 	 */
 	protected boolean isItemTypeDefinitionFile(final String fileName) {
 		// ignore merged itemtypes files.

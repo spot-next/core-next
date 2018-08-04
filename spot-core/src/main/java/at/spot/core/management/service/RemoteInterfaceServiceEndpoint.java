@@ -29,15 +29,12 @@ public interface RemoteInterfaceServiceEndpoint {
 
 	/**
 	 * Gets the port that is being used for this service.
-	 * 
-	 * @param port
 	 */
 	int getPort();
 
 	/**
 	 * Gets the address on which the service is listening.
 	 * 
-	 * @return
 	 */
 	InetAddress getBindAddress();
 }

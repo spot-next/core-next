@@ -47,7 +47,8 @@ public enum HttpStatus {
 	 * 
 	 * @see <a href=
 	 *      "http://code.google.com/p/gears/wiki/ResumableHttpRequestsProposal">A
-	 *      proposal for supporting resumable POST/PUT HTTP requests in HTTP/1.0</a>
+	 *      proposal for supporting resumable POST/PUT HTTP requests in
+	 *      HTTP/1.0</a>
 	 */
 	CHECKPOINT(103, "Checkpoint"),
 
@@ -98,8 +99,8 @@ public enum HttpStatus {
 	/**
 	 * {@code 206 Partial Content}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7233#section-4.1">HTTP/1.1: Range
-	 *      Requests, section 4.1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7233#section-4.1">HTTP/1.1:
+	 *      Range Requests, section 4.1</a>
 	 */
 	PARTIAL_CONTENT(206, "Partial Content"),
 	/**
@@ -111,8 +112,8 @@ public enum HttpStatus {
 	/**
 	 * {@code 208 Already Reported}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc5842#section-7.1">WebDAV Binding
-	 *      Extensions</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5842#section-7.1">WebDAV
+	 *      Binding Extensions</a>
 	 */
 	ALREADY_REPORTED(208, "Already Reported"),
 	/**
@@ -269,15 +270,15 @@ public enum HttpStatus {
 	/**
 	 * {@code 410 Gone}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.9"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.9">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.9</a>
 	 */
 	GONE(410, "Gone"),
 	/**
 	 * {@code 411 Length Required}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.10"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.10</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.10">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.10</a>
 	 */
 	LENGTH_REQUIRED(411, "Length Required"),
 	/**
@@ -291,14 +292,15 @@ public enum HttpStatus {
 	 * {@code 413 Payload Too Large}.
 	 * 
 	 * @since 4.1
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.11"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.11">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.11</a>
 	 */
 	PAYLOAD_TOO_LARGE(413, "Payload Too Large"),
 	/**
 	 * {@code 413 Request Entity Too Large}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.14">HTTP/1.1,
+	 * @see <a href=
+	 *      "http://tools.ietf.org/html/rfc2616#section-10.4.14">HTTP/1.1,
 	 *      section 10.4.14</a>
 	 * @deprecated in favor of {@link #PAYLOAD_TOO_LARGE} which will be returned
 	 *             from {@code HttpStatus.valueOf(413)}
@@ -309,14 +311,15 @@ public enum HttpStatus {
 	 * {@code 414 URI Too Long}.
 	 * 
 	 * @since 4.1
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.12"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.12</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.12">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.12</a>
 	 */
 	URI_TOO_LONG(414, "URI Too Long"),
 	/**
 	 * {@code 414 Request-URI Too Long}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.15">HTTP/1.1,
+	 * @see <a href=
+	 *      "http://tools.ietf.org/html/rfc2616#section-10.4.15">HTTP/1.1,
 	 *      section 10.4.15</a>
 	 * @deprecated in favor of {@link #URI_TOO_LONG} which will be returned from
 	 *             {@code HttpStatus.valueOf(414)}
@@ -326,22 +329,22 @@ public enum HttpStatus {
 	/**
 	 * {@code 415 Unsupported Media Type}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.13"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.13</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.13">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.13</a>
 	 */
 	UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type"),
 	/**
 	 * {@code 416 Requested Range Not Satisfiable}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7233#section-4.4">HTTP/1.1: Range
-	 *      Requests, section 4.4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7233#section-4.4">HTTP/1.1:
+	 *      Range Requests, section 4.4</a>
 	 */
 	REQUESTED_RANGE_NOT_SATISFIABLE(416, "Requested range not satisfiable"),
 	/**
 	 * {@code 417 Expectation Failed}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.14"> HTTP/1.1:
-	 *      Semantics and Content, section 6.5.14</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc7231#section-6.5.14">
+	 *      HTTP/1.1: Semantics and Content, section 6.5.14</a>
 	 */
 	EXPECTATION_FAILED(417, "Expectation Failed"),
 	/**
@@ -393,29 +396,29 @@ public enum HttpStatus {
 	/**
 	 * {@code 426 Upgrade Required}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc2817#section-6">Upgrading to TLS
-	 *      Within HTTP/1.1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2817#section-6">Upgrading to
+	 *      TLS Within HTTP/1.1</a>
 	 */
 	UPGRADE_REQUIRED(426, "Upgrade Required"),
 	/**
 	 * {@code 428 Precondition Required}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-3">Additional HTTP
-	 *      Status Codes</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-3">Additional
+	 *      HTTP Status Codes</a>
 	 */
 	PRECONDITION_REQUIRED(428, "Precondition Required"),
 	/**
 	 * {@code 429 Too Many Requests}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">Additional HTTP
-	 *      Status Codes</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-4">Additional
+	 *      HTTP Status Codes</a>
 	 */
 	TOO_MANY_REQUESTS(429, "Too Many Requests"),
 	/**
 	 * {@code 431 Request Header Fields Too Large}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-5">Additional HTTP
-	 *      Status Codes</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-5">Additional
+	 *      HTTP Status Codes</a>
 	 */
 	REQUEST_HEADER_FIELDS_TOO_LARGE(431, "Request Header Fields Too Large"),
 	/**
@@ -488,8 +491,8 @@ public enum HttpStatus {
 	/**
 	 * {@code 508 Loop Detected}
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc5842#section-7.2">WebDAV Binding
-	 *      Extensions</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5842#section-7.2">WebDAV
+	 *      Binding Extensions</a>
 	 */
 	LOOP_DETECTED(508, "Loop Detected"),
 	/**
@@ -499,15 +502,15 @@ public enum HttpStatus {
 	/**
 	 * {@code 510 Not Extended}
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc2774#section-7">HTTP Extension
-	 *      Framework</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2774#section-7">HTTP
+	 *      Extension Framework</a>
 	 */
 	NOT_EXTENDED(510, "Not Extended"),
 	/**
 	 * {@code 511 Network Authentication Required}.
 	 * 
-	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-6">Additional HTTP
-	 *      Status Codes</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc6585#section-6">Additional
+	 *      HTTP Status Codes</a>
 	 */
 	NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required");
 
@@ -515,7 +518,7 @@ public enum HttpStatus {
 
 	private final String reasonPhrase;
 
-	HttpStatus(int value, String reasonPhrase) {
+	HttpStatus(final int value, final String reasonPhrase) {
 		this.value = value;
 		this.reasonPhrase = reasonPhrase;
 	}
@@ -536,17 +539,16 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#INFORMATIONAL}. This is a
-	 * shortcut for checking the value of {@link #series()}.
+	 * {@link Series#INFORMATIONAL}. This is a shortcut for checking the value
+	 * of {@link #series()}.
 	 */
 	public boolean is1xxInformational() {
 		return Series.INFORMATIONAL.equals(series());
 	}
 
 	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#SUCCESSFUL}. This is a
-	 * shortcut for checking the value of {@link #series()}.
+	 * Whether this status code is in the HTTP series {@link Series#SUCCESSFUL}.
+	 * This is a shortcut for checking the value of {@link #series()}.
 	 */
 	public boolean is2xxSuccessful() {
 		return Series.SUCCESSFUL.equals(series());
@@ -554,8 +556,8 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#REDIRECTION}. This is a
-	 * shortcut for checking the value of {@link #series()}.
+	 * {@link Series#REDIRECTION}. This is a shortcut for checking the value of
+	 * {@link #series()}.
 	 */
 	public boolean is3xxRedirection() {
 		return Series.REDIRECTION.equals(series());
@@ -563,8 +565,8 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#CLIENT_ERROR}. This is a
-	 * shortcut for checking the value of {@link #series()}.
+	 * {@link Series#CLIENT_ERROR}. This is a shortcut for checking the value of
+	 * {@link #series()}.
 	 */
 	public boolean is4xxClientError() {
 		return Series.CLIENT_ERROR.equals(series());
@@ -572,8 +574,8 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is a
-	 * shortcut for checking the value of {@link #series()}.
+	 * {@link Series#SERVER_ERROR}. This is a shortcut for checking the value of
+	 * {@link #series()}.
 	 */
 	public boolean is5xxServerError() {
 		return Series.SERVER_ERROR.equals(series());
@@ -581,8 +583,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link org.springframework.http.HttpStatus.Series#CLIENT_ERROR} or
-	 * {@link org.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is a
+	 * {@link Series#CLIENT_ERROR} or {@link Series#SERVER_ERROR}. This is a
 	 * shortcut for checking the value of {@link #series()}.
 	 */
 	public boolean isError() {
@@ -615,8 +616,8 @@ public enum HttpStatus {
 	 * @throws IllegalArgumentException
 	 *             if this enum has no constant for the specified numeric value
 	 */
-	public static HttpStatus valueOf(int statusCode) {
-		HttpStatus status = resolve(statusCode);
+	public static HttpStatus valueOf(final int statusCode) {
+		final HttpStatus status = resolve(statusCode);
 		if (status == null) {
 			throw new IllegalArgumentException("No matching constant for [" + statusCode + "]");
 		}
@@ -628,12 +629,13 @@ public enum HttpStatus {
 	 * 
 	 * @param statusCode
 	 *            the HTTP status code (potentially non-standard)
-	 * @return the corresponding {@code HttpStatus}, or {@code null} if not found
+	 * @return the corresponding {@code HttpStatus}, or {@code null} if not
+	 *         found
 	 * @since 5.0
 	 */
 	@Nullable
-	public static HttpStatus resolve(int statusCode) {
-		for (HttpStatus status : values()) {
+	public static HttpStatus resolve(final int statusCode) {
+		for (final HttpStatus status : values()) {
 			if (status.value == statusCode) {
 				return status;
 			}
@@ -652,7 +654,7 @@ public enum HttpStatus {
 
 		private final int value;
 
-		Series(int value) {
+		Series(final int value) {
 			this.value = value;
 		}
 
@@ -663,9 +665,9 @@ public enum HttpStatus {
 			return this.value;
 		}
 
-		public static Series valueOf(int status) {
-			int seriesCode = status / 100;
-			for (Series series : values()) {
+		public static Series valueOf(final int status) {
+			final int seriesCode = status / 100;
+			for (final Series series : values()) {
 				if (series.value == seriesCode) {
 					return series;
 				}
@@ -673,7 +675,7 @@ public enum HttpStatus {
 			throw new IllegalArgumentException("No matching constant for [" + status + "]");
 		}
 
-		public static Series valueOf(HttpStatus status) {
+		public static Series valueOf(final HttpStatus status) {
 			return valueOf(status.value);
 		}
 	}

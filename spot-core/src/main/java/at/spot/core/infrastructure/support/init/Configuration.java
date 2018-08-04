@@ -9,7 +9,6 @@ public interface Configuration {
 	 * Return an ordered list of {@link Properties} application configuration
 	 * objects.
 	 * 
-	 * @return
 	 */
 	List<Properties> getConfiguration();
 }

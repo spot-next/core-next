@@ -17,7 +17,6 @@ public interface BaseStoreService {
 	/**
 	 * Returns the {@link BaseStore} of the current user session.
 	 * 
-	 * @return
 	 */
 	BaseStore getSessionBaseStore();
 
@@ -25,7 +24,6 @@ public interface BaseStoreService {
 	 * Returns the {@link BaseStore} with the given id or null if not found.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	BaseStore getBaseStoreById(String id);
 }
