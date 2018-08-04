@@ -66,38 +66,7 @@
 				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.boot.version}</version>
-				<executions>
-					<execution>
-						<id>repackage</id>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-						<configuration>
-							<classifier>jar-with-dependencies</classifier>
-						</configuration>
-					</execution>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-						<configuration>
-							<additionalProperties>
-								<encoding.source>UTF-8</encoding.source>
-								<encoding.reporting>UTF-8</encoding.reporting>
-								<java.source>${java.version}</java.source>
-								<java.target>${java.version}</java.target>
-							</additionalProperties>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- ECLIPSE FIX -->
+			<!-- ECLIPSE SETTINGS -->
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>

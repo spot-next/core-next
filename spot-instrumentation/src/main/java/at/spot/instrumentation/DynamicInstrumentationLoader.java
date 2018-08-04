@@ -41,7 +41,7 @@ public final class DynamicInstrumentationLoader {
 	protected static Class<? extends ClassFileTransformer>[] registeredTranformers;
 
 	/**
-	 * keeping a reference here so it is not garbage collected
+	 * Keeping a reference here so it is not garbage collected
 	 */
 	static GenericXmlApplicationContext ltwCtx;
 

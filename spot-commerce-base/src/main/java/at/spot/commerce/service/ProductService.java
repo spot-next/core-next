@@ -12,7 +12,6 @@ public interface ProductService {
 	 * Returns the product with the given id of the active session catalog.
 	 * 
 	 * @param productId
-	 * @param catalog
 	 */
 	Product getProductForId(String productId);
 

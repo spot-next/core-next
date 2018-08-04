@@ -8,7 +8,7 @@ import at.spot.itemtype.commerce.store.BaseStore;
  */
 public interface BaseStoreService {
 	/**
-	 * Sets the given {@link BaseStore} in the currenet user session.
+	 * Sets the given {@link BaseStore} in the current user session.
 	 * 
 	 * @param baseStore
 	 */

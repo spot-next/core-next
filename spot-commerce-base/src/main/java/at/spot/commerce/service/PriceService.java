@@ -10,7 +10,7 @@ import at.spot.itemtype.core.user.UserGroup;
 public interface PriceService {
 
 	/**
-	 * Returns the prices for the given product.<br />
+	 * Returns the prices for the given product.<br>
 	 * 
 	 * @param product
 	 * @param user
