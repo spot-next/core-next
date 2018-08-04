@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -105,7 +107,13 @@ public final class DynamicInstrumentationReflections {
 	public static sun.misc.Unsafe getUnsafe() {
 		try {
 			final Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-			unsafeField.setAccessible(true);
+			AccessController.doPrivileged(new PrivilegedAction<Void>() {
+				@Override
+				public Void run() {
+					unsafeField.setAccessible(true);
+					return null;
+				}
+			});
 			final sun.misc.Unsafe unsafe = (sun.misc.Unsafe) unsafeField.get(null);
 			return unsafe;
 		} catch (final Throwable e) {
@@ -147,7 +155,13 @@ public final class DynamicInstrumentationReflections {
 			System.setProperty(javaLibraryPathKey, newJavaLibraryPath);
 			// CHECKSTYLE:ON
 			final Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-			fieldSysPath.setAccessible(true);
+			AccessController.doPrivileged(new PrivilegedAction<Void>() {
+				@Override
+				public Void run() {
+					fieldSysPath.setAccessible(true);
+					return null;
+				}
+			});
 			fieldSysPath.set(ClassLoader.class, null);
 		} catch (final NoSuchFieldException e) {
 			org.springframework.util.ReflectionUtils.handleReflectionException(e);
