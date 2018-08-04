@@ -218,7 +218,6 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
 	 */
 	protected User authenticate(final Request request, final Response response) {
 		final String encodedHeader = StringUtils.trim(
@@ -307,7 +306,6 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		 * 
 		 * @param response
 		 * @param responseBody
-		 * @return
 		 */
 		protected Object processResponse(final Response response, final Object responseBody) {
 			if (responseBody instanceof HttpResponse) {

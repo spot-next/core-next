@@ -18,10 +18,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
-import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.infrastructure.exception.DeserializationException;
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
@@ -44,6 +40,9 @@ import at.spot.core.management.support.data.PageableData;
 import at.spot.core.management.transformer.JsonResponseTransformer;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
+import at.spot.core.persistence.query.QueryResult;
 import at.spot.core.persistence.service.QueryService;
 import at.spot.core.support.util.MiscUtil;
 import at.spot.core.types.Item;
@@ -129,7 +128,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
+	 * @return the fetched item instance
 	 * @throws UnknownTypeException
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/v1/models/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
@@ -152,7 +151,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 			models = (List<T>) modelService.getAll(query);
 
 			body.setBody(Payload.of(new PageableData<>(models, page, pageSize)));
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			body.setStatusCode(HttpStatus.BAD_REQUEST);
 			body.getBody().addError(new Status("error.ongetall", "Unknown item type."));
 		}
@@ -165,7 +164,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
 	 * @throws ModelNotFoundException
 	 * @throws UnknownTypeException
 	 */
@@ -198,7 +196,8 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	/**
 	 * Gets an item based on the search query. The query is a JPQL WHERE
 	 * clause.<br />
-	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
+	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%'
+	 * <br/>
 	 * 
 	 * @throws UnknownTypeException
 	 */
@@ -213,12 +212,12 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		final String[] queryParamValues = request.queryParamsValues("q");
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
-			JpqlQuery<T> query = new JpqlQuery<>(
+			final JpqlQuery<T> query = new JpqlQuery<>(
 					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
 			query.setEagerFetchRelations(true);
 
 			try {
-				QueryResult<T> result = queryService.query(query);
+				final QueryResult<T> result = queryService.query(query);
 				body.setBody(Payload.of(result));
 			} catch (final QueryException e) {
 				body.setStatusCode(HttpStatus.BAD_REQUEST);
@@ -271,7 +270,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
@@ -280,7 +278,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	public <T extends Item> HttpResponse<Map<String, Object>> createModel(final Request request,
 			final Response response) throws UnknownTypeException, ModelSaveException {
 
-		Payload<Map<String, Object>> payload = new Payload<>();
+		final Payload<Map<String, Object>> payload = new Payload<>();
 
 		final HttpResponse<Map<String, Object>> body = new HttpResponse<>(payload, HttpStatus.PRECONDITION_FAILED);
 
@@ -315,7 +313,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */
@@ -347,14 +344,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an existing or creates the item with the given values. The PK must be
-	 * provided. If the new item is not unique, an error is returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just want
-	 * to update a few fields, use the PATCH Method.
+	 * Updates an existing or creates the item with the given values. The PK
+	 * must be provided. If the new item is not unique, an error is
+	 * returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just
+	 * want to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response
-	 * @return
 	 * @throws UnknownTypeException
 	 * @throws ModelSaveException
 	 */

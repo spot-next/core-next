@@ -159,7 +159,6 @@ public class Bootstrap {
 	 * 
 	 * @param builder
 	 * @param options
-	 * @return
 	 * @throws IOException
 	 */
 	protected static void loadConfiguration(final SpringApplicationBuilder builder, final BootstrapOptions options) {
@@ -173,10 +172,8 @@ public class Bootstrap {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with the
-	 * parent context.
-	 * 
-	 * @param parentContext
+	 * necessary, so that the spring context of this module can be merged with
+	 * the parent context.
 	 */
 	protected static void loadSpringConfiguration(final SpringApplicationBuilder builder,
 			final BootstrapOptions options) {
@@ -202,7 +199,6 @@ public class Bootstrap {
 	 * Get command line arguments, eg. for getting the custom *.properties file.
 	 * 
 	 * @param args
-	 * @return
 	 * @throws ParseException
 	 * @throws BootstrapException
 	 */

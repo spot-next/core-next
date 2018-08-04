@@ -165,7 +165,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	/**
 	 * Returns the names and the values of all properties annotated with @Unique.
 	 *
-	 * @return
 	 */
 	public Map<String, Object> getUniqueProperties() {
 		final Map<String, Object> uniqueProps = new HashMap<>();

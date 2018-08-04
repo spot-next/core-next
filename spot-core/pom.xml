@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spot-core</artifactId>
@@ -16,70 +15,52 @@
 		<jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
 	</properties>
 
+	<profiles>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>profile</name>
+					<value>release</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
-			<!-- item type generation -->
+			<!-- RESOURCE GENERTATION -->
 			<plugin>
 				<groupId>at.spot</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>Item type generation</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-types</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>Item type post-processing</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>transform-types</goal>
-						</goals>
-						<configuration>
-							<includeJars>false</includeJars>
-							<classFileTransformers>
-								<classFileTransformer>
-									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
-								</classFileTransformer>
-							</classFileTransformers>
-						</configuration>
-					</execution>
-					<execution>
-						<id>Item type post-processing (test)</id>
-						<phase>process-test-classes</phase>
-						<goals>
-							<goal>transform-types</goal>
-						</goals>
-						<configuration>
-							<includeJars>false</includeJars>
-							<classFileTransformers>
-								<classFileTransformer>
-									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
-								</classFileTransformer>
-							</classFileTransformers>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 
-			<!-- building -->
+			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<goals>
-							<!-- IMPORTANT -->
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
-			<!-- testing -->
+			<!-- CODE ANALYSIS -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+
+			<!-- TESTING -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -96,49 +77,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
+			<!-- RELEASE -->
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.boot.version}</version>
-				<executions>
-					<execution>
-						<id>repackage</id>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-						<configuration>
-<!-- 							<attach>false</attach> -->
-<!-- 							<layout>JAR</layout> -->
-							<classifier>jar-with-dependencies</classifier>
-						</configuration>
-					</execution>
-					<execution>
-						<id>build-info</id>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-						<configuration>
-							<additionalProperties>
-								<encoding.source>UTF-8</encoding.source>
-								<encoding.reporting>UTF-8</encoding.reporting>
-								<java.source>${java.version}</java.source>
-								<java.target>${java.version}</java.target>
-							</additionalProperties>
-						</configuration>
-					</execution>
-				</executions>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 
+			<!-- ECLIPSE SETTINGS -->
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 

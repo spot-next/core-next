@@ -6,7 +6,6 @@ public interface PasswordEncryptionStrategy {
 	 * be a simple hash function or a very complex algorithm.
 	 * 
 	 * @param rawPassword
-	 * @return
 	 */
 	String encryptPassword(String rawPassword);
 }

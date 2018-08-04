@@ -19,16 +19,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the main entry point for the application. After the application has
- * been initialized, it will call {@link CoreInit#run()}. Then the shell is
- * being loaded.
+ * been initialized, {@link CoreInit#initialize()},
+ * {@link CoreInit#importInitialData()} and {@link CoreInit#importSampleData()}
+ * will be called in that exact order.
  */
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource(value = "classpath:/core.properties")
 @PropertySource(value = "classpath:/local.properties", ignoreResourceNotFound = true)
-//@EnableAsync
-//@EnableTransactionManagement
-//@EnableScheduling
-//@EnableJpaAuditing
+// @EnableAsync
+// @EnableTransactionManagement
+// @EnableScheduling
+// @EnableJpaAuditing
 public class CoreInit extends ModuleInit {
 
 	@Resource

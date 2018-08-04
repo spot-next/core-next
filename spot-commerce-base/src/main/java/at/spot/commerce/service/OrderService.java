@@ -28,8 +28,8 @@ public interface OrderService {
 	Order getOrderById(String orderId);
 
 	/**
-	 * Creates a new order based on the given one. A new order will be created, but
-	 * the order entries, and settings will be the same. <br />
+	 * Creates a new order based on the given one. A new order will be created,
+	 * but the order entries, and settings will be the same. <br>
 	 * Prices and other conditions may change though, depending on the service
 	 * implementation.
 	 */

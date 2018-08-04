@@ -10,7 +10,7 @@ import com.google.gson.GsonBuilder;
 import at.spot.core.support.exception.CannotInvokeException;
 
 /**
- * The dynamic object works similar like a javscript object. You can store any
+ * The dynamic object works similar like a javascript object. You can store any
  * object and retrieve it again - although without type-safety.
  */
 public class DynamicObject {
@@ -27,7 +27,7 @@ public class DynamicObject {
 	 * @param value
 	 * @return the object
 	 */
-	public DynamicObject prop(String propertyName, Object value) {
+	public DynamicObject prop(final String propertyName, final Object value) {
 		properties.put(propertyName, value);
 		return this;
 	}
@@ -36,9 +36,8 @@ public class DynamicObject {
 	 * Returns the value of the given property or null.
 	 * 
 	 * @param propertyName
-	 * @return
 	 */
-	public Object prop(String propertyName) {
+	public Object prop(final String propertyName) {
 		return properties.get(propertyName);
 	}
 
@@ -46,10 +45,9 @@ public class DynamicObject {
 	 * Invoke (= run) a {@link Callable} object and return the return value. If
 	 * 
 	 * @param propertyName
-	 * @return
 	 */
-	public <R extends Object> R invoke(String propertyName) throws CannotInvokeException {
-		Object callable = properties.get(propertyName);
+	public <R extends Object> R invoke(final String propertyName) throws CannotInvokeException {
+		final Object callable = properties.get(propertyName);
 
 		try {
 			if (callable != null && callable instanceof Callable) {
@@ -57,7 +55,7 @@ public class DynamicObject {
 			} else {
 				throw new CannotInvokeException(String.format("Method %s not found.", propertyName));
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new CannotInvokeException(String.format("Error invoking method %s.", propertyName), e);
 		}
 	}

@@ -14,68 +14,30 @@
 
 	<build>
 		<plugins>
-			<!-- item type generation -->
+			<!-- RESOURCE GENERTATION -->
 			<plugin>
 				<groupId>at.spot</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>Item type generation</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>generate-types</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>Item type post-processing</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>transform-types</goal>
-						</goals>
-						<configuration>
-							<includeJars>false</includeJars>
-							<classFileTransformers>
-								<classFileTransformer>
-									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
-								</classFileTransformer>
-							</classFileTransformers>
-						</configuration>
-					</execution>
-					<execution>
-						<id>Item type post-processing (test)</id>
-						<phase>process-test-classes</phase>
-						<goals>
-							<goal>transform-types</goal>
-						</goals>
-						<configuration>
-							<includeJars>false</includeJars>
-							<classFileTransformers>
-								<classFileTransformer>
-									at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
-								</classFileTransformer>
-							</classFileTransformers>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 
-			<!-- building -->
+			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-sources</phase>
-						<goals>
-							<!-- IMPORTANT -->
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
-			<!-- testing -->
+			<!-- CODE ANALYSIS -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+
+			<!-- TESTING -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -92,14 +54,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
+			</plugin>
+
+			<!-- RELEASE -->
+
+			<!-- ECLIPSE SETTINGS -->
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
 			</plugin>
 		</plugins>
 	</build>

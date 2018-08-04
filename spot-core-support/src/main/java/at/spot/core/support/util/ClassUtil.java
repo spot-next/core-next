@@ -44,7 +44,6 @@ public class ClassUtil {
 	 * @param fieldName
 	 * @param includeSuperTypes if this is true all super classes till and including
 	 *                          {@link Object} will be invoked.
-	 * @return
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
 			final boolean includeSuperTypes) {

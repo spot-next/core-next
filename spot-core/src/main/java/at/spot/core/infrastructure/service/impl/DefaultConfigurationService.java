@@ -87,7 +87,6 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	 * Iterates over all registered properties files.
 	 * 
 	 * @param key
-	 * @return
 	 */
 	protected String getProperty(final String key) {
 		final String value = environment.getProperty(key);

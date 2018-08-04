@@ -8,7 +8,7 @@ import at.spot.itemtype.commerce.store.BaseStore;
  */
 public interface BaseStoreService {
 	/**
-	 * Sets the given {@link BaseStore} in the currenet user session.
+	 * Sets the given {@link BaseStore} in the current user session.
 	 * 
 	 * @param baseStore
 	 */
@@ -17,7 +17,6 @@ public interface BaseStoreService {
 	/**
 	 * Returns the {@link BaseStore} of the current user session.
 	 * 
-	 * @return
 	 */
 	BaseStore getSessionBaseStore();
 
@@ -25,7 +24,6 @@ public interface BaseStoreService {
 	 * Returns the {@link BaseStore} with the given id or null if not found.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	BaseStore getBaseStoreById(String id);
 }

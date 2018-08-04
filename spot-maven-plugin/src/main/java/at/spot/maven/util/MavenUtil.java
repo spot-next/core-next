@@ -18,7 +18,6 @@ public class MavenUtil {
 	 * 
 	 * @param repository
 	 * @param artifact
-	 * @return
 	 * @throws IOException
 	 */
 	public static File getArtiactFile(final ArtifactRepository repository, final Artifact artifact) throws IOException {

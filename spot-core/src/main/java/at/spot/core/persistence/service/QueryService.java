@@ -3,7 +3,6 @@ package at.spot.core.persistence.service;
 import at.spot.core.persistence.query.JpqlQuery;
 import at.spot.core.persistence.query.LambdaQuery;
 import at.spot.core.persistence.query.QueryResult;
-
 import at.spot.core.types.Item;
 
 public interface QueryService {
@@ -14,8 +13,8 @@ public interface QueryService {
 	 * 
 	 * @param query
 	 *            the JPQL query
-	 * @param the
-	 *            type of the result
+	 * @param resultClass
+	 *            the type of the result
 	 * @return the query result
 	 */
 	<T> QueryResult<T> query(String query, Class<T> resultClass);

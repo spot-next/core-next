@@ -12,14 +12,12 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import at.spot.core.persistence.query.JpqlQuery;
-import at.spot.core.persistence.query.ModelQuery;
-
 import at.spot.core.infrastructure.exception.ModelNotFoundException;
 import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.exception.ModelValidationException;
 import at.spot.core.persistence.exception.ModelNotUniqueException;
 import at.spot.core.persistence.exception.QueryException;
+import at.spot.core.persistence.query.JpqlQuery;
+import at.spot.core.persistence.query.ModelQuery;
 import at.spot.core.types.Item;
 
 @Service
@@ -32,17 +30,12 @@ public interface PersistenceService {
 
 	/**
 	 * Saves the given models and all of its dependent models.
-	 * 
-	 * @param type
-	 * @return
 	 */
 	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Refreshes the given model's properties.
 	 * 
-	 * @param pk
-	 * @return
 	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> void refresh(List<T> item) throws ModelNotFoundException;
@@ -54,9 +47,6 @@ public interface PersistenceService {
 
 	/**
 	 * Returns an object based on its PK.
-	 * 
-	 * @param pk
-	 * @return
 	 */
 	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
 
@@ -76,8 +66,8 @@ public interface PersistenceService {
 	<T extends Item> void remove(Class<T> type, long pk);
 
 	/**
-	 * Saves the database to disk. This has to be done before the application quits
-	 * to prevent data corruption.
+	 * Saves the database to disk. This has to be done before the application
+	 * quits to prevent data corruption.
 	 */
 	void saveDataStorage();
 
@@ -88,30 +78,20 @@ public interface PersistenceService {
 
 	/**
 	 * Initialize a new item.
-	 * 
-	 * @param joinPoint
-	 * @param rel
-	 * @return
-	 * @throws Throwable
 	 */
 	<T extends Item> void initItem(T item);
 
 	/**
-	 * Detaches a given item model from the underlying persistence implementation.
-	 * This is useful if serializing the item causes problems. The effect can be
-	 * different depending on the persistence service implementation, but in general
-	 * lazy-loading properties will not work anymore afterwards.
-	 * 
-	 * @param items
+	 * Detaches a given item model from the underlying persistence
+	 * implementation. This is useful if serializing the item causes problems.
+	 * The effect can be different depending on the persistence service
+	 * implementation, but in general lazy-loading properties will not work
+	 * anymore afterwards.
 	 */
 	<T extends Item> void detach(List<T> items);
 
 	/**
 	 * Converts the given item to a map.
-	 * 
-	 * @param item
-	 * @return
-	 * @throws ModelValidationException
 	 */
 	<T extends Item> Map<String, Object> convertItemToMap(T item);
 }

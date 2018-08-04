@@ -5,7 +5,7 @@
 	<artifactId>spot-core-shell</artifactId>
 	<name>spot-core-shell</name>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>at.spot</groupId>
 		<artifactId>spot-framework</artifactId>
@@ -15,6 +15,54 @@
 	<properties>
 		<spring.shell.version>2.0.0.RELEASE</spring.shell.version>
 	</properties>
+
+	<build>
+		<plugins>
+			<!-- COMPILING -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- CODE ANALYSIS -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+			</plugin>
+
+			<!-- TESTING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>at.spot.core.testing.SpotJunitRunListener</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+
+			<!-- RELEASE -->
+
+			<!-- ECLIPSE SETTINGS -->
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 		<dependency>

@@ -12,7 +12,6 @@ public interface ItemPropertyValueProvider<I extends Item, V> {
 	 * 
 	 * @param item
 	 * @param attributeName
-	 * @return
 	 * @throws NotReadablePropertyException
 	 */
 	V readValue(I item, String attributeName) throws NotReadablePropertyException;

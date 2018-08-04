@@ -3,10 +3,8 @@ package at.spot.core.infrastructure.http;
 import java.util.Objects;
 
 /**
- * This entity extends the spring {@link ResponseEntity} with the ability to set
- * the body and status after object creation.
- * 
- * @param <T>
+ * This entity extends the spring ResponseEntity with the ability to set the
+ * body and status after object creation.
  */
 public class HttpResponse<T> {
 	protected Payload<T> body;
@@ -31,8 +29,6 @@ public class HttpResponse<T> {
 
 	/**
 	 * Sets the HTTP status code of the response.
-	 * 
-	 * @return the HTTP status as an HttpStatus enum entry
 	 */
 	public void setStatusCode(final HttpStatus status) {
 		this.statusCode = status;

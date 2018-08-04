@@ -12,8 +12,6 @@ public interface ProductService {
 	 * Returns the product with the given id of the active session catalog.
 	 * 
 	 * @param productId
-	 * @param catalog
-	 * @return
 	 */
 	Product getProductForId(String productId);
 
@@ -22,7 +20,6 @@ public interface ProductService {
 	 * 
 	 * @param productId
 	 * @param catalog
-	 * @return
 	 */
 	Product getProductForId(String productId, Catalog catalog);
 
@@ -30,14 +27,12 @@ public interface ProductService {
 	 * Returns all products of the given category in the active session catalog.
 	 * 
 	 * @param catalog
-	 * @return
 	 */
 	List<Product> getProductsInCategory(Category category);
 
 	/**
 	 * Returns all products of the active session catalog.
 	 * 
-	 * @return
 	 */
 	List<Product> getAllProducts();
 
@@ -45,7 +40,6 @@ public interface ProductService {
 	 * Returns all products of the given catalog.
 	 * 
 	 * @param catalog
-	 * @return
 	 */
 	List<Product> getAllProducts(Catalog catalog);
 

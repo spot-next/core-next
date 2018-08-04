@@ -17,7 +17,6 @@ public interface L10nService extends MessageSource, MessageInterpolator, Initial
 	 * 
 	 * @param key
 	 * @param messageParams
-	 * @return
 	 * @throws NoSuchMessageException
 	 */
 	String getMessage(String key, String defaultMessage, Object... messageParams) throws NoSuchMessageException;
@@ -28,7 +27,6 @@ public interface L10nService extends MessageSource, MessageInterpolator, Initial
 	 * 
 	 * @param key
 	 * @param messageParams
-	 * @return
 	 * @throws NoSuchMessageException
 	 */
 	String getMessage(String key, String defaultMessage, Locale locale, Object... messageParams)

@@ -32,16 +32,16 @@ import at.spot.instrumentation.internal.JdkFilesFinder;
 @ThreadSafe
 public final class DynamicInstrumentationLoader {
 
-	protected static final String LOAD_AGENT_THREAD_NAME = "instrumentationAgentStarter";
+	private static final String LOAD_AGENT_THREAD_NAME = "instrumentationAgentStarter";
 
-	protected static volatile Throwable threadFailed;
-	protected static volatile String toolsJarPath;
-	protected static volatile String attachLibPath;
+	private static volatile Throwable threadFailed;
+	private static volatile String toolsJarPath;
+	private static volatile String attachLibPath;
 
-	protected static Class<? extends ClassFileTransformer>[] registeredTranformers;
+	private static Class<? extends ClassFileTransformer>[] registeredTranformers;
 
 	/**
-	 * keeping a reference here so it is not garbage collected
+	 * Keeping a reference here so it is not garbage collected
 	 */
 	static GenericXmlApplicationContext ltwCtx;
 

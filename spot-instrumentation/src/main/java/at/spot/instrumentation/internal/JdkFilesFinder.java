@@ -11,7 +11,10 @@ import java.util.Set;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @NotThreadSafe
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class JdkFilesFinder {
 
 	private final Set<File> potentialFolders;

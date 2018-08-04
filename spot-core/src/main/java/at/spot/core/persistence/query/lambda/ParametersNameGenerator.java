@@ -27,7 +27,6 @@ public class ParametersNameGenerator {
 	 * Each call to this method returns next unique String (a, b, c, ..., z, aa, ab,
 	 * ac,...)
 	 * 
-	 * @return
 	 */
 	public String next() {
 		return alpha(++current).toString();

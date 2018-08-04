@@ -22,7 +22,6 @@ public class FileUtils {
 	 * list files in the given directory and subdirs (with recursion)
 	 *
 	 * @param paths
-	 * @return
 	 */
 	public static List<File> getFiles(final String paths) {
 		final List<File> filesList = new ArrayList<>();
@@ -52,7 +51,6 @@ public class FileUtils {
 	 * Reads a file into an {@link InputStream}.
 	 *
 	 * @param filePath
-	 * @return
 	 * @throws FileNotFoundException
 	 */
 	public static InputStream readFile(final String filePath) throws FileNotFoundException {
@@ -63,7 +61,6 @@ public class FileUtils {
 	 * Reads a file into an {@link InputStream}.
 	 *
 	 * @param file
-	 * @return
 	 * @throws FileNotFoundException
 	 */
 	public static InputStream readFile(final File file) throws FileNotFoundException {
@@ -99,7 +96,6 @@ public class FileUtils {
 	 *
 	 * @param zipFilePath
 	 * @param relativeFilePath
-	 * @return
 	 * @throws FileNotFoundException
 	 */
 	public static InputStream readFileFromZipFile(final String zipFilePath, final String relativeFilePath)
@@ -117,7 +113,6 @@ public class FileUtils {
 	 * List the content of the given jar
 	 *
 	 * @param jarPath
-	 * @return
 	 * @throws IOException
 	 */
 	public static List<String> getFileListFromJar(final String jarPath) throws IOException {

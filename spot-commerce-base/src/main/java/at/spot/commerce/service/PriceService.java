@@ -10,12 +10,11 @@ import at.spot.itemtype.core.user.UserGroup;
 public interface PriceService {
 
 	/**
-	 * Returns the prices for the given product.<br />
+	 * Returns the prices for the given product.<br>
 	 * 
 	 * @param product
 	 * @param user
 	 * @param userGroup
-	 * @return
 	 */
 	List<Price> getPrices(Product product, User user, UserGroup userGroup);
 }

@@ -15,7 +15,6 @@ public interface CustomerService extends UserService<Customer, UserGroup> {
 	 * valid for a certain amount of time.
 	 * 
 	 * @param customer
-	 * @return
 	 */
 	String createResetPasswordToken(Customer customer);
 

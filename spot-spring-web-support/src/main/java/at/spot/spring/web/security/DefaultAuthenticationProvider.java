@@ -87,7 +87,6 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	 * If the username matches, then the user will be given the admin role.
 	 * 
 	 * @param user
-	 * @return
 	 */
 	protected boolean isAdminUser(final User user) {
 		final String adminUserName = configurationService.getString(ADMIN_USER_NAME_KEY, DEFAULT_ADMIN_USER_NAME);
