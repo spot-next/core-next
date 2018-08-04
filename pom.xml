@@ -424,7 +424,7 @@
 					<configuration>
 						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 						<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
-						<injectAllReactorProjects>true</injectAllReactorProjects>
+						<injectAllReactorProjects>false</injectAllReactorProjects>
 						<failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
 						<failOnNoGitDirectory>true</failOnNoGitDirectory>
 						<generateGitPropertiesFile>true</generateGitPropertiesFile>
@@ -443,7 +443,7 @@
 							</goals>
 							<!-- *NOTE*: The default phase of validateRevision is verify, but 
 								in case you want to change it, you can do so by adding the phase here -->
-							<phase>package</phase>
+							<!-- <phase>package</phase> -->
 						</execution>
 					</executions>
 				</plugin>
