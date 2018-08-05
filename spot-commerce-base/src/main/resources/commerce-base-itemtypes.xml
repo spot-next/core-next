@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://mojo2012.github.io/spot-framework/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
 	<!-- enums -->
 
