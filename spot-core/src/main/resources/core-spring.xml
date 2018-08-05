@@ -19,37 +19,37 @@
 	<!-- enable @Value property resolution -->
 	<context:property-placeholder />
 
-	<context:component-scan base-package="at.spot.core.infrastructure.support.spring" />
-	<context:component-scan base-package="at.spot.core.infrastructure.spring" />
-	<context:component-scan base-package="at.spot.core.infrastructure.service" />
-	<context:component-scan base-package="at.spot.core.infrastructure.strategy" />
-	<context:component-scan base-package="at.spot.core.infrastructure.resolver" />
-	<context:component-scan base-package="at.spot.core.infrastructure.interceptor" />
-	<context:component-scan base-package="at.spot.core.management.service" />
-	<context:component-scan base-package="at.spot.core.management.converter" />
-	<context:component-scan base-package="at.spot.core.management.populator" />
-	<context:component-scan base-package="at.spot.core.management.transformer" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.support.spring" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.spring" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.service" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.strategy" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.resolver" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.interceptor" />
+	<context:component-scan base-package="io.spotnext.core.management.service" />
+	<context:component-scan base-package="io.spotnext.core.management.converter" />
+	<context:component-scan base-package="io.spotnext.core.management.populator" />
+	<context:component-scan base-package="io.spotnext.core.management.transformer" />
 	<context:component-scan
-		base-package="at.spot.core.persistence.instrumentation.transformers" />
-	<context:component-scan base-package="at.spot.core.persistence.service" />
-	<context:component-scan base-package="at.spot.core.persistence.valueprovider" />
-	<context:component-scan base-package="at.spot.core.security.service" />
-	<context:component-scan base-package="at.spot.core.security.strategy" />
+		base-package="io.spotnext.core.persistence.instrumentation.transformers" />
+	<context:component-scan base-package="io.spotnext.core.persistence.service" />
+	<context:component-scan base-package="io.spotnext.core.persistence.valueprovider" />
+	<context:component-scan base-package="io.spotnext.core.security.service" />
+	<context:component-scan base-package="io.spotnext.core.security.strategy" />
 
-	<context:component-scan base-package="at.spot.itemtype" />
+	<context:component-scan base-package="io.spotnext.itemtype" />
 
 
 	<bean id="itemTypeAnnotationProcessor"
-		class="at.spot.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
+		class="io.spotnext.core.infrastructure.spring.ItemTypeAnnotationProcessor" />
 
-	<bean id="abstractBaseAspect" class="at.spot.core.infrastructure.aspect.AbstractBaseAspect"
+	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect"
 		abstract="true">
 		<property name="loggingService" ref="loggingService" />
 	</bean>
 
-	<!-- <bean class="at.spot.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" 
+	<!-- <bean class="io.spotnext.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" 
 		parent="abstractBaseAspect" /> -->
-	<!-- <bean class="at.spot.core.infrastructure.aspect.ItemPropertyAccessAspect" 
+	<!-- <bean class="io.spotnext.core.infrastructure.aspect.ItemPropertyAccessAspect" 
 		factory-method="aspectOf" parent="abstractBaseAspect"> -->
 	<!-- <property name="modelService" ref="modelService" /> -->
 	<!-- <property name="queryService" ref="queryService" /> -->
@@ -58,7 +58,7 @@
 	<!-- This mapping of property value providers is used to fetch Item models 
 		from collection-like properties -->
 	<util:map id="itemPropertyValueProviders" key-type="java.lang.String"
-		value-type="at.spot.core.persistence.valueprovider.ItemPropertyValueProvider">
+		value-type="io.spotnext.core.persistence.valueprovider.ItemPropertyValueProvider">
 		<!-- <entry key="Collection"> -->
 		<!-- <ref bean="collectionValueProvider" /> -->
 		<!-- </entry> -->
@@ -88,7 +88,7 @@
 	<alias name="l10nService" alias="defaultMessageInterpolator" />
 	<alias name="l10nService" alias="defaultMessageSource" />
 	<bean id="defaultL10nService"
-		class="at.spot.core.infrastructure.service.impl.DefaultL10nService">
+		class="io.spotnext.core.infrastructure.service.impl.DefaultL10nService">
 		<property name="parentMessageSource" ref="reloadableMessageSource" />
 	</bean>
 
@@ -105,14 +105,14 @@
 
 	<!-- SERVICES -->
 	<bean id="hibernatePersistenceService"
-		class="at.spot.core.persistence.hibernate.impl.HibernatePersistenceService" />
+		class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" />
 
 	<bean id="abstractService"
-		class="at.spot.core.infrastructure.service.impl.AbstractService"
+		class="io.spotnext.core.infrastructure.service.impl.AbstractService"
 		abstract="true" />
 
 	<bean id="abstractSerialNumberGeneratorService"
-		class="at.spot.core.persistence.service.impl.AbstractSerialNumberGeneratorService"
+		class="io.spotnext.core.persistence.service.impl.AbstractSerialNumberGeneratorService"
 		abstract="true" />
 
 	<!-- ALIASES -->
@@ -141,12 +141,12 @@
 
 	<!-- converters -->
 	<bean id="abstractPopulatingConverter"
-		class="at.spot.core.management.converter.impl.AbstractPopulatingConverter"
+		class="io.spotnext.core.management.converter.impl.AbstractPopulatingConverter"
 		abstract="true" />
 
 	<bean id="itemTypeConverter" parent="abstractPopulatingConverter">
 		<property name="targetClass"
-			value="at.spot.core.management.support.data.GenericItemDefinitionData" />
+			value="io.spotnext.core.management.support.data.GenericItemDefinitionData" />
 		<property name="populators">
 			<list>
 				<ref bean="itemTypePopulator" />
@@ -156,7 +156,7 @@
 
 	<!-- item interceptors -->
 	<bean id="abstractItemInterceptorRegistry" abstract="true"
-		class="at.spot.core.infrastructure.support.ItemInterceptorRegistry">
+		class="io.spotnext.core.infrastructure.support.ItemInterceptorRegistry">
 
 		<property name="typeService" ref="typeService" />
 		<property name="persistenceService" ref="persistenceService" />

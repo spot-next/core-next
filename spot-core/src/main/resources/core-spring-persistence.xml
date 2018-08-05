@@ -20,7 +20,7 @@
 	<aop:aspectj-autoproxy proxy-target-class="true" />
 	<tx:annotation-driven mode="proxy" proxy-target-class="true" />
 
-	<context:component-scan base-package="at.spot.core.persistence.hibernate.impl" />
+	<context:component-scan base-package="io.spotnext.core.persistence.hibernate.impl" />
 
 	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
 		<property name="driverClassName" value="${database.jdbc.driverClassName}" />
@@ -44,17 +44,17 @@
 		</constructor-arg>
 	</bean>
 
-<!-- 	<bean id="sessionFactory" class="at.spot.core.persistence.hibernate.impl.HibernateSessionFactoryBean"> -->
+<!-- 	<bean id="sessionFactory" class="io.spotnext.core.persistence.hibernate.impl.HibernateSessionFactoryBean"> -->
 <!-- 		<property name="dataSource" ref="dataSource" /> -->
 <!-- 		<property name="hibernateProperties" ref="jpaProperties" /> -->
 <!-- 	</bean> -->
 
-	<bean id="hibernatePersistenceProvider" class="at.spot.core.persistence.hibernate.impl.HibernatePersistenceProviderImpl" />
+	<bean id="hibernatePersistenceProvider" class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceProviderImpl" />
 
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="packagesToScan" value="at.spot.itemtype,at.spot.core.persistence.hibernate.support" />
+		<property name="packagesToScan" value="io.spotnext.itemtype,io.spotnext.core.persistence.hibernate.support" />
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
 		</property>
@@ -62,7 +62,7 @@
 		<property name="persistenceUnitPostProcessors">
 			<list>
 				<bean
-					class="at.spot.core.persistence.hibernate.impl.TypeServicePersistenceUnitPostProcessor" />
+					class="io.spotnext.core.persistence.hibernate.impl.TypeServicePersistenceUnitPostProcessor" />
 			</list>
 		</property>
 		<property name="jpaProperties" ref="jpaProperties" />

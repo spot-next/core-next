@@ -3,7 +3,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>at.spot</groupId>
+	<groupId>io.spotnext</groupId>
 	<artifactId>spot-framework</artifactId>
 	<version>1.0-beta2-SNAPSHOT</version>
 	<name>spOt framework</name>
@@ -31,6 +31,10 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>
@@ -100,22 +104,29 @@
 	</modules>
 
 	<properties>
+		<!-- compiling -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<aspectj.version>1.9.1</aspectj.version>
+
+		<!-- misc -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j.version>2.11.1</log4j.version>
 		<junit.version>4.12</junit.version>
 		<spring.boot.version>2.0.3.RELEASE</spring.boot.version>
 		<spring.version>5.0.7.RELEASE</spring.version>
-		<aspectj.version>1.9.1</aspectj.version>
 
-		<!-- nexus repositry -->
-		<nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
-		<nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
+		<!-- GPG -->
+		<gpg.keyname>${env.GPG_KEY}</gpg.keyname>
+		<gpg.passphrase>${env.GPG_PWD}</gpg.passphrase>
+
+		<!-- nexus repository -->
+		<nexus.snapshot.host>http://nexus.spot-next.io/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://nexus.spot-next.io/repository/spot-release/</nexus.release.host>
 	</properties>
 
 	<distributionManagement>
@@ -173,7 +184,7 @@
 			<plugins>
 				<!-- RESOURCE GENERATION -->
 				<plugin>
-					<groupId>at.spot</groupId>
+					<groupId>io.spotnext</groupId>
 					<artifactId>spot-maven-plugin</artifactId>
 					<version>1.0-beta2-SNAPSHOT</version>
 					<executions>
@@ -194,7 +205,7 @@
 								<includeJars>false</includeJars>
 								<classFileTransformers>
 									<classFileTransformer>
-										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
 									</classFileTransformer>
 								</classFileTransformers>
 							</configuration>
@@ -209,7 +220,7 @@
 								<includeJars>false</includeJars>
 								<classFileTransformers>
 									<classFileTransformer>
-										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
 									</classFileTransformer>
 								</classFileTransformers>
 							</configuration>
@@ -480,6 +491,22 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>1.6</version>
+					<configuration>
+						<!-- This is necessary for gpg to not try to use the pinentry programs -->
+						<gpgArguments>
+							<arg>--pinentry-mode</arg>
+							<arg>loopback</arg>
+						</gpgArguments>
+					</configuration>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 
 				<!-- ECLIPSE FIX -->
@@ -494,7 +521,7 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>at.spot</groupId>
+										<groupId>io.spotnext</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
 											[1.0-SNAPSHOT,)
@@ -509,7 +536,7 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>at.spot</groupId>
+										<groupId>io.spotnext</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
 											[1.0-SNAPSHOT,)

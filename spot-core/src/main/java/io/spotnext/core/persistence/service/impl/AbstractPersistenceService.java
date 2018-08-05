@@ -1,0 +1,64 @@
+package io.spotnext.core.persistence.service.impl;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.service.TypeService;
+import io.spotnext.core.infrastructure.service.impl.AbstractService;
+import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
+import io.spotnext.core.persistence.service.PersistenceService;
+import io.spotnext.core.types.Item;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+public abstract class AbstractPersistenceService extends AbstractService implements PersistenceService {
+
+	@Autowired
+	protected TypeService typeService;
+
+	@Override
+	public <T extends Item> Map<String, Object> convertItemToMap(final T item) {
+		final String typeCode = typeService.getTypeCodeForClass(item.getClass());
+		final Map<String, Object> retMap = new HashMap<>();
+
+		try {
+			final Map<String, ItemTypePropertyDefinition> properties = typeService.getItemTypeDefinition(typeCode)
+					.getProperties();
+
+			for (final Map.Entry<String, ItemTypePropertyDefinition> prop : properties.entrySet()) {
+				if (isArrayOrCollection(prop.getValue().getReturnType())) {
+					loggingService
+							.warn(String.format("Item property '%s' is a list or collection - it will be ignored.",
+									prop.getValue().getName()));
+				} else {
+
+					try {
+						final Object value = PropertyUtils.getProperty(item, prop.getValue().getName());
+
+						if (value != null) {
+							retMap.put(prop.getValue().getName(), value);
+						}
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						loggingService.warn(String.format(
+								"Could not convert property '%s' for given item of type '%s' - it will be ignored.",
+								prop.getValue().getName(), item.getClass().getSimpleName()));
+					}
+				}
+			}
+		} catch (final UnknownTypeException e1) {
+			loggingService.warn(String.format("Could not load properties for item with type code '%s'", typeCode));
+		}
+
+		return retMap;
+	}
+
+	protected boolean isArrayOrCollection(final Class<?> type) {
+		return type.isArray() || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
+	}
+}

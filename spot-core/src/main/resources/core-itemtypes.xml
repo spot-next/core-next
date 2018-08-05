@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://mojo2012.github.io/spot-framework/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
 	<!-- atomic java types -->
 	<atomic name="String" className="java.lang.String" />
@@ -21,20 +21,20 @@
 
 	<!-- enums -->
 
-	<enum name="ApprovalStatus" package="at.spot.itemtype.core.enumeration">
+	<enum name="ApprovalStatus" package="io.spotnext.itemtype.core.enumeration">
 		<description>The approval status, eg. of products or CMS items.</description>
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
 	</enum>
 
-	<enum name="ImportFormat" package="at.spot.itemtype.core.enumeration">
+	<enum name="ImportFormat" package="io.spotnext.itemtype.core.enumeration">
 		<description>Formats that are supported for import of data.</description>
 		<value code="ImpEx" />
 		<value code="JSON" />
 		<value code="XML" />
 	</enum>
 
-	<bean name="ImportConfiguration" package="at.spot.itemtype.core.beans">
+	<bean name="ImportConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
 		<properties>
 			<property name="scriptIdentifier" type="String">
@@ -52,7 +52,7 @@
 
 	<!-- users and groups -->
 
-	<type name="UniqueIdItem" abstract="true" package="at.spot.itemtype.core"
+	<type name="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.core"
 		persistable="false">
 		<description>The base type of all types that have a unique id property.</description>
 		<properties>
@@ -69,7 +69,7 @@
 		</properties>
 	</type>
 
-	<type name="CatalogItem" abstract="true" package="at.spot.itemtype.core"
+	<type name="CatalogItem" abstract="true" package="io.spotnext.itemtype.core"
 		extends="UniqueIdItem" persistable="false">
 		<description>The base type all types that are catalogable.</description>
 		<properties>
@@ -83,7 +83,7 @@
 		</properties>
 	</type>
 
-	<type name="Principal" abstract="true" package="at.spot.itemtype.core.user"
+	<type name="Principal" abstract="true" package="io.spotnext.itemtype.core.user"
 		extends="UniqueIdItem">
 		<description>The base type all user related item types.</description>
 		<properties>
@@ -94,7 +94,7 @@
 		</properties>
 	</type>
 
-	<type name="PrincipalGroup" abstract="true" package="at.spot.itemtype.core.user"
+	<type name="PrincipalGroup" abstract="true" package="io.spotnext.itemtype.core.user"
 		extends="Principal">
 		<description>The base type all principal group-like structures.</description>
 		<properties>
@@ -102,7 +102,7 @@
 	</type>
 
 	<type name="User" typeCode="User" extends="Principal"
-		package="at.spot.itemtype.core.user">
+		package="io.spotnext.itemtype.core.user">
 		<description>Represents a user.</description>
 		<properties>
 			<property name="emailAddress" type="String">
@@ -115,13 +115,13 @@
 	</type>
 
 	<type name="UserGroup" typeCode="UserGroup" extends="PrincipalGroup"
-		package="at.spot.itemtype.core.user">
+		package="io.spotnext.itemtype.core.user">
 		<description>The base type all user group-like structures.</description>
 	</type>
 
 	<!-- addresses -->
 
-	<type name="Address" typeCode="Address" package="at.spot.itemtype.core.user"
+	<type name="Address" typeCode="Address" package="io.spotnext.itemtype.core.user"
 		abstract="true">
 		<properties>
 			<property name="streetName" type="String" />
@@ -133,7 +133,7 @@
 		</properties>
 	</type>
 
-	<type name="UserAddress" typeCode="UserAddress" package="at.spot.itemtype.core.user"
+	<type name="UserAddress" typeCode="UserAddress" package="io.spotnext.itemtype.core.user"
 		extends="Address">
 		<properties>
 			<property name="emailAddress" type="String" />
@@ -141,7 +141,7 @@
 		</properties>
 	</type>
 
-	<type name="AddressType" typeCode="AddressType" package="at.spot.itemtype.core.user"
+	<type name="AddressType" typeCode="AddressType" package="io.spotnext.itemtype.core.user"
 		extends="UniqueIdItem">
 		<properties>
 			<property name="name" type="String">
@@ -151,7 +151,7 @@
 	</type>
 
 	<type name="ContactDetailsType" typeCode="ContactDetailsType"
-		package="at.spot.itemtype.core.user" extends="UniqueIdItem">
+		package="io.spotnext.itemtype.core.user" extends="UniqueIdItem">
 		<properties>
 			<property name="name" type="String">
 				<description>The name of the contact details type.</description>
@@ -161,7 +161,7 @@
 
 	<!-- basic catalogs -->
 
-	<type name="Catalog" typeCode="Catalog" package="at.spot.itemtype.core.catalog"
+	<type name="Catalog" typeCode="Catalog" package="io.spotnext.itemtype.core.catalog"
 		extends="UniqueIdItem">
 		<description>This is the container for all category and product-related types. It can have multiple catalog version.</description>
 		<properties>
@@ -172,7 +172,7 @@
 	</type>
 
 	<type name="CatalogVersion" typeCode="CatalogVersion"
-		package="at.spot.itemtype.core.catalog" extends="UniqueIdItem">
+		package="io.spotnext.itemtype.core.catalog" extends="UniqueIdItem">
 		<description>A catalog version holds catalogable types that can be synchronized into another catalog version.</description>
 		<properties>
 			<property name="name" type="String">
@@ -189,7 +189,7 @@
 
 	<!-- media objects -->
 
-	<type name="AbstractMedia" abstract="true" package="at.spot.itemtype.core.media"
+	<type name="AbstractMedia" abstract="true" package="io.spotnext.itemtype.core.media"
 		extends="CatalogItem">
 		<properties>
 			<property name="mimeType" type="String">
@@ -201,7 +201,7 @@
 		</properties>
 	</type>
 
-	<type name="Media" extends="AbstractMedia" package="at.spot.itemtype.core.media">
+	<type name="Media" extends="AbstractMedia" package="io.spotnext.itemtype.core.media">
 		<properties>
 			<property name="data" type="ByteArray">
 				<description>The content of the data object.</description>
@@ -210,7 +210,7 @@
 		</properties>
 	</type>
 
-	<type name="FileMedia" extends="Media" package="at.spot.itemtype.core.media">
+	<type name="FileMedia" extends="Media" package="io.spotnext.itemtype.core.media">
 		<properties>
 			<property name="dataPath" type="String">
 				<description>The file path to the data object.</description>
@@ -222,7 +222,7 @@
 		</properties>
 	</type>
 
-	<type name="MediaContainer" package="at.spot.itemtype.core.media"
+	<type name="MediaContainer" package="io.spotnext.itemtype.core.media"
 		extends="CatalogItem">
 		<properties>
 		</properties>
@@ -230,7 +230,7 @@
 
 	<!-- internationalization -->
 
-	<type name="Country" package="at.spot.itemtype.core.internationalization">
+	<type name="Country" package="io.spotnext.itemtype.core.internationalization">
 		<properties>
 			<property name="isoCode" type="String">
 				<description>
@@ -271,7 +271,7 @@
 		</properties>
 	</type>
 
-	<type name="Language" package="at.spot.itemtype.core.internationalization">
+	<type name="Language" package="io.spotnext.itemtype.core.internationalization">
 		<description>This represents a language object and it's locale.</description>
 		<properties>
 			<property name="iso3Code" type="String">
@@ -305,7 +305,7 @@
 		</properties>
 	</type>
 
-	<type name="Currency" package="at.spot.itemtype.core.internationalization">
+	<type name="Currency" package="io.spotnext.itemtype.core.internationalization">
 		<description>Represents a currency.</description>
 		<properties>
 			<property name="isoCode" type="String">
@@ -321,10 +321,10 @@
 		</properties>
 	</type>
 
-	<type name="LocalizedString" package="at.spot.itemtype.core.internationalization">
+	<type name="LocalizedString" package="io.spotnext.itemtype.core.internationalization">
 		<description>This type can be used to store localized strings.</description>
 		<interfaces>
-			<interface javaClass="at.spot.core.types.Localizable">
+			<interface javaClass="io.spotnext.core.types.Localizable">
 				<genericType value="String" />
 			</interface>
 		</interfaces>
@@ -368,7 +368,7 @@
 		</properties>
 	</type>
 	
-	<type name="LocalizationValue" package="at.spot.itemtype.core.internationalization"
+	<type name="LocalizationValue" package="io.spotnext.itemtype.core.internationalization"
 		extends="UniqueIdItem">
 		<description>This type can be used to store localized values different languages/locales.</description>
 		<properties>
@@ -389,7 +389,7 @@
 
 	<!-- configuration -->
 
-	<type name="Configuration" package="at.spot.itemtype.core.configuration"
+	<type name="Configuration" package="io.spotnext.itemtype.core.configuration"
 		extends="UniqueIdItem">
 		<description>This type can be used to store a set of configuration entries.</description>
 		<properties>
@@ -399,7 +399,7 @@
 		</properties>
 	</type>
 
-	<type name="ConfigEntry" package="at.spot.itemtype.core.configuration"
+	<type name="ConfigEntry" package="io.spotnext.itemtype.core.configuration"
 		extends="UniqueIdItem">
 		<description>This type can be used to store a configuration entry.</description>
 		<properties>

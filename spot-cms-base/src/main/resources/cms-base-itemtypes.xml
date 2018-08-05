@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://mojo2012.github.io/spot-framework/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
 	<!-- enums -->
 
-	<enum name="HtmlLinkTarget" package="at.spot.itemtype.cms.enumeration">
+	<enum name="HtmlLinkTarget" package="io.spotnext.itemtype.cms.enumeration">
 		<description>Represents an HTML link target used.</description>
 		<value code="BLANK" />
 		<value code="SELF" />
@@ -12,7 +12,7 @@
 		<value code="TOP" />
 	</enum>
 
-	<enum name="Orientation" package="at.spot.itemtype.cms.enumeration">
+	<enum name="Orientation" package="io.spotnext.itemtype.cms.enumeration">
 		<description>Defines the orientation, eg. for layouts.</description>
 		<value code="TOP" />
 		<value code="BOTTOM" />
@@ -20,7 +20,7 @@
 		<value code="RIGHT" />
 	</enum>
 
-	<enum name="TemplateRenderEngine" package="at.spot.itemtype.cms.enumeration">
+	<enum name="TemplateRenderEngine" package="io.spotnext.itemtype.cms.enumeration">
 		<description>The render engine used to render cms items.</description>
 		<value code="VELOCITY" />
 		<value code="FREEMARKER" />
@@ -28,14 +28,14 @@
 	</enum>
 
 	<!-- image media -->
-	<type name="ImageMedia" extends="FileMedia" package="at.spot.core.model.media">
+	<type name="ImageMedia" extends="FileMedia" package="io.spotnext.core.model.media">
 		<properties>
 		</properties>
 	</type>
 
 	<!-- cms item types -->
 
-	<type name="AbstractCmsItem" abstract="true" package="at.spot.itemtype.cms.model"
+	<type name="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms.model"
 		extends="UniqueIdItem">
 		<properties>
 			<property name="catalog" type="Catalog">
@@ -54,7 +54,7 @@
 		</properties>
 	</type>
 
-	<type name="CmsRestriction" extends="AbstractCmsItem" package="at.spot.itemtype.cms.model">
+	<type name="CmsRestriction" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="evaluator" type="String">
 				<description>The spring bean id of the corresponding evaluator implementation.</description>
@@ -66,7 +66,7 @@
 	</type>
 
 	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem"
-		package="at.spot.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="renderContextProvider" type="String">
 				<description>
@@ -90,26 +90,26 @@
 	</type>
 
 	<type name="AbstractCmsContainerComponent" abstract="true"
-		extends="AbstractCmsComponent" package="at.spot.itemtype.cms.model">
+		extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms.model">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="CmsComponent" extends="AbstractCmsComponent" package="at.spot.itemtype.cms.model">
+	<type name="CmsComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms.model">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="ContentSlot" extends="AbstractCmsItem" package="at.spot.itemtype.cms.model">
+	<type name="ContentSlot" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="MetaTag" extends="ConfigEntry" package="at.spot.itemtype.cms.model">
+	<type name="MetaTag" extends="ConfigEntry" package="io.spotnext.itemtype.cms.model">
 	</type>
 
 	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
-		package="at.spot.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="title" type="LocalizedString">
 			</property>
@@ -121,7 +121,7 @@
 		</properties>
 	</type>
 
-	<type name="CmsPage" extends="CmsPageTemplate" package="at.spot.itemtype.cms.model">
+	<type name="CmsPage" extends="CmsPageTemplate" package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="urlMatches" type="StringList">
 				<description>Holds the regex string to determine which URL should
@@ -135,7 +135,7 @@
 	<!-- special cms components -->
 
 	<type name="AbstractNavigationEntry" abstract="true" extends="CmsComponent"
-		package="at.spot.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="name" type="String">
 				<description>The navigation entry name.</description>
@@ -144,7 +144,7 @@
 	</type>
 
 	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry"
-		package="at.spot.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms.model">
 		<properties>
 			<property name="href" type="String">
 				<description>The href of the link.</description>
@@ -156,15 +156,15 @@
 	</type>
 
 	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent" abstract="true"
-		package="at.spot.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms.model">
 		<properties>
 		</properties>
 	</type>
 
 	<type name="NavigationBar" extends="AbstractNavigationContainer"
-		package="at.spot.itemtype.cms.model" />
+		package="io.spotnext.itemtype.cms.model" />
 
-	<type name="Footer" extends="AbstractNavigationContainer" package="at.spot.itemtype.cms.model" />
+	<type name="Footer" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms.model" />
 
 
 	<relation name="AbstractCmsItem2CmsRestriction">
