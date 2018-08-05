@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<types>
+    <atomicTypes>
+        <entry>
+            <key>Integer</key>
+            <value className="java.lang.Integer" name="Integer"/>
+        </entry>
+        <entry>
+            <key>Locale</key>
+            <value className="java.util.Locale" name="Locale"/>
+        </entry>
+        <entry>
+            <key>Float</key>
+            <value className="java.lang.Float" name="Float"/>
+        </entry>
+        <entry>
+            <key>Long</key>
+            <value className="java.lang.Long" name="Long"/>
+        </entry>
+        <entry>
+            <key>ByteArray</key>
+            <value className="java.lang.Byte" array="true" name="ByteArray"/>
+        </entry>
+        <entry>
+            <key>String</key>
+            <value className="java.lang.String" name="String"/>
+        </entry>
+        <entry>
+            <key>Boolean</key>
+            <value className="java.lang.Boolean" name="Boolean"/>
+        </entry>
+        <entry>
+            <key>Double</key>
+            <value className="java.lang.Double" name="Double"/>
+        </entry>
+        <entry>
+            <key>LocalDate</key>
+            <value className="java.time.LocalDate" name="LocalDate"/>
+        </entry>
+        <entry>
+            <key>BigDecimal</key>
+            <value className="java.math.BigDecimal" name="BigDecimal"/>
+        </entry>
+        <entry>
+            <key>Date</key>
+            <value className="java.util.Date" name="Date"/>
+        </entry>
+    </atomicTypes>
+    <itemTypes>
+        <entry>
+            <key>AbstractCmsItem</key>
+            <value typeCode="abstractcmsitem" extends="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.cms.model" name="AbstractCmsItem">
+                <properties>
+                    <property name="catalog" type="Catalog">
+                        <description>The content catalog of the item.</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="onlyOneRestrictionMustApply" type="Boolean">
+                        <description>
+					f set to true, only one restriction must evaluate to "show cms item" 
+					for the item to be visible.
+				</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>NavigationLinkEntry</key>
+            <value typeCode="navigationlinkentry" extends="AbstractNavigationEntry" package="io.spotnext.itemtype.cms.model" name="NavigationLinkEntry">
+                <properties>
+                    <property name="href" type="String">
+                        <description>The href of the link.</description>
+                    </property>
+                    <property name="target" type="HtmlLinkTarget">
+                        <description>The HTML link target.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Address</key>
+            <value typeCode="address" abstract="true" package="io.spotnext.itemtype.core.user" name="Address">
+                <properties>
+                    <property name="streetName" type="String"/>
+                    <property name="streetNumber" type="String"/>
+                    <property name="city" type="String"/>
+                    <property name="postalCode" type="String"/>
+                    <property name="state" type="String"/>
+                    <property name="country" type="Country"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Configuration</key>
+            <value typeCode="configuration" extends="UniqueIdItem" package="io.spotnext.itemtype.core.configuration" name="Configuration">
+                <description>This type can be used to store a set of configuration entries.</description>
+                <properties>
+                    <property name="description" type="String">
+                        <description>The short description of the configuration's purpose.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractCmsContainerComponent</key>
+            <value typeCode="abstractcmscontainercomponent" extends="AbstractCmsComponent" abstract="true" package="io.spotnext.itemtype.cms.model" name="AbstractCmsContainerComponent">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>Customer</key>
+            <value typeCode="customer" extends="User" package="io.spotnext.itemtype.commerce.customer" name="Customer">
+                <properties>
+                    <property name="firstName" type="String"/>
+                    <property name="lastName" type="String"/>
+                    <property name="birthDay" type="Date"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Product</key>
+            <value typeCode="product" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.catalog" name="Product">
+                <description>The base type Product is used for all purchasable items.</description>
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the product.</description>
+                    </property>
+                    <property name="description" type="LocalizedString">
+                        <description>The localized description of the product.</description>
+                    </property>
+                    <property name="ean" type="String">
+                        <description>The EAN product code.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>CmsComponent</key>
+            <value typeCode="cmscomponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms.model" name="CmsComponent">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>UserAddress</key>
+            <value typeCode="useraddress" extends="Address" package="io.spotnext.itemtype.core.user" name="UserAddress">
+                <properties>
+                    <property name="emailAddress" type="String"/>
+                    <property name="phone" type="String"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Tax</key>
+            <value typeCode="tax" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.store" name="Tax">
+                <properties>
+                    <property name="value" type="BigDecimal"/>
+                    <property name="description" type="LocalizedString"/>
+                    <property name="country" type="Country"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>UserGroup</key>
+            <value typeCode="usergroup" extends="PrincipalGroup" package="io.spotnext.itemtype.core.user" name="UserGroup">
+                <description>The base type all user group-like structures.</description>
+            </value>
+        </entry>
+        <entry>
+            <key>Item</key>
+            <value typeCode="item" abstract="true" package="io.spotnext.core.types" name="Item"/>
+        </entry>
+        <entry>
+            <key>OrderEntry</key>
+            <value typeCode="orderentry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order" name="OrderEntry"/>
+        </entry>
+        <entry>
+            <key>UniqueIdItem</key>
+            <value typeCode="uniqueiditem" persistable="false" abstract="true" package="io.spotnext.itemtype.core" name="UniqueIdItem">
+                <description>The base type of all types that have a unique id property.</description>
+                <properties>
+                    <property name="id" type="String">
+                        <description>The unique id of the object.</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="org.hibernate.validator.constraints.Length">
+<argument name="min" numberValue="3"/>
+                            </validator>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Currency</key>
+            <value typeCode="currency" package="io.spotnext.itemtype.core.internationalization" name="Currency">
+                <description>Represents a currency.</description>
+                <properties>
+                    <property name="isoCode" type="String">
+                        <description>The iso code of the currency.</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="name" type="LocalizedString" localized="true">
+                        <description>The localized name of the currency.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>ContactDetailsType</key>
+            <value typeCode="contactdetailstype" extends="UniqueIdItem" package="io.spotnext.itemtype.core.user" name="ContactDetailsType">
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the contact details type.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>MetaTag</key>
+            <value typeCode="metatag" extends="ConfigEntry" package="io.spotnext.itemtype.cms.model" name="MetaTag"/>
+        </entry>
+        <entry>
+            <key>PriceGroup</key>
+            <value typeCode="pricegroup" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.catalog" name="PriceGroup">
+                <description>This is the container for all categories and products.</description>
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractOrderEntry</key>
+            <value typeCode="abstractorderentry" abstract="true" package="io.spotnext.itemtype.commerce.order" name="AbstractOrderEntry">
+                <properties>
+                    <property name="product" type="Product">
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Order</key>
+            <value typeCode="order" extends="AbstractOrder" package="io.spotnext.itemtype.commerce.order" name="Order"/>
+        </entry>
+        <entry>
+            <key>CartEntry</key>
+            <value typeCode="cartentry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order" name="CartEntry"/>
+        </entry>
+        <entry>
+            <key>ImageMedia</key>
+            <value typeCode="imagemedia" extends="FileMedia" package="io.spotnext.core.model.media" name="ImageMedia">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>Media</key>
+            <value typeCode="media" extends="AbstractMedia" package="io.spotnext.itemtype.core.media" name="Media">
+                <properties>
+                    <property name="data" type="ByteArray">
+                        <description>The content of the data object.</description>
+                        <persistence columnType="BLOB"></persistence>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Catalog</key>
+            <value typeCode="catalog" extends="UniqueIdItem" package="io.spotnext.itemtype.core.catalog" name="Catalog">
+                <description>This is the container for all category and product-related types. It can have multiple catalog version.</description>
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the catalog.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractOrder</key>
+            <value typeCode="abstractorder" extends="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.commerce.order" name="AbstractOrder">
+                <description>The abstract base type for orders and carts.</description>
+                <properties>
+                    <property name="customer" type="Customer">
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>ConfigEntry</key>
+            <value typeCode="configentry" extends="UniqueIdItem" package="io.spotnext.itemtype.core.configuration" name="ConfigEntry">
+                <description>This type can be used to store a configuration entry.</description>
+                <properties>
+                    <property name="stringValue" type="String"/>
+                    <property name="intValue" type="Integer"/>
+                    <property name="longValue" type="Long"/>
+                    <property name="doubleValue" type="Double"/>
+                    <property name="floatValue" type="Float"/>
+                    <property name="description" type="String">
+                        <description>The short description of the configuration entry's purpose.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractNavigationEntry</key>
+            <value typeCode="abstractnavigationentry" extends="CmsComponent" abstract="true" package="io.spotnext.itemtype.cms.model" name="AbstractNavigationEntry">
+                <properties>
+                    <property name="name" type="String">
+                        <description>The navigation entry name.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Price</key>
+            <value typeCode="price" package="io.spotnext.itemtype.commerce.catalog" name="Price">
+                <description>This is the container for all categories and products.</description>
+                <properties>
+                    <property name="productId" type="String">
+                        <description>The product id the price is used for.</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="userGroup" type="UserGroup">
+                        <description>The assigned user group.</description>
+                    </property>
+                    <property name="user" type="User">
+                        <description>The assigned user.</description>
+                    </property>
+                    <property name="price" type="BigDecimal">
+                        <description>The price value.</description>
+                    </property>
+                    <property name="currency" type="Currency">
+                        <description>The currency of the price.</description>
+                    </property>
+                    <property name="net" type="Boolean">
+                        <description>Defines if the price is net or gross.</description>
+                        <defaultValue>true</defaultValue>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Country</key>
+            <value typeCode="country" package="io.spotnext.itemtype.core.internationalization" name="Country">
+                <properties>
+                    <property name="isoCode" type="String">
+                        <description>
+                    The ISO-2 code of the country.
+                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
+                </description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                            <validator javaClass="org.hibernate.validator.constraints.Length">
+<argument name="min" numberValue="2"/>
+<argument name="max" numberValue="2"/>
+                            </validator>
+                        </validators>
+                    </property>
+                    <property name="iso3Code" type="String">
+                        <description>
+				The ISO-3 code of the country.
+				@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
+			</description>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                            <validator javaClass="org.hibernate.validator.constraints.Length">
+<argument name="min" numberValue="3"/>
+<argument name="max" numberValue="3"/>
+                            </validator>
+                        </validators>
+                    </property>
+                    <property name="shortName" type="LocalizedString" localized="true">
+                        <description>The short name of the country, eg. "Austria".</description>
+                    </property>
+                    <property name="longName" type="LocalizedString" localized="true">
+                        <description>The long name of the country, eg. "Republic of Austria".</description>
+                    </property>
+                    <property name="phoneCountryCode" type="String">
+                        <description>The phone country code, eg. +43 or 0043 for Austria</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractMedia</key>
+            <value typeCode="abstractmedia" extends="CatalogItem" abstract="true" package="io.spotnext.itemtype.core.media" name="AbstractMedia">
+                <properties>
+                    <property name="mimeType" type="String">
+                        <description>The mime type of the content.</description>
+                    </property>
+                    <property name="encoding" type="String">
+                        <description>The encoding of the content, eg. "UTF-8" or "base64".</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Stock</key>
+            <value typeCode="stock" package="io.spotnext.itemtype.commerce.store" name="Stock">
+                <properties>
+                    <property name="productId" type="String">
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="value" type="Integer">
+                        <description>The actual stock level.</description>
+                        <defaultValue>0</defaultValue>
+                    </property>
+                    <property name="reserved" type="Integer">
+                        <description>The reserved amount of stock.</description>
+                        <defaultValue>0</defaultValue>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>ContentSlot</key>
+            <value typeCode="contentslot" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model" name="ContentSlot">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>User</key>
+            <value typeCode="user" extends="Principal" package="io.spotnext.itemtype.core.user" name="User">
+                <description>Represents a user.</description>
+                <properties>
+                    <property name="emailAddress" type="String">
+                        <description>The main email address of the user.</description>
+                    </property>
+                    <property name="password" type="String">
+                        <description>The login password, can be encrypted.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Category</key>
+            <value typeCode="category" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.catalog" name="Category">
+                <description>Categories are used to group products.</description>
+                <properties>
+                    <property name="name" type="String"/>
+                    <property name="description" type="LocalizedString"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>LocalizedString</key>
+            <value typeCode="localizedstring" package="io.spotnext.itemtype.core.internationalization" name="LocalizedString">
+                <description>This type can be used to store localized strings.</description>
+                <interfaces>
+                    <interface javaClass="io.spotnext.core.types.Localizable">
+                        <genericType value="String"/>
+                    </interface>
+                </interfaces>
+                <properties>
+                    <property name="en" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="en_GB" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="de" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="de_DE" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="fr" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="fr_FR" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="es" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="es_ES" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="it" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="it_IT" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="ja" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                    <property name="ja_JP" type="String">
+                        <modifiers readable="false" writable="false"/>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>FileMedia</key>
+            <value typeCode="filemedia" extends="Media" package="io.spotnext.itemtype.core.media" name="FileMedia">
+                <properties>
+                    <property name="dataPath" type="String">
+                        <description>The file path to the data object.</description>
+                    </property>
+                    <property name="data" type="ByteArray">
+                        <description>The content of the data object (read from the filesystem).</description>
+                        <accessors valueProvider="mediaDataValueProvider"/>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>NavigationBar</key>
+            <value typeCode="navigationbar" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms.model" name="NavigationBar"/>
+        </entry>
+        <entry>
+            <key>Language</key>
+            <value typeCode="language" package="io.spotnext.itemtype.core.internationalization" name="Language">
+                <description>This represents a language object and it's locale.</description>
+                <properties>
+                    <property name="iso3Code" type="String">
+                        <description>
+                    The ISO-3 code of the language.
+                    @see https://en.wikipedia.org/wiki/ISO_639-3.
+                </description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                            <validator javaClass="org.hibernate.validator.constraints.Length">
+<argument name="min" numberValue="3"/>
+<argument name="max" numberValue="3"/>
+                            </validator>
+                        </validators>
+                    </property>
+                    <property name="isoCode" type="String">
+                        <description>
+                    The ISO-3 code of the language.
+                    @see https://en.wikipedia.org/wiki/ISO_639-1.
+                </description>
+                        <validators>
+                            <validator javaClass="org.hibernate.validator.constraints.Length">
+<argument name="max" numberValue="2"/>
+                            </validator>
+                        </validators>
+                    </property>
+                    <property name="name" type="LocalizedString" localized="true">
+                        <description>The international name of the language.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>CatalogVersion</key>
+            <value typeCode="catalogversion" extends="UniqueIdItem" package="io.spotnext.itemtype.core.catalog" name="CatalogVersion">
+                <description>A catalog version holds catalogable types that can be synchronized into another catalog version.</description>
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the catalog version.</description>
+                    </property>
+                    <property name="synchronizationTarget" type="CatalogVersion">
+                        <description>The target catalog version to which all containing items will be synchronized..</description>
+                    </property>
+                    <property name="synchronizationLanguages" type="LanguageList">
+                        <description>The languages that will be synchronized .</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>FutureStock</key>
+            <value typeCode="futurestock" extends="Stock" package="io.spotnext.itemtype.commerce.store" name="FutureStock">
+                <properties>
+                    <property name="availableAt" type="String">
+                        <description>Defines a future stock and when it will be available.</description>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractNavigationContainer</key>
+            <value typeCode="abstractnavigationcontainer" extends="AbstractCmsContainerComponent" abstract="true" package="io.spotnext.itemtype.cms.model" name="AbstractNavigationContainer">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>Cart</key>
+            <value typeCode="cart" extends="AbstractOrder" package="io.spotnext.itemtype.commerce.order" name="Cart"/>
+        </entry>
+        <entry>
+            <key>CmsRestriction</key>
+            <value typeCode="cmsrestriction" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model" name="CmsRestriction">
+                <properties>
+                    <property name="evaluator" type="String">
+                        <description>The spring bean id of the corresponding evaluator implementation.</description>
+                    </property>
+                    <property name="evaluatorScript" type="String">
+                        <description>The beanshell script that evaluates the cms item visibility.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>CmsPage</key>
+            <value typeCode="cmspage" extends="CmsPageTemplate" package="io.spotnext.itemtype.cms.model" name="CmsPage">
+                <properties>
+                    <property name="urlMatches" type="StringList">
+                        <description>Holds the regex string to determine which URL should
+						be handler by this page.</description>
+                    </property>
+                    <property name="template" type="CmsPageTemplate"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>LocalizationValue</key>
+            <value typeCode="localizationvalue" extends="UniqueIdItem" package="io.spotnext.itemtype.core.internationalization" name="LocalizationValue">
+                <description>This type can be used to store localized values different languages/locales.</description>
+                <properties>
+                    <property name="locale" type="Locale">
+                        <description>
+				The locale of the translation key.
+			</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="value" type="String">
+                        <description>The localized value of the key.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>CatalogItem</key>
+            <value typeCode="catalogitem" persistable="false" extends="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.core" name="CatalogItem">
+                <description>The base type all types that are catalogable.</description>
+                <properties>
+                    <property name="catalogVersion" type="CatalogVersion">
+                        <description>The catalog version this item belongs to.</description>
+                        <modifiers unique="true"/>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>BaseStore</key>
+            <value typeCode="basestore" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.store" name="BaseStore">
+                <description>This holds the base configuration for a store.</description>
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the base store.</description>
+                    </property>
+                    <property name="urlMatchers" type="StringList">
+                        <description>These regex strings are used to match browser url to the base store.</description>
+                    </property>
+                    <property name="countries" type="CountryList">
+                        <description>The countries that are assigned to this base store.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>CmsPageTemplate</key>
+            <value typeCode="cmspagetemplate" extends="AbstractCmsContainerComponent" package="io.spotnext.itemtype.cms.model" name="CmsPageTemplate">
+                <properties>
+                    <property name="title" type="LocalizedString"/>
+                    <property name="favIconPath" type="LocalizedString"/>
+                    <property name="favIcon" type="ImageMedia"/>
+                    <property name="metaTags" type="StringList"/>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Footer</key>
+            <value typeCode="footer" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms.model" name="Footer"/>
+        </entry>
+        <entry>
+            <key>PrincipalGroup</key>
+            <value typeCode="principalgroup" extends="Principal" abstract="true" package="io.spotnext.itemtype.core.user" name="PrincipalGroup">
+                <description>The base type all principal group-like structures.</description>
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>AddressType</key>
+            <value typeCode="addresstype" extends="UniqueIdItem" package="io.spotnext.itemtype.core.user" name="AddressType">
+                <properties>
+                    <property name="name" type="String">
+                        <description>The name of the address type.</description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>MediaContainer</key>
+            <value typeCode="mediacontainer" extends="CatalogItem" package="io.spotnext.itemtype.core.media" name="MediaContainer">
+                <properties/>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractCmsComponent</key>
+            <value typeCode="abstractcmscomponent" extends="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms.model" name="AbstractCmsComponent">
+                <properties>
+                    <property name="renderContextProvider" type="String">
+                        <description>
+					The spring bean id of the context provider implementation.
+				</description>
+                    </property>
+                    <property name="renderContextPreparationScript" type="String">
+                        <description>
+				Beanshell code that is executed before the page rendering.
+				It can be used to prepare the render context variables.
+			</description>
+                    </property>
+                    <property name="content" type="String"/>
+                    <property name="renderEngine" type="TemplateRenderEngine">
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+        <entry>
+            <key>Principal</key>
+            <value typeCode="principal" extends="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.core.user" name="Principal">
+                <description>The base type all user related item types.</description>
+                <properties>
+                    <property name="shortName" type="String">
+                        <description>The short name identifying the principal object.
+                </description>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+    </itemTypes>
+    <collectionTypes>
+        <entry>
+            <key>StringList</key>
+            <value elementType="String" name="StringList"/>
+        </entry>
+        <entry>
+            <key>CountryList</key>
+            <value elementType="Country" name="CountryList"/>
+        </entry>
+        <entry>
+            <key>LanguageList</key>
+            <value elementType="Language" name="LanguageList"/>
+        </entry>
+    </collectionTypes>
+    <mapTypes/>
+    <enumTypes>
+        <entry>
+            <key>OrderStatus</key>
+            <value package="io.spotnext.itemtype.commerce.enumeration" name="OrderStatus">
+                <description>The render engine used to render cms items.</description>
+                <value code="OPEN"/>
+                <value code="APPROVAL_PENDING"/>
+                <value code="APPROVED"/>
+                <value code="APPROVAL_REJECTED"/>
+                <value code="CANCELLED"/>
+                <value code="UNKNOWN"/>
+            </value>
+        </entry>
+        <entry>
+            <key>TemplateRenderEngine</key>
+            <value package="io.spotnext.itemtype.cms.enumeration" name="TemplateRenderEngine">
+                <description>The render engine used to render cms items.</description>
+                <value code="VELOCITY"/>
+                <value code="FREEMARKER"/>
+                <value code="JSP"/>
+            </value>
+        </entry>
+        <entry>
+            <key>HtmlLinkTarget</key>
+            <value package="io.spotnext.itemtype.cms.enumeration" name="HtmlLinkTarget">
+                <description>Represents an HTML link target used.</description>
+                <value code="BLANK"/>
+                <value code="SELF"/>
+                <value code="PARENT"/>
+                <value code="TOP"/>
+            </value>
+        </entry>
+        <entry>
+            <key>Orientation</key>
+            <value package="io.spotnext.itemtype.cms.enumeration" name="Orientation">
+                <description>Defines the orientation, eg. for layouts.</description>
+                <value code="TOP"/>
+                <value code="BOTTOM"/>
+                <value code="LEFT"/>
+                <value code="RIGHT"/>
+            </value>
+        </entry>
+        <entry>
+            <key>ApprovalStatus</key>
+            <value package="io.spotnext.itemtype.core.enumeration" name="ApprovalStatus">
+                <description>The approval status, eg. of products or CMS items.</description>
+                <value code="APPROVED"/>
+                <value code="UNAPPROVED"/>
+            </value>
+        </entry>
+        <entry>
+            <key>ImportFormat</key>
+            <value package="io.spotnext.itemtype.core.enumeration" name="ImportFormat">
+                <description>Formats that are supported for import of data.</description>
+                <value code="ImpEx"/>
+                <value code="JSON"/>
+                <value code="XML"/>
+            </value>
+        </entry>
+    </enumTypes>
+    <beanTypes>
+        <entry>
+            <key>ImportConfiguration</key>
+            <value package="io.spotnext.itemtype.core.beans" name="ImportConfiguration">
+                <description>Holds import configuration and parameters.</description>
+                <properties>
+                    <property name="scriptIdentifier" type="String">
+                        <description>Holds the filename or abstract identifier of the import data</description>
+                        <validators>
+                            <validator javaClass="javax.validation.constraints.NotNull"/>
+                        </validators>
+                    </property>
+                    <property name="ignoreErrors" type="Boolean">
+                        <description>If true import errors are ignored are ignored and processing is continued</description>
+                        <defaultValue>false</defaultValue>
+                    </property>
+                </properties>
+            </value>
+        </entry>
+    </beanTypes>
+    <relationTypes>
+        <entry>
+            <key>PrincipalGroup2Principal</key>
+            <value name="PrincipalGroup2Principal">
+                <description>The relation between principal groups and principals</description>
+                <source itemType="PrincipalGroup" mappedBy="groups" cardinality="many" collectionType="List">
+                    <description>The principal groups assigned to the principal.</description>
+                </source>
+                <target itemType="Principal" mappedBy="members" cardinality="many" collectionType="List">
+                    <description>The members of the group.</description>
+                </target>
+            </value>
+        </entry>
+        <entry>
+            <key>Address2AddressType</key>
+            <value name="Address2AddressType">
+                <description>Defines a address ownership relation.</description>
+                <source itemType="Address" cardinality="many"/>
+                <target itemType="AddressType" mappedBy="type" cardinality="one"/>
+            </value>
+        </entry>
+        <entry>
+            <key>ContentSlot2CmsComponent</key>
+            <value name="ContentSlot2CmsComponent">
+                <source itemType="ContentSlot" mappedBy="contentSlot" cardinality="many"/>
+                <target itemType="CmsComponent" mappedBy="components" cardinality="many"/>
+            </value>
+        </entry>
+        <entry>
+            <key>Catalog2CatalogVersion</key>
+            <value name="Catalog2CatalogVersion">
+                <source itemType="Catalog" mappedBy="catalog" cardinality="one">
+                    <description>The catalog this catalog version belongs to.</description>
+                    <modifiers unique="true"/>
+                </source>
+                <target itemType="CatalogVersion" mappedBy="versions" cardinality="many" collectionType="List">
+                    <description>The catalog version of this catalog.</description>
+                </target>
+            </value>
+        </entry>
+        <entry>
+            <key>Country2Language</key>
+            <value name="Country2Language">
+                <description>The languages available for that country.</description>
+                <source itemType="Country" mappedBy="countries" cardinality="many"/>
+                <target itemType="Language" mappedBy="languages" cardinality="many"/>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractOrder2AbstractOrderEntry</key>
+            <value name="AbstractOrder2AbstractOrderEntry">
+                <description>The categories the product is referenced by.</description>
+                <source itemType="AbstractOrder" mappedBy="order" cardinality="one"/>
+                <target itemType="AbstractOrderEntry" mappedBy="entries" cardinality="many">
+                    <description>The order entries.</description>
+                </target>
+            </value>
+        </entry>
+        <entry>
+            <key>Category2Product</key>
+            <value name="Category2Product">
+                <description>The categories the product is referenced by.</description>
+                <source itemType="Category" mappedBy="categories" cardinality="many"/>
+                <target itemType="Product" mappedBy="products" cardinality="many">
+                    <description>The products in this catalog.</description>
+                </target>
+            </value>
+        </entry>
+        <entry>
+            <key>User2Address</key>
+            <value name="User2Address">
+                <description>Defines a address ownership relation.</description>
+                <source itemType="User" mappedBy="owner" cardinality="one"/>
+                <target itemType="UserAddress" mappedBy="addresses" cardinality="many"/>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractCmsItem2CmsRestriction</key>
+            <value name="AbstractCmsItem2CmsRestriction">
+                <source itemType="AbstractCmsItem" mappedBy="cmsItem" cardinality="one"/>
+                <target itemType="CmsRestriction" mappedBy="cmsRestrictions" cardinality="many">
+                    <description>The restrictions evaluate if the current cms item should be rendered.</description>
+                </target>
+            </value>
+        </entry>
+        <entry>
+            <key>AbstractCmsContainerComponent2AbstractCmsComponent</key>
+            <value name="AbstractCmsContainerComponent2AbstractCmsComponent">
+                <source itemType="AbstractCmsContainerComponent" mappedBy="container" cardinality="many"/>
+                <target itemType="AbstractCmsComponent" mappedBy="components" cardinality="many"/>
+            </value>
+        </entry>
+        <entry>
+            <key>MediaContainer2Media</key>
+            <value name="MediaContainer2Media">
+                <source itemType="MediaContainer" mappedBy="container" cardinality="one"/>
+                <target itemType="Media" mappedBy="medias" cardinality="many"/>
+            </value>
+        </entry>
+        <entry>
+            <key>Configuration2ConfigEntry</key>
+            <value name="Configuration2ConfigEntry">
+                <description>The config entries referenced by this configuration.</description>
+                <source itemType="Configuration" mappedBy="configuration" cardinality="one"/>
+                <target itemType="ConfigEntry" mappedBy="entries" cardinality="many"/>
+            </value>
+        </entry>
+    </relationTypes>
+</types>
