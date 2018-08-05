@@ -3,7 +3,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>at.spot</groupId>
+	<groupId>io.spotnext</groupId>
 	<artifactId>spot-framework</artifactId>
 	<version>1.0-beta2-SNAPSHOT</version>
 	<name>spOt framework</name>
@@ -125,8 +125,8 @@
 		<gpg.passphrase>${env.GPG_PWD}</gpg.passphrase>
 
 		<!-- nexus repository -->
-		<nexus.snapshot.host>http://nexus.spot-next.io:8081/repository/spot-snapshot/</nexus.snapshot.host>
-		<nexus.release.host>http://nexus.spot-next.io:8081/repository/spot-release/</nexus.release.host>
+		<nexus.snapshot.host>http://nexus.spot-next.io/repository/spot-snapshot/</nexus.snapshot.host>
+		<nexus.release.host>http://nexus.spot-next.io/repository/spot-release/</nexus.release.host>
 	</properties>
 
 	<distributionManagement>
@@ -184,7 +184,7 @@
 			<plugins>
 				<!-- RESOURCE GENERATION -->
 				<plugin>
-					<groupId>at.spot</groupId>
+					<groupId>io.spotnext</groupId>
 					<artifactId>spot-maven-plugin</artifactId>
 					<version>1.0-beta2-SNAPSHOT</version>
 					<executions>
@@ -205,7 +205,7 @@
 								<includeJars>false</includeJars>
 								<classFileTransformers>
 									<classFileTransformer>
-										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
 									</classFileTransformer>
 								</classFileTransformers>
 							</configuration>
@@ -220,7 +220,7 @@
 								<includeJars>false</includeJars>
 								<classFileTransformers>
 									<classFileTransformer>
-										at.spot.core.infrastructure.instrumentation.JpaEntityClassTransformer
+										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
 									</classFileTransformer>
 								</classFileTransformers>
 							</configuration>
@@ -491,6 +491,13 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>1.6</version>
+					<configuration>
+						<!-- This is necessary for gpg to not try to use the pinentry programs -->
+						<gpgArguments>
+							<arg>--pinentry-mode</arg>
+							<arg>loopback</arg>
+						</gpgArguments>
+					</configuration>
 					<executions>
 						<execution>
 							<id>sign-artifacts</id>
@@ -514,7 +521,7 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>at.spot</groupId>
+										<groupId>io.spotnext</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
 											[1.0-SNAPSHOT,)
@@ -529,7 +536,7 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>at.spot</groupId>
+										<groupId>io.spotnext</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
 											[1.0-SNAPSHOT,)

@@ -25,8 +25,8 @@
 		</rollingPolicy>
 	</appender>
 
-	<logger name="at.spot" level="INFO" />
-	<logger name="at.spot.core.persistence.instrumentation" level="WARN" />
+	<logger name="io.spotnext" level="INFO" />
+	<logger name="io.spotnext.core.persistence.instrumentation" level="WARN" />
 
 	<!-- framework logs -->
 	<logger name="org.hibernate" level="WARN" />

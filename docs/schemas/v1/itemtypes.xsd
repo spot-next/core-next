@@ -225,7 +225,7 @@
 				<xs:documentation>
 					Specifies if additional localized getters and
 					setters should be created. This is only valid for types that
-					implement the interface 'at.spot.core.types.Localizable'
+					implement the interface 'io.spotnext.core.types.Localizable'
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

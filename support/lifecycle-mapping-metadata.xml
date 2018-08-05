@@ -3,7 +3,7 @@
 	<pluginExecutions>
 		<pluginExecution>
 			<pluginExecutionFilter>
-				<groupId>at.spot</groupId>
+				<groupId>io.spotnext</groupId>
 				<artifactId>spot-core-maven-plugins</artifactId>
 				<versionRange>1.0-SNAPSHOT</versionRange>
 				<goals>
