@@ -25,7 +25,7 @@ public class BuildInfoIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testGetBuildInfoFromRegistry() {
-		BuildInfo buildInfo = Registry.getBuildInfos();
+		final BuildInfo buildInfo = Registry.getBuildInfos();
 
 		assertNotNull(buildInfo);
 		assertNotNull(buildInfo.getBranch());

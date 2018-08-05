@@ -101,7 +101,7 @@ public class TransformTypesMojo extends AbstractMojo {
 						}
 					}
 
-					if (modifiedByteCode != null && modifiedByteCode != byteCode) {
+					if (modifiedByteCode != null && modifiedByteCode.length > 0 && modifiedByteCode != byteCode) {
 						OutputStream fileWriter = null;
 
 						try {

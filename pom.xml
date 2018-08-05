@@ -270,7 +270,6 @@
 					</configuration>
 					<executions>
 						<execution>
-							<phase>process-sources</phase>
 							<goals>
 								<!-- IMPORTANT -->
 								<goal>compile</goal>

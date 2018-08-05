@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -50,6 +50,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected final List<String> classPaths = new ArrayList<>();
 
 	@Override
+	@SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "needed according to the java specs")
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
@@ -63,36 +64,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 			// why is javassist.DirClassPath not public?
 			for (final String classPath : classPaths) {
-				pool.insertClassPath(new ClassPath() {
-
-					@Override
-					public InputStream openClassfile(final String classname) {
-						try {
-							final char sep = File.separatorChar;
-							final String filename = classPath + sep + classname.replace('.', sep) + ".class";
-							return new FileInputStream(filename);
-						} catch (final FileNotFoundException e) {
-						} catch (final SecurityException e) {
-						}
-						return null;
-					}
-
-					@Override
-					public URL find(final String classname) {
-						final char sep = File.separatorChar;
-						final String filename = classPath + sep + classname.replace('.', sep) + ".class";
-						final File f = new File(filename);
-						if (f.exists()) {
-							try {
-								return f.getCanonicalFile().toURI().toURL();
-							} catch (final MalformedURLException e) {
-							} catch (final IOException e) {
-							}
-						}
-
-						return null;
-					}
-				});
+				pool.insertClassPath(new FileClassPath(classPath));
 			}
 
 			CtClass clazz = null;
@@ -131,7 +103,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 			LOG.debug("Ignoring class with empty name");
 		}
 
-		return new byte[0];
+		return null;
 	}
 
 	protected boolean isValidClass(final String className) {
@@ -453,5 +425,41 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 	public List<String> getClassPaths() {
 		return classPaths;
+	}
+
+	public static class FileClassPath implements ClassPath {
+		private final String classPath;
+
+		public FileClassPath(final String classPath) {
+			this.classPath = classPath;
+		}
+
+		@Override
+		public InputStream openClassfile(final String classname) {
+			try {
+				final char sep = File.separatorChar;
+				final String filename = classPath + sep + classname.replace('.', sep) + ".class";
+				return new FileInputStream(filename);
+			} catch (final FileNotFoundException | SecurityException e) {
+				//
+			}
+			return null;
+		}
+
+		@Override
+		public URL find(final String classname) {
+			final char sep = File.separatorChar;
+			final String filename = classPath + sep + classname.replace('.', sep) + ".class";
+			final File f = new File(filename);
+			if (f.exists()) {
+				try {
+					return f.getCanonicalFile().toURI().toURL();
+				} catch (final IOException e) {
+					//
+				}
+			}
+
+			return null;
+		}
 	}
 }

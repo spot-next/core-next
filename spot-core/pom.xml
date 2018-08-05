@@ -85,6 +85,11 @@
 				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
 			<!-- ECLIPSE SETTINGS -->
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
