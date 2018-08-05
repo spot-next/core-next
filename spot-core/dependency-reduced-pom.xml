@@ -118,11 +118,11 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <nexus.release.host>http://5.249.148.46:8081/repository/spot-release/</nexus.release.host>
+    <nexus.release.host>http://nexus.spot-next.io:8081/repository/spot-release/</nexus.release.host>
     <junit.version>4.10</junit.version>
     <java.version>1.8</java.version>
     <spring.shell.version>1.2.0.RELEASE</spring.shell.version>
-    <nexus.snapshot.host>http://5.249.148.46:8081/repository/spot-snapshot/</nexus.snapshot.host>
+    <nexus.snapshot.host>http://nexus.spot-next.io:8081/repository/spot-snapshot/</nexus.snapshot.host>
     <aspectj.version>1.8.9</aspectj.version>
     <jar.mainclass>org.springframework.shell.Bootstrap</jar.mainclass>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
