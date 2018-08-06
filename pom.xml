@@ -145,10 +145,14 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-			<uniqueVersion>true</uniqueVersion>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		<!-- <snapshotRepository> -->
+		<!-- <id>spot-nexus-snapshot</id> -->
+		<!-- <url>${nexus.snapshot.host}</url> -->
+		<!-- <uniqueVersion>true</uniqueVersion> -->
+		<!-- </snapshotRepository> -->
 	</distributionManagement>
 
 	<build>
