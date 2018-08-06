@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-beta2-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<properties>
@@ -68,12 +68,12 @@
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-model-infrastructure</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 
 		<!-- spring shell -->
