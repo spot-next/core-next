@@ -34,13 +34,13 @@ script: "mvn clean verify"
 
 deploy:
   - provider: script
-    script: "mvn -Dprofile=release -Dmaven.test.skip=true clean install deploy"
+    script: "mvn -Dtravis=true -Dprofile=release -Dmaven.test.skip=true clean install deploy"
     skip_cleanup: true
     on:
       branch: develop
       tags: false
   - provider: script
-    script: "mvn -Dprofile=release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
+    script: "mvn -Dtravis=true -Dprofile=release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
     skip_cleanup: true
     on:
       branch: master
