@@ -11,25 +11,32 @@ cache:
   - "$HOME/.cache"
 
 before_install:
-      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+#  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
-addons:
-  coverity_scan:
-
-    project:
-      name: "mojo2012/spot-framework"
-      description: "Build submitted via Travis CI"
-    notification_email: meister.fuchs@gmail.com
-    build_command_prepend: "mvn clean"
-    build_command:   "mvn -DskipTests=true compile"
-    branch_pattern: master
+#addons:
+#  coverity_scan:
+#
+#    project:
+#      name: "mojo2012/spot-framework"
+#      description: "Build submitted via Travis CI"
+#    notification_email: meister.fuchs@gmail.com
+#    build_command_prepend: "mvn clean"
+#    build_command:   "mvn -DskipTests=true compile"
+#    branch_pattern: master
 
 deploy:
-  provider: script
-  script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Dprofile=release clean deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: script
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Dprofile=release clean deploy"
+    skip_cleanup: true
+    on:
+      branch: develop
+      tags: false
+  - provider: script
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Dprofile=release clean deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
+    skip_cleanup: true
+    on:
+      branch: master
+      tags: true
 
 notifications:
   email:
