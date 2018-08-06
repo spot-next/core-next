@@ -7,7 +7,7 @@
 	<name>${project.groupId}:${project.artifactId}</name>
 
 	<parent>
-		<groupId>io.spotnext</groupId>
+		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
 		<version>1.0-beta2-SNAPSHOT</version>
 	</parent>

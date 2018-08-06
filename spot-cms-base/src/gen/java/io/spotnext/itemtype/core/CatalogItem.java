@@ -37,17 +37,9 @@ public abstract class CatalogItem extends UniqueIdItem {
     /**
      * The catalog version this item belongs to.
      */
-    @NotNull
     @Property(readable = true, unique = true, writable = true)
+    @NotNull
     protected CatalogVersion catalogVersion;
-
-    /**
-     * The catalog version this item belongs to.
-     */
-    @Accessor(propertyName = "catalogVersion", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public CatalogVersion getCatalogVersion() {
-        return this.catalogVersion;
-    }
 
     /**
      * The catalog version this item belongs to.
@@ -55,5 +47,13 @@ public abstract class CatalogItem extends UniqueIdItem {
     @Accessor(propertyName = "catalogVersion", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCatalogVersion(CatalogVersion catalogVersion) {
         this.catalogVersion = catalogVersion;
+    }
+
+    /**
+     * The catalog version this item belongs to.
+     */
+    @Accessor(propertyName = "catalogVersion", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public CatalogVersion getCatalogVersion() {
+        return this.catalogVersion;
     }
 }

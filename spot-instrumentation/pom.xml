@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>io.spotnext</groupId>
+		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
 		<version>1.0-beta2-SNAPSHOT</version>
 	</parent>
@@ -55,8 +55,8 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Premain-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
-							<Agent-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
+							<Premain-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
+							<Agent-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
 							<Can-Redefine-Classes>true</Can-Redefine-Classes>
 							<Can-Retransform-Classes>true</Can-Retransform-Classes>
 						</manifestEntries>

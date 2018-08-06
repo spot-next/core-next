@@ -39,12 +39,9 @@ public class CmsPage extends CmsPageTemplate {
     @Property(readable = true, writable = true)
     protected CmsPageTemplate template;
 
-    /**
-     * Holds the regex string to determine which URL should<br>                                                be handler by this page.
-     */
-    @Accessor(propertyName = "urlMatches", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<String> getUrlMatches() {
-        return this.urlMatches;
+    @Accessor(propertyName = "template", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setTemplate(CmsPageTemplate template) {
+        this.template = template;
     }
 
     @Accessor(propertyName = "template", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -52,9 +49,12 @@ public class CmsPage extends CmsPageTemplate {
         return this.template;
     }
 
-    @Accessor(propertyName = "template", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setTemplate(CmsPageTemplate template) {
-        this.template = template;
+    /**
+     * Holds the regex string to determine which URL should<br>                                                be handler by this page.
+     */
+    @Accessor(propertyName = "urlMatches", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<String> getUrlMatches() {
+        return this.urlMatches;
     }
 
     /**

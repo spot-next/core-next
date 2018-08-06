@@ -51,14 +51,6 @@ public class Configuration extends UniqueIdItem {
     public Set<ConfigEntry> entries;
 
     /**
-     * The config entries referenced by this configuration.
-     */
-    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<ConfigEntry> getEntries() {
-        return ItemCollectionFactory.wrap(this, "entries", this.entries);
-    }
-
-    /**
      * The short description of the configuration's purpose.
      */
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -67,18 +59,26 @@ public class Configuration extends UniqueIdItem {
     }
 
     /**
-     * The config entries referenced by this configuration.
-     */
-    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEntries(Set<ConfigEntry> entries) {
-        this.entries = entries;
-    }
-
-    /**
      * The short description of the configuration's purpose.
      */
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * The config entries referenced by this configuration.
+     */
+    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<ConfigEntry> getEntries() {
+        return ItemCollectionFactory.wrap(this, "entries", this.entries);
+    }
+
+    /**
+     * The config entries referenced by this configuration.
+     */
+    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEntries(Set<ConfigEntry> entries) {
+        this.entries = entries;
     }
 }

@@ -61,14 +61,6 @@ public class Configuration extends UniqueIdItem {
     /**
      * The short description of the configuration's purpose.
      */
-    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * The short description of the configuration's purpose.
-     */
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getDescription() {
         return this.description;
@@ -80,5 +72,13 @@ public class Configuration extends UniqueIdItem {
     @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Set<ConfigEntry> getEntries() {
         return ItemCollectionFactory.wrap(this, "entries", this.entries);
+    }
+
+    /**
+     * The short description of the configuration's purpose.
+     */
+    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

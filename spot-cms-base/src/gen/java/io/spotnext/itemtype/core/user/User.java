@@ -58,6 +58,14 @@ public class User extends Principal {
     public Set<UserAddress> addresses;
 
     /**
+     * Defines a address ownership relation.
+     */
+    @Accessor(propertyName = "addresses", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setAddresses(Set<UserAddress> addresses) {
+        this.addresses = addresses;
+    }
+
+    /**
      * The login password, can be encrypted.
      */
     @Accessor(propertyName = "password", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -66,19 +74,11 @@ public class User extends Principal {
     }
 
     /**
-     * The login password, can be encrypted.
-     */
-    @Accessor(propertyName = "password", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
      * Defines a address ownership relation.
      */
-    @Accessor(propertyName = "addresses", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setAddresses(Set<UserAddress> addresses) {
-        this.addresses = addresses;
+    @Accessor(propertyName = "addresses", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<UserAddress> getAddresses() {
+        return ItemCollectionFactory.wrap(this, "addresses", this.addresses);
     }
 
     /**
@@ -98,10 +98,10 @@ public class User extends Principal {
     }
 
     /**
-     * Defines a address ownership relation.
+     * The login password, can be encrypted.
      */
-    @Accessor(propertyName = "addresses", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<UserAddress> getAddresses() {
-        return ItemCollectionFactory.wrap(this, "addresses", this.addresses);
+    @Accessor(propertyName = "password", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

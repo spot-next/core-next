@@ -37,8 +37,8 @@ public abstract class PrincipalGroup extends Principal {
     /**
      * The relation between principal groups and principals
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.List, relationName = "PrincipalGroup2Principal", mappedTo = "groups", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<Principal> members;
 
     /**

@@ -98,43 +98,11 @@ public class Price extends Item {
     }
 
     /**
-     * The product id the price is used for.
-     */
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    /**
-     * The product id the price is used for.
-     */
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getProductId() {
-        return this.productId;
-    }
-
-    /**
-     * Defines if the price is net or gross.
-     */
-    @Accessor(propertyName = "net", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setNet(Boolean net) {
-        this.net = net;
-    }
-
-    /**
      * The assigned user group.
      */
     @Accessor(propertyName = "userGroup", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
-    }
-
-    /**
-     * The assigned user.
-     */
-    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public User getUser() {
-        return this.user;
     }
 
     /**
@@ -154,14 +122,6 @@ public class Price extends Item {
     }
 
     /**
-     * The assigned user.
-     */
-    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
      * The price value.
      */
     @Accessor(propertyName = "price", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -170,10 +130,50 @@ public class Price extends Item {
     }
 
     /**
+     * The assigned user.
+     */
+    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
+     * Defines if the price is net or gross.
+     */
+    @Accessor(propertyName = "net", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setNet(Boolean net) {
+        this.net = net;
+    }
+
+    /**
      * Defines if the price is net or gross.
      */
     @Accessor(propertyName = "net", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Boolean getNet() {
         return this.net;
+    }
+
+    /**
+     * The product id the price is used for.
+     */
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    /**
+     * The product id the price is used for.
+     */
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getProductId() {
+        return this.productId;
+    }
+
+    /**
+     * The assigned user.
+     */
+    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public User getUser() {
+        return this.user;
     }
 }

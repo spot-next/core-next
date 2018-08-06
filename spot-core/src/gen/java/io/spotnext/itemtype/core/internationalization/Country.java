@@ -46,16 +46,16 @@ public class Country extends Item {
     /**
      * The ISO-2 code of the country.<br>                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
      */
-    @Property(readable = true, unique = true, writable = true)
     @Length(min = 2, max = 2)
+    @Property(readable = true, unique = true, writable = true)
     @NotNull
     protected String isoCode;
 
     /**
      * The ISO-3 code of the country.<br>                                @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
      */
-    @NotNull
     @Property(readable = true, writable = true)
+    @NotNull
     @Length(min = 3, max = 3)
     protected String iso3Code;
 
@@ -93,11 +93,67 @@ public class Country extends Item {
     }
 
     /**
+     * The phone country code, eg. +43 or 0043 for Austria
+     */
+    @Accessor(propertyName = "phoneCountryCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setPhoneCountryCode(String phoneCountryCode) {
+        this.phoneCountryCode = phoneCountryCode;
+    }
+
+    /**
      * The short name of the country, eg. "Austria".
      */
     @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getShortName(Locale locale) {
         return this.shortName.get(locale);
+    }
+
+    /**
+     * The ISO-3 code of the country.<br>                                @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
+     */
+    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getIso3Code() {
+        return this.iso3Code;
+    }
+
+    /**
+     * The ISO-2 code of the country.<br>                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
+     */
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
+    }
+
+    /**
+     * The short name of the country, eg. "Austria".
+     */
+    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getShortName() {
+        return this.shortName.get();
+    }
+
+    /**
+     * The ISO-3 code of the country.<br>                                @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
+     */
+    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIso3Code(String iso3Code) {
+        this.iso3Code = iso3Code;
+    }
+
+    /**
+     * The short name of the country, eg. "Austria".
+     */
+    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setShortName(String shortName) {
+        this.shortName.set(shortName);
+    }
+
+    /**
+     * The languages available for that country.
+     */
+    @Accessor(propertyName = "languages", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setLanguages(Set<Language> languages) {
+        this.languages = languages;
     }
 
     /**
@@ -112,64 +168,8 @@ public class Country extends Item {
      * The long name of the country, eg. "Republic of Austria".
      */
     @Accessor(propertyName = "longName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getLongName() {
-        return this.longName.get();
-    }
-
-    /**
-     * The ISO-3 code of the country.<br>                                @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
-     */
-    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIso3Code(String iso3Code) {
-        this.iso3Code = iso3Code;
-    }
-
-    /**
-     * The short name of the country, eg. "Austria".
-     */
-    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getShortName() {
-        return this.shortName.get();
-    }
-
-    /**
-     * The ISO-2 code of the country.<br>                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
-    }
-
-    /**
-     * The ISO-2 code of the country.<br>                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getIsoCode() {
-        return this.isoCode;
-    }
-
-    /**
-     * The long name of the country, eg. "Republic of Austria".
-     */
-    @Accessor(propertyName = "longName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getLongName(Locale locale) {
         return this.longName.get(locale);
-    }
-
-    /**
-     * The phone country code, eg. +43 or 0043 for Austria
-     */
-    @Accessor(propertyName = "phoneCountryCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setPhoneCountryCode(String phoneCountryCode) {
-        this.phoneCountryCode = phoneCountryCode;
-    }
-
-    /**
-     * The short name of the country, eg. "Austria".
-     */
-    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setShortName(String shortName, Locale locale) {
-        this.shortName.set(locale, shortName);
     }
 
     /**
@@ -181,22 +181,6 @@ public class Country extends Item {
     }
 
     /**
-     * The ISO-3 code of the country.<br>                                @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
-     */
-    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getIso3Code() {
-        return this.iso3Code;
-    }
-
-    /**
-     * The short name of the country, eg. "Austria".
-     */
-    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setShortName(String shortName) {
-        this.shortName.set(shortName);
-    }
-
-    /**
      * The languages available for that country.
      */
     @Accessor(propertyName = "languages", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -205,10 +189,26 @@ public class Country extends Item {
     }
 
     /**
-     * The languages available for that country.
+     * The long name of the country, eg. "Republic of Austria".
      */
-    @Accessor(propertyName = "languages", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setLanguages(Set<Language> languages) {
-        this.languages = languages;
+    @Accessor(propertyName = "longName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getLongName() {
+        return this.longName.get();
+    }
+
+    /**
+     * The short name of the country, eg. "Austria".
+     */
+    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setShortName(String shortName, Locale locale) {
+        this.shortName.set(locale, shortName);
+    }
+
+    /**
+     * The ISO-2 code of the country.<br>                    @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
+     */
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getIsoCode() {
+        return this.isoCode;
     }
 }

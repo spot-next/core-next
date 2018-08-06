@@ -45,19 +45,14 @@ public class Tax extends UniqueIdItem {
         this.country = country;
     }
 
-    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public LocalizedString getDescription() {
-        return this.description;
+    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setValue(BigDecimal value) {
+        this.value = value;
     }
 
     @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public BigDecimal getValue() {
         return this.value;
-    }
-
-    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setValue(BigDecimal value) {
-        this.value = value;
     }
 
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -68,5 +63,10 @@ public class Tax extends UniqueIdItem {
     @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Country getCountry() {
         return this.country;
+    }
+
+    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public LocalizedString getDescription() {
+        return this.description;
     }
 }

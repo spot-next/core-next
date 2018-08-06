@@ -39,8 +39,8 @@ public abstract class AbstractOrder extends UniqueIdItem {
     public static final String TYPECODE = "abstractorder";
     public static final String PROPERTY_CUSTOMER = "customer";
     public static final String PROPERTY_ENTRIES = "entries";
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected Customer customer;
 
     /**
@@ -50,9 +50,12 @@ public abstract class AbstractOrder extends UniqueIdItem {
     @Property(readable = true, writable = true)
     public Set<AbstractOrderEntry> entries;
 
-    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    /**
+     * The categories the product is referenced by.
+     */
+    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEntries(Set<AbstractOrderEntry> entries) {
+        this.entries = entries;
     }
 
     /**
@@ -63,16 +66,13 @@ public abstract class AbstractOrder extends UniqueIdItem {
         return ItemCollectionFactory.wrap(this, "entries", this.entries);
     }
 
-    /**
-     * The categories the product is referenced by.
-     */
-    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEntries(Set<AbstractOrderEntry> entries) {
-        this.entries = entries;
-    }
-
     @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Customer getCustomer() {
         return this.customer;
+    }
+
+    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

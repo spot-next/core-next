@@ -31,8 +31,8 @@ public class Stock extends Item {
     public static final String PROPERTY_PRODUCT_ID = "productId";
     public static final String PROPERTY_VALUE = "value";
     public static final String PROPERTY_RESERVED = "reserved";
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected String productId;
 
     /**
@@ -48,11 +48,11 @@ public class Stock extends Item {
     protected Integer reserved = 0;
 
     /**
-     * The reserved amount of stock.
+     * The actual stock level.
      */
-    @Accessor(propertyName = "reserved", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Integer getReserved() {
-        return this.reserved;
+    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Integer getValue() {
+        return this.value;
     }
 
     /**
@@ -63,9 +63,12 @@ public class Stock extends Item {
         this.reserved = reserved;
     }
 
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getProductId() {
-        return this.productId;
+    /**
+     * The reserved amount of stock.
+     */
+    @Accessor(propertyName = "reserved", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Integer getReserved() {
+        return this.reserved;
     }
 
     @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -76,16 +79,13 @@ public class Stock extends Item {
     /**
      * The actual stock level.
      */
-    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Integer getValue() {
-        return this.value;
-    }
-
-    /**
-     * The actual stock level.
-     */
     @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getProductId() {
+        return this.productId;
     }
 }

@@ -43,27 +43,27 @@ public class UserAddress extends Address {
     @Property(readable = true, writable = true)
     public User owner;
 
-    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getPhone() {
-        return this.phone;
+    @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     /**
      * Defines a address ownership relation.
      */
-    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public User getOwner() {
-        return this.owner;
+    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getPhone() {
+        return this.phone;
     }
 
     @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getEmailAddress() {
         return this.emailAddress;
-    }
-
-    @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
     }
 
     @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -74,8 +74,8 @@ public class UserAddress extends Address {
     /**
      * Defines a address ownership relation.
      */
-    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setOwner(User owner) {
-        this.owner = owner;
+    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public User getOwner() {
+        return this.owner;
     }
 }

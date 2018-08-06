@@ -38,8 +38,8 @@ public abstract class UniqueIdItem extends Item {
      * The unique id of the object.
      */
     @Property(readable = true, unique = true, writable = true)
-    @Length(min = 3)
     @NotNull
+    @Length(min = 3)
     protected String id;
 
     /**

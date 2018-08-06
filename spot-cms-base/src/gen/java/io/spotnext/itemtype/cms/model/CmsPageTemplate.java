@@ -43,14 +43,9 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
     @Property(readable = true, writable = true)
     protected Set<String> metaTags;
 
-    @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public LocalizedString getFavIconPath() {
-        return this.favIconPath;
-    }
-
-    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public LocalizedString getTitle() {
-        return this.title;
+    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public ImageMedia getFavIcon() {
+        return this.favIcon;
     }
 
     @Accessor(propertyName = "metaTags", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -63,9 +58,14 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
         this.metaTags = metaTags;
     }
 
-    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setTitle(LocalizedString title) {
-        this.title = title;
+    @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public LocalizedString getFavIconPath() {
+        return this.favIconPath;
+    }
+
+    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public LocalizedString getTitle() {
+        return this.title;
     }
 
     @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -73,9 +73,9 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
         this.favIconPath = favIconPath;
     }
 
-    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public ImageMedia getFavIcon() {
-        return this.favIcon;
+    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setTitle(LocalizedString title) {
+        this.title = title;
     }
 
     @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.set)

@@ -45,14 +45,9 @@ public class Category extends UniqueIdItem {
     /**
      * The categories the product is referenced by.
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "Category2Product", mappedTo = "categories", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<Product> products;
-
-    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setDescription(LocalizedString description) {
-        this.description = description;
-    }
 
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getName() {
@@ -67,9 +62,9 @@ public class Category extends UniqueIdItem {
     /**
      * The categories the product is referenced by.
      */
-    @Accessor(propertyName = "products", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProducts(Set<Product> products) {
-        this.products = products;
+    @Accessor(propertyName = "products", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<Product> getProducts() {
+        return this.products;
     }
 
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -77,11 +72,16 @@ public class Category extends UniqueIdItem {
         this.name = name;
     }
 
+    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setDescription(LocalizedString description) {
+        this.description = description;
+    }
+
     /**
      * The categories the product is referenced by.
      */
-    @Accessor(propertyName = "products", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<Product> getProducts() {
-        return this.products;
+    @Accessor(propertyName = "products", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 }

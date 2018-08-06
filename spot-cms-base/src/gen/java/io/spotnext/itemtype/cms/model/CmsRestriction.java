@@ -42,24 +42,16 @@ public class CmsRestriction extends AbstractCmsItem {
      */
     @Property(readable = true, writable = true)
     protected String evaluatorScript;
-    @Property(readable = true, writable = true)
     @Relation(relationName = "AbstractCmsItem2CmsRestriction", mappedTo = "cmsRestrictions", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public AbstractCmsItem cmsItem;
 
     /**
      * The spring bean id of the corresponding evaluator implementation.
      */
-    @Accessor(propertyName = "evaluator", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEvaluator(String evaluator) {
-        this.evaluator = evaluator;
-    }
-
-    /**
-     * The beanshell script that evaluates the cms item visibility.
-     */
-    @Accessor(propertyName = "evaluatorScript", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getEvaluatorScript() {
-        return this.evaluatorScript;
+    @Accessor(propertyName = "evaluator", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getEvaluator() {
+        return this.evaluator;
     }
 
     /**
@@ -71,11 +63,11 @@ public class CmsRestriction extends AbstractCmsItem {
     }
 
     /**
-     * The spring bean id of the corresponding evaluator implementation.
+     * The beanshell script that evaluates the cms item visibility.
      */
-    @Accessor(propertyName = "evaluator", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getEvaluator() {
-        return this.evaluator;
+    @Accessor(propertyName = "evaluatorScript", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getEvaluatorScript() {
+        return this.evaluatorScript;
     }
 
     @Accessor(propertyName = "cmsItem", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -86,5 +78,13 @@ public class CmsRestriction extends AbstractCmsItem {
     @Accessor(propertyName = "cmsItem", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public AbstractCmsItem getCmsItem() {
         return this.cmsItem;
+    }
+
+    /**
+     * The spring bean id of the corresponding evaluator implementation.
+     */
+    @Accessor(propertyName = "evaluator", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEvaluator(String evaluator) {
+        this.evaluator = evaluator;
     }
 }
