@@ -40,6 +40,11 @@ public class Tax extends UniqueIdItem {
     @Property(readable = true, writable = true)
     protected Country country;
 
+    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Country getCountry() {
+        return this.country;
+    }
+
     @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCountry(Country country) {
         this.country = country;
@@ -63,10 +68,5 @@ public class Tax extends UniqueIdItem {
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setDescription(LocalizedString description) {
         this.description = description;
-    }
-
-    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Country getCountry() {
-        return this.country;
     }
 }

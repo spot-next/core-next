@@ -37,8 +37,8 @@ public class Media extends AbstractMedia {
      */
     @Property(readable = true, columnType = io.spotnext.core.infrastructure.maven.xml.DatabaseColumnType.BLOB, writable = true)
     protected Byte[] data;
-    @Property(readable = true, writable = true)
     @Relation(relationName = "MediaContainer2Media", mappedTo = "medias", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public MediaContainer container;
 
     /**
@@ -49,14 +49,14 @@ public class Media extends AbstractMedia {
         return this.data;
     }
 
-    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setContainer(MediaContainer container) {
-        this.container = container;
-    }
-
     @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public MediaContainer getContainer() {
         return this.container;
+    }
+
+    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setContainer(MediaContainer container) {
+        this.container = container;
     }
 
     /**

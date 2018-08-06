@@ -44,6 +44,16 @@ public abstract class AbstractOrderEntry extends Item {
     @Property(readable = true, writable = true)
     public AbstractOrder order;
 
+    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Product getProduct() {
+        return this.product;
+    }
+
     /**
      * The categories the product is referenced by.
      */
@@ -58,15 +68,5 @@ public abstract class AbstractOrderEntry extends Item {
     @Accessor(propertyName = "order", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setOrder(AbstractOrder order) {
         this.order = order;
-    }
-
-    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Product getProduct() {
-        return this.product;
     }
 }

@@ -55,11 +55,19 @@ public class BaseStore extends UniqueIdItem {
     protected Set<Country> countries;
 
     /**
-     * These regex strings are used to match browser url to the base store.
+     * The countries that are assigned to this base store.
      */
-    @Accessor(propertyName = "urlMatchers", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setUrlMatchers(Set<String> urlMatchers) {
-        this.urlMatchers = urlMatchers;
+    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<Country> getCountries() {
+        return this.countries;
+    }
+
+    /**
+     * The name of the base store.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -73,14 +81,6 @@ public class BaseStore extends UniqueIdItem {
     /**
      * The name of the base store.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * The name of the base store.
-     */
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setName(String name) {
         this.name = name;
@@ -89,16 +89,16 @@ public class BaseStore extends UniqueIdItem {
     /**
      * The countries that are assigned to this base store.
      */
-    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<Country> getCountries() {
-        return this.countries;
-    }
-
-    /**
-     * The countries that are assigned to this base store.
-     */
     @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCountries(Set<Country> countries) {
         this.countries = countries;
+    }
+
+    /**
+     * These regex strings are used to match browser url to the base store.
+     */
+    @Accessor(propertyName = "urlMatchers", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setUrlMatchers(Set<String> urlMatchers) {
+        this.urlMatchers = urlMatchers;
     }
 }

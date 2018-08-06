@@ -51,6 +51,14 @@ public class UserAddress extends Address {
     /**
      * Defines a address ownership relation.
      */
+    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public User getOwner() {
+        return this.owner;
+    }
+
+    /**
+     * Defines a address ownership relation.
+     */
     @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setOwner(User owner) {
         this.owner = owner;
@@ -64,14 +72,6 @@ public class UserAddress extends Address {
     @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getEmailAddress() {
         return this.emailAddress;
-    }
-
-    /**
-     * Defines a address ownership relation.
-     */
-    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public User getOwner() {
-        return this.owner;
     }
 
     @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.set)

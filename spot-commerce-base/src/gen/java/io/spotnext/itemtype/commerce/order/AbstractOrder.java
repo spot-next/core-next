@@ -39,21 +39,16 @@ public abstract class AbstractOrder extends UniqueIdItem {
     public static final String TYPECODE = "abstractorder";
     public static final String PROPERTY_CUSTOMER = "customer";
     public static final String PROPERTY_ENTRIES = "entries";
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected Customer customer;
 
     /**
      * The categories the product is referenced by.
      */
-    @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "AbstractOrder2AbstractOrderEntry", mappedTo = "order", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
     @Property(readable = true, writable = true)
+    @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "AbstractOrder2AbstractOrderEntry", mappedTo = "order", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
     public Set<AbstractOrderEntry> entries;
-
-    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
 
     /**
      * The categories the product is referenced by.
@@ -61,6 +56,11 @@ public abstract class AbstractOrder extends UniqueIdItem {
     @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Set<AbstractOrderEntry> getEntries() {
         return ItemCollectionFactory.wrap(this, "entries", this.entries);
+    }
+
+    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Customer getCustomer() {
+        return this.customer;
     }
 
     /**
@@ -71,8 +71,8 @@ public abstract class AbstractOrder extends UniqueIdItem {
         this.entries = entries;
     }
 
-    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Customer getCustomer() {
-        return this.customer;
+    @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }

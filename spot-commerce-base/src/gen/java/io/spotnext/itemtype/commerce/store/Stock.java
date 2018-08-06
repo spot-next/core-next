@@ -31,8 +31,8 @@ public class Stock extends Item {
     public static final String PROPERTY_PRODUCT_ID = "productId";
     public static final String PROPERTY_VALUE = "value";
     public static final String PROPERTY_RESERVED = "reserved";
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected String productId;
 
     /**
@@ -50,14 +50,6 @@ public class Stock extends Item {
     /**
      * The reserved amount of stock.
      */
-    @Accessor(propertyName = "reserved", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Integer getReserved() {
-        return this.reserved;
-    }
-
-    /**
-     * The reserved amount of stock.
-     */
     @Accessor(propertyName = "reserved", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setReserved(Integer reserved) {
         this.reserved = reserved;
@@ -68,9 +60,12 @@ public class Stock extends Item {
         return this.productId;
     }
 
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProductId(String productId) {
-        this.productId = productId;
+    /**
+     * The reserved amount of stock.
+     */
+    @Accessor(propertyName = "reserved", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Integer getReserved() {
+        return this.reserved;
     }
 
     /**
@@ -87,5 +82,10 @@ public class Stock extends Item {
     @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 }

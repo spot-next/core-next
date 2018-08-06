@@ -51,40 +51,9 @@ public abstract class AbstractCmsItem extends UniqueIdItem {
      */
     @Property(readable = true, writable = true)
     protected Boolean onlyOneRestrictionMustApply;
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "AbstractCmsItem2CmsRestriction", mappedTo = "cmsItem", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<CmsRestriction> cmsRestrictions;
-
-    /**
-     * f set to true, only one restriction must evaluate to "show cms item" <br>                                        for the item to be visible.
-     */
-    @Accessor(propertyName = "onlyOneRestrictionMustApply", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setOnlyOneRestrictionMustApply(
-        Boolean onlyOneRestrictionMustApply) {
-        this.onlyOneRestrictionMustApply = onlyOneRestrictionMustApply;
-    }
-
-    /**
-     * f set to true, only one restriction must evaluate to "show cms item" <br>                                        for the item to be visible.
-     */
-    @Accessor(propertyName = "onlyOneRestrictionMustApply", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Boolean getOnlyOneRestrictionMustApply() {
-        return this.onlyOneRestrictionMustApply;
-    }
-
-    @Accessor(propertyName = "cmsRestrictions", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<CmsRestriction> getCmsRestrictions() {
-        return ItemCollectionFactory.wrap(this, "cmsRestrictions",
-            this.cmsRestrictions);
-    }
-
-    /**
-     * The content catalog of the item.
-     */
-    @Accessor(propertyName = "catalog", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Catalog getCatalog() {
-        return this.catalog;
-    }
 
     /**
      * The content catalog of the item.
@@ -97,5 +66,36 @@ public abstract class AbstractCmsItem extends UniqueIdItem {
     @Accessor(propertyName = "cmsRestrictions", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCmsRestrictions(Set<CmsRestriction> cmsRestrictions) {
         this.cmsRestrictions = cmsRestrictions;
+    }
+
+    /**
+     * f set to true, only one restriction must evaluate to "show cms item" <br>                                        for the item to be visible.
+     */
+    @Accessor(propertyName = "onlyOneRestrictionMustApply", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setOnlyOneRestrictionMustApply(
+        Boolean onlyOneRestrictionMustApply) {
+        this.onlyOneRestrictionMustApply = onlyOneRestrictionMustApply;
+    }
+
+    /**
+     * The content catalog of the item.
+     */
+    @Accessor(propertyName = "catalog", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Catalog getCatalog() {
+        return this.catalog;
+    }
+
+    @Accessor(propertyName = "cmsRestrictions", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<CmsRestriction> getCmsRestrictions() {
+        return ItemCollectionFactory.wrap(this, "cmsRestrictions",
+            this.cmsRestrictions);
+    }
+
+    /**
+     * f set to true, only one restriction must evaluate to "show cms item" <br>                                        for the item to be visible.
+     */
+    @Accessor(propertyName = "onlyOneRestrictionMustApply", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Boolean getOnlyOneRestrictionMustApply() {
+        return this.onlyOneRestrictionMustApply;
     }
 }

@@ -37,18 +37,10 @@ public abstract class UniqueIdItem extends Item {
     /**
      * The unique id of the object.
      */
+    @NotNull
     @Length(min = 3)
     @Property(readable = true, unique = true, writable = true)
-    @NotNull
     protected String id;
-
-    /**
-     * The unique id of the object.
-     */
-    @Accessor(propertyName = "id", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setId(String id) {
-        this.id = id;
-    }
 
     /**
      * The unique id of the object.
@@ -56,5 +48,13 @@ public abstract class UniqueIdItem extends Item {
     @Accessor(propertyName = "id", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * The unique id of the object.
+     */
+    @Accessor(propertyName = "id", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setId(String id) {
+        this.id = id;
     }
 }

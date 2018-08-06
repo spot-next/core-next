@@ -47,9 +47,9 @@ public class Language extends Item {
     /**
      * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
      */
-    @NotNull
     @Property(readable = true, unique = true, writable = true)
     @Length(min = 3, max = 3)
+    @NotNull
     protected String iso3Code;
 
     /**
@@ -68,25 +68,9 @@ public class Language extends Item {
     /**
      * The languages available for that country.
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "Country2Language", mappedTo = "languages", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public Set<Country> countries;
-
-    /**
-     * The international name of the language.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName(Locale locale) {
-        return this.name.get(locale);
-    }
-
-    /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
-    }
 
     /**
      * The international name of the language.
@@ -97,11 +81,27 @@ public class Language extends Item {
     }
 
     /**
+     * The international name of the language.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName(Locale locale) {
+        return this.name.get(locale);
+    }
+
+    /**
      * The languages available for that country.
      */
-    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<Country> getCountries() {
-        return this.countries;
+    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCountries(Set<Country> countries) {
+        this.countries = countries;
+    }
+
+    /**
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
+     */
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
     }
 
     /**
@@ -121,11 +121,11 @@ public class Language extends Item {
     }
 
     /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
+     * The international name of the language.
      */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getIsoCode() {
-        return this.isoCode;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     /**
@@ -137,18 +137,18 @@ public class Language extends Item {
     }
 
     /**
-     * The international name of the language.
+     * The languages available for that country.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name.set(name);
+    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<Country> getCountries() {
+        return this.countries;
     }
 
     /**
-     * The languages available for that country.
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
      */
-    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCountries(Set<Country> countries) {
-        this.countries = countries;
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getIsoCode() {
+        return this.isoCode;
     }
 }

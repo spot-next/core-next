@@ -57,26 +57,9 @@ public class CatalogVersion extends UniqueIdItem {
      */
     @Property(readable = true, writable = true)
     protected Set<Language> synchronizationLanguages;
-    @Property(readable = true, initial = false, unique = true, writable = true)
     @Relation(relationName = "Catalog2CatalogVersion", mappedTo = "versions", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, initial = false, unique = true, writable = true)
     public Catalog catalog;
-
-    /**
-     * The target catalog version to which all containing items will be synchronized..
-     */
-    @Accessor(propertyName = "synchronizationTarget", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setSynchronizationTarget(CatalogVersion synchronizationTarget) {
-        this.synchronizationTarget = synchronizationTarget;
-    }
-
-    /**
-     * The languages that will be synchronized .
-     */
-    @Accessor(propertyName = "synchronizationLanguages", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setSynchronizationLanguages(
-        Set<Language> synchronizationLanguages) {
-        this.synchronizationLanguages = synchronizationLanguages;
-    }
 
     /**
      * The name of the catalog version.
@@ -86,17 +69,17 @@ public class CatalogVersion extends UniqueIdItem {
         return this.name;
     }
 
+    @Accessor(propertyName = "catalog", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Catalog getCatalog() {
+        return this.catalog;
+    }
+
     /**
      * The name of the catalog version.
      */
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Accessor(propertyName = "catalog", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Catalog getCatalog() {
-        return this.catalog;
     }
 
     /**
@@ -118,5 +101,22 @@ public class CatalogVersion extends UniqueIdItem {
     @Accessor(propertyName = "synchronizationTarget", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public CatalogVersion getSynchronizationTarget() {
         return this.synchronizationTarget;
+    }
+
+    /**
+     * The languages that will be synchronized .
+     */
+    @Accessor(propertyName = "synchronizationLanguages", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setSynchronizationLanguages(
+        Set<Language> synchronizationLanguages) {
+        this.synchronizationLanguages = synchronizationLanguages;
+    }
+
+    /**
+     * The target catalog version to which all containing items will be synchronized..
+     */
+    @Accessor(propertyName = "synchronizationTarget", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setSynchronizationTarget(CatalogVersion synchronizationTarget) {
+        this.synchronizationTarget = synchronizationTarget;
     }
 }

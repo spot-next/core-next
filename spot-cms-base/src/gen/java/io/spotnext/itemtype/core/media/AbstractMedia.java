@@ -42,19 +42,11 @@ public abstract class AbstractMedia extends CatalogItem {
     protected String encoding;
 
     /**
-     * The mime type of the content.
+     * The encoding of the content, eg. "UTF-8" or "base64".
      */
-    @Accessor(propertyName = "mimeType", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getMimeType() {
-        return this.mimeType;
-    }
-
-    /**
-     * The mime type of the content.
-     */
-    @Accessor(propertyName = "mimeType", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
+    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     /**
@@ -66,10 +58,18 @@ public abstract class AbstractMedia extends CatalogItem {
     }
 
     /**
-     * The encoding of the content, eg. "UTF-8" or "base64".
+     * The mime type of the content.
      */
-    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
+    @Accessor(propertyName = "mimeType", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    /**
+     * The mime type of the content.
+     */
+    @Accessor(propertyName = "mimeType", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getMimeType() {
+        return this.mimeType;
     }
 }

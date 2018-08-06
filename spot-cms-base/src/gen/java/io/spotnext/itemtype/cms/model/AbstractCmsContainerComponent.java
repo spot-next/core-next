@@ -34,13 +34,13 @@ public abstract class AbstractCmsContainerComponent extends AbstractCmsComponent
     @Property(readable = true, writable = true)
     public Set<AbstractCmsComponent> components;
 
-    @Accessor(propertyName = "components", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setComponents(Set<AbstractCmsComponent> components) {
-        this.components = components;
-    }
-
     @Accessor(propertyName = "components", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Set<AbstractCmsComponent> getComponents() {
         return this.components;
+    }
+
+    @Accessor(propertyName = "components", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setComponents(Set<AbstractCmsComponent> components) {
+        this.components = components;
     }
 }

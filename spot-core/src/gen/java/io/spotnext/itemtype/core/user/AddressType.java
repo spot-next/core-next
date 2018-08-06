@@ -37,16 +37,16 @@ public class AddressType extends UniqueIdItem {
     /**
      * The name of the address type.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name = name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName() {
+        return this.name;
     }
 
     /**
      * The name of the address type.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name = name;
     }
 }

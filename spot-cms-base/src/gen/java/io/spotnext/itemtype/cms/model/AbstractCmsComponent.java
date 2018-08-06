@@ -55,37 +55,21 @@ public abstract class AbstractCmsComponent extends AbstractCmsItem {
     @NotNull
     @Property(readable = true, writable = true)
     protected TemplateRenderEngine renderEngine;
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "AbstractCmsContainerComponent2AbstractCmsComponent", mappedTo = "components", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public Set<AbstractCmsContainerComponent> container;
 
     /**
-     * Beanshell code that is executed before the page rendering.<br>                                It can be used to prepare the render context variables.
+     * The spring bean id of the context provider implementation.
      */
-    @Accessor(propertyName = "renderContextPreparationScript", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setRenderContextPreparationScript(
-        String renderContextPreparationScript) {
-        this.renderContextPreparationScript = renderContextPreparationScript;
+    @Accessor(propertyName = "renderContextProvider", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setRenderContextProvider(String renderContextProvider) {
+        this.renderContextProvider = renderContextProvider;
     }
 
-    @Accessor(propertyName = "renderEngine", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setRenderEngine(TemplateRenderEngine renderEngine) {
-        this.renderEngine = renderEngine;
-    }
-
-    @Accessor(propertyName = "content", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setContainer(Set<AbstractCmsContainerComponent> container) {
-        this.container = container;
-    }
-
-    @Accessor(propertyName = "renderEngine", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public TemplateRenderEngine getRenderEngine() {
-        return this.renderEngine;
+    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<AbstractCmsContainerComponent> getContainer() {
+        return this.container;
     }
 
     /**
@@ -96,9 +80,38 @@ public abstract class AbstractCmsComponent extends AbstractCmsItem {
         return this.renderContextPreparationScript;
     }
 
-    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<AbstractCmsContainerComponent> getContainer() {
-        return this.container;
+    /**
+     * Beanshell code that is executed before the page rendering.<br>                                It can be used to prepare the render context variables.
+     */
+    @Accessor(propertyName = "renderContextPreparationScript", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setRenderContextPreparationScript(
+        String renderContextPreparationScript) {
+        this.renderContextPreparationScript = renderContextPreparationScript;
+    }
+
+    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setContainer(Set<AbstractCmsContainerComponent> container) {
+        this.container = container;
+    }
+
+    @Accessor(propertyName = "content", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Accessor(propertyName = "renderEngine", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setRenderEngine(TemplateRenderEngine renderEngine) {
+        this.renderEngine = renderEngine;
+    }
+
+    @Accessor(propertyName = "content", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getContent() {
+        return this.content;
+    }
+
+    @Accessor(propertyName = "renderEngine", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public TemplateRenderEngine getRenderEngine() {
+        return this.renderEngine;
     }
 
     /**
@@ -107,18 +120,5 @@ public abstract class AbstractCmsComponent extends AbstractCmsItem {
     @Accessor(propertyName = "renderContextProvider", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getRenderContextProvider() {
         return this.renderContextProvider;
-    }
-
-    /**
-     * The spring bean id of the context provider implementation.
-     */
-    @Accessor(propertyName = "renderContextProvider", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setRenderContextProvider(String renderContextProvider) {
-        this.renderContextProvider = renderContextProvider;
-    }
-
-    @Accessor(propertyName = "content", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getContent() {
-        return this.content;
     }
 }

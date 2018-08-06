@@ -44,17 +44,17 @@ public abstract class AbstractMedia extends CatalogItem {
     /**
      * The encoding of the content, eg. "UTF-8" or "base64".
      */
-    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getEncoding() {
-        return this.encoding;
+    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     /**
      * The encoding of the content, eg. "UTF-8" or "base64".
      */
-    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
+    @Accessor(propertyName = "encoding", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getEncoding() {
+        return this.encoding;
     }
 
     /**

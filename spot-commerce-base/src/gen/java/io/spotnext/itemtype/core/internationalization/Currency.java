@@ -59,11 +59,27 @@ public class Currency extends Item {
     }
 
     /**
+     * The iso code of the currency.
+     */
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
+    }
+
+    /**
      * The localized name of the currency.
      */
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getName() {
         return this.name.get();
+    }
+
+    /**
+     * The localized name of the currency.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName(Locale locale) {
+        return this.name.get(locale);
     }
 
     /**
@@ -80,21 +96,5 @@ public class Currency extends Item {
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setName(String name, Locale locale) {
         this.name.set(locale, name);
-    }
-
-    /**
-     * The localized name of the currency.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName(Locale locale) {
-        return this.name.get(locale);
-    }
-
-    /**
-     * The iso code of the currency.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
     }
 }

@@ -43,24 +43,9 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
     @Property(readable = true, writable = true)
     protected Set<String> metaTags;
 
-    @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public LocalizedString getFavIconPath() {
-        return this.favIconPath;
-    }
-
-    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public LocalizedString getTitle() {
-        return this.title;
-    }
-
-    @Accessor(propertyName = "metaTags", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<String> getMetaTags() {
-        return this.metaTags;
-    }
-
-    @Accessor(propertyName = "metaTags", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setMetaTags(Set<String> metaTags) {
-        this.metaTags = metaTags;
+    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public ImageMedia getFavIcon() {
+        return this.favIcon;
     }
 
     @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -68,18 +53,33 @@ public class CmsPageTemplate extends AbstractCmsContainerComponent {
         this.title = title;
     }
 
+    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setFavIcon(ImageMedia favIcon) {
+        this.favIcon = favIcon;
+    }
+
+    @Accessor(propertyName = "metaTags", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setMetaTags(Set<String> metaTags) {
+        this.metaTags = metaTags;
+    }
+
     @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setFavIconPath(LocalizedString favIconPath) {
         this.favIconPath = favIconPath;
     }
 
-    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public ImageMedia getFavIcon() {
-        return this.favIcon;
+    @Accessor(propertyName = "title", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public LocalizedString getTitle() {
+        return this.title;
     }
 
-    @Accessor(propertyName = "favIcon", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setFavIcon(ImageMedia favIcon) {
-        this.favIcon = favIcon;
+    @Accessor(propertyName = "favIconPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public LocalizedString getFavIconPath() {
+        return this.favIconPath;
+    }
+
+    @Accessor(propertyName = "metaTags", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<String> getMetaTags() {
+        return this.metaTags;
     }
 }

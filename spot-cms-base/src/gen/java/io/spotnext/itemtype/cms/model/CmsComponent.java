@@ -31,17 +31,17 @@ public class CmsComponent extends AbstractCmsComponent {
     private static final long serialVersionUID = 1L;
     public static final String TYPECODE = "cmscomponent";
     public static final String PROPERTY_CONTENT_SLOT = "contentSlot";
-    @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "ContentSlot2CmsComponent", mappedTo = "components", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     @Property(readable = true, writable = true)
+    @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "ContentSlot2CmsComponent", mappedTo = "components", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     public Set<ContentSlot> contentSlot;
-
-    @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<ContentSlot> getContentSlot() {
-        return this.contentSlot;
-    }
 
     @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setContentSlot(Set<ContentSlot> contentSlot) {
         this.contentSlot = contentSlot;
+    }
+
+    @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<ContentSlot> getContentSlot() {
+        return this.contentSlot;
     }
 }

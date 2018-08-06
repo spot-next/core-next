@@ -60,24 +60,16 @@ public class Product extends UniqueIdItem {
     /**
      * The categories the product is referenced by.
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "Category2Product", mappedTo = "products", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public Set<Category> categories;
-
-    /**
-     * The EAN product code.
-     */
-    @Accessor(propertyName = "ean", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEan(String ean) {
-        this.ean = ean;
-    }
 
     /**
      * The name of the product.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name = name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -89,6 +81,14 @@ public class Product extends UniqueIdItem {
     }
 
     /**
+     * The EAN product code.
+     */
+    @Accessor(propertyName = "ean", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEan(String ean) {
+        this.ean = ean;
+    }
+
+    /**
      * The localized description of the product.
      */
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -97,27 +97,27 @@ public class Product extends UniqueIdItem {
     }
 
     /**
-     * The categories the product is referenced by.
-     */
-    @Accessor(propertyName = "categories", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
-    }
-
-    /**
-     * The name of the product.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name;
-    }
-
-    /**
      * The EAN product code.
      */
     @Accessor(propertyName = "ean", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getEan() {
         return this.ean;
+    }
+
+    /**
+     * The name of the product.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * The categories the product is referenced by.
+     */
+    @Accessor(propertyName = "categories", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
     /**

@@ -41,14 +41,22 @@ public class Media extends AbstractMedia {
     @Property(readable = true, writable = true)
     public MediaContainer container;
 
-    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public MediaContainer getContainer() {
-        return this.container;
+    /**
+     * The content of the data object.
+     */
+    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Byte[] getData() {
+        return this.data;
     }
 
     @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setContainer(MediaContainer container) {
         this.container = container;
+    }
+
+    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public MediaContainer getContainer() {
+        return this.container;
     }
 
     /**
@@ -57,13 +65,5 @@ public class Media extends AbstractMedia {
     @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setData(Byte[] data) {
         this.data = data;
-    }
-
-    /**
-     * The content of the data object.
-     */
-    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Byte[] getData() {
-        return this.data;
     }
 }

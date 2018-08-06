@@ -66,6 +66,11 @@ public class ConfigEntry extends UniqueIdItem {
     @Property(readable = true, writable = true)
     public Configuration configuration;
 
+    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setDoubleValue(Double doubleValue) {
+        this.doubleValue = doubleValue;
+    }
+
     /**
      * The short description of the configuration entry's purpose.
      */
@@ -74,9 +79,24 @@ public class ConfigEntry extends UniqueIdItem {
         this.description = description;
     }
 
-    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getStringValue() {
-        return this.stringValue;
+    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setFloatValue(Float floatValue) {
+        this.floatValue = floatValue;
+    }
+
+    @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
+    }
+
+    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Double getDoubleValue() {
+        return this.doubleValue;
+    }
+
+    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
     }
 
     @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -89,35 +109,9 @@ public class ConfigEntry extends UniqueIdItem {
         this.longValue = longValue;
     }
 
-    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setFloatValue(Float floatValue) {
-        this.floatValue = floatValue;
-    }
-
-    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Double getDoubleValue() {
-        return this.doubleValue;
-    }
-
-    /**
-     * The short description of the configuration entry's purpose.
-     */
-    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * The config entries referenced by this configuration.
-     */
-    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-    }
-
-    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Float getFloatValue() {
-        return this.floatValue;
+    @Accessor(propertyName = "longValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Long getLongValue() {
+        return this.longValue;
     }
 
     /**
@@ -128,23 +122,29 @@ public class ConfigEntry extends UniqueIdItem {
         return this.configuration;
     }
 
-    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
+    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getStringValue() {
+        return this.stringValue;
     }
 
-    @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIntValue(Integer intValue) {
-        this.intValue = intValue;
+    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Float getFloatValue() {
+        return this.floatValue;
     }
 
-    @Accessor(propertyName = "longValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Long getLongValue() {
-        return this.longValue;
+    /**
+     * The config entries referenced by this configuration.
+     */
+    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
-    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setDoubleValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
+    /**
+     * The short description of the configuration entry's purpose.
+     */
+    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getDescription() {
+        return this.description;
     }
 }

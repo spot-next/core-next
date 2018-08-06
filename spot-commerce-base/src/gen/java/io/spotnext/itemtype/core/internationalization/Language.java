@@ -48,8 +48,8 @@ public class Language extends Item {
      * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
      */
     @Property(readable = true, unique = true, writable = true)
-    @NotNull
     @Length(min = 3, max = 3)
+    @NotNull
     protected String iso3Code;
 
     /**
@@ -81,27 +81,19 @@ public class Language extends Item {
     }
 
     /**
-     * The international name of the language.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    /**
-     * The international name of the language.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name, Locale locale) {
-        this.name.set(locale, name);
-    }
-
-    /**
      * The languages available for that country.
      */
     @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCountries(Set<Country> countries) {
         this.countries = countries;
+    }
+
+    /**
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
+     */
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIsoCode(String isoCode) {
+        this.isoCode = isoCode;
     }
 
     /**
@@ -121,19 +113,11 @@ public class Language extends Item {
     }
 
     /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
+     * The international name of the language.
      */
-    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIso3Code(String iso3Code) {
-        this.iso3Code = iso3Code;
-    }
-
-    /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIsoCode(String isoCode) {
-        this.isoCode = isoCode;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName(Locale locale) {
+        return this.name.get(locale);
     }
 
     /**
@@ -145,10 +129,26 @@ public class Language extends Item {
     }
 
     /**
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
+     */
+    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIso3Code(String iso3Code) {
+        this.iso3Code = iso3Code;
+    }
+
+    /**
      * The international name of the language.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName(Locale locale) {
-        return this.name.get(locale);
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    /**
+     * The international name of the language.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name, Locale locale) {
+        this.name.set(locale, name);
     }
 }

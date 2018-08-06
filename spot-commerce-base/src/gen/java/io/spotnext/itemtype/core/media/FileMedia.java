@@ -45,9 +45,17 @@ public class FileMedia extends Media {
     /**
      * The content of the data object (read from the filesystem).
      */
-    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Byte[] getData() {
-        return this.data;
+    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setData(Byte[] data) {
+        this.data = data;
+    }
+
+    /**
+     * The file path to the data object.
+     */
+    @Accessor(propertyName = "dataPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getDataPath() {
+        return this.dataPath;
     }
 
     /**
@@ -61,16 +69,8 @@ public class FileMedia extends Media {
     /**
      * The content of the data object (read from the filesystem).
      */
-    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setData(Byte[] data) {
-        this.data = data;
-    }
-
-    /**
-     * The file path to the data object.
-     */
-    @Accessor(propertyName = "dataPath", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getDataPath() {
-        return this.dataPath;
+    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Byte[] getData() {
+        return this.data;
     }
 }

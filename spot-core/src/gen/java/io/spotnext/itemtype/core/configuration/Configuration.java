@@ -46,9 +46,17 @@ public class Configuration extends UniqueIdItem {
     /**
      * The config entries referenced by this configuration.
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "Configuration2ConfigEntry", mappedTo = "configuration", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<ConfigEntry> entries;
+
+    /**
+     * The short description of the configuration's purpose.
+     */
+    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getDescription() {
+        return this.description;
+    }
 
     /**
      * The config entries referenced by this configuration.
@@ -64,14 +72,6 @@ public class Configuration extends UniqueIdItem {
     @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Set<ConfigEntry> getEntries() {
         return ItemCollectionFactory.wrap(this, "entries", this.entries);
-    }
-
-    /**
-     * The short description of the configuration's purpose.
-     */
-    @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getDescription() {
-        return this.description;
     }
 
     /**
