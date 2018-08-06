@@ -2,15 +2,19 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>io.spotnext</groupId>
 	<artifactId>spot-framework</artifactId>
 	<version>1.0-beta2-SNAPSHOT</version>
-	<name>spOt framework</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>pom</packaging>
 	<description>
 		The spOt microservice framework.
 	</description>
+
+	<organization>
+		<url>https://spot-next.io</url>
+		<name>spOt</name>
+	</organization>
 
 	<profiles>
 		<profile>
@@ -36,15 +40,19 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
 					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
 
 	<scm>
-		<url>https://github.com/mojo2012/spot-framework</url>
 		<connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
 		<developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
+		<url>https://github.com/mojo2012/spot-framework/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
 
@@ -61,6 +69,8 @@
 			</roles>
 			<timezone>1</timezone>
 			<url>http://github.com/mojo2012/</url>
+			<organizationUrl>https://spot-next.io</organizationUrl>
+			<organization>spOt</organization>
 		</developer>
 	</developers>
 
@@ -131,9 +141,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>maven-central</id>
-			<name>Central Repository</name>
-			<url>http://repo.maven.apache.org/maven2</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 		<snapshotRepository>
 			<id>spot-nexus-snapshot</id>
@@ -141,35 +150,6 @@
 			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>interval:300</updatePolicy>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-
-	<repositories>
-		<!-- spot repos -->
-		<repository>
-			<id>spot-nexus-snapshot</id>
-			<url>${nexus.snapshot.host}</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>interval:300</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>
@@ -452,6 +432,9 @@
 						<branchName>master</branchName>
 						<pushChanges>false</pushChanges>
 						<localCheckout>true</localCheckout>
+						<releaseProfiles>release</releaseProfiles>
+						<useReleaseProfile>false</useReleaseProfile>
+						<goal>deploy</goal>
 					</configuration>
 				</plugin>
 
@@ -507,6 +490,19 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+
+				<!-- DEPLOYMENT -->
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.8</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrh</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					</configuration>
 				</plugin>
 
 				<!-- ECLIPSE FIX -->
@@ -680,8 +676,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<organization>
-		<url>spot-next.io</url>
-		<name>spOt</name>
-	</organization>
 </project>
