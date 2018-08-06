@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-beta2-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<properties>
@@ -83,17 +83,17 @@
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-model-infrastructure</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-base-models</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-support</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 
 		<!-- -->

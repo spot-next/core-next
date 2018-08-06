@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.spot-next</groupId>
 	<artifactId>spot-framework</artifactId>
-	<version>${revision}</version>
+	<version>${version.number}</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>pom</packaging>
 	<description>
@@ -110,7 +110,7 @@
 	</modules>
 
 	<properties>
-		<revision>1.0-SNAPSHOT</revision>
+		<version.number>${git.commit.time}.${git.commit.id.abbrev}</version.number>
 
 		<!-- compiling -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -163,7 +163,7 @@
 				<plugin>
 					<groupId>io.spot-next</groupId>
 					<artifactId>spot-maven-plugin</artifactId>
-					<version>${revision}</version>
+					<version>1.0-beta2-SNAPSHOT</version>
 					<executions>
 						<execution>
 							<id>Item type generation</id>
@@ -403,6 +403,7 @@
 					<executions>
 						<execution>
 							<id>get-the-git-infos</id>
+							<phase>validate</phase>
 							<goals>
 								<goal>revision</goal>
 							</goals>

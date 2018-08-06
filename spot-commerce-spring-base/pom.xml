@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-beta2-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<build>
@@ -56,23 +56,23 @@
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-commerce-base</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-cms-base</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-spring-web-support</artifactId>
-			<version>1.0-beta2-SNAPSHOT</version>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>
