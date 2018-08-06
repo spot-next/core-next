@@ -26,17 +26,21 @@ before_install:
 #    build_command:   "mvn -DskipTests=true compile"
 #    branch_pattern: master
 
-script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn clean verify"
+before_install: "cp .travis.settings.xml $HOME/.m2/settings.xml"
+
+install: -
+
+script: "mvn clean verify"
 
 deploy:
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Dprofile=release clean deploy"
+    script: "mvn -Dprofile=release -Dmaven.test.skip=true clean install deploy"
     skip_cleanup: true
     on:
       branch: develop
       tags: false
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn -Dprofile=release clean deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
+    script: "mvn -Dprofile=release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
     skip_cleanup: true
     on:
       branch: master
