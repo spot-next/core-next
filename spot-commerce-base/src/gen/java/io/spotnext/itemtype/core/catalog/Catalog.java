@@ -54,9 +54,9 @@ public class Catalog extends UniqueIdItem {
         this.name = name;
     }
 
-    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setVersions(Set<CatalogVersion> versions) {
-        this.versions = versions;
+    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<CatalogVersion> getVersions() {
+        return ItemCollectionFactory.wrap(this, "versions", this.versions);
     }
 
     /**
@@ -67,8 +67,8 @@ public class Catalog extends UniqueIdItem {
         return this.name;
     }
 
-    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<CatalogVersion> getVersions() {
-        return ItemCollectionFactory.wrap(this, "versions", this.versions);
+    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setVersions(Set<CatalogVersion> versions) {
+        this.versions = versions;
     }
 }

@@ -33,17 +33,9 @@ public class FutureStock extends Stock {
     /**
      * Defines a future stock and when it will be available.
      */
-    @NotNull
     @Property(readable = true, writable = true)
+    @NotNull
     protected String availableAt;
-
-    /**
-     * Defines a future stock and when it will be available.
-     */
-    @Accessor(propertyName = "availableAt", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getAvailableAt() {
-        return this.availableAt;
-    }
 
     /**
      * Defines a future stock and when it will be available.
@@ -51,5 +43,13 @@ public class FutureStock extends Stock {
     @Accessor(propertyName = "availableAt", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setAvailableAt(String availableAt) {
         this.availableAt = availableAt;
+    }
+
+    /**
+     * Defines a future stock and when it will be available.
+     */
+    @Accessor(propertyName = "availableAt", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getAvailableAt() {
+        return this.availableAt;
     }
 }

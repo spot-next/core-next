@@ -39,8 +39,8 @@ public class LocalizationValue extends UniqueIdItem {
     /**
      * The locale of the translation key.
      */
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected Locale locale;
 
     /**
@@ -52,25 +52,17 @@ public class LocalizationValue extends UniqueIdItem {
     /**
      * The locale of the translation key.
      */
-    @Accessor(propertyName = "locale", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Locale getLocale() {
-        return this.locale;
-    }
-
-    /**
-     * The locale of the translation key.
-     */
     @Accessor(propertyName = "locale", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
     /**
-     * The localized value of the key.
+     * The locale of the translation key.
      */
-    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setValue(String value) {
-        this.value = value;
+    @Accessor(propertyName = "locale", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Locale getLocale() {
+        return this.locale;
     }
 
     /**
@@ -79,5 +71,13 @@ public class LocalizationValue extends UniqueIdItem {
     @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getValue() {
         return this.value;
+    }
+
+    /**
+     * The localized value of the key.
+     */
+    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setValue(String value) {
+        this.value = value;
     }
 }

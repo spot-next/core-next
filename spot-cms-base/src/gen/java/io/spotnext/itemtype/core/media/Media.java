@@ -41,9 +41,12 @@ public class Media extends AbstractMedia {
     @Relation(relationName = "MediaContainer2Media", mappedTo = "medias", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     public MediaContainer container;
 
-    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public MediaContainer getContainer() {
-        return this.container;
+    /**
+     * The content of the data object.
+     */
+    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setData(Byte[] data) {
+        this.data = data;
     }
 
     /**
@@ -54,12 +57,9 @@ public class Media extends AbstractMedia {
         return this.data;
     }
 
-    /**
-     * The content of the data object.
-     */
-    @Accessor(propertyName = "data", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setData(Byte[] data) {
-        this.data = data;
+    @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public MediaContainer getContainer() {
+        return this.container;
     }
 
     @Accessor(propertyName = "container", type = io.spotnext.core.infrastructure.type.AccessorType.set)

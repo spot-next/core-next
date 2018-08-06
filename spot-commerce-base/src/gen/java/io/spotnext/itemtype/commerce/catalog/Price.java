@@ -82,51 +82,11 @@ public class Price extends Item {
     protected Boolean net = true;
 
     /**
-     * The product id the price is used for.
-     */
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getProductId() {
-        return this.productId;
-    }
-
-    /**
-     * The currency of the price.
-     */
-    @Accessor(propertyName = "currency", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Currency getCurrency() {
-        return this.currency;
-    }
-
-    /**
      * The assigned user group.
      */
     @Accessor(propertyName = "userGroup", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public UserGroup getUserGroup() {
         return this.userGroup;
-    }
-
-    /**
-     * Defines if the price is net or gross.
-     */
-    @Accessor(propertyName = "net", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Boolean getNet() {
-        return this.net;
-    }
-
-    /**
-     * The assigned user.
-     */
-    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    /**
-     * The assigned user.
-     */
-    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public User getUser() {
-        return this.user;
     }
 
     /**
@@ -138,11 +98,11 @@ public class Price extends Item {
     }
 
     /**
-     * The price value.
+     * The assigned user group.
      */
-    @Accessor(propertyName = "price", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    @Accessor(propertyName = "userGroup", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 
     /**
@@ -154,11 +114,27 @@ public class Price extends Item {
     }
 
     /**
-     * The product id the price is used for.
+     * The currency of the price.
      */
-    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProductId(String productId) {
-        this.productId = productId;
+    @Accessor(propertyName = "currency", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Currency getCurrency() {
+        return this.currency;
+    }
+
+    /**
+     * The price value.
+     */
+    @Accessor(propertyName = "price", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    /**
+     * The assigned user.
+     */
+    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setUser(User user) {
+        this.user = user;
     }
 
     /**
@@ -170,10 +146,34 @@ public class Price extends Item {
     }
 
     /**
-     * The assigned user group.
+     * Defines if the price is net or gross.
      */
-    @Accessor(propertyName = "userGroup", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setUserGroup(UserGroup userGroup) {
-        this.userGroup = userGroup;
+    @Accessor(propertyName = "net", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Boolean getNet() {
+        return this.net;
+    }
+
+    /**
+     * The product id the price is used for.
+     */
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    /**
+     * The product id the price is used for.
+     */
+    @Accessor(propertyName = "productId", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getProductId() {
+        return this.productId;
+    }
+
+    /**
+     * The assigned user.
+     */
+    @Accessor(propertyName = "user", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public User getUser() {
+        return this.user;
     }
 }

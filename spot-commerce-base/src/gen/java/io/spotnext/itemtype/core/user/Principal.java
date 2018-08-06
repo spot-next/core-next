@@ -45,8 +45,8 @@ public abstract class Principal extends UniqueIdItem {
     /**
      * The relation between principal groups and principals
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.List, relationName = "PrincipalGroup2Principal", mappedTo = "members", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public Set<PrincipalGroup> groups;
 
     /**
@@ -60,9 +60,9 @@ public abstract class Principal extends UniqueIdItem {
     /**
      * The short name identifying the principal object.
      */
-    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getShortName() {
-        return this.shortName;
+    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     /**
@@ -76,8 +76,8 @@ public abstract class Principal extends UniqueIdItem {
     /**
      * The short name identifying the principal object.
      */
-    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
+    @Accessor(propertyName = "shortName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getShortName() {
+        return this.shortName;
     }
 }

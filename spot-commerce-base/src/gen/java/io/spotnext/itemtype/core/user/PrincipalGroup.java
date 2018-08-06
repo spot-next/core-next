@@ -44,16 +44,16 @@ public abstract class PrincipalGroup extends Principal {
     /**
      * The relation between principal groups and principals
      */
-    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setMembers(Set<Principal> members) {
-        this.members = members;
+    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<Principal> getMembers() {
+        return this.members;
     }
 
     /**
      * The relation between principal groups and principals
      */
-    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<Principal> getMembers() {
-        return this.members;
+    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setMembers(Set<Principal> members) {
+        this.members = members;
     }
 }

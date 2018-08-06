@@ -48,15 +48,15 @@ public class Language extends Item {
      * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
      */
     @Property(readable = true, unique = true, writable = true)
-    @Length(min = 3, max = 3)
     @NotNull
+    @Length(min = 3, max = 3)
     protected String iso3Code;
 
     /**
      * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
      */
-    @Property(readable = true, writable = true)
     @Length(max = 2)
+    @Property(readable = true, writable = true)
     protected String isoCode;
 
     /**
@@ -75,17 +75,17 @@ public class Language extends Item {
     /**
      * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
      */
-    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getIso3Code() {
-        return this.iso3Code;
+    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setIso3Code(String iso3Code) {
+        this.iso3Code = iso3Code;
     }
 
     /**
-     * The languages available for that country.
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
      */
-    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCountries(Set<Country> countries) {
-        this.countries = countries;
+    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getIso3Code() {
+        return this.iso3Code;
     }
 
     /**
@@ -100,8 +100,8 @@ public class Language extends Item {
      * The international name of the language.
      */
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name.get();
+    public String getName(Locale locale) {
+        return this.name.get(locale);
     }
 
     /**
@@ -115,25 +115,25 @@ public class Language extends Item {
     /**
      * The international name of the language.
      */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name, Locale locale) {
+        this.name.set(locale, name);
+    }
+
+    /**
+     * The languages available for that country.
+     */
+    @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCountries(Set<Country> countries) {
+        this.countries = countries;
+    }
+
+    /**
+     * The international name of the language.
+     */
     @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName(Locale locale) {
-        return this.name.get(locale);
-    }
-
-    /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
-     */
-    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getIsoCode() {
-        return this.isoCode;
-    }
-
-    /**
-     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-3.
-     */
-    @Accessor(propertyName = "iso3Code", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setIso3Code(String iso3Code) {
-        this.iso3Code = iso3Code;
+    public String getName() {
+        return this.name.get();
     }
 
     /**
@@ -145,10 +145,10 @@ public class Language extends Item {
     }
 
     /**
-     * The international name of the language.
+     * The ISO-3 code of the language.<br>                    @see https://en.wikipedia.org/wiki/ISO_639-1.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name, Locale locale) {
-        this.name.set(locale, name);
+    @Accessor(propertyName = "isoCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getIsoCode() {
+        return this.isoCode;
     }
 }

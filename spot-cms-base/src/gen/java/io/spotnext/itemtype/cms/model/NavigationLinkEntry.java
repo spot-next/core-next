@@ -51,19 +51,19 @@ public class NavigationLinkEntry extends AbstractNavigationEntry {
     }
 
     /**
-     * The HTML link target.
-     */
-    @Accessor(propertyName = "target", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setTarget(HtmlLinkTarget target) {
-        this.target = target;
-    }
-
-    /**
      * The href of the link.
      */
     @Accessor(propertyName = "href", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setHref(String href) {
         this.href = href;
+    }
+
+    /**
+     * The HTML link target.
+     */
+    @Accessor(propertyName = "target", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setTarget(HtmlLinkTarget target) {
+        this.target = target;
     }
 
     /**

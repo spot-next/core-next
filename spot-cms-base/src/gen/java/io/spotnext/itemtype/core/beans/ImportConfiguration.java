@@ -36,6 +36,11 @@ public class ImportConfiguration extends Bean {
         return this.scriptIdentifier;
     }
 
+    @Accessor(propertyName = "scriptIdentifier", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setScriptIdentifier(String scriptIdentifier) {
+        this.scriptIdentifier = scriptIdentifier;
+    }
+
     @Accessor(propertyName = "ignoreErrors", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setIgnoreErrors(Boolean ignoreErrors) {
         this.ignoreErrors = ignoreErrors;
@@ -44,10 +49,5 @@ public class ImportConfiguration extends Bean {
     @Accessor(propertyName = "ignoreErrors", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Boolean getIgnoreErrors() {
         return this.ignoreErrors;
-    }
-
-    @Accessor(propertyName = "scriptIdentifier", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setScriptIdentifier(String scriptIdentifier) {
-        this.scriptIdentifier = scriptIdentifier;
     }
 }

@@ -32,8 +32,8 @@ public class MediaContainer extends CatalogItem {
     private static final long serialVersionUID = 1L;
     public static final String TYPECODE = "mediacontainer";
     public static final String PROPERTY_MEDIAS = "medias";
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "MediaContainer2Media", mappedTo = "container", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<Media> medias;
 
     @Accessor(propertyName = "medias", type = io.spotnext.core.infrastructure.type.AccessorType.set)

@@ -39,24 +39,9 @@ public class UserAddress extends Address {
     /**
      * Defines a address ownership relation.
      */
-    @Property(readable = true, writable = true)
     @Relation(relationName = "User2Address", mappedTo = "addresses", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
+    @Property(readable = true, writable = true)
     public User owner;
-
-    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getPhone() {
-        return this.phone;
-    }
-
-    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getEmailAddress() {
-        return this.emailAddress;
-    }
 
     @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setEmailAddress(String emailAddress) {
@@ -66,16 +51,31 @@ public class UserAddress extends Address {
     /**
      * Defines a address ownership relation.
      */
-    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public User getOwner() {
-        return this.owner;
+    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getPhone() {
+        return this.phone;
+    }
+
+    @Accessor(propertyName = "emailAddress", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    @Accessor(propertyName = "phone", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     /**
      * Defines a address ownership relation.
      */
-    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setOwner(User owner) {
-        this.owner = owner;
+    @Accessor(propertyName = "owner", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public User getOwner() {
+        return this.owner;
     }
 }

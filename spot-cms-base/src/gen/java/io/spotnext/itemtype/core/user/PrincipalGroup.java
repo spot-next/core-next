@@ -37,17 +37,9 @@ public abstract class PrincipalGroup extends Principal {
     /**
      * The relation between principal groups and principals
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.List, relationName = "PrincipalGroup2Principal", mappedTo = "groups", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<Principal> members;
-
-    /**
-     * The relation between principal groups and principals
-     */
-    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Set<Principal> getMembers() {
-        return this.members;
-    }
 
     /**
      * The relation between principal groups and principals
@@ -55,5 +47,13 @@ public abstract class PrincipalGroup extends Principal {
     @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setMembers(Set<Principal> members) {
         this.members = members;
+    }
+
+    /**
+     * The relation between principal groups and principals
+     */
+    @Accessor(propertyName = "members", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Set<Principal> getMembers() {
+        return this.members;
     }
 }

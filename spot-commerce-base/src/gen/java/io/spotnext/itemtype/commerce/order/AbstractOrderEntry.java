@@ -33,8 +33,8 @@ public abstract class AbstractOrderEntry extends Item {
     public static final String TYPECODE = "abstractorderentry";
     public static final String PROPERTY_PRODUCT = "product";
     public static final String PROPERTY_ORDER = "order";
-    @NotNull
     @Property(readable = true, unique = true, writable = true)
+    @NotNull
     protected Product product;
 
     /**
@@ -43,11 +43,6 @@ public abstract class AbstractOrderEntry extends Item {
     @Relation(relationName = "AbstractOrder2AbstractOrderEntry", mappedTo = "entries", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     @Property(readable = true, writable = true)
     public AbstractOrder order;
-
-    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setProduct(Product product) {
-        this.product = product;
-    }
 
     @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Product getProduct() {
@@ -68,5 +63,10 @@ public abstract class AbstractOrderEntry extends Item {
     @Accessor(propertyName = "order", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setOrder(AbstractOrder order) {
         this.order = order;
+    }
+
+    @Accessor(propertyName = "product", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

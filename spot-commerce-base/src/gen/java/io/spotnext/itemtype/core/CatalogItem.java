@@ -37,8 +37,8 @@ public abstract class CatalogItem extends UniqueIdItem {
     /**
      * The catalog version this item belongs to.
      */
-    @Property(readable = true, unique = true, writable = true)
     @NotNull
+    @Property(readable = true, unique = true, writable = true)
     protected CatalogVersion catalogVersion;
 
     /**

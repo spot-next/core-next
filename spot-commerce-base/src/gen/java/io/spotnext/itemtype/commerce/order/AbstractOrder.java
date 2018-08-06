@@ -46,9 +46,17 @@ public abstract class AbstractOrder extends UniqueIdItem {
     /**
      * The categories the product is referenced by.
      */
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "AbstractOrder2AbstractOrderEntry", mappedTo = "order", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<AbstractOrderEntry> entries;
+
+    /**
+     * The categories the product is referenced by.
+     */
+    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setEntries(Set<AbstractOrderEntry> entries) {
+        this.entries = entries;
+    }
 
     /**
      * The categories the product is referenced by.
@@ -61,14 +69,6 @@ public abstract class AbstractOrder extends UniqueIdItem {
     @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Customer getCustomer() {
         return this.customer;
-    }
-
-    /**
-     * The categories the product is referenced by.
-     */
-    @Accessor(propertyName = "entries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setEntries(Set<AbstractOrderEntry> entries) {
-        this.entries = entries;
     }
 
     @Accessor(propertyName = "customer", type = io.spotnext.core.infrastructure.type.AccessorType.set)

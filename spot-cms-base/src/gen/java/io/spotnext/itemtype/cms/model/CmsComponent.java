@@ -35,13 +35,13 @@ public class CmsComponent extends AbstractCmsComponent {
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.Set, relationName = "ContentSlot2CmsComponent", mappedTo = "components", type = io.spotnext.core.infrastructure.type.RelationType.ManyToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     public Set<ContentSlot> contentSlot;
 
-    @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setContentSlot(Set<ContentSlot> contentSlot) {
-        this.contentSlot = contentSlot;
-    }
-
     @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public Set<ContentSlot> getContentSlot() {
         return this.contentSlot;
+    }
+
+    @Accessor(propertyName = "contentSlot", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setContentSlot(Set<ContentSlot> contentSlot) {
+        this.contentSlot = contentSlot;
     }
 }

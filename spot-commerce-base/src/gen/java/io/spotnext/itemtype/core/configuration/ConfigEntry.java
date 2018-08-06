@@ -62,13 +62,13 @@ public class ConfigEntry extends UniqueIdItem {
     /**
      * The config entries referenced by this configuration.
      */
-    @Relation(relationName = "Configuration2ConfigEntry", mappedTo = "entries", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     @Property(readable = true, writable = true)
+    @Relation(relationName = "Configuration2ConfigEntry", mappedTo = "entries", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.TARGET)
     public Configuration configuration;
 
-    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Double getDoubleValue() {
-        return this.doubleValue;
+    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setDoubleValue(Double doubleValue) {
+        this.doubleValue = doubleValue;
     }
 
     @Accessor(propertyName = "longValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -76,9 +76,9 @@ public class ConfigEntry extends UniqueIdItem {
         return this.longValue;
     }
 
-    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Float getFloatValue() {
-        return this.floatValue;
+    @Accessor(propertyName = "longValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setLongValue(Long longValue) {
+        this.longValue = longValue;
     }
 
     @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -86,27 +86,14 @@ public class ConfigEntry extends UniqueIdItem {
         this.intValue = intValue;
     }
 
-    /**
-     * The config entries referenced by this configuration.
-     */
-    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Configuration getConfiguration() {
-        return this.configuration;
-    }
-
-    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getStringValue() {
-        return this.stringValue;
-    }
-
-    @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Integer getIntValue() {
-        return this.intValue;
-    }
-
     @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setStringValue(String stringValue) {
         this.stringValue = stringValue;
+    }
+
+    @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Float getFloatValue() {
+        return this.floatValue;
     }
 
     /**
@@ -120,24 +107,19 @@ public class ConfigEntry extends UniqueIdItem {
     /**
      * The config entries referenced by this configuration.
      */
-    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
+    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
+
+    @Accessor(propertyName = "intValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Integer getIntValue() {
+        return this.intValue;
     }
 
     @Accessor(propertyName = "floatValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setFloatValue(Float floatValue) {
         this.floatValue = floatValue;
-    }
-
-    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setDoubleValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
-    }
-
-    @Accessor(propertyName = "longValue", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setLongValue(Long longValue) {
-        this.longValue = longValue;
     }
 
     /**
@@ -146,5 +128,23 @@ public class ConfigEntry extends UniqueIdItem {
     @Accessor(propertyName = "description", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getDescription() {
         return this.description;
+    }
+
+    @Accessor(propertyName = "doubleValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Double getDoubleValue() {
+        return this.doubleValue;
+    }
+
+    @Accessor(propertyName = "stringValue", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getStringValue() {
+        return this.stringValue;
+    }
+
+    /**
+     * The config entries referenced by this configuration.
+     */
+    @Accessor(propertyName = "configuration", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 }

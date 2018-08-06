@@ -38,9 +38,9 @@ public class Customer extends User {
     @Property(readable = true, writable = true)
     protected Date birthDay;
 
-    @Accessor(propertyName = "lastName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getLastName() {
-        return this.lastName;
+    @Accessor(propertyName = "birthDay", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
     }
 
     @Accessor(propertyName = "firstName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -48,14 +48,9 @@ public class Customer extends User {
         this.firstName = firstName;
     }
 
-    @Accessor(propertyName = "lastName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    @Accessor(propertyName = "birthDay", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
+    @Accessor(propertyName = "birthDay", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Date getBirthDay() {
+        return this.birthDay;
     }
 
     @Accessor(propertyName = "firstName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -63,8 +58,13 @@ public class Customer extends User {
         return this.firstName;
     }
 
-    @Accessor(propertyName = "birthDay", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Date getBirthDay() {
-        return this.birthDay;
+    @Accessor(propertyName = "lastName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Accessor(propertyName = "lastName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getLastName() {
+        return this.lastName;
     }
 }

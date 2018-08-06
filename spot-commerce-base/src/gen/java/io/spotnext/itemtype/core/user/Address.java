@@ -56,19 +56,9 @@ public abstract class Address extends Item {
     @Relation(relationName = "Address2AddressType", mappedTo = "null", type = io.spotnext.core.infrastructure.type.RelationType.ManyToOne, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
     public AddressType type;
 
-    @Accessor(propertyName = "postalCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getPostalCode() {
-        return this.postalCode;
-    }
-
-    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public Country getCountry() {
-        return this.country;
-    }
-
-    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCountry(Country country) {
-        this.country = country;
+    @Accessor(propertyName = "streetName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getStreetName() {
+        return this.streetName;
     }
 
     @Accessor(propertyName = "streetNumber", type = io.spotnext.core.infrastructure.type.AccessorType.set)
@@ -76,32 +66,39 @@ public abstract class Address extends Item {
         this.streetNumber = streetNumber;
     }
 
-    @Accessor(propertyName = "city", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    @Accessor(propertyName = "city", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getCity() {
-        return this.city;
-    }
-
     @Accessor(propertyName = "state", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setState(String state) {
         this.state = state;
     }
 
-    /**
-     * Defines a address ownership relation.
-     */
-    @Accessor(propertyName = "type", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public AddressType getType() {
-        return this.type;
+    @Accessor(propertyName = "state", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getState() {
+        return this.state;
     }
 
-    @Accessor(propertyName = "streetName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
+    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    @Accessor(propertyName = "streetNumber", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getStreetNumber() {
+        return this.streetNumber;
+    }
+
+    @Accessor(propertyName = "country", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public Country getCountry() {
+        return this.country;
+    }
+
+    @Accessor(propertyName = "city", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    @Accessor(propertyName = "postalCode", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getPostalCode() {
+        return this.postalCode;
     }
 
     /**
@@ -112,23 +109,26 @@ public abstract class Address extends Item {
         this.type = type;
     }
 
-    @Accessor(propertyName = "state", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getState() {
-        return this.state;
-    }
-
-    @Accessor(propertyName = "streetName", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getStreetName() {
-        return this.streetName;
-    }
-
-    @Accessor(propertyName = "streetNumber", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getStreetNumber() {
-        return this.streetNumber;
+    @Accessor(propertyName = "streetName", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
     }
 
     @Accessor(propertyName = "postalCode", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    /**
+     * Defines a address ownership relation.
+     */
+    @Accessor(propertyName = "type", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public AddressType getType() {
+        return this.type;
+    }
+
+    @Accessor(propertyName = "city", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getCity() {
+        return this.city;
     }
 }

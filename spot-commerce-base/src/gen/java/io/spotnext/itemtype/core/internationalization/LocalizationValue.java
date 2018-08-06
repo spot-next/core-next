@@ -60,6 +60,14 @@ public class LocalizationValue extends UniqueIdItem {
     /**
      * The localized value of the key.
      */
+    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * The localized value of the key.
+     */
     @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.get)
     public String getValue() {
         return this.value;
@@ -71,13 +79,5 @@ public class LocalizationValue extends UniqueIdItem {
     @Accessor(propertyName = "locale", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setLocale(Locale locale) {
         this.locale = locale;
-    }
-
-    /**
-     * The localized value of the key.
-     */
-    @Accessor(propertyName = "value", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setValue(String value) {
-        this.value = value;
     }
 }

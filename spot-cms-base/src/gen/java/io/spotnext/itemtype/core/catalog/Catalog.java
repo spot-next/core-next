@@ -42,21 +42,16 @@ public class Catalog extends UniqueIdItem {
      */
     @Property(readable = true, writable = true)
     protected String name;
-    @Property(readable = true, writable = true)
     @Relation(collectionType = io.spotnext.core.infrastructure.type.RelationCollectionType.List, relationName = "Catalog2CatalogVersion", mappedTo = "catalog", type = io.spotnext.core.infrastructure.type.RelationType.OneToMany, nodeType = io.spotnext.core.infrastructure.type.RelationNodeType.SOURCE)
+    @Property(readable = true, writable = true)
     public Set<CatalogVersion> versions;
-
-    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setVersions(Set<CatalogVersion> versions) {
-        this.versions = versions;
-    }
 
     /**
      * The name of the catalog.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name = name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName() {
+        return this.name;
     }
 
     @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -67,8 +62,13 @@ public class Catalog extends UniqueIdItem {
     /**
      * The name of the catalog.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Accessor(propertyName = "versions", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setVersions(Set<CatalogVersion> versions) {
+        this.versions = versions;
     }
 }

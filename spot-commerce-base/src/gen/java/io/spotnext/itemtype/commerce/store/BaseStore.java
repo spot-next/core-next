@@ -63,14 +63,6 @@ public class BaseStore extends UniqueIdItem {
     }
 
     /**
-     * The name of the base store.
-     */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
-    public String getName() {
-        return this.name;
-    }
-
-    /**
      * These regex strings are used to match browser url to the base store.
      */
     @Accessor(propertyName = "urlMatchers", type = io.spotnext.core.infrastructure.type.AccessorType.get)
@@ -81,9 +73,9 @@ public class BaseStore extends UniqueIdItem {
     /**
      * The name of the base store.
      */
-    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
-    public void setName(String name) {
-        this.name = name;
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.get)
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -92,6 +84,14 @@ public class BaseStore extends UniqueIdItem {
     @Accessor(propertyName = "countries", type = io.spotnext.core.infrastructure.type.AccessorType.set)
     public void setCountries(Set<Country> countries) {
         this.countries = countries;
+    }
+
+    /**
+     * The name of the base store.
+     */
+    @Accessor(propertyName = "name", type = io.spotnext.core.infrastructure.type.AccessorType.set)
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
