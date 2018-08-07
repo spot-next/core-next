@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,16 @@ import io.spotnext.core.types.Localizable;
 @Service
 public class PrimitiveValueResolver implements ImpexValueResolver {
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override
-	public <T> T resolve(String value, Class<T> type, List<Class<?>> genericArguments,
-			ColumnDefinition columnDefinition) throws ValueResolverException {
+	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments,
+			final ColumnDefinition columnDefinition) throws ValueResolverException {
+
+		if (StringUtils.isBlank(value)) {
+			return null;
+		}
+
 		try {
 			if (Localizable.class.isAssignableFrom(type)) {
 				Class<?> genericType = null;
@@ -63,20 +69,20 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 					return mapper.readValue(value, type);
 				}
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new ValueResolverException(e);
 		}
 	}
 
-	private boolean isBoolean(String value) {
+	private boolean isBoolean(final String value) {
 		return BooleanUtils.toBooleanObject(value) != null;
 	}
 
-	private Boolean toBoolean(String value) {
+	private Boolean toBoolean(final String value) {
 		return BooleanUtils.toBooleanObject(value);
 	}
 
-	private Number toNumber(String value) {
+	private Number toNumber(final String value) {
 		return NumberUtils.createNumber(value);
 	}
 }
