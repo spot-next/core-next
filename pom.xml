@@ -43,6 +43,27 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>travis</id>
+			<activation>
+				<property>
+					<name>travis</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<configuration>
+							<gpgArguments combine.self="override" />
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<scm>
