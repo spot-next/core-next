@@ -58,8 +58,7 @@
 						<artifactId>maven-gpg-plugin</artifactId>
 						<version>1.6</version>
 						<configuration>
-							<gpgArguments>
-							</gpgArguments>
+							<gpgArguments combine.self="override" />
 						</configuration>
 					</plugin>
 				</plugins>
