@@ -49,9 +49,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import io.spotnext.core.persistence.query.JpqlQuery;
-import io.spotnext.core.persistence.query.ModelQuery;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -59,11 +57,12 @@ import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
+import io.spotnext.core.persistence.query.JpqlQuery;
+import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
@@ -149,7 +148,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			if (Item.class.isAssignableFrom(sourceQuery.getResultClass())
 					|| NATIVE_DATATYPES.contains(sourceQuery.getResultClass())) {
 
-				final Query<T> query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
+				Query<T> query = null;
+
+				try {
+					query = session.createQuery(sourceQuery.getQuery(), sourceQuery.getResultClass());
+				} catch (final Exception e) {
+					throw new QueryException("Could not parse query", e);
+				}
+
 				// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
 				// true);
 
@@ -248,8 +254,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		query.setHint("org.hibernate.cacheable", !sourceQuery.isIgnoreCache());
 	}
 
-	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setFetchSubGraphsHint(final Session session,
-			final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
+	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setFetchSubGraphsHint(
+			final Session session, final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
 		if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
 			loggingService.warn("Fetch sub graphs can only be used for item queries.");
@@ -411,7 +417,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * Attaches the given item in case it is detached.
 	 * 
 	 * @param item
-	 * @return true if the item was successfully attached to the hibernate session.
+	 * @return true if the item was successfully attached to the hibernate
+	 *         session.
 	 * @throws ModelNotFoundException
 	 */
 	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {

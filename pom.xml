@@ -501,6 +501,7 @@
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						<stagingProfileId>5f2e64bdcef503</stagingProfileId>
 					</configuration>
 					<executions>
 						<execution>
@@ -508,6 +509,13 @@
 							<phase>deploy</phase>
 							<goals>
 								<goal>deploy</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-release</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal></goal>
 							</goals>
 						</execution>
 					</executions>

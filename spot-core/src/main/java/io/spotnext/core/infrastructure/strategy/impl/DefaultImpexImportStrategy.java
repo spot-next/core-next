@@ -30,9 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
-import io.spotnext.core.persistence.query.JpqlQuery;
-import io.spotnext.core.persistence.query.ModelQuery;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
@@ -48,13 +46,14 @@ import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.infrastructure.support.impex.ImpexCommand;
 import io.spotnext.core.infrastructure.support.impex.ImpexMergeMode;
 import io.spotnext.core.infrastructure.support.impex.WorkUnit;
+import io.spotnext.core.persistence.query.JpqlQuery;
+import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.support.util.MiscUtil;
 import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.core.types.Item;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Service
 public class DefaultImpexImportStrategy extends AbstractService implements ImpexImportStrategy {
@@ -62,9 +61,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	public static final String MAP_ENTRY_SEPARATOR = "->";
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\=]{0,}\]{0,1})
+	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\-\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
-			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\=]{0,}\\]{0,1})");
+			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\-\\=]{0,}\\]{0,1})");
 
 	@Resource
 	private TypeService typeService;
@@ -123,7 +122,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		for (final String line : fileContent) {
 
-			// there might be some invisible unicode characters that might cause troubles
+			// there might be some invisible unicode characters that might cause
+			// troubles
 			// furthermore all spaces
 			final String trimmedLine = StringUtils.trim(line);
 
@@ -226,7 +226,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							final Class<?> returnType = propDef.getReturnType();
 							col.setColumnType(returnType);
 
-							// resolve values using the default or the configured value resolvers
+							// resolve values using the default or the
+							// configured value resolvers
 							final Object propertyValue = resolveValue(val, returnType,
 									propDef.getGenericTypeArguments(), col);
 
@@ -248,7 +249,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 								rawItem, config);
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
 
-						// if no matching item is found, we tread this the same way as an INSERT COMMAND
+						// if no matching item is found, we tread this the same
+						// way as an INSERT COMMAND
 						if (existingItem != null) {
 							setItemValues(existingItem, rawItem);
 							saveItem(config, existingItem);
@@ -384,8 +386,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/**
 	 * Return the unique resolved (!) properties.
 	 * 
-	 * @throws ImpexImportException if one of the given columns is a collection or a
-	 *                              map, as this is not supported.
+	 * @throws ImpexImportException
+	 *             if one of the given columns is a collection or a map, as this
+	 *             is not supported.
 	 */
 	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns,
 			final Map<ColumnDefinition, Object> rawItem, final ImportConfiguration config) throws ImpexImportException {
@@ -482,14 +485,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	private void setPropertyValue(Item item, ColumnDefinition columnDefinition, Object value) {
-		String localeString = columnDefinition.getModifiers().get("lang");
+	private void setPropertyValue(final Item item, final ColumnDefinition columnDefinition, final Object value) {
+		final String localeString = columnDefinition.getModifiers().get("lang");
 		Locale locale = null;
 
 		if (StringUtils.isNotBlank(localeString)) {
 			try {
 				locale = MiscUtil.parseLocale(localeString);
-			} catch (IllegalStateException e) {
+			} catch (final IllegalStateException e) {
 				loggingService.warn(String.format("Unknown locale %s", localeString));
 			}
 		}
@@ -517,8 +520,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		Object ret = null;
 
+		// if value is null, check for default value in the column definition
+		final String val = StringUtils.isNotBlank(value) ? value : columnDefinition.getModifiers().get("default");
+
 		if (Collection.class.isAssignableFrom(type)) {
-			final String[] collectionValues = value.split(COLLECTION_VALUE_SEPARATOR);
+			final String[] collectionValues = val.split(COLLECTION_VALUE_SEPARATOR);
 			final List<Object> resolvedValues = new ArrayList<>();
 			ret = resolvedValues;
 
@@ -526,7 +532,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition));
 			}
 		} else if (Map.class.isAssignableFrom(type)) {
-			final String[] mapEntryValues = value.split(COLLECTION_VALUE_SEPARATOR);
+			final String[] mapEntryValues = val.split(COLLECTION_VALUE_SEPARATOR);
 			final Map<Object, Object> resolvedValues = new HashMap<>();
 			ret = resolvedValues;
 
@@ -538,7 +544,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				resolvedValues.put(entryKey, entryValue);
 			}
 		} else {
-			ret = resolveSingleValue(value, type, columnDefinition);
+			ret = resolveSingleValue(val, type, columnDefinition);
 		}
 
 		return ret;
