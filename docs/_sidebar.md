@@ -6,7 +6,7 @@
 
 - [FAQ](/faq)
 - [Roadmap](/roadmap)
-- [Changelog](/changelog)
+- [Changelog](https://raw.githubusercontent.com/mojo2012/spot-framework/master/CHANGELOG.md)
 <!--- - [![](https://icongr.am/feather/code.svg?size=16&color=808080)API documentation](/api) --->
 <!--- - [![](https://icongr.am/feather/file-text.svg?size=16&color=808080)Javadoc](/javadoc) --->
 
