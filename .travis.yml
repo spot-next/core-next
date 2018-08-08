@@ -44,7 +44,7 @@ deploy:
       branch: develop
       tags: false
   - provider: script
-    script: "mvn -P travis,release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
+    script: "mvn -P travis,release -Dmaven.test.skip=true clean install deploy nexus-staging:close -Drevision=$TRAVIS_TAG-`date +%Y%m%d`-`git log --pretty=format:'%h' -n 1`"
     skip_cleanup: true
     on:
       branch: master
@@ -53,6 +53,6 @@ deploy:
 notifications:
   email:
     recipients:
-    - meister.fuchs@gmail.com
+      - meister.fuchs@gmail.com
     on_success: change
     on_failure: always
