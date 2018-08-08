@@ -45,7 +45,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 public abstract class AbstractBaseClassTransformer implements ClassFileTransformer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
-	protected ClassPool pool = ClassPool.getDefault();
+	protected ClassPool pool = new ClassPool(true);
 
 	protected final List<String> classPaths = new ArrayList<>();
 

@@ -31,7 +31,7 @@ public class TypeServicePersistenceUnitPostProcessor extends AbstractService imp
 
 				if (!Item.class.equals(typeClass) && (entityAnnotation == null && mappedSuperclassAnnotation == null)) {
 					throw new IllegalStateException(
-							String.format("Item type with code '%s' has not JPA entity annotation", def.getTypeCode()));
+							String.format("Item type with code '%s' has no JPA entity annotation", def.getTypeCode()));
 				}
 			} catch (final ClassNotFoundException e) {
 				throw new IllegalStateException(
