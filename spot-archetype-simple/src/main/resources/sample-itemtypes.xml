@@ -24,9 +24,11 @@
 	<type name="User" package="io.spotnext.itemtype.core.user">
 		<properties>
 			<property name="type" type="UserType">
-				<!-- <validators> -->
-				<!-- <validator javaClass="javax.validation.constraints.NotNull" /> -->
-				<!-- </validators> -->
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+				<defaultValue>io.spotnext.sample.itemtype.sample.enumeration.UserType.REGISTERED
+				</defaultValue>
 			</property>
 		</properties>
 	</type>

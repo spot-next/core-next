@@ -300,14 +300,14 @@
 						<complianceLevel>${java.version}</complianceLevel>
 						<encoding>UTF-8</encoding>
 						<verbose>false</verbose>
-						<forceAjcCompile>true</forceAjcCompile>
-						<!-- <preserveAllLocals>true</preserveAllLocals> -->
+						<forceAjcCompile>false</forceAjcCompile>
+						<preserveAllLocals>true</preserveAllLocals>
 						<proceedOnError>true</proceedOnError>
 						<!-- <Xreweavable>true</Xreweavable> -->
+						
 					</configuration>
 					<executions>
 						<execution>
-							<phase>process-resources</phase>
 							<goals>
 								<!-- IMPORTANT -->
 								<goal>compile</goal>

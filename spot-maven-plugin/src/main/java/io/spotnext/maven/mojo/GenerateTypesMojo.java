@@ -38,6 +38,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
+import de.hunsicker.jalopy.Jalopy;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.Accessor;
 import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.infrastructure.maven.TypeDefinitions;
@@ -87,8 +89,6 @@ import io.spotnext.maven.velocity.type.parts.JavaGenericTypeArgument;
 import io.spotnext.maven.velocity.type.parts.JavaMemberType;
 import io.spotnext.maven.velocity.type.parts.JavaMethod;
 import io.spotnext.maven.velocity.util.VelocityUtil;
-import de.hunsicker.jalopy.Jalopy;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @description Generates the java source code for the defined item types.
@@ -330,8 +330,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 				if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 					try {
-						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
-					} catch (final ClassNotFoundException e) {
+						field.setAssignement(
+								new JavaExpression(prop.getDefaultValue().getContent(), JavaValueType.LITERAL));
+					} catch (final Exception e) {
 						throw new MojoExecutionException(String
 								.format(String.format("Could not set default value for property %s of item type %s",
 										field.getName(), javaClass.getFullyQualifiedName())),
@@ -398,7 +399,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		return builder.toString().toUpperCase(Locale.ENGLISH);
 	}
 
-	private Optional<String> getLocalizedType(String localizableTypeCode) {
+	private Optional<String> getLocalizedType(final String localizableTypeCode) {
 		final ItemType localizableType = typeDefinitions.getItemTypes().get(localizableTypeCode);
 
 		if (localizableType.getInterfaces() != null
@@ -415,8 +416,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	/**
 	 * This generates 2 getters, one with a {@link Locale} as single parameter.
-	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
-	 * that the field type is implementing {@link Localizable}!
+	 * Furthermore it calls {@link Localizable#get()} on the field, which
+	 * implies that the field type is implementing {@link Localizable}!
 	 *
 	 * @throws MojoExecutionException
 	 */
@@ -464,8 +465,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	/**
 	 * This generates 2 getters, one with a {@link Locale} as single parameter.
-	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
-	 * that the field type is implementing {@link Localizable}!
+	 * Furthermore it calls {@link Localizable#get()} on the field, which
+	 * implies that the field type is implementing {@link Localizable}!
 	 *
 	 * @param prop
 	 * @throws MojoExecutionException
@@ -519,7 +520,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 		javaClass.setVisibility(Visibility.PUBLIC);
 
 		// add itemtype annotation, ignore base item type
-		final JavaAnnotation typeAnnotation = new JavaAnnotation(io.spotnext.core.infrastructure.annotation.ItemType.class);
+		final JavaAnnotation typeAnnotation = new JavaAnnotation(
+				io.spotnext.core.infrastructure.annotation.ItemType.class);
 
 		if (StringUtils.isBlank(type.getTypeCode())) {
 			throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
@@ -831,7 +833,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 			javaClass.addField(property);
 
 			// add modifiers
-			final JavaAnnotation propAnn = new JavaAnnotation(io.spotnext.core.infrastructure.annotation.Property.class);
+			final JavaAnnotation propAnn = new JavaAnnotation(
+					io.spotnext.core.infrastructure.annotation.Property.class);
 			property.addAnnotation(propAnn);
 
 			populatePropertyValidators(to.getValidators(), property);
@@ -840,7 +843,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 			boolean addSetter = io.spotnext.core.infrastructure.annotation.Property.DEFAULT_WRITABLE;
 
 			if (to.getModifiers() != null) {
-				if (io.spotnext.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers().isUnique()) {
+				if (io.spotnext.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers()
+						.isUnique()) {
 					propAnn.addParameter("unique", to.getModifiers().isUnique(), JavaValueType.LITERAL);
 				}
 

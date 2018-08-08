@@ -11,6 +11,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.aop.TargetClassAware;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
@@ -62,16 +63,25 @@ public class LogAspect extends AbstractBaseAspect {
 			final Object[] arguments, final Long duration) {
 
 		String msg = null;
+		final Object target = joinPoint.getTarget();
+		Class<?> targetClass = null;
+
+		if (target instanceof TargetClassAware) {
+			targetClass = ((TargetClassAware) target).getTargetClass();
+		} else if (target.getClass().getName().contains("CGLIB")) {
+			targetClass = target.getClass().getSuperclass();
+		} else {
+			targetClass = target.getClass();
+		}
 
 		if (StringUtils.isNotBlank(message)) {
 			msg = String.format(message, arguments);
 
-			msg = msg.replace("$className", joinPoint.getTarget().getClass().getName());
-			msg = msg.replace("$classSimpleName", joinPoint.getTarget().getClass().getSimpleName());
+			msg = msg.replace("$className", targetClass.getName());
+			msg = msg.replace("$classSimpleName", targetClass.getSimpleName());
 			msg = msg.replace("$timestamp", DATEFORMAT.format(new Date()));
 		} else {
-			msg = String.format("%s %s.%s", marker, joinPoint.getTarget().getClass().getSimpleName(),
-					joinPoint.getSignature().getName());
+			msg = String.format("%s %s.%s", marker, targetClass.getSimpleName(), joinPoint.getSignature().getName());
 		}
 
 		if (duration != null) {
