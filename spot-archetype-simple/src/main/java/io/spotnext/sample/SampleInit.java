@@ -1,17 +1,17 @@
+
 package io.spotnext.sample;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.Bootstrap;
+import io.spotnext.core.infrastructure.support.init.ModuleInit;
 
-@SpringBootApplication(scanBasePackages = { "io.spotnext.sample" })
-public class SampleInit extends CoreInit {
+@SpringBootApplication(scanBasePackages = { "io.spotnext.sample.service" })
+public class SampleInit extends ModuleInit {
 
 	@Override
 	protected void initialize() throws ModuleInitializationException {
-		super.initialize();
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class SampleInit extends CoreInit {
 		super.importSampleData();
 	}
 
-	public static void main(final String[] args) {
-		Bootstrap.bootstrap(SampleInit.class, new String[] { "io.spotnext.sample" }).run();
+	public static void main(final String[] args) throws Exception {
+		Bootstrap.bootstrap(SampleInit.class, new String[] { "io.spotnext.sample.itemtype" }, args).run();
 	}
 
 }
