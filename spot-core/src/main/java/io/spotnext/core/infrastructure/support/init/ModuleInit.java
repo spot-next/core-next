@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
@@ -43,33 +44,35 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	protected void onApplicationEvent(final ApplicationReadyEvent event) throws ModuleInitializationException {
 		if (!alreadyInitialized) {
 			initialize();
+			if (configurationService.getBoolean("core.setup.import.initialdata", false)) {
+				importInitialData();
+			}
+
+			if (configurationService.getBoolean("core.setup.import.sampledata", false)) {
+				importSampleData();
+			}
+
+			loggingService.info("Initialization complete");
 			alreadyInitialized = true;
 		}
-
-		if (configurationService.getBoolean("core.setup.import.initialdata", false)) {
-			importInitialData();
-		}
-
-		if (configurationService.getBoolean("core.setup.import.sampledata", false)) {
-			importSampleData();
-		}
-
-		loggingService.info("Initialization complete");
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called after
-	 * {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called
+	 * after {@link Bootstrap} all spring beans are initialized.
 	 */
+	@Log(message = "Initializing module $classSimpleName", measureTime = true)
 	protected abstract void initialize() throws ModuleInitializationException;
 
 	/**
 	 * This is only called, if the corresponding command line flag is also set
 	 */
+	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		//
 	}
 
+	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		//
 	}

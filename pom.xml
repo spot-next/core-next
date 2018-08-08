@@ -261,6 +261,7 @@
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
+						<useIncrementalCompilation>false</useIncrementalCompilation>
 					</configuration>
 				</plugin>
 
@@ -299,13 +300,14 @@
 						<complianceLevel>${java.version}</complianceLevel>
 						<encoding>UTF-8</encoding>
 						<verbose>false</verbose>
-						<!-- <forceAjcCompile>true</forceAjcCompile> -->
+						<forceAjcCompile>true</forceAjcCompile>
 						<!-- <preserveAllLocals>true</preserveAllLocals> -->
 						<proceedOnError>true</proceedOnError>
 						<!-- <Xreweavable>true</Xreweavable> -->
 					</configuration>
 					<executions>
 						<execution>
+							<phase>process-resources</phase>
 							<goals>
 								<!-- IMPORTANT -->
 								<goal>compile</goal>

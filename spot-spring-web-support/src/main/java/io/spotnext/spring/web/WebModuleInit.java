@@ -103,7 +103,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 			conf.setSpringConfigFile(springConfigFile);
 		}
 
-		Bootstrap.bootstrap(conf);
+		Bootstrap.bootstrap(conf).run();
 	}
 
 	/**

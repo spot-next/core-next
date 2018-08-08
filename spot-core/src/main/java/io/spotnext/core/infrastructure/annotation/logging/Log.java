@@ -20,6 +20,16 @@ public @interface Log {
 
 	LogLevel logLevel() default LogLevel.INFO;
 
+	/**
+	 * Logs the given message. The following placeholders are supported:
+	 * <ul>
+	 * <li>classSimpleName</li>
+	 * <li>className</li>
+	 * <li>timestamp</li>
+	 * </ul>
+	 * 
+	 * Example: "This is a logging message from classs $className"
+	 */
 	String message() default "";
 
 	String[] messageArguments() default {};

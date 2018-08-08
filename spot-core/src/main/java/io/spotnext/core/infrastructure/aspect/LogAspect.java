@@ -1,20 +1,25 @@
 package io.spotnext.core.infrastructure.aspect;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
-import io.spotnext.core.infrastructure.annotation.logging.Log;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 
 @Aspect
 @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
+
+	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
 	@PostConstruct
 	public void init() {
@@ -54,13 +59,19 @@ public class LogAspect extends AbstractBaseAspect {
 	}
 
 	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message,
-			final String[] arguments, final Long duration) {
+			final Object[] arguments, final Long duration) {
 
-		String msg = String.format("%s %s.%s", marker, joinPoint.getTarget().getClass().getSimpleName(),
-				joinPoint.getSignature().getName());
+		String msg = null;
 
 		if (StringUtils.isNotBlank(message)) {
 			msg = String.format(message, arguments);
+
+			msg = msg.replace("$className", joinPoint.getTarget().getClass().getName());
+			msg = msg.replace("$classSimpleName", joinPoint.getTarget().getClass().getSimpleName());
+			msg = msg.replace("$timestamp", DATEFORMAT.format(new Date()));
+		} else {
+			msg = String.format("%s %s.%s", marker, joinPoint.getTarget().getClass().getSimpleName(),
+					joinPoint.getSignature().getName());
 		}
 
 		if (duration != null) {

@@ -29,13 +29,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.BootstrapException;
 import io.spotnext.core.infrastructure.spring.ItemTypeAnnotationProcessor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.support.util.PropertiesUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
@@ -65,9 +65,9 @@ public class Bootstrap {
 	}
 
 	public static SpringApplicationBuilder bootstrap(final Class<? extends ModuleInit> configuration,
-			final String[] modelScanPaths) {
+			final String[] modelScanPaths, final String[] args) throws ParseException, BootstrapException {
 
-		final SpringApplicationBuilder builder = build(CoreInit.class);
+		final SpringApplicationBuilder builder = bootstrap(parseCommandLine(args));
 
 		builder.initializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
 			@Override
@@ -94,8 +94,9 @@ public class Bootstrap {
 	 * This is the main entry point for the bootstrap mechanism.
 	 * 
 	 * @param options
+	 * @return
 	 */
-	public static void bootstrap(final BootstrapOptions options) {
+	public static SpringApplicationBuilder bootstrap(final BootstrapOptions options) {
 		setDefaultLocale();
 		setLogSettings();
 
@@ -111,12 +112,12 @@ public class Bootstrap {
 
 		LOG.info("Bootstrapping done.");
 
-		builder.run();
+		return builder;
 	}
 
 	/**
-	 * Adds the parsed command line args regarding type system initialization and
-	 * import to the spring properties.
+	 * Adds the parsed command line args regarding type system initialization
+	 * and import to the spring properties.
 	 */
 	protected static void loadCommandLineArgsIntoSpringContext(final SpringApplicationBuilder builder,
 			final BootstrapOptions options) {
@@ -273,8 +274,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths. This
-	 * causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths.
+	 * This causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");
@@ -292,6 +293,6 @@ public class Bootstrap {
 	 *******************************************************************************************/
 
 	public static void main(final String[] args) throws Exception {
-		bootstrap(parseCommandLine(args));
+		bootstrap(parseCommandLine(args)).run();
 	}
 }

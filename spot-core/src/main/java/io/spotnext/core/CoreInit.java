@@ -7,15 +7,14 @@ import javax.annotation.Resource;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
-import io.spotnext.core.infrastructure.annotation.logging.Log;
+import ch.qos.logback.core.util.CloseUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 import io.spotnext.itemtype.core.enumeration.ImportFormat;
-import ch.qos.logback.core.util.CloseUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is the main entry point for the application. After the application has
@@ -40,14 +39,14 @@ public class CoreInit extends ModuleInit {
 	 */
 
 	@Override
-	@Log(message = "Initializing core", measureTime = true)
 	protected void initialize() throws ModuleInitializationException {
 		//
 	}
 
 	@Override
-	@Log(message = "Importing initial data", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
+		super.importInitialData();
+
 		try {
 			importScript("/data/initial/countries.impex", "Importing countries");
 			importScript("/data/initial/languages.impex", "Importing languages");
@@ -61,8 +60,9 @@ public class CoreInit extends ModuleInit {
 
 	@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
 	@Override
-	@Log(message = "Importing sample data", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
+		super.importSampleData();
+
 		try {
 			importScript("/data/sample/users.impex", "Importing sample users");
 			importScript("/data/sample/medias.impex", "Importing sample medias");
