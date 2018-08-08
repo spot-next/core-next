@@ -1,10 +1,11 @@
-package io.spotnext.sample.interceptor;
+package io.spotnext.sample.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.user.User;
+import io.spotnext.sample.itemtype.sample.enumeration.UserType;
 
 public class UserPrepareInterceptorIT extends AbstractIntegrationTest {
 
@@ -23,12 +24,10 @@ public class UserPrepareInterceptorIT extends AbstractIntegrationTest {
 	@Test
 	public void testUserPrepareInterceptor() {
 		final User user = modelService.create(User.class);
-		user.setShortName("test user");
 
 		modelService.save(user);
-
 		modelService.refresh(user);
 
-		Assert.assertEquals("user-0", user.getId());
+		Assert.assertEquals(UserType.REGISTERED, user.getType());
 	}
 }
