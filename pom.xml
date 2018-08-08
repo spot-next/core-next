@@ -7,6 +7,7 @@
 	<version>${revision}</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>pom</packaging>
+
 	<description>
 		The spOt microservice framework.
 	</description>
@@ -171,6 +172,31 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<configuration>
+					<updatePomFile>true</updatePomFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- ECLIPSE SETTINGS -->
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
@@ -520,7 +546,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				
+
 				<!-- ECLIPSE FIX -->
 				<!-- This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
