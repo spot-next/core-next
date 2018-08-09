@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.ItemType;
 import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.annotation.Relation;
@@ -43,7 +44,6 @@ import io.spotnext.core.types.Item;
 import io.spotnext.instrumentation.ClassTransformer;
 import io.spotnext.instrumentation.transformer.AbstractBaseClassTransformer;
 import io.spotnext.instrumentation.transformer.IllegalClassTransformationException;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
@@ -93,7 +93,16 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		try {
 			// we only want to transform item types only ...
-			if (!clazz.isFrozen() && isItemType(clazz) && !alreadyTransformed(clazz)) {
+			if (isItemType(clazz) && !alreadyTransformed(clazz)) {
+
+				if (clazz.isFrozen()) {
+					try {
+						clazz.defrost();
+					} catch (final Exception e) {
+						throw new IllegalClassTransformationException(
+								String.format("Type %s was frozen and could not be defrosted", clazz.getName()), e);
+					}
+				}
 
 				// add JPA entity annotation
 				addEntityAnnotation(clazz);
@@ -122,7 +131,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 							}
 						}
 
-						// only add column annotation if there is no relation annotation, as this is not
+						// only add column annotation if there is no relation
+						// annotation, as this is not
 						// allowed
 						if (CollectionUtils.isEmpty(fieldAnnotations)) {
 							final List<Annotation> columnAnn = createColumnAnnotation(clazz, field, propertyAnn.get());
@@ -134,18 +144,20 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					}
 				}
 
-//				try {
-//					final File file = new File("/var/tmp/" + clazz.getName() + CLASS_FILE_SUFFIX);
-//
-//					if (file.exists()) {
-//						file.delete();
-//					}
-//
-//					writeClass(clazz, file);
-//				} catch (final IOException e) {
-//					throw new IllegalClassTransformationException(
-//							String.format("Unable to write class file %s", clazz.getName()), e);
-//				}
+				// try {
+				// final File file = new File("/var/tmp/" + clazz.getName() +
+				// CLASS_FILE_SUFFIX);
+				//
+				// if (file.exists()) {
+				// file.delete();
+				// }
+				//
+				// writeClass(clazz, file);
+				// } catch (final IOException e) {
+				// throw new IllegalClassTransformationException(
+				// String.format("Unable to write class file %s",
+				// clazz.getName()), e);
+				// }
 
 				return Optional.of(clazz);
 			}
@@ -189,7 +201,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected Optional<Annotation> getItemTypeAnnotation(final CtClass clazz)
 			throws IllegalClassTransformationException {
 
-		// if the given class is a java base class it can't be unfrozen and it would
+		// if the given class is a java base class it can't be unfrozen and it
+		// would
 		// throw an exception so we check for valid classes
 		if (isValidClass(clazz.getName())) {
 			return getAnnotation(clazz, ItemType.class);
@@ -213,7 +226,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected List<Annotation> createColumnAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
 
-		List<Annotation> ret = new ArrayList<>();
+		final List<Annotation> ret = new ArrayList<>();
 
 		final Annotation columnAnn = createAnnotation(field.getFieldInfo2().getConstPool(), Column.class);
 
@@ -231,13 +244,13 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		// add the type information, if available
 
-		EnumMemberValue colTypeVal = (EnumMemberValue) propertyAnnotation.getMemberValue(MV_COLUMN_TYPE);
+		final EnumMemberValue colTypeVal = (EnumMemberValue) propertyAnnotation.getMemberValue(MV_COLUMN_TYPE);
 
 		if (colTypeVal != null) {
 			DatabaseColumnType columnTypeEnumVal;
 			try {
 				columnTypeEnumVal = DatabaseColumnType.valueOf(colTypeVal.getValue());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				columnTypeEnumVal = DatabaseColumnType.DEFAULT;
 			}
 
@@ -256,9 +269,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Checks if the field has the {@link Property#unique()} annotation value set.
-	 * If yes, then a {@link NotNull} is added. The real uniqueness constraint is
-	 * checked using {@link Item#uniquenessHash()}.
+	 * Checks if the field has the {@link Property#unique()} annotation value
+	 * set. If yes, then a {@link NotNull} is added. The real uniqueness
+	 * constraint is checked using {@link Item#uniquenessHash()}.
 	 */
 	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
@@ -434,11 +447,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// TODO change to list?
 			if (val == null || RelationCollectionType.List.toString().equals(val.getValue())) {
-				typeVal.setValue("io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+				typeVal.setValue(
+						"io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			} else if (RelationCollectionType.Set.toString().equals(val.getValue())) {
-				typeVal.setValue("io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+				typeVal.setValue(
+						"io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			} else {
-				typeVal.setValue("io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+				typeVal.setValue(
+						"io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
 			}
 
 			ann.addMemberValue("type", typeVal);
@@ -449,8 +465,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
-	 * unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property
+	 * has a unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
@@ -549,7 +565,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
 	}
 
-	private String mapColumnTypeToHibernate(DatabaseColumnType columnType) {
+	private String mapColumnTypeToHibernate(final DatabaseColumnType columnType) {
 		switch (columnType) {
 		case CHAR:
 			return "char";

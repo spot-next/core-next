@@ -67,21 +67,40 @@ public class LogAspect extends AbstractBaseAspect {
 		Class<?> targetClass = null;
 
 		if (target instanceof TargetClassAware) {
-			targetClass = ((TargetClassAware) target).getTargetClass();
-		} else if (target.getClass().getName().contains("CGLIB")) {
-			targetClass = target.getClass().getSuperclass();
+			final TargetClassAware targetAware = ((TargetClassAware) target);
+
+			if (targetAware.getTargetClass() != null) {
+				targetClass = targetAware.getTargetClass();
+			} else {
+				targetClass = targetAware.getClass();
+			}
+		} else if (target != null) {
+			if (target.getClass().getName().contains("CGLIB")) {
+				targetClass = target.getClass().getSuperclass();
+			} else {
+				targetClass = target.getClass();
+			}
+		}
+
+		final String className;
+		final String classSimpleName;
+
+		if (targetClass != null) {
+			className = targetClass.getName();
+			classSimpleName = targetClass.getSimpleName();
 		} else {
-			targetClass = target.getClass();
+			className = "<null>";
+			classSimpleName = "<null>";
 		}
 
 		if (StringUtils.isNotBlank(message)) {
 			msg = String.format(message, arguments);
 
-			msg = msg.replace("$className", targetClass.getName());
-			msg = msg.replace("$classSimpleName", targetClass.getSimpleName());
+			msg = msg.replace("$className", className);
+			msg = msg.replace("$classSimpleName", classSimpleName);
 			msg = msg.replace("$timestamp", DATEFORMAT.format(new Date()));
 		} else {
-			msg = String.format("%s %s.%s", marker, targetClass.getSimpleName(), joinPoint.getSignature().getName());
+			msg = String.format("%s %s.%s", marker, classSimpleName, joinPoint.getSignature().getName());
 		}
 
 		if (duration != null) {

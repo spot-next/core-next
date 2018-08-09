@@ -45,7 +45,6 @@ import javassist.bytecode.annotation.StringMemberValue;
 public abstract class AbstractBaseClassTransformer implements ClassFileTransformer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
-	protected ClassPool pool = ClassPool.getDefault();
 
 	protected final List<String> classPaths = new ArrayList<>();
 
@@ -54,10 +53,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
-		String classId = className;
+		final ClassPool pool = new ClassPool(true);
 
-		if (StringUtils.isNotBlank(classId)) {
-			classId = classId.replaceAll("/", ".");
+		if (StringUtils.isNotBlank(className)) {
+			final String classId = className.replaceAll("/", ".");
 
 			pool.insertClassPath(new ClassClassPath(this.getClass()));
 			pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));

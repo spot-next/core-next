@@ -129,7 +129,7 @@
 		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
 		<!-- <module>spot-mail</module> -->
-		<module>spot-archetype-simple</module>
+		<module>spot-sample-simple</module>
 	</modules>
 
 	<properties>
