@@ -179,6 +179,7 @@
 				<version>1.0.0</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
+					<flattenMode>oss</flattenMode>
 				</configuration>
 				<executions>
 					<execution>
