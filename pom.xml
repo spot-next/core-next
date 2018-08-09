@@ -541,13 +541,13 @@
 								<goal>deploy</goal>
 							</goals>
 						</execution>
-						<execution>
-							<id>sonatype close</id>
-							<phase>deploy</phase>
-							<goals>
-								<goal>close</goal>
-							</goals>
-						</execution>
+<!-- 						<execution> -->
+<!-- 							<id>sonatype close</id> -->
+<!-- 							<phase>deploy</phase> -->
+<!-- 							<goals> -->
+<!-- 								<goal>close</goal> -->
+<!-- 							</goals> -->
+<!-- 						</execution> -->
 					</executions>
 				</plugin>
 
