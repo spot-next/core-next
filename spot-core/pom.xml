@@ -48,7 +48,7 @@
 					<properties>
 						<property>
 							<name>listener</name>
-							<value>io.spot-next.core.testing.SpotJunitRunListener</value>
+							<value>io.spotnext.core.testing.SpotJunitRunListener</value>
 						</property>
 					</properties>
 				</configuration>

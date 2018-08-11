@@ -12,7 +12,7 @@ public class SpotJunitRunListener extends RunListener {
 
 	@Override
 	public void testRunStarted(final Description description) throws Exception {
-		if (description.getTestClass() != null) {
+		if (description != null && description.getTestClass() != null) {
 			testAnnotation = ClassUtil.getAnnotation(description.getTestClass(), IntegrationTest.class);
 
 			Registry.setMainClass(this.testAnnotation.initClass());
