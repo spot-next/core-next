@@ -1,13 +1,13 @@
-package at.spot.mail.model;
+package io.spotnext.mail.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
 
-import at.spot.core.infrastructure.annotation.ItemType;
-import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.model.Item;
+import io.spotnext.core.infrastructure.annotation.ItemType;
+import io.spotnext.core.infrastructure.annotation.Property;
+import io.spotnext.core.model.Item;
 
 @ItemType(typeCode = "mail")
 public class Mail extends Item {

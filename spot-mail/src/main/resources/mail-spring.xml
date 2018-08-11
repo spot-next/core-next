@@ -15,12 +15,12 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
 
-	<context:component-scan base-package="at.spot.mail" />
+	<context:component-scan base-package="io.spotnext.mail" />
 
 	<!-- model package scan path -->
-	<bean id="mailModuleDefinition" class="at.spot.core.infrastructure.type.ModuleDefinition">
+	<bean id="mailModuleDefinition" class="io.spotnext.core.infrastructure.type.ModuleDefinition">
 		<constructor-arg name="moduleName" value="mail" />
-		<constructor-arg name="modelPackagePath" value="at.spot.mail.model" />
+		<constructor-arg name="modelPackagePath" value="io.spotnext.mail.model" />
 	</bean>
 
 </beans>

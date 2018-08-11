@@ -1,4 +1,4 @@
-package at.spot.mail.type;
+package io.spotnext.mail.type;
 
 public enum UriType {
 	FILE("file"), MAIL("mailto"), TEL("tel");

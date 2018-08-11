@@ -1,20 +1,20 @@
-package at.spot.mail;
+package io.spotnext.mail;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.CoreInit;
-import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.support.init.ModuleConfig;
+import io.spotnext.core.CoreInit;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.support.init.ModuleConfig;
 
 @Service
 @EnableAsync
 @EnableScheduling
 @Order(value = 1)
 @ModuleConfig(moduleName = "mail", modelPackagePaths = {
-		"at.spot.mail.model" }, appConfigFile = "mail.properties", springConfigFile = "mail-spring.xml")
+		"io.spotnext.mail.model" }, appConfigFile = "mail.properties", springConfigFile = "mail-spring.xml")
 public class MailInit extends CoreInit {
 
 	@Log(message = "Starting mail module ...")

@@ -1,12 +1,12 @@
-package at.spot.mail.model;
+package io.spotnext.mail.model;
 
 import java.util.List;
 
-import at.spot.core.infrastructure.annotation.ItemType;
-import at.spot.core.infrastructure.annotation.Property;
-import at.spot.core.model.Item;
-import at.spot.core.model.user.User;
-import at.spot.mail.type.MailBoxType;
+import io.spotnext.core.infrastructure.annotation.ItemType;
+import io.spotnext.core.infrastructure.annotation.Property;
+import io.spotnext.core.model.Item;
+import io.spotnext.core.model.user.User;
+import io.spotnext.mail.type.MailBoxType;
 
 @ItemType(typeCode = "mailBox")
 public class MailBox extends Item {

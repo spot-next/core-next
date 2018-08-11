@@ -29,7 +29,7 @@
 						<transformer
 							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 							<manifestEntries>
-								<Main-Class>at.spot.core.infrastructure.init.Bootstrap</Main-Class>
+								<Main-Class>io.spotnext.core.infrastructure.init.Bootstrap</Main-Class>
 							</manifestEntries>
 						</transformer>
 						<transformer

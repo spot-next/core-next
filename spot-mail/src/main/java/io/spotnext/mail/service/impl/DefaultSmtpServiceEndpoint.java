@@ -1,4 +1,4 @@
-package at.spot.mail.service.impl;
+package io.spotnext.mail.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,16 +21,16 @@ import org.subethamail.smtp.helper.SimpleMessageListener;
 import org.subethamail.smtp.helper.SimpleMessageListenerAdapter;
 import org.subethamail.smtp.server.SMTPServer;
 
-import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.support.LogLevel;
-import at.spot.core.management.exception.RemoteServiceInitException;
-import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.mail.model.Mail;
-import at.spot.mail.service.SmtpServiceEndpoint;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.exception.ModelSaveException;
+import io.spotnext.core.infrastructure.exception.ModelValidationException;
+import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.service.impl.AbstractService;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.management.exception.RemoteServiceInitException;
+import io.spotnext.core.persistence.exception.ModelNotUniqueException;
+import io.spotnext.mail.model.Mail;
+import io.spotnext.mail.service.SmtpServiceEndpoint;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**

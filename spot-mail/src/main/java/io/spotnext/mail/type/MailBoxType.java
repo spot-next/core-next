@@ -1,4 +1,4 @@
-package at.spot.mail.type;
+package io.spotnext.mail.type;
 
 public enum MailBoxType {
 	PRIMARY, SECONDARY, SHARED

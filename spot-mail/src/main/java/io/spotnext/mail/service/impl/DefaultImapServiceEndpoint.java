@@ -1,4 +1,4 @@
-package at.spot.mail.service.impl;
+package io.spotnext.mail.service.impl;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -7,11 +7,11 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.annotation.logging.Log;
-import at.spot.core.infrastructure.service.impl.AbstractService;
-import at.spot.core.infrastructure.support.LogLevel;
-import at.spot.core.management.exception.RemoteServiceInitException;
-import at.spot.mail.service.ImapServiceEndpoint;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.service.impl.AbstractService;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.management.exception.RemoteServiceInitException;
+import io.spotnext.mail.service.ImapServiceEndpoint;
 
 @Service
 public class DefaultImapServiceEndpoint extends AbstractService implements ImapServiceEndpoint {

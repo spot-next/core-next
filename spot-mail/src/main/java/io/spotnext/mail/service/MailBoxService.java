@@ -1,7 +1,7 @@
-package at.spot.mail.service;
+package io.spotnext.mail.service;
 
-import at.spot.core.model.user.User;
-import at.spot.mail.model.MailBox;
+import io.spotnext.core.model.user.User;
+import io.spotnext.mail.model.MailBox;
 
 /**
  * Offers {@link MailBox} related functionality.

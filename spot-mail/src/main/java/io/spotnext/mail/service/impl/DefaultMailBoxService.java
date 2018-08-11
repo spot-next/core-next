@@ -1,4 +1,4 @@
-package at.spot.mail.service.impl;
+package io.spotnext.mail.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,13 +6,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import at.spot.core.infrastructure.exception.ModelSaveException;
-import at.spot.core.infrastructure.exception.ModelValidationException;
-import at.spot.core.infrastructure.service.ModelService;
-import at.spot.core.model.user.User;
-import at.spot.core.persistence.exception.ModelNotUniqueException;
-import at.spot.mail.model.MailBox;
-import at.spot.mail.service.MailBoxService;
+import io.spotnext.core.infrastructure.exception.ModelSaveException;
+import io.spotnext.core.infrastructure.exception.ModelValidationException;
+import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.model.user.User;
+import io.spotnext.core.persistence.exception.ModelNotUniqueException;
+import io.spotnext.mail.model.MailBox;
+import io.spotnext.mail.service.MailBoxService;
 
 @Service
 public class DefaultMailBoxService implements MailBoxService {
