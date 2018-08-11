@@ -204,7 +204,7 @@
 					<updatePomFile>true</updatePomFile>
 					<pomElements>
 						<profiles />
-						<build />
+						<pluginManagement />
 						<properties />
 						<dependencyManagement />
 						<reporting />

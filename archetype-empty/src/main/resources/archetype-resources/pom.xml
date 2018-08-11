@@ -16,6 +16,7 @@
 
 	<properties>
 		<spot.version>1.0.3-BETA-20180811-5cf1f7a</spot.version>
+		<jar.mainclass>${package}.Init</jar.mainclass>
 	</properties>
 
 	<repositories>
@@ -28,7 +29,7 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-		
+
 		<!-- eclipse lifecycle plugin is only available here -->
 		<repository>
 			<id>mvnrepository</id>
@@ -42,6 +43,42 @@
 
 	<build>
 		<plugins>
+			<!-- resolves variables and slims down POM -->
+			<!-- fixes CI-friendly ${revision} variables -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<updatePomFile>true</updatePomFile>
+					<pomElements>
+						<profiles />
+						<pluginManagement />
+						<properties />
+						<dependencyManagement />
+						<reporting />
+						<modules />
+					</pomElements>
+					<flattenMode>oss</flattenMode>
+				</configuration>
+				<executions>
+					<execution>
+						<id>flatten</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>flatten</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>flatten.clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- RESOURCE GENERTATION -->
 			<plugin>
 				<groupId>io.spot-next</groupId>
@@ -85,6 +122,16 @@
 			</plugin>
 
 			<!-- RELEASE -->
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
 			<!-- skip the deployment for this project, it's just a sample -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -95,10 +142,10 @@
 			</plugin>
 
 			<!-- ECLIPSE SETTINGS -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.eclipse.m2e</groupId> -->
-<!-- 				<artifactId>lifecycle-mapping</artifactId> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.eclipse.m2e</groupId> -->
+			<!-- <artifactId>lifecycle-mapping</artifactId> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
 
