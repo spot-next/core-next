@@ -199,9 +199,17 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.0.0</version>
+				<version>1.0.1</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
+					<pomElements>
+						<profiles />
+						<build />
+						<properties />
+						<dependencyManagement />
+						<reporting />
+						<modules />
+					</pomElements>
 					<flattenMode>oss</flattenMode>
 				</configuration>
 				<executions>
