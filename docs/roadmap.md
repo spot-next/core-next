@@ -1,8 +1,20 @@
-# Change Log
+# Roadmap
 
-## 0.1-SNAPSHOT
+## 1.1.x
+> Release date: approx. end of December 2018
+* Transparent persistence operation over REST interface
+* More ImpEx features
+* Cronjob scheduling 
 
-*2018-08-01*
+## 1.0.x
+> Release date: approx. end of August 2018
 
-- Still in progress version, not for the faint of heart
-  
+The upcomping 1.0.x release contains the following features:
+* Complete persistence layer based on Hibernate
+ * Localized (string) properties
+ * Bi-directional relational mapping (update relations from both side)
+ * Type system initialization and update
+* Import of initial and sample data (usng ImpEx format) 
+* Core services: localization, persistence, validation, ...
+* Generic REST CRUD service 
+* Maven starter archetype   

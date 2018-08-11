@@ -62,10 +62,130 @@ You are still here? Well, then let's better get started!
 
 ## Quick start
 
-### Create maven archtype
-### Adapte domain model
+With this command you can directly initializes an empty spOt project.
+```bash
+mvn archetype:generate -B \
+		-DarchetypeGroupId=io.spot-next.archetypes \
+		-DarchetypeArtifactId=archetype-empty \
+		-DgroupId=io.spot-next.test \
+		-DartifactId=test-project \
+		-Dpackage=io.spotnext.test \
+		-Dversion=1.0-SNAPSHOT
+```
+> The maven artifact values are directly passed as command line arguments
+
+The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
+```bash
+java -jar target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar \
+		-initializetypesystem -importinitialdata -importsampledata```
+> If you changed the variables above you also have to adapt the JAR-filename!
+
+So what is the meaning of the command line arguments?
+* **initializetypesystem** creates the necessary database schema based on the domain model
+* **importinitialdata** imports some basic data, like the admin user, country and language data
+* **importsampledata** imports some test users and media files
+
+> The **first two** arguments are **necessary** if you boot up spOt the first time.
+
+
+During boot you will then get some output similar to this:
+```
+21:59:04.856 [main] INFO  i.s.c.i.support.init.Bootstrap - Bootstrapping done.
+21:59:05.472 [main] INFO  io.spotnext.test.Init - Starting Init on zelek.office.getit.de with PID 32712 (/private/var/tmp/test-project/target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar started by matthias.fuchs in /private/var/tmp/test-project)
+21:59:05.473 [main] INFO  io.spotnext.test.Init - No active profile set, falling back to default profiles: default
+21:59:08.121 [main] INFO  i.s.c.i.s.impl.DefaultTypeService - Detected application root path: jar:file:/private/var/tmp/test-project/target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar!/BOOT-INF/classes!/
+21:59:08.321 [main] INFO  i.s.c.i.s.impl.DefaultTypeService - Registered item types: currency, localizationvalue, addresstype, filemedia, configentry, localizedstring, usergroup, user, configuration, country, contactdetailstype, media, language, catalogversion, catalog, useraddress, mediacontainer
+21:59:09.886 [main] INFO  hsqldb.db.HSQLDB652A90F714.ENGINE - checkpointClose start
+21:59:09.889 [main] INFO  hsqldb.db.HSQLDB652A90F714.ENGINE - checkpointClose synched
+21:59:09.896 [main] INFO  hsqldb.db.HSQLDB652A90F714.ENGINE - checkpointClose script done
+21:59:09.902 [main] INFO  hsqldb.db.HSQLDB652A90F714.ENGINE - checkpointClose end
+21:59:11.352 [main] INFO  i.s.c.p.h.i.HibernatePersistenceService - Initializing type system schema ...
+21:59:11.381 [main] WARN  i.s.c.p.h.i.HibernatePersistenceService - Could not drop type system schema.
+21:59:11.590 [main] WARN  i.s.c.p.h.i.HibernatePersistenceService - Type system schema needs to be initialized/updated
+21:59:11.831 [main] INFO  i.s.c.m.s.i.TypeSystemServiceRestEndpoint - Initiating remote type system REST service on port 19000
+21:59:11.887 [Thread-4] INFO  org.eclipse.jetty.util.log - Logging initialized @7939ms to org.eclipse.jetty.util.log.Slf4jLog
+21:59:12.017 [Thread-4] INFO  s.e.jetty.EmbeddedJettyServer - == Spark has ignited ...
+21:59:12.018 [Thread-4] INFO  s.e.jetty.EmbeddedJettyServer - >> Listening on 0.0.0.0:19000
+21:59:12.025 [Thread-4] INFO  org.eclipse.jetty.server.Server - jetty-9.4.6.v20170531
+21:59:12.081 [Thread-4] INFO  org.eclipse.jetty.server.session - DefaultSessionIdManager workerName=node0
+21:59:12.082 [Thread-4] INFO  org.eclipse.jetty.server.session - No SessionScavenger set, using defaults
+21:59:12.085 [Thread-4] INFO  org.eclipse.jetty.server.session - Scavenging every 660000ms
+21:59:12.182 [Thread-4] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@520ffd6f{HTTP/1.1,[http/1.1]}{0.0.0.0:19000}
+21:59:12.182 [Thread-4] INFO  org.eclipse.jetty.server.Server - Started @8235ms
+21:59:12.961 [main] INFO  io.spotnext.test.Init - Started Init in 8.087 seconds (JVM running for 9.013)
+21:59:13.020 [main] INFO  io.spotnext.core.CoreInit - Importing initial data for CoreInit
+21:59:15.859 [main] INFO  io.spotnext.core.CoreInit - Importing sample data for CoreInit
+21:59:16.305 [main] WARN  i.s.c.i.s.i.DefaultImpexImportStrategy - Ignoring empty file /data/sample/medias.impex
+21:59:16.305 [main] INFO  i.s.c.i.support.init.ModuleInit - Initialization complete
+21:59:16.342 [main] INFO  io.spotnext.test.Init - No active profile set, falling back to default profiles: default
+21:59:17.196 [main] INFO  io.spotnext.test.Init - Started Init in 0.89 seconds (JVM running for 13.248)
+21:59:17.199 [main] INFO  i.s.t.Init$$EnhancerBySpringCGLIB$$579770a4 - Importing initial data for Init
+21:59:17.200 [main] INFO  i.s.t.Init$$EnhancerBySpringCGLIB$$579770a4 - Importing sample data for Init
+21:59:17.200 [main] INFO  i.s.c.i.support.init.ModuleInit - Initialization complete
+```
+
+The last line indicates that the system has booted and can now be used. But what for?
+
+A core spOt project does not do any useful stuff - overall it's a framework. So you got to do the work ;-)
+Actually that's not entirely true. As mentioned earlier, spOt provides a generic REST CRUD service that allows you to manipulate all available domain models.
+
+Fire up [Postman](https://www.getpostman.com/) (or a REST-client of your choosing) and issue this request:
+```http
+GET /v1/models/user HTTP/1.1
+Host: localhost:19000
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Cache-Control: no-cache
+Postman-Token: e1cfcf59-aa45-40ea-9931-29f1e5990ae7
+```
+> The REST endpoints are secured with basic authentication. The default password for the user `admin` is `nimda`
+
+It's easy to guess what this does: list all user objects:
+
+```json
+{
+    "errors": [],
+    "warnings": [],
+    "data": {
+        "objects": [
+            {
+                "pk": 22207630153109145,
+                "createdAt": 1534017556159,
+                "createdBy": "<system>",
+                "lastModifiedAt": 1534017556159,
+                "lastModifiedBy": "<system>",
+                "version": 0,
+                "deleted": false,
+                "uniquenessHash": -1146271689,
+                "id": "tester92",
+                "shortName": null,
+                "groups": [
+                    {
+                        "pk": 2672514096731801604,
+                        "typeCode": "usergroup"
+                    }
+                ],
+                "emailAddress": null,
+                "password": "MD5:16d7a4fca7442dda3ad93c9a726597e4",
+                "addresses": []
+            },
+            ...
+        ]
+    }
+}
+```
+
+
+> TODO: Download and import this [Postman config]() for a full set of available endpoints
+
+Currently we don't have any custom domain model types configured. So let's head on to the next chapture.
+
+### Adapt domain model
+
+
 ### Implement service
-### Test REST interface
+
+
+### Summary
 
 
 
