@@ -7,11 +7,7 @@
 			"path": "../jfly"
 		},
 		{
-			"path": "../spot-instrumentation"
-		},
-		{
 			"path": "."
 		}
-		
 	]
 }
