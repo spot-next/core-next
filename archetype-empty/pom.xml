@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>maven-archetype</packaging>
+	<groupId>io.spot-next.archetypes</groupId>
+	<artifactId>archetype-empty</artifactId>
+	<name>Archetype - archetype-empty</name>
+
+	<parent>
+		<artifactId>spot-framework</artifactId>
+		<groupId>io.spot-next</groupId>
+		<version>${revision}</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<!-- ECLIPSE SETTINGS -->
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+			</plugin>
+		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.archetype</groupId>
+				<artifactId>archetype-packaging</artifactId>
+				<version>3.0.1</version>
+			</extension>
+		</extensions>
+	</build>
+</project>

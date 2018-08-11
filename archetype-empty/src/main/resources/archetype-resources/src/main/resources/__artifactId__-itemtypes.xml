@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
+
+	<!-- enums -->
+
+<!-- 	<enum name="UserType" package="io.spotnext.sample.itemtype.sample.enumeration"> -->
+<!-- 		<value code="GUEST" /> -->
+<!-- 		<value code="REGISTERED" /> -->
+<!-- 	</enum> -->
+
+<!-- 	<bean name="UserData" package="io.spotnext.sample.itemtype.sample.beans"> -->
+<!-- 		<properties> -->
+<!-- 			<property name="type" type="UserType"> -->
+<!-- 				<validators> -->
+<!-- 					<validator javaClass="javax.validation.constraints.NotNull" /> -->
+<!-- 				</validators> -->
+<!-- 			</property> -->
+<!-- 		</properties> -->
+<!-- 	</bean> -->
+
+	<!-- users and groups -->
+
+<!-- 	<type name="User" package="io.spotnext.itemtype.core.user"> -->
+<!-- 		<properties> -->
+<!-- 			<property name="type" type="UserType"> -->
+<!-- 				<validators> -->
+<!-- 					<validator javaClass="javax.validation.constraints.NotNull" /> -->
+<!-- 				</validators> -->
+<!-- 				<defaultValue>io.spotnext.sample.itemtype.sample.enumeration.UserType.REGISTERED -->
+<!-- 				</defaultValue> -->
+<!-- 			</property> -->
+<!-- 		</properties> -->
+<!-- 	</type> -->
+
+</types>
+
