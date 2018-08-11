@@ -128,8 +128,8 @@
 		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
 		<!-- <module>spot-mail</module> -->
-		<!-- <module>spot-sample-simple</module> -->
-<!-- 		<module>archetype-empty</module> -->
+		<module>spot-sample-simple</module>
+		<module>archetype-empty</module>
 	</modules>
 
 	<properties>
@@ -163,9 +163,23 @@
 
 	<repositories>
 		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<!-- eclipse lifecycle plugin is only available here -->
+		<repository>
 			<id>mvnrepository</id>
 			<name>mvnrepository</name>
 			<url>http://www.mvnrepository.com</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
@@ -540,6 +554,11 @@
 				</plugin>
 
 				<!-- DEPLOYMENT -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
+				</plugin>
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
 					<artifactId>nexus-staging-maven-plugin</artifactId>
