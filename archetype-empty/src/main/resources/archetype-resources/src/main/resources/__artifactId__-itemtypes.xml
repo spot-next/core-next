@@ -2,14 +2,14 @@
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
-	<!-- enums -->
+<!-- Example for new types -->
 
-<!-- 	<enum name="UserType" package="io.spotnext.sample.itemtype.sample.enumeration"> -->
+<!-- 	<enum name="UserType" package="${package}.itemtype.sample.enumeration"> -->
 <!-- 		<value code="GUEST" /> -->
 <!-- 		<value code="REGISTERED" /> -->
 <!-- 	</enum> -->
 
-<!-- 	<bean name="UserData" package="io.spotnext.sample.itemtype.sample.beans"> -->
+<!-- 	<bean name="UserData" package="${package}.itemtype.sample.beans"> -->
 <!-- 		<properties> -->
 <!-- 			<property name="type" type="UserType"> -->
 <!-- 				<validators> -->
@@ -19,7 +19,8 @@
 <!-- 		</properties> -->
 <!-- 	</bean> -->
 
-	<!-- users and groups -->
+
+<!-- This is an example how to add a property to an already existing type-->
 
 <!-- 	<type name="User" package="io.spotnext.itemtype.core.user"> -->
 <!-- 		<properties> -->

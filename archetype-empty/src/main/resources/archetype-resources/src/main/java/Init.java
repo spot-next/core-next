@@ -24,7 +24,7 @@ public class Init extends ModuleInit {
 	}
 
 	public static void main(final String[] args) throws Exception {
-		Bootstrap.bootstrap(Init.class, new String[] { "$package.itemtype" }, args).run();
+		Bootstrap.bootstrap(Init.class, new String[] { "${package}.itemtype" }, args).run();
 	}
 
 }
