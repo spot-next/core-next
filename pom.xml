@@ -129,7 +129,7 @@
 		<module>spot-cms-base</module>
 		<!-- <module>spot-mail</module> -->
 		<!-- <module>spot-sample-simple</module> -->
-		<module>archetype-empty</module>
+<!-- 		<module>archetype-empty</module> -->
 	</modules>
 
 	<properties>

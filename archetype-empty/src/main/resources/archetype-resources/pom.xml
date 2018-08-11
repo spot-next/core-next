@@ -11,11 +11,11 @@
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0.2-BETA-20180809-d30d1c6</version>
 	</parent>
 
 	<properties>
-		<spot.version>1.0-SNAPSHOT</spot.version>
+		<spot.version>1.0.2-BETA-20180809-d30d1c6</spot.version>
 	</properties>
 
 	<repositories>
