@@ -585,9 +585,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		bindSession();
 
 		for (final T item : items) {
-			// HibernateUtil.initializeObject(item, "my.app.model");
-
-			// em.detach(item);
 			getSession().detach(item);
 		}
 	}

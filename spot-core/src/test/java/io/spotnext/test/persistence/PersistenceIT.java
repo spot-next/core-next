@@ -1,5 +1,7 @@
 package io.spotnext.test.persistence;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -28,9 +30,9 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	/**
-	 * The catalogVersion Default:Online already be available through the initial
-	 * data. Therefore saving a second item will cause a uniqueness constraint
-	 * violation.
+	 * The catalogVersion Default:Online already be available through the
+	 * initial data. Therefore saving a second item will cause a uniqueness
+	 * constraint violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
@@ -46,18 +48,18 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testLocalizedString() {
-		Currency currency = modelService.create(Currency.class);
+		final Currency currency = modelService.create(Currency.class);
 		currency.setIsoCode("EUR");
 
-		String german = "german";
-		String english = "english";
+		final String german = "german";
+		final String english = "english";
 
 		currency.setName(english, Locale.UK);
 		currency.setName(german, Locale.GERMANY);
 
 		modelService.save(currency);
 
-		Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
+		final Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
 
 		// these locales are not the same as the locales with country codes!
 		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
@@ -174,4 +176,14 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertNotNull(user.getId());
 	}
 
+	@Test
+	public void testDetachedItemIsNotSaved() {
+		final User admin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
+		admin.setShortName("detached");
+		modelService.detach(admin);
+
+		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
+
+		assertEquals(null, loadedAdmin.getShortName());
+	}
 }
