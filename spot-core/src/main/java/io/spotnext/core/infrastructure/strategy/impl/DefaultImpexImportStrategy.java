@@ -33,6 +33,7 @@ import com.opencsv.CSVReader;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.exception.ValueResolverException;
 import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
 import io.spotnext.core.infrastructure.resolver.impex.impl.PrimitiveValueResolver;
 import io.spotnext.core.infrastructure.resolver.impex.impl.ReferenceValueResolver;
@@ -200,7 +201,6 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			List<String> currentRow = null;
 
 			try {
-
 				// resolve and collect all the property values
 				for (final List<String> row : unit.getDataRows()) {
 					currentRow = row;
@@ -228,10 +228,18 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 							// resolve values using the default or the
 							// configured value resolvers
-							final Object propertyValue = resolveValue(val, returnType,
-									propDef.getGenericTypeArguments(), col);
-
-							rawItem.put(col, propertyValue);
+							try {
+								final Object propertyValue = resolveValue(val, returnType,
+										propDef.getGenericTypeArguments(), col);
+								rawItem.put(col, propertyValue);
+							} catch (final ValueResolverException e) {
+								if (config.getIgnoreErrors()) {
+									loggingService.warn(String.format("Could not resolve value '%s' for %s.%s", val,
+											unit.getItemType().getSimpleName(), col.getPropertyName()));
+								} else {
+									throw e;
+								}
+							}
 						} else {
 							loggingService.warn(String.format("Ignoring unknown column %s for type %s",
 									col.getPropertyName(), unit.getItemType().getSimpleName()));
