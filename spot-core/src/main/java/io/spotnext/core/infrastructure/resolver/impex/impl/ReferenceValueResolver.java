@@ -69,7 +69,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 		if (result.getResultList().size() > 1) {
 			throw new ValueResolverException("Ambiguous results found for given input values.");
 		} else if (result.getResultList().size() == 0) {
-			throw new ValueResolverException("No results found for given input values.");
+			throw new ValueResolverException(String.format("No results found for given input value '%s'", value));
 		}
 
 		return result.getResultList().get(0);

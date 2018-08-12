@@ -180,6 +180,41 @@ It's easy to guess what this does: list all user objects:
 Currently we don't have any custom domain model types configured. So let's head on to the next chapture.
 
 ### Adapt domain model
+Let's say our project goal is to offer a party guest lits service:
+* CRUD-REST interface to create parties, locations add guests
+* Automatically send party confirmation emails as soon as a party's date, location and guest list has been fixed
+* Automatically send party invidation emails when new guests are registered
+* Offer a way to customize email templates
+
+Before we are going to implement the actual functionality, we start by modelling the domain objects. Among the predefined types `User` and `Address` seem suitable candidates for "party guest" and "location".
+But we definitely need a new model type `Party`.
+> In the JPA/HIbernate world this would be called an "Entity". The corresponding spOt terminology is "Item type".
+
+Open the `src/main/resources/test-project-itemtypes.xml` file - it contains the type definitions.     
+Common Java IDEs like Eclipse or IntelliJ offer auto-completion in XML files. This comes in handy to explore the possible constructs (in a type-safe and correct way!).
+
+First we add the new `Party` type:
+```xml
+<type name="Party" package="io.spotnext.test.itemtype.Party">
+	<properties>
+		<property name="title" type="String">
+			<description>The unique title of the party</description>
+			<validators>
+				<validator javaClass="javax.validation.constraints.NotNull" />
+			</validators>
+			<modifiers unique="true" />
+		</property>
+		<property name="location" type="Address">
+			<description>The location the party will take place</description>
+		</property>
+	</properties>
+</type>
+```
+Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the unique`-modifier to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
+The validator element `javax.validation.constraints.NotNull` adds a JSR-303 validation to the property. Basicalyl it means that the value may not be `null` when saving.
+The description elements will be rendered as Javadoc.
+
+What we are still missing is list of guests. Therea are two options to model collections and maps: a  
 
 
 ### Implement service
