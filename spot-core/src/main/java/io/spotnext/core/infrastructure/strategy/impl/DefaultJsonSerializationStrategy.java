@@ -46,13 +46,14 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		// needed for localizedStrings, because otherwise the default locale value would
+		// needed for localizedStrings, because otherwise the default locale
+		// value would
 		// be returned instead of the real item
 		jacksonMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		jacksonMapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
 		jacksonMapper.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
 
-		TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
+		final TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
 		typeResolver.init(JsonTypeInfo.Id.CUSTOM, new ItemTypeResolver());
 		typeResolver.inclusion(JsonTypeInfo.As.PROPERTY);
 		typeResolver.typeProperty("typeCode");
@@ -63,14 +64,14 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 
 		typeService.getItemTypeDefinitions().values().stream().forEach(t -> {
 			try {
-				Class<? extends Item> type = typeService.getClassForTypeCode(t.getTypeCode());
+				final Class<? extends Item> type = typeService.getClassForTypeCode(t.getTypeCode());
 
 				if (!Modifier.isAbstract(type.getModifiers())) {
 					module.addDeserializer(type, new ItemDeserializer(type));
 				}
 
 				jacksonMapper.registerSubtypes(type);
-			} catch (UnknownTypeException e) {
+			} catch (final UnknownTypeException e) {
 				loggingService.warn(String.format("Could not load class for item type with code=%s", t.getTypeCode()));
 			}
 		});
@@ -89,7 +90,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		try {
 			return this.jacksonWriter.writeValueAsString(object);
 		} catch (final JsonProcessingException e) {
-			throw new SerializationException("Cannot serialize object", e);
+			throw new SerializationException("Cannot serialize object: " + e.getMessage(), e);
 		}
 	}
 
@@ -98,7 +99,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		try {
 			return this.jacksonMapper.readValue(serializedObject, type);
 		} catch (final Exception e) {
-			throw new SerializationException("Cannot deserialize object", e);
+			throw new SerializationException("Cannot deserialize object: " + e.getMessage(), e);
 		}
 	}
 
