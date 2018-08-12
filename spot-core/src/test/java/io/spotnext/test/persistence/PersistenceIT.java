@@ -131,22 +131,35 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testBidirectionalMany2ManyRelations() throws Exception {
-		final UserGroup group = modelService.create(UserGroup.class);
-		group.setId("testGroup");
+		final UserGroup group1 = modelService.create(UserGroup.class);
+		group1.setId("testGroup 1");
 
-		final User user = modelService.create(User.class);
-		user.setId("testUser");
-		user.getGroups().add(group);
+		final UserGroup group2 = modelService.create(UserGroup.class);
+		group2.setId("testGroup 2");
 
-		modelService.save(user);
+		final User user1 = modelService.create(User.class);
+		user1.setId("testUser 1");
+		user1.getGroups().add(group1);
+		user1.getGroups().add(group2);
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
-		final UserGroup loadedGroup = modelService.get(UserGroup.class, group.getPk());
+		final User user2 = modelService.create(User.class);
+		user2.setId("testUser 2");
+		user2.getGroups().add(group2);
 
-		Assert.assertEquals(loadedUser.getGroups().iterator().next().getPk(), loadedGroup.getPk());
-		Assert.assertEquals(loadedUser.getPk(), loadedGroup.getMembers().iterator().next().getPk());
-		Assert.assertEquals(user.getId(), loadedUser.getId());
-		Assert.assertEquals(group.getPk(), loadedGroup.getPk());
+		modelService.saveAll(user1, user2);
+
+		final User loadedUser1 = modelService.get(User.class, user1.getPk());
+		final User loadedUser2 = modelService.get(User.class, user2.getPk());
+
+		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getPk());
+		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getPk());
+
+		Assert.assertEquals(2, loadedUser1.getGroups().size());
+		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup1));
+		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup2));
+
+		Assert.assertEquals(1, loadedUser2.getGroups().size());
+		Assert.assertTrue(loadedUser2.getGroups().contains(loadedGroup2));
 	}
 
 	@Test

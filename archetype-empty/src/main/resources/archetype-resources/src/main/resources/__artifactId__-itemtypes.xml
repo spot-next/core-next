@@ -4,12 +4,12 @@
 
 <!-- Example for new types -->
 
-<!-- 	<enum name="UserType" package="${package}.itemtype.sample.enumeration"> -->
+<!-- 	<enum name="UserType" package="${package}.itemtype.enumeration"> -->
 <!-- 		<value code="GUEST" /> -->
 <!-- 		<value code="REGISTERED" /> -->
 <!-- 	</enum> -->
 
-<!-- 	<bean name="UserData" package="${package}.itemtype.sample.beans"> -->
+<!-- 	<bean name="UserData" package="${package}.itemtype.beans"> -->
 <!-- 		<properties> -->
 <!-- 			<property name="type" type="UserType"> -->
 <!-- 				<validators> -->
@@ -28,11 +28,26 @@
 <!-- 				<validators> -->
 <!-- 					<validator javaClass="javax.validation.constraints.NotNull" /> -->
 <!-- 				</validators> -->
-<!-- 				<defaultValue>io.spotnext.sample.itemtype.sample.enumeration.UserType.REGISTERED -->
+<!-- 				<defaultValue>${package}.itemtype.enumeration.UserType.REGISTERED -->
 <!-- 				</defaultValue> -->
 <!-- 			</property> -->
 <!-- 		</properties> -->
 <!-- 	</type> -->
+
+<type name="Party" package="io.spotnext.test.itemtype.Party">
+	<properties>
+		<property name="title" type="String">
+			<description>The unique title of the party</description>
+			<validators>
+				<validator javaClass="javax.validation.constraints.NotNull" />
+			</validators>
+			<modifiers unique="true" />
+		</property>
+		<property name="location" type="Address">
+			<description>The location the party will take place</description>
+		</property>
+	</properties>
+</type>
 
 </types>
 
