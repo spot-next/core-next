@@ -177,13 +177,13 @@ It's easy to guess what this does: list all user objects:
 
 > TODO: Download and import this [Postman config]() for a full set of available endpoints
 
-Currently we don't have any custom domain model types configured. So let's head on to the next chapture.
+Currently we don't have any custom domain model types configured. So let's head on to the next chapter.
 
 ### Adapt domain model
-Let's say our project goal is to offer a party guest lits service:
+Let's say our project goal is to offer a party guest list service:
 * CRUD-REST interface to create parties, locations add guests
 * Automatically send party confirmation emails as soon as a party's date, location and guest list has been fixed
-* Automatically send party invidation emails when new guests are registered
+* Automatically send party invitation emails when new guests are registered
 * Offer a way to customize email templates
 
 Before we are going to implement the actual functionality, we start by modelling the domain objects. Among the predefined types `User` and `Address` seem suitable candidates for "party guest" and "location".
@@ -199,10 +199,10 @@ First we add the new `Party` type:
 	<properties>
 		<property name="title" type="String">
 			<description>The unique title of the party</description>
+			<modifiers unique="true" />
 			<validators>
 				<validator javaClass="javax.validation.constraints.NotNull" />
 			</validators>
-			<modifiers unique="true" />
 		</property>
 		<property name="location" type="Address">
 			<description>The location the party will take place</description>
@@ -210,12 +210,172 @@ First we add the new `Party` type:
 	</properties>
 </type>
 ```
-Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the unique`-modifier to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
-The validator element `javax.validation.constraints.NotNull` adds a JSR-303 validation to the property. Basicalyl it means that the value may not be `null` when saving.
+Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the "unique-modifier" to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
+The validator element `javax.validation.constraints.NotNull` adds a [JSR-303 validation](https://beanvalidation.org/1.0/spec/) to the property. Basically it means that the value may not be `null` when saving.
 The description elements will be rendered as Javadoc.
 
-What we are still missing is list of guests. Therea are two options to model collections and maps: a  
+What we are still missing is list of guests. In general there are two options to add a collection property to an Item type:
+* Use a `CollectionType` or a `MapType`
+* Create a relation between to Item types   
 
+We have to create a new relation, as the plain collection properties only support non-Item types (`AtomicType` and `EnumType`):
+
+```xml
+<relation name="Party2InvitedUser">
+	<source itemType="Party" mappedBy="parties" cardinality="many">
+		<description>The parties this user is invited.</description>
+	</source>
+	<target itemType="User" mappedBy="invitedGuests" cardinality="many">
+		<description>The guests that are invited to this party.</description>
+	</target>
+</relation>
+```
+> A relation definition always has a source and a target, although it doesn't matter what type is on what side.
+
+In our case we declared a many-to-many relation between `Party` and `User`. Both types will be extended with the corresponding properties (the `mappedBy` attribute), the descriptions will be rendered as Javadoc.
+
+> The name of the relation doesn't really matter, but it is a good practice to name it **Source2Target** or **Source_property2Target_property**. 
+
+To generate the Java classes, issue this command: `mvn clean install`. This creates a new class `Party`, and adds the `parties` property to the `User` class.  
+
+Now it's time to fire up the system and create some parties. This time we use this command:
+
+```bash
+java -jar target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar -updatetypesystem
+```
+> There is no need to initialize the whole type system anymore. Instead we can use the parameter `updatetypesystem`. This adds new properties and types to the database.
+
+To create a new party we issue the following request:
+```http
+POST /v1/models/party HTTP/1.1
+Host: localhost:19000
+Content-Type: application/json
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Cache-Control: no-cache
+Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
+
+{
+    "title": "spOt test party",
+    "location": {
+	    	"typeCode": "useraddress",
+	    	"streetName": "Test street",
+	    	"streetNumber": "100",
+	    	"city": "Vienna",
+	    	"postalCode": "1030",
+	    	"country": "at"
+    },
+    "guests": [
+	    	{
+	    		"typeCode": "user",
+	    		"id": "guest-01",
+	    		"shortName": "Guest user #1"
+	    	}
+    ]
+}
+```
+
+**STOP!** Do you see the error (or can guess what it is?). Let's try it out:
+```json
+{
+    "errors": [
+        {
+            "code": "error.internal",
+            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.itemtype.Party.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
+        }
+    ],
+    "warnings": []
+}
+```
+
+You probably guest it already: we cannot pass a country by it's ISO code. `Country` is a separate type and therefore has to be referenced with a `PK`.
+To obtain this `PK` we issue a quick search:
+```http
+GET /v1/models/country/query/?q=isoCode = 'AT' HTTP/1.1
+Host: localhost:19000
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Cache-Control: no-cache
+Postman-Token: 1b268b2b-a72d-4540-a13d-87c6eec7aa26
+```
+
+> Please mind the `/` after "country/query"!
+
+This results in something like this:
+```json
+{
+    "errors": [],
+    "warnings": [],
+    "data": {
+        "results": [
+            {
+                "pk": 4003256542000269317,
+                "createdAt": 1534017553477,
+                "createdBy": "<system>",
+                "lastModifiedAt": 1534017553477,
+                "lastModifiedBy": "<system>",
+                "version": 0,
+                "deleted": false,
+                "uniquenessHash": 2130,
+                "isoCode": "AT",
+                "iso3Code": "AUT",
+                "shortName": {
+                    "pk": 8617539322739705278,
+                    "typeCode": "localizedstring"
+                },
+                "longName": {
+                    "pk": 5123398329302468367,
+                    "typeCode": "localizedstring"
+                },
+                "phoneCountryCode": "43",
+                "languages": []
+            }
+        ],
+        "pageSize": 2147483647,
+        "page": 0
+    }
+}
+``` 
+
+After fixing our POST request the creation of a `Party` item succeeds:
+```http
+{
+    "title": "spOt test party",
+    "location": {
+    	"typeCode": "useraddress",
+    	"streetName": "Test street",
+    	"streetNumber": "100",
+    	"city": "Vienna",
+    	"postalCode": "1030",
+    	"country": {
+	    		"typeCode": "country",
+	    		"pk": 4003256542000269317
+	    	}
+    },
+    "guests": [
+	    	{
+	    		"typeCode": "User",
+	    		"id": "guest-01",
+	    		"shortName": "Guest user #1"
+	    	}
+    ]
+}
+```
+
+> Please keep in mind that for each property that hold a reference to an `Item` an additional JSON property `typeCode` is necessary. If not defined explicitly in the `*-itemtypes.xml` file, the lowercase class name is used (eg. for the `Party` type has the typeCode `party`).
+
+The REST interface returns the following JSON:
+```json
+{
+    "errors": [],
+    "warnings": [],
+    "data": {
+        "pk": 5653851201092010438
+    }
+} 
+```
+
+Only the `PK` and errors or warnings (if any) are returned. Go ahead and try inspect the [newly created Party item](http://localhost:19000/v1/models/party).
+
+So now that we can create new items, let's head over to the next chapter.
 
 ### Implement service
 

@@ -395,7 +395,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				for (final T item : items) {
 					try {
 						attach(item);
-						getSession().refresh(item);
+						getSession().refresh(item, LockMode.NONE);
 					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
 						throw new ModelNotFoundException(

@@ -324,10 +324,6 @@ public class GenerateTypesMojo extends AbstractMojo {
 				field.setName(prop.getName());
 				field.setDescription(StringUtils.trim(prop.getDescription()));
 
-				if (prop.isLocalized()) {
-					field.setAssignement(new JavaExpression("new " + prop.getType() + "()", JavaValueType.LITERAL));
-				}
-
 				if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 					try {
 						field.setAssignement(
@@ -432,13 +428,22 @@ public class GenerateTypesMojo extends AbstractMojo {
 					"Cannot generate localized getters because field type is not of type Localizable");
 		}
 
-		final JavaMethod getter = addGetter(field, javaClass, String.format("return this.%s.get();", field.getName()));
+		final JavaMethod getter = addGetter(field, javaClass,
+				String.format(getNullInitializationString(prop) + "return this.%s.get();", field.getName()));
 		getter.setType(new JavaMemberType(localizedType.get()));
 
 		final JavaMethod locGetter = addGetter(field, javaClass,
-				String.format("return this.%s.get(locale);", field.getName()));
+				String.format(getNullInitializationString(prop) + "return this.%s.get(locale);", field.getName()));
 		locGetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locGetter.setType(getter.getType());
+	}
+
+	private String getNullInitializationString(final Property property) {
+		// initialize the field on first access if null
+		final String nullInitializationAssignment = String.format("if (this.%s == null) this.%s = new %s(); ",
+				property.getName(), property.getName(), property.getType());
+
+		return nullInitializationAssignment;
 	}
 
 	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass) {
@@ -481,12 +486,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 					"Cannot generate localized setters because field type is not of type Localizable");
 		}
 
-		final JavaMethod setter = addSetter(field, javaClass,
-				String.format("this.%s.set(%s);", field.getName(), field.getName()));
+		final JavaMethod setter = addSetter(field, javaClass, String
+				.format(getNullInitializationString(prop) + "this.%s.set(%s);", field.getName(), field.getName()));
 		setter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 
-		final JavaMethod locSetter = addSetter(field, javaClass,
-				String.format("this.%s.set(locale, %s);", field.getName(), field.getName()));
+		final JavaMethod locSetter = addSetter(field, javaClass, String.format(
+				getNullInitializationString(prop) + "this.%s.set(locale, %s);", field.getName(), field.getName()));
 		locSetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locSetter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 	}
