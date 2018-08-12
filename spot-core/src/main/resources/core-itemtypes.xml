@@ -5,6 +5,8 @@
 	<!-- atomic java types -->
 	<atomic name="String" className="java.lang.String" />
 	<atomic name="Boolean" className="java.lang.Boolean" />
+	<atomic name="Byte" className="java.lang.Byte" />
+	<atomic name="Short" className="java.lang.Short" />
 	<atomic name="Integer" className="java.lang.Integer" />
 	<atomic name="Long" className="java.lang.Long" />
 	<atomic name="Double" className="java.lang.Double" />
@@ -15,9 +17,14 @@
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
 
+	<collection name="BooleanList" elementType="Boolean" />
 	<collection name="StringList" elementType="String" />
-	<collection name="CountryList" elementType="Country" />
-	<collection name="LanguageList" elementType="Language" />
+	<collection name="ByteList" elementType="Byte" />
+	<collection name="ShortList" elementType="Short" />
+	<collection name="IntegerList" elementType="Integer" />
+	<collection name="LongList" elementType="Long" />
+	<collection name="DoubleList" elementType="Double" />
+	<collection name="FloatList" elementType="Float" />
 
 	<!-- enums -->
 
@@ -180,9 +187,6 @@
 			</property>
 			<property name="synchronizationTarget" type="CatalogVersion">
 				<description>The target catalog version to which all containing items will be synchronized..</description>
-			</property>
-			<property name="synchronizationLanguages" type="LanguageList">
-				<description>The languages that will be synchronized .</description>
 			</property>
 		</properties>
 	</type>
@@ -469,6 +473,12 @@
 		<description>The languages available for that country.</description>
 		<source itemType="Country" mappedBy="countries" cardinality="many" />
 		<target itemType="Language" mappedBy="languages" cardinality="many" />
+	</relation>
+	
+	<relation name="CatalogVersion2SynchronizedLanguage">
+		<description>The languages that are synchronized from source to target catalog version.</description>
+		<source itemType="CatalogVersion" cardinality="many" />
+		<target itemType="Language" mappedBy="synchronizedLanguages" cardinality="many" />
 	</relation>
 
 </types>

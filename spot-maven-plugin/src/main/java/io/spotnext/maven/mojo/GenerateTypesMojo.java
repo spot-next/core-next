@@ -590,10 +590,36 @@ public class GenerateTypesMojo extends AbstractMojo {
 			ret = new JavaMemberType(((EnumType) propType).getName(), ((EnumType) propType).getPackage());
 		} else if (propType instanceof CollectionType) {
 			final CollectionType t = (CollectionType) propType;
+
+			// check if the element type is an enum or an atomic type, all
+			// others are not supported
+			if (!typeDefinitions.getAtomicTypes().containsKey(t.getElementType())
+					&& !typeDefinitions.getEnumTypes().containsKey(t.getElementType())) {
+				throw new MojoExecutionException(
+						String.format("Type '%s' is not supported as collection element type", t.getElementType()));
+			}
+
 			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType());
 
 		} else if (propType instanceof MapType) {
 			final MapType t = (MapType) propType;
+
+			// check if the key type is an enum or an atomic type, all others
+			// are not supported
+			if (!typeDefinitions.getAtomicTypes().containsKey(t.getKeyType())
+					&& !typeDefinitions.getEnumTypes().containsKey(t.getKeyType())) {
+				throw new MojoExecutionException(
+						String.format("Type '%s' is not supported as map key type", t.getKeyType()));
+			}
+
+			// check if the value type is an enum or an atomic type, all others
+			// are not supported
+			if (!typeDefinitions.getAtomicTypes().containsKey(t.getValueType())
+					&& !typeDefinitions.getEnumTypes().containsKey(t.getValueType())) {
+				throw new MojoExecutionException(
+						String.format("Type '%s' is not supported as map key type", t.getValueType()));
+			}
+
 			ret = createMapMemberType(t.getKeyType(), t.getValueType());
 
 		} else if (propType instanceof ItemType) {

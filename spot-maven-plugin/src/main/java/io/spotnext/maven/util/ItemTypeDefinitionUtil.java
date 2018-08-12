@@ -47,7 +47,7 @@ public class ItemTypeDefinitionUtil {
 	protected ArtifactRepository localRepository;
 	protected Log log;
 
-	public ItemTypeDefinitionUtil(MavenProject project, ArtifactRepository localRepository, Log log) {
+	public ItemTypeDefinitionUtil(final MavenProject project, final ArtifactRepository localRepository, final Log log) {
 		this.project = project;
 		this.localRepository = localRepository;
 		this.log = log;
@@ -96,7 +96,7 @@ public class ItemTypeDefinitionUtil {
 						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 						for (final String c : jarContent) {
 							if (isItemTypeDefinitionFile(c)) {
-								String fileName = f.getAbsolutePath() + "/" + c;
+								final String fileName = f.getAbsolutePath() + "/" + c;
 
 								if (definitionFiles.get(fileName) == null) {
 									definitionFiles.put(fileName,
@@ -140,8 +140,8 @@ public class ItemTypeDefinitionUtil {
 		return new ArrayList<>(definitionFiles.values());
 	}
 
-	protected <T extends BaseType> void populateTypeDefinition(List<T> source, Map<String, T> target,
-			boolean mergeTypes) throws IllegalItemTypeDefinitionException {
+	protected <T extends BaseType> void populateTypeDefinition(final List<T> source, final Map<String, T> target,
+			final boolean mergeTypes) throws IllegalItemTypeDefinitionException {
 
 		for (final T def : source) {
 			final T existing = target.get(def.getName());
@@ -150,6 +150,8 @@ public class ItemTypeDefinitionUtil {
 				target.put(def.getName(), def);
 			} else {
 				if (mergeTypes) {
+					log.warn(String.format("Redefinition of type '%s' not yet supported",
+							def.getClass().getSimpleName()));
 				} else {
 					throw new IllegalItemTypeDefinitionException(
 							String.format("Duplicate type definition '%s'", def.getName()));
@@ -332,7 +334,7 @@ public class ItemTypeDefinitionUtil {
 	 * 
 	 * @param itemTypesDefinitions
 	 */
-	public void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions, File targetResourcesDirectory) {
+	public void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions, final File targetResourcesDirectory) {
 		if (!targetResourcesDirectory.exists() && !targetResourcesDirectory.mkdir()) {
 			log.error("Could not create target output directory for merged item types file.");
 		}

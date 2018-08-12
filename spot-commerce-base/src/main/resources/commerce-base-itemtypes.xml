@@ -16,8 +16,8 @@
 
 	<!-- base configuration -->
 
-	<type name="BaseStore" typeCode="BaseStore" package="io.spotnext.itemtype.commerce.store"
-		extends="UniqueIdItem">
+	<type name="BaseStore" typeCode="BaseStore"
+		package="io.spotnext.itemtype.commerce.store" extends="UniqueIdItem">
 		<description>This holds the base configuration for a store.</description>
 		<properties>
 			<property name="name" type="String">
@@ -26,23 +26,19 @@
 			<property name="urlMatchers" type="StringList">
 				<description>These regex strings are used to match browser url to the base store.</description>
 			</property>
-			<property name="countries" type="CountryList">
-				<description>The countries that are assigned to this base store.</description>
-			</property>
 		</properties>
 	</type>
 
 	<!-- product related types -->
 
-	<type name="Product" typeCode="Product" package="io.spotnext.itemtype.commerce.catalog"
-		extends="UniqueIdItem">
+	<type name="Product" typeCode="Product"
+		package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
 			<property name="name" type="String">
 				<description>The name of the product.</description>
 			</property>
-			<property name="description"
-				type="LocalizedString">
+			<property name="description" type="LocalizedString">
 				<description>The localized description of the product.</description>
 			</property>
 			<property name="ean" type="String">
@@ -51,8 +47,8 @@
 		</properties>
 	</type>
 
-	<type name="Category" typeCode="Category" package="io.spotnext.itemtype.commerce.catalog"
-		extends="UniqueIdItem">
+	<type name="Category" typeCode="Category"
+		package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>Categories are used to group products.</description>
 		<properties>
 			<property name="name" type="String">
@@ -69,7 +65,8 @@
 		</properties>
 	</type>
 
-	<type name="Price" typeCode="Price" package="io.spotnext.itemtype.commerce.catalog">
+	<type name="Price" typeCode="Price"
+		package="io.spotnext.itemtype.commerce.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 			<property name="productId" type="String">
@@ -129,7 +126,8 @@
 		</properties>
 	</type>
 
-	<type name="FutureStock" extends="Stock" package="io.spotnext.itemtype.commerce.store">
+	<type name="FutureStock" extends="Stock"
+		package="io.spotnext.itemtype.commerce.store">
 		<properties>
 			<property name="availableAt" type="String">
 				<description>Defines a future stock and when it will be available.</description>
@@ -167,11 +165,13 @@
 		</properties>
 	</type>
 
-	<type name="OrderEntry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order">
+	<type name="OrderEntry" extends="AbstractOrderEntry"
+		package="io.spotnext.itemtype.commerce.order">
 
 	</type>
 
-	<type name="CartEntry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order">
+	<type name="CartEntry" extends="AbstractOrderEntry"
+		package="io.spotnext.itemtype.commerce.order">
 
 	</type>
 
@@ -183,7 +183,8 @@
 
 	<!-- customers -->
 
-	<type name="Customer" extends="User" package="io.spotnext.itemtype.commerce.customer">
+	<type name="Customer" extends="User"
+		package="io.spotnext.itemtype.commerce.customer">
 		<properties>
 			<property name="firstName" type="String">
 			</property>
@@ -201,12 +202,24 @@
 			<description>The products in this catalog.</description>
 		</target>
 	</relation>
-	
+
 	<relation name="AbstractOrder2AbstractOrderEntry">
 		<description>The categories the product is referenced by.</description>
 		<source cardinality="one" itemType="AbstractOrder" mappedBy="order"></source>
-		<target cardinality="many" itemType="AbstractOrderEntry" mappedBy="entries">
+		<target cardinality="many" itemType="AbstractOrderEntry"
+			mappedBy="entries">
 			<description>The order entries.</description>
 		</target>
 	</relation>
+
+	<relation name="BaseStore2Country">
+		<description>The categories the product is referenced by.</description>
+		<source itemType="BaseStore" mappedBy="baseStores" cardinality="many">
+			<description>The base stores the country is assigned to.</description>
+		</source>
+		<target itemType="Country" mappedBy="countries" cardinality="many">
+			<description>The countries that are assigned to this base store.</description>
+		</target>
+	</relation>
+
 </types>

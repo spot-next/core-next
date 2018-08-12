@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -344,9 +345,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
 			}
 
-		} else if (isItemType(field.getType())) { // one to one in case the
-													// field type is a subtype
-													// of Item
+		} else if (isItemType(field.getType())) {
+			// one to one in case the field type is a subtype of Item
 			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
 			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
@@ -354,7 +354,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
 					"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
-			jpaAnnotations.add(createAnnotation(entityClass, ElementCollection.class));
+			jpaAnnotations.addAll(createElementCollectionAnnotation(entityClass, field));
 
 			// necessary for serialization
 			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -414,6 +414,37 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
 			}
 		}
+	}
+
+	protected List<Annotation> createElementCollectionAnnotation(final CtClass clazz, final CtField field)
+			throws IllegalClassTransformationException {
+
+		final List<Annotation> ret = new ArrayList<>();
+
+		{ // ElementCollection
+			final Annotation ann = createAnnotation(clazz, ElementCollection.class);
+			addCascadeAnnotation(ann, field);
+
+			// add fetch type
+			final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
+			fetchType.setType(FetchType.class.getName());
+			fetchType.setValue(FetchType.LAZY.name());
+			ann.addMemberValue("fetch", fetchType);
+			ret.add(ann);
+		}
+
+		{ // CollectionTable
+			final Annotation ann = createAnnotation(clazz, CollectionTable.class);
+			addCascadeAnnotation(ann, field);
+
+			// add fetch type
+			final StringMemberValue tableName = new StringMemberValue(getConstPool(clazz));
+			tableName.setValue(clazz.getSimpleName() + "_" + field.getName());
+			ann.addMemberValue("name", tableName);
+			ret.add(ann);
+		}
+
+		return ret;
 	}
 
 	protected Annotation createJpaRelationAnnotation(final CtClass clazz, final CtField field,
