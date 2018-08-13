@@ -4,18 +4,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>${groupId}</groupId>
-	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>
+	<groupId>\${groupId}</groupId>
+	<artifactId>\${artifactId}</artifactId>
+	<version>\${version}</version>
 
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
-		<version>1.0.3-BETA-20180811-5cf1f7a</version>
+		<version>${project.version}</version>
 	</parent>
 
 	<properties>
-		<spot.version>1.0.3-BETA-20180811-5cf1f7a</spot.version>
+		<spot.version>${project.version}</spot.version>
 		<jar.mainclass>${package}.Init</jar.mainclass>
 	</properties>
 
