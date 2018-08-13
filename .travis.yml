@@ -34,7 +34,7 @@ before_install:
 
 install: true
 
-script: "mvn -T 4 -q clean verify findbugs:check"
+script: "mvn -T 4 -q clean install findbugs:check"
 
 deploy:
   - provider: script
