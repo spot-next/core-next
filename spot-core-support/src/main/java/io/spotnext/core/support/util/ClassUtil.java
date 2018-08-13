@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -37,13 +38,14 @@ public class ClassUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If the
-	 * field does not exist, null is returned.
+	 * Returns a {@link Field} instance from the given {@link Class} object. If
+	 * the field does not exist, null is returned.
 	 *
 	 * @param type
 	 * @param fieldName
-	 * @param includeSuperTypes if this is true all super classes till and including
-	 *                          {@link Object} will be invoked.
+	 * @param includeSuperTypes
+	 *            if this is true all super classes till and including
+	 *            {@link Object} will be invoked.
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
 			final boolean includeSuperTypes) {
@@ -78,11 +80,13 @@ public class ClassUtil {
 	 * concrete class> to {@link Object}.
 	 *
 	 * @param type
-	 * @param stopClass         {@link Object} if null
-	 * @param includeStopClass  if this is true, the stop class will be included.
-	 *                          defaults to
-	 * @param includeStartClass if this is true, the given {@link Class} is included
-	 *                          in the result
+	 * @param stopClass
+	 *            {@link Object} if null
+	 * @param includeStopClass
+	 *            if this is true, the stop class will be included. defaults to
+	 * @param includeStartClass
+	 *            if this is true, the given {@link Class} is included in the
+	 *            result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -115,8 +119,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if something
-	 * goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if
+	 * something goes wrong. something goes wrong.
 	 *
 	 * @param object
 	 * @param fieldName
@@ -211,9 +215,27 @@ public class ClassUtil {
 		// iterate over all superclasses and look for given method
 		for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
 			try {
-				method = c.getDeclaredMethod(methodName, paramArgs);
+				final List<Method> possibleMethods = Stream.of(c.getDeclaredMethods())
+						.filter(m -> methodName.equals(m.getName())).collect(Collectors.toList());
 
-			} catch (IllegalArgumentException | NoSuchMethodException | SecurityException e) {
+				for (final Method m : possibleMethods) {
+					boolean matches = true;
+
+					if (m.getParameterCount() == paramArgs.length) {
+						for (int x = 0; x < m.getParameterCount(); x++) {
+							if (!m.getParameterTypes()[x].isAssignableFrom(paramArgs[x])) {
+								matches = false;
+							}
+						}
+
+						if (matches) {
+							method = m;
+							break;
+						}
+					}
+				}
+
+			} catch (IllegalArgumentException | SecurityException e) {
 				// silently fail
 				if (LOG.isDebugEnabled()) {
 					LOG.debug(String.format("Can't find method %s from class %s", methodName, c.getSimpleName()));
@@ -242,8 +264,19 @@ public class ClassUtil {
 		return retVal;
 	}
 
+	/**
+	 * The whole class hierarchy is searched for fields with the given
+	 * annotation.
+	 * 
+	 * @param type
+	 *            the class to inspect
+	 * @param annotation
+	 *            the annotation that must be present on the field
+	 * @return all fields of the given class that have the given annotation.
+	 */
 	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
 			final Class<A> annotation) {
+
 		final Set<Field> annotatedFields = new HashSet<>();
 
 		for (final Class<?> c : getAllAssignableClasses(type)) {
@@ -258,8 +291,34 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all assignable classes for the given class, starting with the actual
-	 * class.
+	 * The whole class hierarchy is searched for methods with the given
+	 * annotation.
+	 * 
+	 * @param type
+	 *            the class to inspect
+	 * @param annotation
+	 *            the annotation that must be present on the method
+	 * @return all methods of the given class that have the given annotation.
+	 */
+	public static <A extends Annotation> Set<Method> getMethodsWithAnnotation(final Class<?> type,
+			final Class<A> annotation) {
+
+		final Set<Method> annotatedMethds = new HashSet<>();
+
+		for (final Class<?> c : getAllAssignableClasses(type)) {
+			for (final Method method : c.getDeclaredMethods()) {
+				if (method.isAnnotationPresent(annotation)) {
+					annotatedMethds.add(method);
+				}
+			}
+		}
+
+		return annotatedMethds;
+	}
+
+	/**
+	 * Returns all assignable classes for the given class, starting with the
+	 * actual class.
 	 */
 	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
@@ -391,7 +450,7 @@ public class ClassUtil {
 
 		Constructor<T> matchingConstructor = null;
 
-		for (Constructor<?> c : type.getDeclaredConstructors()) {
+		for (final Constructor<?> c : type.getDeclaredConstructors()) {
 			boolean found = true;
 
 			for (int i = 0; i < c.getParameterTypes().length; i++) {
@@ -400,10 +459,10 @@ public class ClassUtil {
 					continue;
 				}
 
-				Class<?> paramType = c.getParameterTypes()[i];
+				final Class<?> paramType = c.getParameterTypes()[i];
 
 				if (i < constructorArgTypes.size()) {
-					Class<?> argumentType = constructorArgTypes.get(i);
+					final Class<?> argumentType = constructorArgTypes.get(i);
 
 					if (!paramType.isAssignableFrom(argumentType)) {
 						found = false;
