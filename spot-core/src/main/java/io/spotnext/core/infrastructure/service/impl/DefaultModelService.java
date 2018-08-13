@@ -3,22 +3,19 @@ package io.spotnext.core.infrastructure.service.impl;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.persistence.query.ModelQuery;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.core.types.Item;
-import io.spotnext.core.types.Localizable;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
@@ -47,6 +44,8 @@ public class DefaultModelService extends AbstractModelService {
 		super.validateModels(models);
 
 		persistenceService.save(models);
+
+		publishEvents(models, ModificationType.SAVE);
 	}
 
 	@Override
@@ -55,6 +54,7 @@ public class DefaultModelService extends AbstractModelService {
 
 		if (item != null) {
 			applyLoadInterceptors(Collections.singletonList(item));
+			publishEvents(Collections.singletonList(item), ModificationType.LOAD);
 		}
 
 		return item;
@@ -77,6 +77,8 @@ public class DefaultModelService extends AbstractModelService {
 
 		if (items.size() > 0) {
 			applyLoadInterceptors(Collections.singletonList(items.get(0)));
+			publishEvents(items, ModificationType.LOAD);
+
 			return items.get(0);
 		}
 
@@ -93,6 +95,7 @@ public class DefaultModelService extends AbstractModelService {
 		final List<T> items = getAllInternal(query);
 
 		applyLoadInterceptors(items);
+		publishEvents(items, ModificationType.LOAD);
 
 		return items;
 	}
@@ -111,6 +114,10 @@ public class DefaultModelService extends AbstractModelService {
 
 		final T item = get(new ModelQuery<T>((Class<T>) example.getClass(), map));
 
+		if (item != null) {
+			publishEvents(Collections.singletonList(item), ModificationType.LOAD);
+		}
+
 		return item;
 	}
 
@@ -121,6 +128,7 @@ public class DefaultModelService extends AbstractModelService {
 		ValidationUtil.validateMinSize("Example item has no properties set", map.values(), 1);
 
 		final List<T> items = getAll(new ModelQuery<T>((Class<T>) example.getClass(), map));
+		publishEvents(items, ModificationType.LOAD);
 
 		return items;
 	}
@@ -137,6 +145,8 @@ public class DefaultModelService extends AbstractModelService {
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		// TODO: remove interceptors
+		// publishEvents(Collections.singletonList(item),
+		// ModificationType.REMOVE);
 
 		persistenceService.remove(type, pk);
 	}
@@ -144,6 +154,7 @@ public class DefaultModelService extends AbstractModelService {
 	@Override
 	public <T extends Item> void removeAll(final List<T> items) throws ModelNotFoundException {
 		applyRemoveInterceptors(items);
+		publishEvents(items, ModificationType.REMOVE);
 
 		persistenceService.remove(items);
 	}
@@ -154,48 +165,4 @@ public class DefaultModelService extends AbstractModelService {
 		removeAll(Arrays.asList(items));
 	}
 
-	@Override
-	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
-		return getPropertyValue(item, propertyName, Item.class);
-	}
-
-	@Override
-	public <T extends Item, V> V getLocalizedPropertyValue(T item, String propertyName, Class<V> valueType,
-			Locale locale) {
-
-		final Localizable<V> localizable = (Localizable<V>) ClassUtil.getField(item, propertyName, true);
-
-		if (localizable != null) {
-			return localizable.get(locale);
-		} else {
-			loggingService.warn(String.format("Localized property %s on type %s not found", propertyName,
-					item.getClass().getSimpleName()));
-		}
-
-		return null;
-	}
-
-	@Override
-	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
-		return (V) ClassUtil.getField(item, propertyName, true);
-	}
-
-	@Override
-	public <T extends Item> void setLocalizedPropertyValue(T item, String propertyName, Object propertyValue,
-			Locale locale) {
-
-		final Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
-
-		if (localizable != null) {
-			localizable.set(locale, propertyValue);
-		} else {
-			loggingService.warn(String.format("Localized property %s on type %s not found", propertyName,
-					item.getClass().getSimpleName()));
-		}
-	}
-
-	@Override
-	public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
-		ClassUtil.setField(item, propertyName, propertyValue);
-	}
 }

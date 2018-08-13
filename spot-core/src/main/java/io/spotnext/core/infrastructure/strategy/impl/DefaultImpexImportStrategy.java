@@ -293,8 +293,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 					}
 				}
 			} catch (final Throwable e) {
-				throw new ImpexImportException(String.format("Could not import item of type %s, line: %s",
-						unit.getItemType().getName(), StringUtils.join(currentRow, ", ")), e);
+				final String message = String.format("Could not import item of type %s, line: %s",
+						unit.getItemType().getName(), StringUtils.join(currentRow, ", "));
+
+				if (!config.getIgnoreErrors()) {
+					throw new ImpexImportException(message, e);
+				} else {
+					loggingService.warn(message);
+				}
 			}
 
 			loggingService.debug(() -> String.format("Removing %s items", itemsToRemove.size()));

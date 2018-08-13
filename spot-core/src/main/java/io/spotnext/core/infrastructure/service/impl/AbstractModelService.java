@@ -2,6 +2,7 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
 import io.spotnext.core.infrastructure.exception.ModelCreationException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -29,6 +31,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
+import io.spotnext.core.types.Localizable;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
@@ -41,6 +44,9 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Resource
 	protected UserService<User, UserGroup> userService;
+
+	// @Resource
+	// protected EventService eventService;
 
 	@Resource
 	protected PersistenceService persistenceService;
@@ -197,5 +203,75 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			ClassUtil.setField(model, "createdBy", username);
 			ClassUtil.setField(model, "lastModifiedBy", username);
 		}
+	}
+
+	/**
+	 * Asynchronously publishes item modification events.
+	 * 
+	 * @param items
+	 *            the items that have been modified
+	 * @param modificationType
+	 *            the kind of modification that has been applied
+	 */
+	protected <T extends Item> void publishEvents(final List<T> items, final ModificationType modificationType) {
+		// for (final T item : items) {
+		// if (item != null) {
+		// try {
+		// eventService.multicastEvent(new ItemModificationEvent<>(item,
+		// modificationType));
+		// } catch (final Exception e) {
+		// loggingService.exception("Could not publish item modification
+		// event.", e);
+		// }
+		// } else {
+		// loggingService.warn("Cannot publish item modification event for
+		// <null>");
+		// }
+		// }
+	}
+
+	@Override
+	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+		return getPropertyValue(item, propertyName, Item.class);
+	}
+
+	@Override
+	public <T extends Item, V> V getLocalizedPropertyValue(final T item, final String propertyName,
+			final Class<V> valueType, final Locale locale) {
+
+		final Localizable<V> localizable = (Localizable<V>) ClassUtil.getField(item, propertyName, true);
+
+		if (localizable != null) {
+			return localizable.get(locale);
+		} else {
+			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+					item.getClass().getSimpleName()));
+		}
+
+		return null;
+	}
+
+	@Override
+	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
+		return (V) ClassUtil.getField(item, propertyName, true);
+	}
+
+	@Override
+	public <T extends Item> void setLocalizedPropertyValue(final T item, final String propertyName,
+			final Object propertyValue, final Locale locale) {
+
+		final Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+
+		if (localizable != null) {
+			localizable.set(locale, propertyValue);
+		} else {
+			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+					item.getClass().getSimpleName()));
+		}
+	}
+
+	@Override
+	public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
+		ClassUtil.setField(item, propertyName, propertyValue);
 	}
 }

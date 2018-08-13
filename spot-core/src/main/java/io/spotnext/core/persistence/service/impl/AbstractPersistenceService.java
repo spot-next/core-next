@@ -8,13 +8,13 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.types.Item;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public abstract class AbstractPersistenceService extends AbstractService implements PersistenceService {
@@ -32,14 +32,19 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 					.getProperties();
 
 			for (final Map.Entry<String, ItemTypePropertyDefinition> prop : properties.entrySet()) {
-				if (isArrayOrCollection(prop.getValue().getReturnType())) {
+				if (isArrayCollectionOrMap(prop.getValue().getReturnType())) {
 					loggingService
 							.warn(String.format("Item property '%s' is a list or collection - it will be ignored.",
 									prop.getValue().getName()));
 				} else {
-
 					try {
 						final Object value = PropertyUtils.getProperty(item, prop.getValue().getName());
+
+						if (value instanceof Item) {
+							loggingService.debug(String.format(
+									"Item property '%s' is an Item type (%s) - this will not work if the object is unsafed.",
+									prop.getValue().getName(), value.getClass().getName()));
+						}
 
 						if (value != null) {
 							retMap.put(prop.getValue().getName(), value);
@@ -58,7 +63,7 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 		return retMap;
 	}
 
-	protected boolean isArrayOrCollection(final Class<?> type) {
+	protected boolean isArrayCollectionOrMap(final Class<?> type) {
 		return type.isArray() || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
 	}
 }

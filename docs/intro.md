@@ -87,7 +87,6 @@ So what is the meaning of the command line arguments?
 
 > The **first two** arguments are **necessary** if you boot up spOt the first time.
 
-
 During boot you will then get some output similar to this:
 ```
 21:59:04.856 [main] INFO  i.s.c.i.support.init.Bootstrap - Bootstrapping done.
@@ -184,7 +183,6 @@ Let's say our project goal is to offer a party guest list service:
 * CRUD-REST interface to create parties, locations add guests
 * Automatically send party confirmation emails as soon as a party's date, location and guest list has been fixed
 * Automatically send party invitation emails when new guests are registered
-* Offer a way to customize email templates
 
 Before we are going to implement the actual functionality, we start by modelling the domain objects. Among the predefined types `User` and `Address` seem suitable candidates for "party guest" and "location".
 But we definitely need a new model type `Party`.
@@ -336,7 +334,7 @@ This results in something like this:
 ``` 
 
 After fixing our POST request the creation of a `Party` item succeeds:
-```http
+```json
 {
     "title": "spOt test party",
     "location": {
@@ -373,12 +371,17 @@ The REST interface returns the following JSON:
 } 
 ```
 
-Only the `PK` and errors or warnings (if any) are returned. Go ahead and try inspect the [newly created Party item](http://localhost:19000/v1/models/party).
+Only the `PK` and errors or warnings (if any) are returned. Go ahead and try to inspect the [newly created Party item](http://localhost:19000/v1/models/party).
 
 So now that we can create new items, let's head over to the next chapter.
 
 ### Implement service
+One of our requirements that we defined, is to send an email invitation each tie a new guest is added to a party.
+Basically what we have to do is to react to item modifications. There are two ways how to do that:
+* Using on of the subclasses of `io.spotnext.core.infrastructure.interceptor.ItemInterceptor<T>` (prepare, validate, load, remove)
+* Subscribing to an item modification event
 
+ 
 
 ### Summary
 

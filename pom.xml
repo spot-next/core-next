@@ -487,8 +487,8 @@
 						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 						<dateFormat>yyyyMMdd-HHmmss</dateFormat>
 						<injectAllReactorProjects>false</injectAllReactorProjects>
-						<failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
-						<failOnNoGitDirectory>true</failOnNoGitDirectory>
+						<failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+						<failOnNoGitDirectory>false</failOnNoGitDirectory>
 						<generateGitPropertiesFile>true</generateGitPropertiesFile>
 					</configuration>
 					<executions>
