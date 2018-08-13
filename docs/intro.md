@@ -193,7 +193,7 @@ Common Java IDEs like Eclipse or IntelliJ offer auto-completion in XML files. Th
 
 First we add the new `Party` type:
 ```xml
-<type name="Party" package="io.spotnext.test.itemtype.Party">
+<type name="Party" package="io.spotnext.test.itemtype">
 	<properties>
 		<property name="title" type="String">
 			<description>The unique title of the party</description>
@@ -278,7 +278,7 @@ Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
     "errors": [
         {
             "code": "error.internal",
-            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.itemtype.Party.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
+            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.itemtype.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
         }
     ],
     "warnings": []

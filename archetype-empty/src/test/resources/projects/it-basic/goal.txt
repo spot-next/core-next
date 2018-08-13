@@ -1,1 +1,1 @@
-verify
+-Dtest=EmptyTest test
