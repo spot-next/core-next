@@ -9,13 +9,14 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.init.Configuration;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.persistence.service.PersistenceService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This is a static provider for the current spring context. It also provides
@@ -29,7 +30,7 @@ public class Registry implements ApplicationContextAware {
 
 	private static ApplicationContext context;
 	private static Thread mainThread;
-	private static Class<? extends ModuleInit> mainClass;
+	private static Class<? extends ModuleInit> mainClass = CoreInit.class;
 
 	private static ModelService modelService;
 	private static TypeService typeService;

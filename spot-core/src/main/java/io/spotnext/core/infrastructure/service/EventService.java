@@ -1,7 +1,6 @@
 package io.spotnext.core.infrastructure.service;
 
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 
 /**
  * Provides infrastructure for publishing events.
@@ -26,12 +25,4 @@ public interface EventService {
 	 */
 	<E extends ApplicationEvent> void multicastEvent(E event);
 
-	/**
-	 * Registers an event listener. Useful in spring child contexts as those
-	 * listeners are not being registered automatically.
-	 * 
-	 * @param listener
-	 *            the listener to register
-	 */
-	void registerListener(ApplicationListener<?> listener);
 }

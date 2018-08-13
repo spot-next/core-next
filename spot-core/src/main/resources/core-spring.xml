@@ -91,14 +91,14 @@
 		class="io.spotnext.core.infrastructure.service.impl.DefaultL10nService">
 		<property name="parentMessageSource" ref="reloadableMessageSource" />
 	</bean>
-	
+
 	<!-- event handling -->
-	<alias name="defaultAsyncTaskExecutor" alias="asyncTaskExecutor"/>
-	<bean id="defaultAsyncTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
-	
-	<alias name="defaultApplicationEventMulticaster" alias="applicationEventMulticaster"/>
-	<bean id="defaultApplicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
-		<property name="TaskExecutor" ref="asyncTaskExecutor" />
+	<bean id="applicationEventMulticaster"
+		class="org.springframework.context.event.SimpleApplicationEventMulticaster">
+		<property name="taskExecutor">
+			<bean
+				class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" />
+		</property>
 	</bean>
 
 	<!-- JSR-303 validator for spring -->

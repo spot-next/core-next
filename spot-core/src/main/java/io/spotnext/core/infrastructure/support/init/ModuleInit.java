@@ -9,14 +9,17 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
+import org.springframework.context.event.EventListenerMethodProcessor;
 
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
+import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 
 @PropertySource(value = "classpath:/git.properties", ignoreResourceNotFound = true)
 @Configuration
@@ -84,5 +87,23 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 	public ApplicationContext getApplicationContext() {
 		return applicationContext;
+	}
+
+	/**
+	 * Override Spring's {@link EventListenerMethodProcessor} and always use the
+	 * root spring context. This makes sure that all event listeners (even in
+	 * child contexts) get notified when events in a parent context are thrown.
+	 * 
+	 * @return the custom event listener instance
+	 */
+	@Bean(name = "org.springframework.context.event.internalEventListenerProcessor")
+	protected EventListenerMethodProcessor eventListenerMethodProcessor() {
+		final EventListenerMethodProcessor processor = new HierarchyAwareEventListenerMethodProcessor();
+
+		return processor;
+	}
+
+	public boolean isAlreadyInitialized() {
+		return alreadyInitialized;
 	}
 }

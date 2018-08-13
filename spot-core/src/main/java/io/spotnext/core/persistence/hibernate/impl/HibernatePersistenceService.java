@@ -510,7 +510,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
 
-			return ((Query<T>) query).getResultList();
+			final List<T> results = ((Query<T>) query).getResultList();
+
+			return results;
 		});
 	}
 

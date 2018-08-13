@@ -12,6 +12,7 @@ import javax.validation.ConstraintViolation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import io.spotnext.core.infrastructure.event.ItemModificationEvent;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
 import io.spotnext.core.infrastructure.exception.ModelCreationException;
@@ -22,6 +23,7 @@ import io.spotnext.core.infrastructure.interceptor.ItemLoadInterceptor;
 import io.spotnext.core.infrastructure.interceptor.ItemPrepareInterceptor;
 import io.spotnext.core.infrastructure.interceptor.ItemRemoveInterceptor;
 import io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor;
+import io.spotnext.core.infrastructure.service.EventService;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.UserService;
@@ -45,8 +47,8 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Resource
 	protected UserService<User, UserGroup> userService;
 
-	// @Resource
-	// protected EventService eventService;
+	@Resource
+	protected EventService eventService;
 
 	@Resource
 	protected PersistenceService persistenceService;
@@ -214,20 +216,17 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	 *            the kind of modification that has been applied
 	 */
 	protected <T extends Item> void publishEvents(final List<T> items, final ModificationType modificationType) {
-		// for (final T item : items) {
-		// if (item != null) {
-		// try {
-		// eventService.multicastEvent(new ItemModificationEvent<>(item,
-		// modificationType));
-		// } catch (final Exception e) {
-		// loggingService.exception("Could not publish item modification
-		// event.", e);
-		// }
-		// } else {
-		// loggingService.warn("Cannot publish item modification event for
-		// <null>");
-		// }
-		// }
+		for (final T item : items) {
+			if (item != null) {
+				try {
+					eventService.multicastEvent(new ItemModificationEvent<>(item, modificationType));
+				} catch (final Exception e) {
+					loggingService.exception("Could not publish item modification event.", e);
+				}
+			} else {
+				loggingService.warn("Cannot publish item modification event for <null>");
+			}
+		}
 	}
 
 	@Override
