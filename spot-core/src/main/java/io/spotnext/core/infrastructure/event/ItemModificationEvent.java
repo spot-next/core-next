@@ -20,7 +20,7 @@ public class ItemModificationEvent<T extends Item> extends ApplicationEvent impl
 		return modificationType;
 	}
 
-	public T getModifiedItem() {
+	public T getItem() {
 		return (T) getSource();
 	}
 

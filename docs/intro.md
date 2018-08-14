@@ -205,9 +205,18 @@ First we add the new `Party` type:
 		<property name="location" type="Address">
 			<description>The location the party will take place</description>
 		</property>
+		<property name="date" type="Date">
+			<description>The date the party will take place</description>
+		</property>
+		<property name="fixed" type="Boolean">
+			<description>Defines that the party has been fixed and should not be changed anymore.</description>
+		</property>
 	</properties>
 </type>
 ```
+
+> Each time the *itemtypes.xml is changed, we can either run a full `mvn install` or the faster `mvn spot:generate-types spot:transform-types`
+
 Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the "unique-modifier" to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
 The validator element `javax.validation.constraints.NotNull` adds a [JSR-303 validation](https://beanvalidation.org/1.0/spec/) to the property. Basically it means that the value may not be `null` when saving.
 The description elements will be rendered as Javadoc.
@@ -262,10 +271,10 @@ Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
 	    	"postalCode": "1030",
 	    	"country": "at"
     },
-    "guests": [
+    "invitedGuests": [
 	    	{
 	    		"typeCode": "user",
-	    		"id": "guest-01",
+	    		"id": "guest-01@test.at",
 	    		"shortName": "Guest user #1"
 	    	}
     ]
@@ -348,10 +357,10 @@ After fixing our POST request the creation of a `Party` item succeeds:
 	    		"pk": 4003256542000269317
 	    	}
     },
-    "guests": [
+    "invitedGuests": [
 	    	{
 	    		"typeCode": "User",
-	    		"id": "guest-01",
+	    		"id": "guest-01@test.at",
 	    		"shortName": "Guest user #1"
 	    	}
     ]
@@ -376,12 +385,134 @@ Only the `PK` and errors or warnings (if any) are returned. Go ahead and try to 
 So now that we can create new items, let's head over to the next chapter.
 
 ### Implement service
-One of our requirements that we defined, is to send an email invitation each tie a new guest is added to a party.
+One of our requirements that we defined, is to send an email as soon as the party location, date and guestlist is fixed.
 Basically what we have to do is to react to item modifications. There are two ways how to do that:
 * Using on of the subclasses of `io.spotnext.core.infrastructure.interceptor.ItemInterceptor<T>` (prepare, validate, load, remove)
-* Subscribing to an item modification event
+* Subscribing to an `ItemModificationEvent`
 
- 
+The first option is a **synchronous approach** - an **interceptor** can slow down and even break a persistence operation like save, load or remove (it runs in the same thread just before or after). As sending mails potentially might be taking longer than a few milliseconds, we go for the seconds option. Among the various events we can listen to, there is also an `ItemModificationEvent`. **Events** are generally delivered **asynchronously** in a different thread.
+
+> Internally Spring's `ApplicationEventMulticaster` is used, although the `EventService` also offers synchronous event delivery
+
+A stub implementation looks like this:
+```java
+@Service
+public class PartyModificationListener {
+	@EventListener
+	public void handleEvent(final ItemModificationEvent<Party> event) {
+		final Party fixedParty = event.getItem();
+	}
+}
+```
+
+As we are only interested in **save** events of parties that have the `fixed` property set to `true`, we add a condition to the `@EventListener` annotation:
+```java
+@EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
+public void handleEvent(final ItemModificationEvent<Party> event) {
+	final Party fixedParty = event.getItem();
+}
+```
+
+This could of course also be one with a simle `if` statement too.
+
+> Here you can find [further details regarding spring events](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#context-functionality-events-annotation).
+
+Right now spOt doesn't contain any messaging services (but this is definitely something on the roadmap), so for now we just *Simple Java Mail* for that. Include that in the `pom.xml`: 
+```xml
+<dependency>
+    <groupId>org.simplejavamail</groupId>
+    <artifactId>simple-java-mail</artifactId>
+    <version>5.0.3</version>
+</dependency>
+``` 
+
+We warp the library in a little service:
+```java
+@Service
+public class EmailService extends AbstractService {
+
+	@Value("${mail.smtp.host}")
+	private String mailHost;
+
+	@Value("${mail.smtp.port}")
+	private Integer mailPort;
+
+	@Value("${mail.smtp.user}")
+	private String mailUser;
+
+	@Value("${mail.smtp.password}")
+	private String mailPassword;
+
+	private Mailer mailer;
+
+	@PostConstruct
+	public void init() {
+		mailer = MailerBuilder.withSMTPServer(mailHost, mailPort, mailUser, mailPassword).buildMailer();
+	}
+
+	public void send(final Email email) {
+		mailer.sendMail(email);
+	}
+}
+```
+
+> By default the whole root package is enabled for spring's autowire detection mechanism (see the annotation `@SpringBootApplication(scanBasePackages = { "io.spotnext.test" })` on the `Init` class.
+
+The configuration properties have to be defined in the file **src/main/resource** is/application.properties:
+
+```
+mail.smtp.host=localhost
+mail.smtp.port=2525
+mail.smtp.user=
+mail.smtp.password=
+```
+
+Now we can extend the `PartyModificationListener` to actually create `mail` objects and send them:
+```java
+@Service
+public class PartyModificationListener {
+
+	@Resource
+	private EmailService emailService;
+
+	@EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
+	public void handleEvent(final ItemModificationEvent<Party> event) {
+		final Party fixedParty = event.getItem();
+
+		// build email for every guest
+		for (final User guest : fixedParty.getInvitedGuests()) {
+			final Email email = EmailBuilder.startingBlank().to(guest.getShortName(), guest.getId())
+					.from("Party Service", "service@party.at")
+					.withSubject(fixedParty.getTitle() + " is on " + fixedParty.getDate())
+					.withHTMLText("Let's get this party started!").buildEmail();
+
+			emailService.send(email);
+		}
+	}
+}
+```
+> For the sake of simplicity we directly use the implementation class. In a real world scenario **interfaces should be used instead**! 
+
+To be able to test this, we need to actually have a running SMTP server on port 2525. On option might be  to use [FAkeSMTP](http://nilhcem.com/FakeSMTP/).
+
+Time to test. Issue this HTTP request to update the `fixed` property of the party we created earlier:
+```http
+PATCH /v1/models/party/5653851201092010438 HTTP/1.1
+Host: localhost:19000
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Content-Type: application/javascript
+Cache-Control: no-cache
+Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
+
+{
+    "fixed": true
+}
+```
+
+> The `PK` part of the URL has to be adapted! Use the same as from above or run another `GET` request.
+
+The listener will execute but no emails will be sent yet, as there are not party guests assigned just yet.
+
 
 ### Summary
 

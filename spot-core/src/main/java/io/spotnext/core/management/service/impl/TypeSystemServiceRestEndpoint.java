@@ -15,9 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -46,7 +44,6 @@ import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.support.util.MiscUtil;
 import io.spotnext.core.types.Item;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
@@ -377,7 +374,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		if (pk > 0) {
 			try {
 				// get body as json object
-				final JsonObject content = deserializeToJsonToken(request);
+				final Map<String, Object> content = deserializeToJsonToken(request);
 
 				// search old item
 				final T oldItem = modelService.get(type, pk);
@@ -389,9 +386,9 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
 						.getItemTypeProperties(typeService.getTypeCodeForClass(type));
 
-				for (final Entry<String, JsonElement> prop : content.entrySet()) {
+				for (final Entry<String, Object> prop : content.entrySet()) {
 					final String key = prop.getKey();
-					final JsonElement value = prop.getValue();
+					final Object value = prop.getValue();
 
 					final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
 
@@ -445,11 +442,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return item;
 	}
 
-	protected JsonObject deserializeToJsonToken(final Request request)
+	protected Map<String, Object> deserializeToJsonToken(final Request request)
 			throws UnknownTypeException, DeserializationException {
 		final String content = request.body();
 
-		return serializationService.fromJson(content, JsonElement.class).getAsJsonObject();
+		return serializationService.fromJson(content, Map.class);
 	}
 
 	/*
