@@ -144,11 +144,9 @@ public class DefaultModelService extends AbstractModelService {
 
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		// TODO: remove interceptors
-		// publishEvents(Collections.singletonList(item),
-		// ModificationType.REMOVE);
+		final T itemToRemove = get(type, pk);
 
-		persistenceService.remove(type, pk);
+		removeAll(Arrays.asList(itemToRemove));
 	}
 
 	@Override

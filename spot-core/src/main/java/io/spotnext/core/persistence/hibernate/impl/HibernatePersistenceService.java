@@ -535,8 +535,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		transactionService.execute(() -> {
 			// TODO: improve
 			// final String query = String.format("DELETE FROM %s WHERE pk IN
-			// (?pk)",
-			// type.getSimpleName());
+			// (?pk)", type.getSimpleName());
 
 			// em.createQuery(query, type).setParameter("pk", pk);
 			final T item = getSession().find(type, pk);
