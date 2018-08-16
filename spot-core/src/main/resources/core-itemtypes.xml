@@ -3,6 +3,11 @@
 	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
 	<!-- atomic java types -->
+	<!-- primitive types -->
+	<atomic name="boolean" className="boolean" />
+	<atomic name="int" className="int" />
+	
+	<!-- complex types -->
 	<atomic name="String" className="java.lang.String" />
 	<atomic name="Boolean" className="java.lang.Boolean" />
 	<atomic name="Byte" className="java.lang.Byte" />
@@ -12,7 +17,10 @@
 	<atomic name="Double" className="java.lang.Double" />
 	<atomic name="Float" className="java.lang.Float" />
 	<atomic name="BigDecimal" className="java.math.BigDecimal" />
-	<atomic name="Date" className="java.util.Date" />
+	<atomic name="Date" className="java.time.LocalDate" />
+	<atomic name="Time" className="java.time.LocalTime" />
+	<atomic name="DateTime" className="java.time.LocalDateTime" />
+	<atomic name="Instant" className="java.time.Instant" />
 	<atomic name="LocalDate" className="java.time.LocalDate" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />

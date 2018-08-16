@@ -105,8 +105,16 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		return null;
 	}
 
+	/**
+	 * Filters primitive types, proxy, internal and java base types.
+	 * 
+	 * @param className
+	 *            the class name to check
+	 * @return true if not filtered out by the above definition.
+	 */
 	protected boolean isValidClass(final String className) {
-		return !className.contains("$Proxy") && !className.contains("sun/reflect") && !className.contains("java.lang");
+		return className.contains(".") && !className.contains("$Proxy") && !className.contains("sun/reflect")
+				&& !className.contains("java.lang");
 	}
 
 	/**
@@ -162,7 +170,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 			throws IllegalClassTransformationException {
 		ClassFile clazzFile = null;
 
-		if (clazz.isFrozen() && defrost) {
+		if (isValidClass(clazz.getName()) && clazz.isFrozen() && defrost) {
 			clazz.defrost();
 			clazzFile = clazz.getClassFile2();
 		} else {

@@ -35,7 +35,10 @@ public class JavaMemberType extends AbstractObject {
 		} else {
 			this.name = name;
 		}
+	}
 
+	public boolean isPrimitiveType() {
+		return !name.contains(".");
 	}
 
 	public JavaMemberType(final String name, final String packagePath) {

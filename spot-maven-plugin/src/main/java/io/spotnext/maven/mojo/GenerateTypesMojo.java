@@ -452,7 +452,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
 		final JavaMethod getter = new JavaMethod();
-		getter.setName(generateMethodName("get", field.getName()));
+
+		if ("boolean".equals(field.getType().getFullyQualifiedName())) {
+			getter.setName(generateMethodName("is", field.getName()));
+		} else {
+			getter.setName(generateMethodName("get", field.getName()));
+		}
 		getter.setType(field.getType());
 		getter.setDescription(field.getDescription());
 		getter.setVisibility(Visibility.PUBLIC);
