@@ -5,8 +5,8 @@ import io.spotnext.core.types.Item;
 
 public interface ItemPrepareInterceptor<T extends Item> extends ItemInterceptor<T> {
 	/**
-	 * The given item has been validated and can now be post-processed before it is
-	 * persisted by the persistence layer.
+	 * This is called before an item is being validated and saved by the
+	 * persistence layer.
 	 * 
 	 * @param item
 	 *            The validated item

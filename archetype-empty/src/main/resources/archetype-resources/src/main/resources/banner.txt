@@ -15,5 +15,5 @@ ${AnsiColor.BRIGHT_GREEN}                   ██████
 ${AnsiColor.BRIGHT_GREEN}                   ██████  
 ${AnsiColor.BRIGHT_GREEN}                   ██████                                INNOVATIVE CODING
 
-${groupId}:${artifactId}:${version}
+${groupId}:${artifactId} ${application.version}
                                                          

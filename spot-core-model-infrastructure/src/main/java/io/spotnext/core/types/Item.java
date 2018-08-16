@@ -2,8 +2,8 @@ package io.spotnext.core.types;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -52,14 +52,14 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@CreationTimestamp
 	@CreatedDate
-	protected Date createdAt;
+	protected LocalDateTime createdAt;
 
 	@CreatedBy
 	protected String createdBy;
 
 	@UpdateTimestamp
 	@LastModifiedDate
-	protected Date lastModifiedAt;
+	protected LocalDateTime lastModifiedAt;
 
 	@LastModifiedBy
 	protected String lastModifiedBy;
@@ -75,10 +75,10 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected boolean deleted = false;
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation). This is necessary to implement
-	 * extendible combined unique constraints, regardless of which JPA inheritance
-	 * strategy is used
+	 * Returns a hash code calculated of all properties that are defined as
+	 * unique (with the {@link Property} annotation). This is necessary to
+	 * implement extendible combined unique constraints, regardless of which JPA
+	 * inheritance strategy is used
 	 */
 	@Column(name = "uniquenessHash", unique = true, nullable = false)
 	private Integer uniquenessHash = null;
@@ -96,7 +96,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@PrePersist
 	public void prePersist() {
-		this.createdAt = new Date();
+		this.createdAt = LocalDateTime.now();
 		uptedateUniquenessHash();
 	}
 
@@ -104,7 +104,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		// update uniqueness hash. This is the only column that has unique-key
 		// constraint!
 
-		Collection<Object> uniquePropertyValues = getUniqueProperties().values();
+		final Collection<Object> uniquePropertyValues = getUniqueProperties().values();
 
 		if (uniquePropertyValues.size() > 0) {
 			this.uniquenessHash = Objects.hash(uniquePropertyValues.toArray());
@@ -120,7 +120,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	protected void setLastModifiedAt() {
-		this.lastModifiedAt = new Date();
+		this.lastModifiedAt = LocalDateTime.now();
 	}
 
 	public int uniquenessHash() {
@@ -135,20 +135,18 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		this.lastModifiedBy = lastModifiedBy;
 	}
 
-	public Date getLastModifiedAt() {
-		// hide internal state, findbugs problem
-		return lastModifiedAt != null ? new Date(lastModifiedAt.getTime()) : null;
+	public LocalDateTime getLastModifiedAt() {
+		return lastModifiedAt;
 	}
 
-	public Date getCreatedAt() {
-		// hide internal state, findbugs problem
-		return createdAt != null ? new Date(createdAt.getTime()) : null;
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
 	}
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing item
-	 *         with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing
+	 *         item with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -163,7 +161,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated with @Unique.
+	 * Returns the names and the values of all properties annotated
+	 * with @Unique.
 	 *
 	 */
 	public Map<String, Object> getUniqueProperties() {
@@ -187,8 +186,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current object,
-	 * both are equal.
+	 * If the type and the pk of the given object is the same as the current
+	 * object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

@@ -61,7 +61,7 @@ public class Bootstrap {
 
 	protected static SpringApplicationBuilder build(final Class<? extends ModuleInit> initClass) {
 		Registry.setMainClass(initClass);
-		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.OFF);
+		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.CONSOLE);
 	}
 
 	public static SpringApplicationBuilder bootstrap(final Class<? extends ModuleInit> configuration,
