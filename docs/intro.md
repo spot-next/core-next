@@ -511,8 +511,79 @@ Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
 
 > The `PK` part of the URL has to be adapted! Use the same as from above or run another `GET` request.
 
-The listener will execute but no emails will be sent yet, as there are not party guests assigned just yet.
+The listener will execute and you should see a new email in your input:
+![fakeSMTTP shows the received email](resources/fakeSMTP_email_in_inbox.png "fakeSMTTP shows the received email")
 
+But what's that? We forgot to set the `date` property. As we didn't validate it in the listener, we sent out an erronious mail. There are two options to prevent his from happending again:
+* Add anothe condition to the listener
+* Implement a custom validation interceptor (`io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor`)
+
+> **Interceptors** allow you to **inject custom behaviour into persistence operations**.  
+
+Current these interceptors are provided:
+* `ItemCreateInterceptor`: runs after `ModelService.create` instantiated a new `Item` instance
+* `ItemPrepareInterceptor`: runs before an `Item` is being validated and persisted
+* `ItemValidateInterceptor`: runs before an `Item` is being persisted and after it has been prepared
+* `ItemLoadInterceptor`: run after an `Item` has been fetched from the database
+* `ItemRemoveInterceptor`: runs before a `Item` is being removed
+
+The difference to an `ItemModificationListener` is that the interceptors are called synchronously. If they throw an exception, the whole persistence operation is interrupted.
+
+We will now implement a custom `PartyValidationInterceptor` that validates that both `date` and `location` are set, and that at least one guest is invited.  
+```java
+@Service
+public class PartyValidateInterceptor extends AbstractItemInterceptor<Party> implements ItemValidateInterceptor<Party> {
+
+	@Override
+	public void onValidate(final Party item) throws ModelValidationException {
+		if (item.getFixed()
+				&& (item.getLocation() == null || (item.getDate() == null || new Date().after(item.getDate()))
+						|| item.getInvitedGuests().size() == 0)) {
+			throw new ModelValidationException(
+					"Party cannot be fixed as not all necessary properties (date, location, invitedGuests) are defined yet.");
+		}
+	}
+
+	@Override
+	public Class<Party> getItemType() {
+		return Party.class;
+	}
+}
+```
+
+Let's try to set the `fixed` to `true` property again:
+```http
+```http
+PATCH /v1/models/party/5653851201092010438 HTTP/1.1
+Host: localhost:19000
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Content-Type: application/javascript
+Cache-Control: no-cache
+Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
+
+{
+    "fixed": true
+}
+```
+> The `PK` has to be adapted!
+
+This time the REST-interface responds with an error:
+```json
+{
+    "errors": [
+        {
+            "code": "error.onpartialupdate",
+            "message": "Party cannot be fixed as not all necessary properties (date, location, invitedGuests) are defined yet."
+        }
+    ],
+    "warnings": []
+}
+```
+
+So now let's quickly update the date:
+```http
+
+```
 
 ### Summary
 
