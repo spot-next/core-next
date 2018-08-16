@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +13,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
@@ -28,7 +29,6 @@ import io.spotnext.core.infrastructure.http.Status;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.converter.Converter;
@@ -373,34 +373,16 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 		if (pk > 0) {
 			try {
-				// get body as json object
-				final Map<String, Object> content = deserializeToJsonToken(request);
 
 				// search old item
-				final T oldItem = modelService.get(type, pk);
+				T oldItem = modelService.get(type, pk);
 
 				if (oldItem == null) {
 					throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
 				}
 
-				final Map<String, ItemTypePropertyDefinition> propertyDefinitions = typeService
-						.getItemTypeProperties(typeService.getTypeCodeForClass(type));
-
-				for (final Entry<String, Object> prop : content.entrySet()) {
-					final String key = prop.getKey();
-					final Object value = prop.getValue();
-
-					final ItemTypePropertyDefinition propDef = propertyDefinitions.get(key);
-
-					// if the json property really exists on the item, then
-					// continue
-					if (propDef != null) {
-						final Object parsedValue = serializationService.fromJson(value.toString(),
-								propDef.getReturnType());
-						modelService.setPropertyValue(oldItem, prop.getKey(), parsedValue);
-					}
-				}
-
+				// get body as json object
+				oldItem = deserializeToItem(request, oldItem);
 				oldItem.markAsDirty();
 
 				modelService.save(oldItem);
@@ -408,8 +390,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 				body.setStatusCode(HttpStatus.ACCEPTED);
 			} catch (final ModelNotUniqueException | ModelValidationException e) {
 				body.setStatusCode(HttpStatus.CONFLICT);
-				body.getBody().addError(new Status("error.onpartialupdate",
-						"Another item with the same uniqueness criteria (but a different PK) was found."));
+				body.getBody().addError(new Status("error.onpartialupdate", e.getMessage()));
 			} catch (final ModelNotFoundException e) {
 				body.setStatusCode(HttpStatus.NOT_FOUND);
 				body.getBody()
@@ -429,11 +410,22 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	protected <T extends Item> T deserializeToItem(final Request request)
 			throws DeserializationException, UnknownTypeException {
+		return deserializeToItem(request, null);
+	}
+
+	protected <T extends Item> T deserializeToItem(final Request request, final T objectToUpdate)
+			throws DeserializationException, UnknownTypeException {
 
 		final String typeCode = request.params(":typecode");
 		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
-		final T item = serializationService.fromJson(request.body(), type);
+		final T item;
+
+		if (objectToUpdate != null) {
+			item = serializationService.fromJson(request.body(), objectToUpdate);
+		} else {
+			item = serializationService.fromJson(request.body(), type);
+		}
 
 		if (item == null) {
 			throw new DeserializationException("Request body was empty");
@@ -442,11 +434,11 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return item;
 	}
 
-	protected Map<String, Object> deserializeToJsonToken(final Request request)
+	protected JsonNode deserializeToJsonToken(final Request request)
 			throws UnknownTypeException, DeserializationException {
 		final String content = request.body();
 
-		return serializationService.fromJson(content, Map.class);
+		return serializationService.fromJson(content, JsonNode.class);
 	}
 
 	/*

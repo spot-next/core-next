@@ -37,8 +37,18 @@ public class DefaultSerializationService implements SerializationService {
 	}
 
 	@Override
+	public <T> T fromJson(final String value, final T instanceToUpdate) throws DeserializationException {
+		return jsonSerializationStrategy.deserialize(value, instanceToUpdate);
+	}
+
+	@Override
 	public <T> T fromXml(final String value, final Class<T> type) throws DeserializationException {
 		return xmlSerializationStrategy.deserialize(value, type);
+	}
+
+	@Override
+	public <T> T fromXml(final String value, final T instanceToUpdate) throws DeserializationException {
+		return xmlSerializationStrategy.deserialize(value, instanceToUpdate);
 	}
 
 }

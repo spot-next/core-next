@@ -33,20 +33,25 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	}
 
 	@Override
+	public I deserialize(final JsonParser p, final DeserializationContext ctxt, final I intoValue) throws IOException {
+		return loadItem(p, ctxt, null, intoValue);
+	}
+
+	@Override
 	public Object deserializeWithType(final JsonParser p, final DeserializationContext ctxt,
 			final TypeDeserializer typeDeserializer) throws IOException {
 
-		return loadItem(p, ctxt, (TypeDeserializerBase) typeDeserializer);
+		return loadItem(p, ctxt, (TypeDeserializerBase) typeDeserializer, null);
 	}
 
 	@Override
 	public I deserialize(final JsonParser p, final DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
-		return loadItem(p, ctxt, null);
+		return loadItem(p, ctxt, null, null);
 	}
 
 	private I loadItem(final JsonParser parser, final DeserializationContext context,
-			final TypeDeserializerBase typeDeserializer) throws IOException {
+			final TypeDeserializerBase typeDeserializer, final I intoValue) throws IOException {
 
 		final ObjectCodec oc = parser.getCodec();
 		final JsonNode node = oc.readTree(parser);
@@ -70,12 +75,19 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 			treeParser.nextToken();
 		}
 
-		deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context);
+		if (intoValue != null) {
+			deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context, intoValue);
+		} else {
+			deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context);
+		}
 
 		try {
-			getModelService().refresh(deserializedItem);
+			if (!getModelService().isAttached(deserializedItem)) {
+				getModelService().refresh(deserializedItem);
+			}
 		} catch (final ModelNotFoundException e) {
-			// ignore exception, as this just means that the item is most likely new
+			// ignore exception, as this just means that the item is most likely
+			// new
 		}
 
 		return deserializedItem;

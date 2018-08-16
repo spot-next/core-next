@@ -174,4 +174,22 @@ public interface ModelService {
 	 * @param items
 	 */
 	<T extends Item> void detach(List<T> items);
+
+	/**
+	 * Checks if the given item is attached to the persistence context.
+	 * 
+	 * @param item
+	 *            the item to check
+	 * @return true if the item is attached
+	 */
+	<T extends Item> boolean isAttached(T item);
+
+	/**
+	 * Attaches the given item to the persistence context.
+	 * 
+	 * @param item
+	 *            to attach
+	 * @throws ModelNotFoundException
+	 */
+	<T extends Item> void attach(T item) throws ModelNotFoundException;
 }

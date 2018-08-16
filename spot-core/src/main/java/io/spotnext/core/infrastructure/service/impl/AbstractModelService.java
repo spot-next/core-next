@@ -16,6 +16,7 @@ import io.spotnext.core.infrastructure.event.ItemModificationEvent;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
 import io.spotnext.core.infrastructure.exception.ModelCreationException;
+import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.interceptor.ItemCreateInterceptor;
@@ -272,5 +273,15 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Override
 	public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
 		ClassUtil.setField(item, propertyName, propertyValue);
+	}
+
+	@Override
+	public <T extends Item> boolean isAttached(final T item) {
+		return persistenceService.isAttached(item);
+	}
+
+	@Override
+	public <T extends Item> void attach(final T item) throws ModelNotFoundException {
+		persistenceService.attach(item);
 	}
 }

@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,11 @@ public class DefaultXmlSerializationStrategy implements SerializationStrategy {
 		return object;
 	}
 
+	@Override
+	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
+		throw new NotImplementedException();
+	}
+
 	public boolean isPrettyPrint() {
 		return prettyPrint;
 	}
@@ -65,4 +71,5 @@ public class DefaultXmlSerializationStrategy implements SerializationStrategy {
 	public void setPrettyPrint(final boolean prettyPrint) {
 		this.prettyPrint = prettyPrint;
 	}
+
 }

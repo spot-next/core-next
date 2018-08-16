@@ -15,8 +15,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemDeserializer;
@@ -45,10 +48,14 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		jacksonMapper = new ObjectMapper();
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+		// jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd
+		// hh:mm:ss"));
 
 		// needed for localizedStrings, because otherwise the default locale
-		// value would
-		// be returned instead of the real item
+		// value would be returned instead of the real item
 		jacksonMapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		jacksonMapper.setVisibility(PropertyAccessor.GETTER, Visibility.NONE);
 		jacksonMapper.setVisibility(PropertyAccessor.IS_GETTER, Visibility.NONE);
@@ -77,6 +84,8 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		});
 
 		jacksonMapper.registerModule(module);
+		jacksonMapper.registerModule(new Jdk8Module());
+		jacksonMapper.registerModule(new JavaTimeModule());
 
 		this.jacksonWriter = jacksonMapper.writer();
 	}
@@ -98,6 +107,15 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
 		try {
 			return this.jacksonMapper.readValue(serializedObject, type);
+		} catch (final Exception e) {
+			throw new SerializationException("Cannot deserialize object: " + e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
+		try {
+			return this.jacksonMapper.readerForUpdating(instanceToUpdate).readValue(serializedObject);
 		} catch (final Exception e) {
 			throw new SerializationException("Cannot deserialize object: " + e.getMessage(), e);
 		}

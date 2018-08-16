@@ -414,15 +414,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	/**
-	 * Attaches the given item in case it is detached.
-	 * 
-	 * @param item
-	 * @return true if the item was successfully attached to the hibernate
-	 *         session.
-	 * @throws ModelNotFoundException
-	 */
-	protected <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
+	@Override
+	public <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
 		bindSession();
 
 		try {
@@ -589,6 +582,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		for (final T item : items) {
 			getSession().detach(item);
 		}
+	}
+
+	@Override
+	public <T extends Item> boolean isAttached(final T item) {
+		bindSession();
+
+		return getSession().contains(item);
 	}
 
 	protected Session getSession() {

@@ -94,4 +94,23 @@ public interface PersistenceService {
 	 * Converts the given item to a map.
 	 */
 	<T extends Item> Map<String, Object> convertItemToMap(T item);
+
+	/**
+	 * Checks if the given item is attached to the persistence context.
+	 * 
+	 * @param item
+	 *            the item to check
+	 * @return true if the item is attached
+	 */
+	<T extends Item> boolean isAttached(T item);
+
+	/**
+	 * Attaches the given item in case it is detached.
+	 * 
+	 * @param item
+	 * @return true if the item was successfully attached to the persistence
+	 *         context.
+	 * @throws ModelNotFoundException
+	 */
+	<T extends Item> boolean attach(T item) throws ModelNotFoundException;
 }
