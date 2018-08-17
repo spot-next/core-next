@@ -1,10 +1,10 @@
 package io.spotnext.core.infrastructure.service.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -164,13 +164,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 
 		if (!errors.isEmpty()) {
-			final ConstraintViolation<?> violation = errors.iterator().next();
-
-			final String message = errors.stream()
-					.map(v -> String.format("%s.%s %s", violation.getRootBeanClass().getSimpleName(),
-							violation.getPropertyPath().toString(), violation.getMessage()))
-					.collect(Collectors.joining(", "));
-
+			final String message = validationService.convertToReadableMessage(Collections.unmodifiableSet((errors)));
 			throw new ModelValidationException(message, errors);
 		}
 	}

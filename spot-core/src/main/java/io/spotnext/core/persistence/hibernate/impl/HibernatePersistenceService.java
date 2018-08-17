@@ -27,6 +27,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.HibernateException;
@@ -54,6 +56,7 @@ import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
@@ -79,6 +82,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@Resource
 	protected PlatformTransactionManager transactionManager;
+
+	@Resource
+	protected ValidationService validationService;
 
 	@PostConstruct
 	public void initialize() {
@@ -344,6 +350,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					// items",
 					// e);
 					// }
+				} catch (final ValidationException e) {
+					final String message;
+					if (e instanceof ConstraintViolationException) {
+						message = validationService
+								.convertToReadableMessage(((ConstraintViolationException) e).getConstraintViolations());
+					} else {
+						message = e.getMessage();
+					}
+
+					throw new ModelSaveException(message);
 				} catch (final DataIntegrityViolationException | TransactionRequiredException
 						| IllegalArgumentException e) {
 

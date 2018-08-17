@@ -1,6 +1,7 @@
 package io.spotnext.core.infrastructure.service.impl;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
@@ -26,6 +27,17 @@ public class DefaultValidationService implements ValidationService {
 		final Set<ConstraintViolation<T>> constraintViolations = validator.validate(object);
 
 		return constraintViolations;
+	}
+
+	@Override
+	public String convertToReadableMessage(final Set<ConstraintViolation<?>> violations) {
+		final ConstraintViolation<?> violation = violations.iterator().next();
+
+		final String message = violations.stream()
+				.map(v -> String.format("%s.%s %s", violation.getRootBeanClass().getSimpleName(),
+						violation.getPropertyPath().toString(), violation.getMessage()))
+				.distinct().collect(Collectors.joining(", "));
+		return message;
 	}
 
 }
