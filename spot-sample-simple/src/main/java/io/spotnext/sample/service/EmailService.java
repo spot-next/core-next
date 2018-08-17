@@ -8,9 +8,11 @@ import org.simplejavamail.mailer.MailerBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 
 @Service
+@SuppressFBWarnings("UUF_UNUSED_FIELD")
 public class EmailService extends AbstractService {
 
 	@Value("${mail.smtp.host}")
