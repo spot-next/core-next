@@ -1,5 +1,4 @@
 - [Introduction](/intro)
-- [Trail](/trail)
 - [API documentation](/api)
 - [Javadoc](/javadoc)
 
