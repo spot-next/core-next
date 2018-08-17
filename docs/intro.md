@@ -193,33 +193,37 @@ Common Java IDEs like Eclipse or IntelliJ offer auto-completion in XML files. Th
 
 First we add the new `Party` type:
 ```xml
-<type name="Party" package="io.spotnext.test.itemtype">
-		<properties>
-			<property name="title" type="String">
-				<description>The unique title of the party</description>
-				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
-			<property name="motto" type="LocalizedString" localized="true">
-				<description>The localized motto of the party</description>
-			</property>
-			<property name="location" type="Address">
-				<description>The location the party will take place</description>
-			</property>
-			<property name="date" type="Date">
-				<description>The date the party will take place</description>
-			</property>
-			<property name="fixed" type="boolean">
-				<description>Defines that the party has been fixed and should not be changed anymore.</description>
-				<defaultValue>false</defaultValue>
-			</property>
-		</properties>
-	</type>
+<type name="Party" package="io.spotnext.test.types.itemtypes">
+	<properties>
+		<property name="title" type="String">
+			<description>The unique title of the party</description>
+			<modifiers unique="true" />
+			<validators>
+				<validator javaClass="javax.validation.constraints.NotNull" />
+			</validators>
+		</property>
+		<property name="motto" type="LocalizedString" localized="true">
+			<description>The localized motto of the party</description>
+		</property>
+		<property name="location" type="Address">
+			<description>The location the party will take place</description>
+		</property>
+		<property name="date" type="Date">
+			<description>The date the party will take place</description>
+		</property>
+		<property name="fixed" type="boolean">
+			<description>Defines that the party has been fixed and should not be changed anymore.</description>
+			<defaultValue>false</defaultValue>
+		</property>
+	</properties>
+</type>
 ```
 > The `motto` property is somewhat special as it is a `LocalizedString`, which allows you to store a separate string per `Locale` 
 > Each time the *itemtypes.xml is changed, we can either run a full `mvn install` or the faster `mvn spot:generate-types spot:transform-types`
+> Make sure that the package you choose is a subpackge of the one defined in the `Init` class:
+> ```java
+> Bootstrap.bootstrap(Init.class, new String[] { "io.spotnext.test.types" }, args).run();
+> ```
 
 Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the "unique-modifier" to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
 The validator element `javax.validation.constraints.NotNull` adds a [JSR-303 validation](https://beanvalidation.org/1.0/spec/) to the property. Basically it means that the value may not be `null` when saving.
@@ -296,7 +300,7 @@ Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
     "errors": [
         {
             "code": "error.internal",
-            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.itemtype.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
+            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.types.itemtypes.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
         }
     ],
     "warnings": []
