@@ -194,27 +194,31 @@ Common Java IDEs like Eclipse or IntelliJ offer auto-completion in XML files. Th
 First we add the new `Party` type:
 ```xml
 <type name="Party" package="io.spotnext.test.itemtype">
-	<properties>
-		<property name="title" type="String">
-			<description>The unique title of the party</description>
-			<modifiers unique="true" />
-			<validators>
-				<validator javaClass="javax.validation.constraints.NotNull" />
-			</validators>
-		</property>
-		<property name="location" type="Address">
-			<description>The location the party will take place</description>
-		</property>
-		<property name="date" type="Date">
-			<description>The date the party will take place</description>
-		</property>
-		<property name="fixed" type="Boolean">
-			<description>Defines that the party has been fixed and should not be changed anymore.</description>
-		</property>
-	</properties>
-</type>
+		<properties>
+			<property name="title" type="String">
+				<description>The unique title of the party</description>
+				<modifiers unique="true" />
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="motto" type="LocalizedString" localized="true">
+				<description>The localized motto of the party</description>
+			</property>
+			<property name="location" type="Address">
+				<description>The location the party will take place</description>
+			</property>
+			<property name="date" type="Date">
+				<description>The date the party will take place</description>
+			</property>
+			<property name="fixed" type="boolean">
+				<description>Defines that the party has been fixed and should not be changed anymore.</description>
+				<defaultValue>false</defaultValue>
+			</property>
+		</properties>
+	</type>
 ```
-
+> The `motto` property is somewhat special as it is a `LocalizedString`, which allows you to store a separate string per `Locale` 
 > Each time the *itemtypes.xml is changed, we can either run a full `mvn install` or the faster `mvn spot:generate-types spot:transform-types`
 
 Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the "unique-modifier" to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
@@ -263,6 +267,11 @@ Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
 
 {
     "title": "spOt test party",
+     "motto": {
+        "en": "Let's do it",
+        "de": "Auf geht's",
+        "typeCode": "localizedstring"
+    },
     "location": {
 	    	"typeCode": "useraddress",
 	    	"streetName": "Test street",
@@ -346,13 +355,18 @@ After fixing our POST request the creation of a `Party` item succeeds:
 ```json
 {
     "title": "spOt test party",
+     "motto": {
+        "en": "Let's do it",
+        "de": "Auf geht's",
+        "typeCode": "localizedstring"
+    },
     "location": {
-    	"typeCode": "useraddress",
-    	"streetName": "Test street",
-    	"streetNumber": "100",
-    	"city": "Vienna",
-    	"postalCode": "1030",
-    	"country": {
+	    	"typeCode": "useraddress",
+	    	"streetName": "Test street",
+	    	"streetNumber": "100",
+	    	"city": "Vienna",
+	    	"postalCode": "1030",
+	    	"country": {
 	    		"typeCode": "country",
 	    		"pk": 4003256542000269317
 	    	}
@@ -384,7 +398,7 @@ Only the `PK` and errors or warnings (if any) are returned. Go ahead and try to 
 
 So now that we can create new items, let's head over to the next chapter.
 
-### Implement service
+### Implement functionality
 One of our requirements that we defined, is to send an email as soon as the party location, date and guestlist is fixed.
 Basically what we have to do is to react to item modifications. There are two ways how to do that:
 * Using on of the subclasses of `io.spotnext.core.infrastructure.interceptor.ItemInterceptor<T>` (prepare, validate, load, remove)
@@ -536,8 +550,8 @@ public class PartyValidateInterceptor extends AbstractItemInterceptor<Party> imp
 
 	@Override
 	public void onValidate(final Party item) throws ModelValidationException {
-		if (item.getFixed()
-				&& (item.getLocation() == null || (item.getDate() == null || new Date().after(item.getDate()))
+		if (item.isFixed()
+				&& (item.getLocation() == null || (item.getDate() == null || item.getDate().isBefore(LocalDate.now()))
 						|| item.getInvitedGuests().size() == 0)) {
 			throw new ModelValidationException(
 					"Party cannot be fixed as not all necessary properties (date, location, invitedGuests) are defined yet.");
@@ -582,10 +596,137 @@ This time the REST-interface responds with an error:
 
 So now let's quickly update the date:
 ```http
+PATCH /v1/models/party/5653851201092010438 HTTP/1.1
+Host: localhost:19000
+Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
+Content-Type: application/javascript
+Cache-Control: no-cache
+Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
 
+{
+	"date": "2019-01-01"
+    "fixed": true
+}
 ```
+> The property type is `java.time.LocalDate`, so we can use the simple date format **yyyy-MM-dd**
+
+Now we should see the date being shown in the email subject.
+
+Most likely you will have to search and manipulate items in the source code as well, not just via REST-interface. Dealing with them will be shown in the next chapter. 
+
+###	Persistence operations
+There are several ways to query for items:
+* JPQL queries
+* Using example objects (can be items or maps, filled with the desired properties)
+* Filtering using lambda expressions
+
+This integration test demonstrates how to use them:
+```java
+@IntegrationTest(initClass = Init.class)
+@SpringBootTest(classes = { Init.class, CoreInit.class })
+public class PersistenceTest extends AbstractIntegrationTest {
+
+	private static final String PARTY_TITLE = "test party";
+
+	@Resource
+	QueryService queryService;
+
+	@Override
+	protected void prepareTest() {
+		final User guest = modelService.create(User.class);
+		guest.setShortName("test user");
+		guest.setId("guest-01@gmail.com");
+
+		final Party party = modelService.create(Party.class);
+		party.setTitle(PARTY_TITLE);
+		party.setDate(LocalDate.of(2019, 1, 1));
+
+		// collections are never null!
+		party.getInvitedGuests().add(guest);
+
+		// only the main items has to be saved explicitly, all dependencies
+		// will be saved too
+		modelService.save(party);
+	}
+
+	@Override
+	protected void teardownTest() {
+		// no need to remove any items, integration tests are run in a separate
+		// database and additionally each test changes will be roll-backed!
+	}
+
+	@Test
+	public void queryPartyByTitle() {
+		final JpqlQuery<Party> query = new JpqlQuery<>("SELECT p FROM Party AS p WHERE p.title = :title", Party.class);
+		query.addParam("title", PARTY_TITLE);
+
+		final QueryResult<Party> result = queryService.query(query);
+
+		Assert.assertEquals(1, result.getResultList().size());
+		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getTitle());
+	}
+
+	@Test
+	public void queryPartyByTypeSafeQuery() {
+		final LambdaQuery<Party> query = new LambdaQuery<>(Party.class);
+		query.filter(q -> PARTY_TITLE.equals(q.getTitle()));
+
+		final QueryResult<Party> result = queryService.query(query);
+
+		Assert.assertEquals(1, result.getResultList().size());
+		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getTitle());
+	}
+
+	@Test
+	public void queryPartyByGenericAttribute() {
+		final ModelQuery<Party> query = new ModelQuery<>(Party.class, Collections.singletonMap("title", PARTY_TITLE));
+
+		final Party result = modelService.get(query);
+
+		Assert.assertEquals(PARTY_TITLE, result.getTitle());
+	}
+	
+	@Test
+	public void queryPartyByGenericAttributeToDTO() {
+		// selected columns are resolved via constructor or reflection field access!
+		final JpqlQuery<PartyData> query = new JpqlQuery<>(
+				"SELECT p.title AS partyTitle, p.date as partyDate FROM Party AS p WHERE p.title = :title",
+				PartyData.class);
+		query.addParam("title", PARTY_TITLE);
+
+		final QueryResult<PartyData> result = queryService.query(query);
+
+		Assert.assertEquals(1, result.getResultList().size());
+		Assert.assertEquals(PartyData.class, result.getResultList().get(0).getClass());
+		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getPartyTitle());
+	}
+
+	public static class PartyData {
+		private String partyTitle;
+		private LocalDate partyDate;
+
+		public String getPartyTitle() {
+			return partyTitle;
+		}
+
+		public LocalDate getPartyDate() {
+			return partyDate;
+		}
+	}
+}
+```
+> There are multiple ways to query data, even directly into Data Transfer Objects (DTO).
+
+There is a whole lot of other interesting features that we haven't touched yet, like:
+* Using interceptors to generate sequence numbers
+* Localization features (both property and database based)
+* Authentication
+* Serialization
+* Data import
+* Spring MVC integration
+
 
 ### Summary
-
+Hopefully this little quickstart tutorial gave you a (good) first impression what spOt is all about. For more infos, just dig through the (ever-growing) documentation. 
 
 

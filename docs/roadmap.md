@@ -1,10 +1,25 @@
 # Roadmap
 
+## For the future
+* Messaging service infrastructure
+* Rule service infrastructure
+* (Generic) Business processes
+* Administration web interface (for CRUD operations)
+* ACL support
+* Audit logging
+* Search integration (solr etc)
+
+## 1.2.x
+> Release date: approx. end of February 2018
+* Better DTO projections (without the need for explicite aliases)
+* Better LocalizedString support (other localized types too)
+* XML support for REST interface
+
 ## 1.1.x
 > Release date: approx. end of December 2018
 * Transparent persistence operation over REST interface
 * More ImpEx features
-* Cronjob scheduling 
+* Cronjob scheduling
 
 ## 1.0.x
 > Release date: approx. end of August 2018
