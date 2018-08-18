@@ -89,7 +89,7 @@ mvn -Psonatype-staging archetype:generate -B \
 		-Dversion=1.0-SNAPSHOT
 ```
 
-> Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes. ([ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)). Therefore the `-DarchetypeVersion` parameter is only necessary until maven central has fixed their issues. If you have used it you always have to include the `-Psonatype-staging` for maven to be able to resolve the `1.0-SNAPSHOT` version of the project dependencies. Or otherwise update the **pom.xml** `parent` tag with the current version.
+> Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes. ([ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)). Therefore the `-DarchetypeVersion` parameter is only necessary until maven central has fixed their issues. If you have used it you always have to include the `-Psonatype-staging` for maven to be able to resolve the `1.0-SNAPSHOT` version of the project dependencies. Or otherwise update the **pom.xml** `parent` tag with the current version (see on the top right `Project info`).
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
