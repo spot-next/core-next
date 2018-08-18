@@ -433,6 +433,7 @@ public class PartyModificationListener {
 	}
 }
 ```
+> If you are using Eclipse or some other IDE, you have to make sure that the **src/gen/java** source folder is on the buildpath!
 
 As we are only interested in **save** events of parties that have the `fixed` property set to `true`, we add a condition to the `@EventListener` annotation:
 ```java
