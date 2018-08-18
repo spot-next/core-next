@@ -527,7 +527,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		// column name
 		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
-		columnName.setValue(field.getName());
+		columnName.setValue(field.getName() + "_pk");
 
 		ann.addMemberValue(MV_NAME, columnName);
 
