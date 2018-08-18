@@ -62,7 +62,7 @@ You are still here? Well, then let's better get started!
 
 ## Quick start
 
-First add this to your local **~/.m2/settings.xml* to enable the spOt snapshop repository:
+First add this to your local **~/.m2/settings.xml** to enable the spOt snapshop repository:
 ```xml
 <profiles>
 	<profile>
