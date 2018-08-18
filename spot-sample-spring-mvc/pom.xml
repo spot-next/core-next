@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spot-sample-simple</artifactId>
+	<artifactId>spot-sample-spring-mvc</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 
@@ -77,12 +77,6 @@
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core</artifactId>
-			<version>${revision}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>io.spot-next</groupId>
-			<artifactId>spot-spring-web-support</artifactId>
 			<version>${revision}</version>
 		</dependency>
 

@@ -130,6 +130,7 @@
 		<module>spot-cms-base</module>
 		<!-- <module>spot-mail</module> -->
 		<module>spot-sample-simple</module>
+		<module>spot-sample-spring-mvc</module>
 		<module>archetype-empty</module>
 	</modules>
 
