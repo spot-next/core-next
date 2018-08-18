@@ -458,6 +458,14 @@ Right now spOt doesn't contain any messaging services (but this is definitely so
 
 We wrap the library in a little service:
 ```java
+import javax.annotation.PostConstruct;
+import org.simplejavamail.email.Email;
+import org.simplejavamail.mailer.Mailer;
+import org.simplejavamail.mailer.MailerBuilder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import io.spotnext.core.infrastructure.service.impl.AbstractService;
+
 @Service
 public class EmailService extends AbstractService {
 
@@ -499,6 +507,16 @@ mail.smtp.password=
 
 Now we can extend the `PartyModificationListener` to actually create `mail` objects and send them:
 ```java
+import javax.annotation.Resource;
+import org.simplejavamail.email.Email;
+import org.simplejavamail.email.EmailBuilder;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
+import io.spotnext.core.infrastructure.event.ItemModificationEvent;
+import io.spotnext.itemtype.core.user.User;
+import io.spotnext.test.service.EmailService;
+import io.spotnext.test.types.itemtypes.Party;
+
 @Service
 public class PartyModificationListener {
 
@@ -523,7 +541,9 @@ public class PartyModificationListener {
 ```
 > For the sake of simplicity we directly use the implementation class. In a real world scenario **interfaces should be used instead**! 
 
-To be able to test this, we need to actually have a running SMTP server on port 2525. On option might be  to use [FAkeSMTP](http://nilhcem.com/FakeSMTP/).
+To be able to test this, we need to actually have a running SMTP server on port 2525. On option might be  to use [FakeSMTP](http://nilhcem.com/FakeSMTP/).
+
+> Don't forget to issue a `mvn clean install` everytime you update the code!
 
 Time to test. Issue this HTTP request to update the `fixed` property of the party we created earlier:
 ```http
@@ -559,6 +579,13 @@ The difference to an `ItemModificationListener` is that the interceptors are cal
 
 We will now implement a custom `PartyValidationInterceptor` that validates that both `date` and `location` are set, and that at least one guest is invited.  
 ```java
+import java.time.LocalDate;
+import org.springframework.stereotype.Service;
+import io.spotnext.core.infrastructure.exception.ModelValidationException;
+import io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor;
+import io.spotnext.core.infrastructure.interceptor.impl.AbstractItemInterceptor;
+import io.spotnext.test.types.itemtypes.Party;
+
 @Service
 public class PartyValidateInterceptor extends AbstractItemInterceptor<Party> implements ItemValidateInterceptor<Party> {
 
@@ -614,7 +641,7 @@ Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
 Content-Type: application/javascript
 
 {
-	"date": "2019-01-01"
+	"date": "2019-01-01",
     "fixed": true
 }
 ```
@@ -632,6 +659,24 @@ There are several ways to query for items:
 
 This integration test demonstrates how to use them:
 ```java
+import java.time.LocalDate;
+import java.util.Collections;
+import javax.annotation.Resource;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import io.spotnext.core.CoreInit;
+import io.spotnext.core.persistence.query.JpqlQuery;
+import io.spotnext.core.persistence.query.LambdaQuery;
+import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.QueryResult;
+import io.spotnext.core.persistence.service.QueryService;
+import io.spotnext.core.testing.AbstractIntegrationTest;
+import io.spotnext.core.testing.IntegrationTest;
+import io.spotnext.itemtype.core.user.User;
+import io.spotnext.test.Init;
+import io.spotnext.test.types.itemtypes.Party;
+
 @IntegrationTest(initClass = Init.class)
 @SpringBootTest(classes = { Init.class, CoreInit.class })
 public class PersistenceTest extends AbstractIntegrationTest {
