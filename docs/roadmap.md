@@ -15,6 +15,8 @@
 * Better DTO projections (without the need for explicite aliases)
 * Better LocalizedString support (other localized types too)
 * XML support for REST interface
+* REST interface for JPQL
+* Spring MVC integration
 
 ## 1.1.x
 > Release date: approx. end of December 2018
@@ -22,6 +24,9 @@
 * Transparent persistence operation over REST interface
 * More ImpEx features
 * Cronjob scheduling
+* OpenAPI REST interface documentation
+* Generated API docs
+* Javadoc
 
 ## 1.0.x
 > Release date: approx. end of August 2018
