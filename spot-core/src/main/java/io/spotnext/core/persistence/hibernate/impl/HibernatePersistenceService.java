@@ -479,10 +479,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 								"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
 					}
 
-					Object value = entry.getValue() instanceof Item ? ((Item) entry.getValue()).getPk()
-							: entry.getValue();
-
-					p = cb.and(p, cb.equal(r.get(entry.getKey()), value));
+					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
 				}
 
 				final CriteriaQuery<T> select = cq.select(r).where(p);
