@@ -62,9 +62,22 @@ You are still here? Well, then let's better get started!
 
 ## Quick start
 
-With this command you can directly initializes an empty spOt project.
+First add this to your local **~/.m2/settings.xml* to enable the spOt snapshop repository:
+```xml
+<profile>
+	<id>sonatype-staging</id>
+	<repositories>
+		<repository>
+			<id>sonatype-staging</id>
+			<url>https://oss.sonatype.org/content/repositories/staging/</url>
+		</repository>
+	</repositories>
+</profile>
+```
+
+With this command you can directly initializes an empty spOt project:
 ```bash
-mvn archetype:generate -B \
+mvn -Psonatype-staging archetype:generate -B \
 		-DarchetypeGroupId=io.spot-next.archetypes \
 		-DarchetypeArtifactId=archetype-empty \
 		-DgroupId=io.spot-next.test \
@@ -72,7 +85,7 @@ mvn archetype:generate -B \
 		-Dpackage=io.spotnext.test \
 		-Dversion=1.0-SNAPSHOT
 ```
-> The maven artifact values are directly passed as command line arguments
+> Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes .... [ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
