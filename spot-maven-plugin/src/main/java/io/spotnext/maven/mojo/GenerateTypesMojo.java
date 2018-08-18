@@ -382,9 +382,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 	protected String generateConstantName(final String fieldName) {
 		final StringBuilder builder = new StringBuilder();
 		int index = 0;
+		boolean lastCharWasUpperCase = false;
 		for (final char c : fieldName.toCharArray()) {
-			if (Character.isUpperCase(c) && index > 0) {
+			if (Character.isUpperCase(c) && index > 0 && !lastCharWasUpperCase) {
 				builder.append("_");
+				lastCharWasUpperCase=true;
+			} else {
+				lastCharWasUpperCase = false;
 			}
 
 			builder.append(c);
