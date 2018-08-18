@@ -456,7 +456,7 @@ Right now spOt doesn't contain any messaging services (but this is definitely so
 </dependency>
 ``` 
 
-We warp the library in a little service:
+We wrap the library in a little service:
 ```java
 @Service
 public class EmailService extends AbstractService {
