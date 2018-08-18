@@ -64,15 +64,17 @@ You are still here? Well, then let's better get started!
 
 First add this to your local **~/.m2/settings.xml* to enable the spOt snapshop repository:
 ```xml
-<profile>
-	<id>sonatype-staging</id>
-	<repositories>
-		<repository>
-			<id>sonatype-staging</id>
-			<url>https://oss.sonatype.org/content/repositories/staging/</url>
-		</repository>
-	</repositories>
-</profile>
+<profiles>
+	<profile>
+		<id>sonatype-staging</id>
+		<repositories>
+			<repository>
+				<id>sonatype-staging</id>
+				<url>https://oss.sonatype.org/content/repositories/staging/</url>
+			</repository>
+		</repositories>
+	</profile>
+</profiles>
 ```
 
 With this command you can directly initializes an empty spOt project:
@@ -80,12 +82,14 @@ With this command you can directly initializes an empty spOt project:
 mvn -Psonatype-staging archetype:generate -B \
 		-DarchetypeGroupId=io.spot-next.archetypes \
 		-DarchetypeArtifactId=archetype-empty \
+		-DarchetypeVersion=1.0-SNAPSHOT
 		-DgroupId=io.spot-next.test \
 		-DartifactId=test-project \
 		-Dpackage=io.spotnext.test \
 		-Dversion=1.0-SNAPSHOT
 ```
-> Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes .... [ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)
+
+> Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes. ([ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)). Therefore the `-DarchetypeVersion` parameter is only necessary until maven central has fixed their issues. If you have used it you always have to include the `-Psonatype-staging` for maven to be able to resolve the `1.0-SNAPSHOT` version of the project dependencies. Or otherwise update the **pom.xml** `parent` tag with the current version.
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
@@ -146,8 +150,6 @@ Fire up [Postman](https://www.getpostman.com/) (or a REST-client of your choosin
 GET /v1/models/user HTTP/1.1
 Host: localhost:19000
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
-Cache-Control: no-cache
-Postman-Token: e1cfcf59-aa45-40ea-9931-29f1e5990ae7
 ```
 > The REST endpoints are secured with basic authentication. The default password for the user `admin` is `nimda`
 
@@ -279,8 +281,6 @@ POST /v1/models/party HTTP/1.1
 Host: localhost:19000
 Content-Type: application/json
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
-Cache-Control: no-cache
-Postman-Token: d7d2a8e9-707e-4e38-b96f-ef863012fa43
 
 {
     "title": "spOt test party",
@@ -326,8 +326,6 @@ To obtain this `PK` we issue a quick search:
 GET /v1/models/country/query/?q=isoCode = 'AT' HTTP/1.1
 Host: localhost:19000
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
-Cache-Control: no-cache
-Postman-Token: 1b268b2b-a72d-4540-a13d-87c6eec7aa26
 ```
 
 > Please mind the `/` after "country/query"!
@@ -532,8 +530,6 @@ PATCH /v1/models/party/5653851201092010438 HTTP/1.1
 Host: localhost:19000
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
 Content-Type: application/javascript
-Cache-Control: no-cache
-Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
 
 {
     "fixed": true
@@ -589,8 +585,6 @@ PATCH /v1/models/party/5653851201092010438 HTTP/1.1
 Host: localhost:19000
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
 Content-Type: application/javascript
-Cache-Control: no-cache
-Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
 
 {
     "fixed": true
@@ -617,8 +611,6 @@ PATCH /v1/models/party/5653851201092010438 HTTP/1.1
 Host: localhost:19000
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
 Content-Type: application/javascript
-Cache-Control: no-cache
-Postman-Token: 2757fe28-928e-438f-a910-46a14766f2fa
 
 {
 	"date": "2019-01-01"
