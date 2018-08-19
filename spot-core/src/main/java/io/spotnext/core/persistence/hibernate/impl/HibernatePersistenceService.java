@@ -343,13 +343,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					items.stream().forEach(o -> session.evict(o));
 					// session.clear();
 
-					// try {
-					// refresh(items);
-					// } catch (final ModelNotFoundException e) {
-					// throw new ModelSaveException("Could not save given
-					// items",
-					// e);
-					// }
+					try {
+						refresh(items);
+					} catch (final ModelNotFoundException e) {
+						throw new ModelSaveException("Could not save given items", e);
+					}
 				} catch (final ValidationException e) {
 					final String message;
 					if (e instanceof ConstraintViolationException) {

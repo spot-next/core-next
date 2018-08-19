@@ -1,17 +1,21 @@
-package io.spotnext.core.management.service.impl;
+package io.spotnext.core.infrastructure.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.SerializationException;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
@@ -22,18 +26,16 @@ import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
-import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
+import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
-import io.spotnext.core.management.service.RemoteInterfaceServiceEndpoint;
 import io.spotnext.core.management.support.HttpAuthorizationType;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -45,8 +47,9 @@ import spark.route.HttpMethod;
  * This HTTP service base class scans the implementing class for annotated
  * method and register it as Spark request endpoints.
  */
+@org.springframework.stereotype.Service
 @SuppressWarnings("PMD.TooManyStaticImports")
-public abstract class AbstractHttpServiceEndpoint extends AbstractService implements RemoteInterfaceServiceEndpoint {
+public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	@Resource
 	protected SerializationService serializationService;
@@ -68,107 +71,129 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 
 	protected Service service;
 
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+	/**
+	 * key = port, value = endpoint instance
+	 */
+	final private Map<Integer, List<Object>> handlersRegistry = new HashMap<>();
+
 	@PostConstruct
-	@Override
+	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	public void init() throws RemoteServiceInitException {
-		try {
-			service = Service.ignite();
-			service.port(getPort());
-		} catch (final IllegalStateException e) {
-			loggingService.warn(e.getMessage());
+		for (Object endpoint : getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class).values()) {
+			final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
+
+			if (remoteEndpoint != null) {
+				int port = remoteEndpoint.port();
+
+				if (StringUtils.isNotBlank(remoteEndpoint.portConfigKey())) {
+					port = configurationService.getInteger(remoteEndpoint.portConfigKey(), port);
+				}
+
+				registerHandler(port, endpoint);
+			}
 		}
 
-		try { // create routes for HTTP methods
-			for (final Method m : this.getClass().getMethods()) {
-				final Handler handler = ClassUtil.getAnnotation(m, Handler.class);
-
-				if (handler != null) {
-					ResponseTransformer transformer = null;
-					final String mimeType = handler.mimeType().toString();
-					final Route route = new HttpRoute(this, m, mimeType);
-
-					if (handler.responseTransformer() != null) {
-						transformer = Registry.getApplicationContext().getBean(handler.responseTransformer());
-					} else {
-						transformer = jsonResponseTransformer;
-					}
-
-					if (handler.method() == HttpMethod.get) {
-						service.get(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					if (handler.method() == HttpMethod.post) {
-						service.post(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					if (handler.method() == HttpMethod.put) {
-						service.put(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					if (handler.method() == HttpMethod.delete) {
-						service.delete(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					if (handler.method() == HttpMethod.head) {
-						service.head(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					if (handler.method() == HttpMethod.patch) {
-						service.patch(handler.pathMapping(), mimeType, route, transformer);
-					}
-
-					// handler of last resort, eg for 404 error pages
-					// get("*", MimeType.JAVASCRIPT.toString(), (request,
-					// response) -> {
-					// return RequestStatus.notFound().error("The requested URL
-					// is not available.");
-					// }, new JsonResponseTransformer());
-				}
+		for (Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
+			try {
+				service = Service.ignite();
+				service.port(endpointEntry.getKey());
+			} catch (final IllegalStateException e) {
+				loggingService.warn(e.getMessage());
 			}
 
-			service.exception(Exception.class, (exception, request, response) -> {
-				loggingService.exception(exception.getMessage(), exception);
+			for (Object endpoint : endpointEntry.getValue()) {
+				for (final Method method : endpoint.getClass().getMethods()) {
+					final Handler handler = ClassUtil.getAnnotation(method, Handler.class);
 
-				final Payload empty = Payload.empty();
-				empty.addError(new Status("internal.error", exception.getMessage()));
+					if (handler != null) {
+						ResponseTransformer transformer = null;
+						final String mimeType = handler.mimeType().toString();
+						final Route route = new HttpRoute(endpoint, method, mimeType);
 
-				final HttpResponse<?> status = new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
-				status.setBody(empty);
+						if (handler.responseTransformer() != null) {
+							transformer = Registry.getApplicationContext().getBean(handler.responseTransformer());
+						} else {
+							transformer = jsonResponseTransformer;
+						}
 
-				try {
-					response.body(serializationService.toJson(status));
-				} catch (final SerializationException e) {
-					response.body("Cannot serialize error response body");
+						if (handler.method() == HttpMethod.get) {
+							service.get(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.post) {
+							service.post(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.put) {
+							service.put(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.delete) {
+							service.delete(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.head) {
+							service.head(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.patch) {
+							service.patch(handler.pathMapping(), mimeType, route, transformer);
+						}
+
+						// handler of last resort, eg for 404 error pages
+						// get("*", MimeType.JAVASCRIPT.toString(), (request,
+						// response) -> {
+						// return RequestStatus.notFound().error("The requested URL
+						// is not available.");
+						// }, new JsonResponseTransformer());
+					}
 				}
-			});
 
-			service.before((request, response) -> {
-				setupSession(request, response);
-				setupLocale();
-			});
+				try { // create routes for HTTP methods
 
-			service.notFound((request, response) -> {
-				final Payload ret = Payload.empty();
-				ret.addError(new Status("not.found", ""));
+					service.exception(Exception.class, (exception, request, response) -> {
+						loggingService.exception(exception.getMessage(), exception);
 
-				final HttpResponse<?> status = new HttpResponse(HttpStatus.NOT_FOUND);
-				status.setBody(ret);
-				response.type(MimeType.JSON.toString());
-				return jsonResponseTransformer.render(ret);
-			});
+						final Payload empty = Payload.empty();
+						empty.addError(new Status("internal.error", exception.getMessage()));
 
-			// after((request, response) -> {
-			// response.header("Content-Encoding", "gzip");
-			// });
+						final HttpResponse<?> status = new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+						status.setBody(empty);
 
-			service.init();
+						try {
+							response.body(serializationService.toJson(status));
+						} catch (final SerializationException e) {
+							response.body("Cannot serialize error response body");
+						}
+					});
 
-		} catch (final Exception e) {
-			loggingService.exception(
-					String.format("Cannot start HTTP service (%s), there is already an instance running on that port",
-							getBeanName()),
-					e);
+					service.before((request, response) -> {
+						setupSession(request, response);
+						setupLocale();
+					});
+
+					service.notFound((request, response) -> {
+						final Payload ret = Payload.empty();
+						ret.addError(new Status("not.found", ""));
+
+						final HttpResponse<?> status = new HttpResponse(HttpStatus.NOT_FOUND);
+						status.setBody(ret);
+						response.type(MimeType.JSON.toString());
+						return jsonResponseTransformer.render(ret);
+					});
+
+					// after((request, response) -> {
+					// response.header("Content-Encoding", "gzip");
+					// });
+
+					service.init();
+
+				} catch (final Exception e) {
+					loggingService.exception(String.format(
+							"Cannot start HTTP service (%s), there is already an instance running on that port",
+							getBeanName()), e);
+				}
+			}
 		}
 	}
 
@@ -250,29 +275,22 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 		LocaleContextHolder.setLocale(i18nService.getDefaultLocale());
 	}
 
-	@Override
-	@PreDestroy
-	public void shutdown() {
-		service.stop();
-	}
-
 	/**
 	 * Helper class that implements a Spark {@link Route} to serve HTTP calls.
 	 *
 	 */
 	protected static class HttpRoute implements Route {
-		private final AbstractHttpServiceEndpoint serviceImpl;
+		private final Object serviceImpl;
 		private final Method httpMethodImpl;
 		private final String contentType;
 
-		public HttpRoute(final AbstractHttpServiceEndpoint serviceImpl, final Method httpMethodImpl) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = "text/html";
 		}
 
-		public HttpRoute(final AbstractHttpServiceEndpoint serviceImpl, final Method httpMethodImpl,
-				final String contentType) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final String contentType) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = contentType;
@@ -292,7 +310,7 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 				String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
-				serviceImpl.loggingService.exception("An error occured during execution of request", e);
+				throw e;
 			}
 
 			return processResponse(response, ret);
@@ -380,5 +398,15 @@ public abstract class AbstractHttpServiceEndpoint extends AbstractService implem
 	// return new RequestStatus(HttpStatus.INTERNAL_SERVER_ERROR_500);
 	// };
 	// }
+
+	public void registerHandler(int port, Object endpoint) {
+		List<Object> handlers = this.handlersRegistry.get(port);
+		if (handlers == null) {
+			handlers = new ArrayList<>();
+			this.handlersRegistry.put(port, handlers);
+		}
+
+		handlers.add(endpoint);
+	}
 
 }

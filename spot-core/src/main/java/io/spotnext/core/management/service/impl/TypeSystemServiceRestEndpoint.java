@@ -1,18 +1,16 @@
 package io.spotnext.core.management.service.impl;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,12 +25,13 @@ import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.http.Payload;
 import io.spotnext.core.infrastructure.http.Status;
 import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
+import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.converter.Converter;
-import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
 import io.spotnext.core.management.support.data.PageableData;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
@@ -48,14 +47,14 @@ import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
 
-@Service
-public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
-
-	private static final String CONFIG_KEY_PORT = "service.typesystem.rest.port";
-	private static final int DEFAULT_PORT = 19000;
+@RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000)
+public class TypeSystemServiceRestEndpoint {
 
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
+
+	@Resource
+	protected SerializationService serializationService;
 
 	@Autowired
 	protected TypeService typeService;
@@ -68,13 +67,6 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
-
-	@PostConstruct
-	@Override
-	public void init() throws RemoteServiceInitException {
-		loggingService.info(String.format("Initiating remote type system REST service on port %s", getPort()));
-		super.init();
-	}
 
 	/*
 	 * TYPES
@@ -193,8 +185,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	/**
 	 * Gets an item based on the search query. The query is a JPQL WHERE
 	 * clause.<br />
-	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%'
-	 * <br/>
+	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 * 
 	 * @throws UnknownTypeException
 	 */
@@ -341,11 +332,10 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 	}
 
 	/**
-	 * Updates an existing or creates the item with the given values. The PK
-	 * must be provided. If the new item is not unique, an error is
-	 * returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just
-	 * want to update a few fields, use the PATCH Method.
+	 * Updates an existing or creates the item with the given values. The PK must be
+	 * provided. If the new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just want
+	 * to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response
@@ -441,19 +431,4 @@ public class TypeSystemServiceRestEndpoint extends AbstractHttpServiceEndpoint {
 		return serializationService.fromJson(content, JsonNode.class);
 	}
 
-	/*
-	 * 
-	 */
-
-	@Override
-	public int getPort() {
-		return configurationService.getInteger(CONFIG_KEY_PORT, DEFAULT_PORT);
-	}
-
-	@Override
-	public InetAddress getBindAddress() {
-		// not used
-		// we listen everywhere
-		return null;
-	}
 }
