@@ -251,8 +251,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a
-	 * basic authentication request header fields.
+	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
+	 * authentication request header fields.
 	 * 
 	 * @param request
 	 * @param response
@@ -270,9 +270,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			if (credentials != null && credentials.length == 2) {
 				/*
-				 * the http authentication password is encoded in MD5, by
-				 * default we are also using the MD5 password strategy, so we
-				 * simply set {@link AuthenticationService#isEncrypted} to true
+				 * the http authentication password is encoded in MD5, by default we are also
+				 * using the MD5 password strategy, so we simply set {@link
+				 * AuthenticationService#isEncrypted} to true
 				 */
 				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
 			}
@@ -324,18 +324,16 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						: e.getMessage();
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
-				throw e;
 			}
 
 			return processResponse(response, ret);
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the
-		 * http status code is set according to
-		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
-		 * returned, not the wrapper object itself. In any other case the given
-		 * response body object is returned.
+		 * If the givn response body object is of type {@link HttpResponse} the http
+		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
+		 * the actual payload is returned, not the wrapper object itself. In any other
+		 * case the given response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody

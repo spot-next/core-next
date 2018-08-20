@@ -3,13 +3,10 @@ package io.spotnext.core.management.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
@@ -22,9 +19,6 @@ import spark.Response;
 
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/types")
 public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
-
-	@Resource
-	protected SerializationService serializationService;
 
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
