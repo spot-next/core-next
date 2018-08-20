@@ -10,7 +10,7 @@
 * Search integration (solr etc)
 
 ## 1.2.x
-> Release date: approx. end of February 2018
+> Release date: approx. end of February 2019
 
 * Better DTO projections (without the need for explicite aliases)
 * Better LocalizedString support (other localized types too)
