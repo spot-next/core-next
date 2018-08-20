@@ -18,12 +18,16 @@ public @interface Handler {
 	HttpMethod method() default HttpMethod.get;
 
 	/**
-	 * Defines the URL path that will be listened for.
+	 * Defines the URL path that will be handled.
 	 */
 	String pathMapping() default "";
 
 	/**
-	 * Defines the response type.
+	 * This is the URL path that this handler method will handle. The path
+	 * mapping defined on the containing class (via the {@link RemoteEndpoint}
+	 * annotation) will be used as suffix.
+	 * 
+	 * @return the URL path that will be handled.
 	 */
 	MimeType mimeType() default MimeType.JAVASCRIPT;
 

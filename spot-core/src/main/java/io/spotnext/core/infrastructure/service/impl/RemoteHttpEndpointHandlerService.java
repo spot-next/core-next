@@ -79,7 +79,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	@PostConstruct
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	public void init() throws RemoteServiceInitException {
-		for (Object endpoint : getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class).values()) {
+		for (final Object endpoint : getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class).values()) {
 			final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
 
 			if (remoteEndpoint != null) {
@@ -93,7 +93,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		}
 
-		for (Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
+		for (final Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
+
 			try {
 				service = Service.ignite();
 				service.port(endpointEntry.getKey());
@@ -101,7 +102,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				loggingService.warn(e.getMessage());
 			}
 
-			for (Object endpoint : endpointEntry.getValue()) {
+			for (final Object endpoint : endpointEntry.getValue()) {
+				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
+						RemoteEndpoint.class);
+
 				for (final Method method : endpoint.getClass().getMethods()) {
 					final Handler handler = ClassUtil.getAnnotation(method, Handler.class);
 
@@ -116,34 +120,43 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 							transformer = jsonResponseTransformer;
 						}
 
+						String pathMappingEndpoint = remoteEndpoint.pathMapping();
+						final String pathMappingHandler = handler.pathMapping();
+						if (!pathMappingEndpoint.endsWith("/") && !pathMappingHandler.startsWith("/")) {
+							pathMappingEndpoint += "/";
+						}
+
+						final String pathMapping = StringUtils.join(pathMappingEndpoint, pathMappingHandler);
+
 						if (handler.method() == HttpMethod.get) {
-							service.get(handler.pathMapping(), mimeType, route, transformer);
+							service.get(pathMapping, mimeType, route, transformer);
 						}
 
 						if (handler.method() == HttpMethod.post) {
-							service.post(handler.pathMapping(), mimeType, route, transformer);
+							service.post(pathMapping, mimeType, route, transformer);
 						}
 
 						if (handler.method() == HttpMethod.put) {
-							service.put(handler.pathMapping(), mimeType, route, transformer);
+							service.put(pathMapping, mimeType, route, transformer);
 						}
 
 						if (handler.method() == HttpMethod.delete) {
-							service.delete(handler.pathMapping(), mimeType, route, transformer);
+							service.delete(pathMapping, mimeType, route, transformer);
 						}
 
 						if (handler.method() == HttpMethod.head) {
-							service.head(handler.pathMapping(), mimeType, route, transformer);
+							service.head(pathMapping, mimeType, route, transformer);
 						}
 
 						if (handler.method() == HttpMethod.patch) {
-							service.patch(handler.pathMapping(), mimeType, route, transformer);
+							service.patch(pathMapping, mimeType, route, transformer);
 						}
 
 						// handler of last resort, eg for 404 error pages
 						// get("*", MimeType.JAVASCRIPT.toString(), (request,
 						// response) -> {
-						// return RequestStatus.notFound().error("The requested URL
+						// return RequestStatus.notFound().error("The requested
+						// URL
 						// is not available.");
 						// }, new JsonResponseTransformer());
 					}
@@ -238,8 +251,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
-	 * authentication request header fields.
+	 * Uses the {@link AuthenticationService} to authenticate a user using a
+	 * basic authentication request header fields.
 	 * 
 	 * @param request
 	 * @param response
@@ -257,9 +270,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			if (credentials != null && credentials.length == 2) {
 				/*
-				 * the http authentication password is encoded in MD5, by default we are also
-				 * using the MD5 password strategy, so we simply set {@link
-				 * AuthenticationService#isEncrypted} to true
+				 * the http authentication password is encoded in MD5, by
+				 * default we are also using the MD5 password strategy, so we
+				 * simply set {@link AuthenticationService#isEncrypted} to true
 				 */
 				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
 			}
@@ -307,7 +320,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			} catch (final InvocationTargetException e) {
 				final HttpResponse<?> errorResponse = HttpResponse.internalError();
 
-				String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
+				final String message = e.getTargetException() != null ? e.getTargetException().getMessage()
+						: e.getMessage();
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
 				throw e;
@@ -317,10 +331,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the http
-		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
-		 * the actual payload is returned, not the wrapper object itself. In any other
-		 * case the given response body object is returned.
+		 * If the givn response body object is of type {@link HttpResponse} the
+		 * http status code is set according to
+		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
+		 * returned, not the wrapper object itself. In any other case the given
+		 * response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody
@@ -399,7 +414,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	// };
 	// }
 
-	public void registerHandler(int port, Object endpoint) {
+	public void registerHandler(final int port, final Object endpoint) {
 		List<Object> handlers = this.handlersRegistry.get(port);
 		if (handlers == null) {
 			handlers = new ArrayList<>();
