@@ -19,6 +19,9 @@ public interface Localizable<R> {
 	/**
 	 * Returns the field value for the given locale. The field name is being created
 	 * out of the locale, eg. en_GB.
+	 * 
+	 * @param locale the locale of the desired value
+	 * @return the value for the given locale or null
 	 */
 	default R get(final Locale locale) {
 		return (R) ClassUtil.getField(this, locale.toString(), true);
@@ -26,6 +29,7 @@ public interface Localizable<R> {
 
 	/**
 	 * @see Localizable#get(Locale). The default locale will be used.
+	 * @return the value for the {@link Locale#getDefault()} locale or null.
 	 */
 	default R get() {
 		Locale locale = Locale.getDefault();
@@ -35,6 +39,9 @@ public interface Localizable<R> {
 	/**
 	 * Sets the given value to the localized field. The field name is being created
 	 * out of the locale, eg. en_GB.
+	 * 
+	 * @param locale the locale of the given value
+	 * @param value  the value to be localized
 	 */
 	default void set(final Locale locale, final R value) {
 		ClassUtil.setField(this, locale.toString(), value);
@@ -42,12 +49,18 @@ public interface Localizable<R> {
 
 	/**
 	 * @see Localizable#set(Locale, Object). The default locale will be used.
+	 * 
+	 * @param value the value that will be stored localized with the
+	 *              {@link Locale#getDefault()} locale.
 	 */
 	default void set(final R value) {
 		Locale locale = Locale.getDefault();
 		ClassUtil.setField(this, locale.toString(), value);
 	}
 
+	/**
+	 * @return all localized values.
+	 */
 	@JsonAnyGetter
 	@JsonProperty
 	default Map<Locale, R> getValues() {
@@ -71,6 +84,12 @@ public interface Localizable<R> {
 		return values;
 	}
 
+	/**
+	 * Adds all localized values to the existing one (=merge).
+	 * 
+	 * @param values the values to merge into the existing values, possibly
+	 *               overwriting some values.
+	 */
 	@JsonAnySetter
 	default void setValues(Map<Locale, R> values) {
 		if (values != null) {
