@@ -18,9 +18,6 @@ public class DefaultSerializationService implements SerializationService {
 	@Resource
 	protected SerializationStrategy xmlSerializationStrategy;
 
-	/**
-	 * Users @Gson to serialize any object to a json string.
-	 */
 	@Override
 	public <T> String toJson(final T object) throws SerializationException {
 		return jsonSerializationStrategy.serialize(object);

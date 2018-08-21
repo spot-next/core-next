@@ -151,8 +151,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j.version>2.11.1</log4j.version>
 		<junit.version>4.12</junit.version>
-		<spring.boot.version>2.0.3.RELEASE</spring.boot.version>
-		<spring.version>5.0.7.RELEASE</spring.version>
+		<spring.boot.version>2.0.4.RELEASE</spring.boot.version>
+		<spring.version>5.0.8.RELEASE</spring.version>
 
 		<!-- GPG -->
 		<gpg.keyname>${env.GPG_KEY}</gpg.keyname>

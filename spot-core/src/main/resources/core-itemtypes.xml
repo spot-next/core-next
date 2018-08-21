@@ -36,6 +36,13 @@
 
 	<!-- enums -->
 
+	<enum name="UserRole" package="io.spotnext.itemtype.core.enumeration">
+		<description>The user role used to determine access rights and authorizations.</description>
+		<value code="ADMIN" />
+		<value code="USER" />
+		<value code="ANONYMOUS" />
+	</enum>
+
 	<enum name="ApprovalStatus" package="io.spotnext.itemtype.core.enumeration">
 		<description>The approval status, eg. of products or CMS items.</description>
 		<value code="APPROVED" />

@@ -24,6 +24,7 @@
 		<description>The render engine used to render cms items.</description>
 		<value code="VELOCITY" />
 		<value code="FREEMARKER" />
+		<value code="THYMELEAF" />
 		<value code="JSP" />
 	</enum>
 

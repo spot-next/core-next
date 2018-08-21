@@ -75,4 +75,18 @@ public class ValidationUtil {
 			throw new IllegalArgumentException(message);
 		}
 	}
+	
+	/**
+	 * 
+	 * @param message
+	 *            the exception message
+	 * @param value
+	 *            the boolean value to check.
+	 * @throws IllegalArgumentException
+	 */
+	public static void validateEquals(final String message, boolean value) throws IllegalArgumentException {
+		if (!value) {
+			throw new IllegalArgumentException(message);
+		}
+	}
 }
