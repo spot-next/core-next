@@ -8,7 +8,7 @@ import io.spotnext.core.infrastructure.support.spring.Registry;
 import spark.ResponseTransformer;
 
 /**
- * Converts the given object to json.
+ * Converts the given object to JSON.
  */
 @Service
 public class JsonResponseTransformer implements ResponseTransformer {

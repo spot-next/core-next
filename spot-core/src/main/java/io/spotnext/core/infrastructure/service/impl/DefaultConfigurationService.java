@@ -1,10 +1,15 @@
 
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.util.Properties;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.ConfigurationService;
@@ -17,7 +22,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	protected LoggingService loggingService;
 
 	@Resource
-	protected Environment environment;
+	protected StandardEnvironment environment;
 
 	@Override
 	public String getString(final String key) {
@@ -91,16 +96,26 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	protected String getProperty(final String key) {
 		final String value = environment.getProperty(key);
 
-		// for (final Properties prop :
-		// Registry.getAppConfiguration().getConfiguration()) {
-		// value = prop.getProperty(key);
-		//
-		// if (StringUtils.isNotBlank(value)) {
-		// break;
-		// }
-		// }
-
 		return value;
+	}
+
+	@Override
+	public Properties getPropertiesForPrefix(String prefix) {
+		final Properties ret = new Properties();
+		
+		for (final PropertySource<?> s : environment.getPropertySources()) {
+			if (s instanceof EnumerablePropertySource) {
+				for (final String k : ((EnumerablePropertySource<?>) s).getPropertyNames()) {
+					if (k.startsWith(prefix) && k.length() > prefix.length()) {
+						ret.put(k.substring(prefix.length()), environment.getProperty(k));
+					}
+				}
+			} else {
+				loggingService.warn(String.format("Ignoring property source of type %s", s.getClass().getName()));
+			}
+		}
+
+		return ret;
 	}
 
 	@Override
@@ -134,6 +149,6 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 
 	@Override
 	public void setEnvironment(final Environment environment) {
-		this.environment = environment;
+		this.environment = (StandardEnvironment) environment;
 	}
 }

@@ -33,6 +33,7 @@
 	<collection name="LongList" elementType="Long" />
 	<collection name="DoubleList" elementType="Double" />
 	<collection name="FloatList" elementType="Float" />
+	<collection name="UserRoleList" elementType="UserRole" />
 
 	<!-- enums -->
 
@@ -66,6 +67,19 @@
 				</validators>
 			</property>
 			<property name="ignoreErrors" type="Boolean">
+				<description>If true import errors are ignored are ignored and processing is continued</description>
+				<defaultValue>false</defaultValue>
+			</property>
+		</properties>
+	</bean>
+	
+	<bean name="AuthenticationDetails" package="io.spotnext.itemtype.core.beans">
+		<description>Holds authentication details used by remote endpoints.</description>
+		<properties>
+			<property name="roles" type="UserRoleList">
+				<description>The roles of the authenticated user.</description>
+			</property>
+			<property name="user" type="Boolean">
 				<description>If true import errors are ignored are ignored and processing is continued</description>
 				<defaultValue>false</defaultValue>
 			</property>

@@ -14,7 +14,6 @@ import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
-import io.spotnext.core.infrastructure.support.init.Configuration;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.persistence.service.PersistenceService;
 
@@ -36,7 +35,6 @@ public class Registry implements ApplicationContextAware {
 	private static TypeService typeService;
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
-	private static Configuration configuration;
 
 	public static Class<? extends ModuleInit> getMainClass() {
 		return mainClass;
@@ -101,14 +99,6 @@ public class Registry implements ApplicationContextAware {
 
 	public static <T> T getBean(final String beanName, final Class<T> beanType) {
 		return context.getBean(beanName, beanType);
-	}
-
-	public static void setAppConfiguration(final Configuration configuration) {
-		Registry.configuration = configuration;
-	}
-
-	public static Configuration getApplicationConfiguration() {
-		return configuration;
 	}
 
 	public static void shutdown() {

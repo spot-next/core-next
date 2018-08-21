@@ -1,6 +1,9 @@
 package io.spotnext.core.infrastructure.support.init;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,9 +68,23 @@ public class Bootstrap {
 	}
 
 	public static SpringApplicationBuilder bootstrap(final Class<? extends ModuleInit> configuration,
-			final String[] modelScanPaths, final String[] args) throws ParseException, BootstrapException {
+			final String[] modelScanPaths, final String[] args) throws BootstrapException {
 
-		final SpringApplicationBuilder builder = bootstrap(parseCommandLine(args));
+		SpringApplicationBuilder builder;
+		try {
+			builder = bootstrap(parseCommandLine(args));
+		} catch (ParseException e) {
+			throw new BootstrapException("Could not parse command line arguments", e);
+		}
+
+		// inject the default spring application.properties into the parent (=CoreInit),
+		// so that the child can override properties
+		URL applicationProperties = configuration.getClass().getResource("/application.properties");
+		try {
+			loadConfigurationProperties(builder, applicationProperties);
+		} catch (URISyntaxException e) {
+			throw new BootstrapException("Could not resolve default spring application.properties file", e);
+		}
 
 		builder.initializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
 			@Override
@@ -103,7 +120,7 @@ public class Bootstrap {
 		final SpringApplicationBuilder builder = build(options.getInitClass()).web(WebApplicationType.NONE);
 
 		// load external properties into builder
-		loadConfiguration(builder, options);
+		loadConfigurationProperties(builder, options.getAppConfigFile());
 
 		// load external spring configs into builder
 		loadSpringConfiguration(builder, options);
@@ -116,8 +133,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Adds the parsed command line args regarding type system initialization
-	 * and import to the spring properties.
+	 * Adds the parsed command line args regarding type system initialization and
+	 * import to the spring properties.
 	 */
 	protected static void loadCommandLineArgsIntoSpringContext(final SpringApplicationBuilder builder,
 			final BootstrapOptions options) {
@@ -154,6 +171,14 @@ public class Bootstrap {
 		return moduleConfigs;
 	}
 
+	protected static void loadConfigurationProperties(final SpringApplicationBuilder builder, URL propertiesFile)
+			throws URISyntaxException {
+
+		if (propertiesFile != null) {
+			loadConfigurationProperties(builder, new File(propertiesFile.toURI()).getAbsolutePath());
+		}
+	}
+
 	/**
 	 * Load the configuration properties passed via command line into the spring
 	 * application builder.
@@ -162,10 +187,10 @@ public class Bootstrap {
 	 * @param options
 	 * @throws IOException
 	 */
-	protected static void loadConfiguration(final SpringApplicationBuilder builder, final BootstrapOptions options) {
-		// load application config, possibly override module configs
-		if (StringUtils.isNotBlank(options.getAppConfigFile())) {
-			final Properties prop = PropertiesUtil.loadPropertiesFromFile(options.getAppConfigFile());
+	protected static void loadConfigurationProperties(final SpringApplicationBuilder builder, String propertiesFile) {
+		// load application config, possibly override module config's
+		if (StringUtils.isNotBlank(propertiesFile)) {
+			final Properties prop = PropertiesUtil.loadPropertiesFromFile(propertiesFile);
 
 			builder.properties(prop);
 		}
@@ -173,8 +198,8 @@ public class Bootstrap {
 
 	/**
 	 * Inject a bean definition using a {@link BeanDefinitionReader}. This is
-	 * necessary, so that the spring context of this module can be merged with
-	 * the parent context.
+	 * necessary, so that the spring context of this module can be merged with the
+	 * parent context.
 	 */
 	protected static void loadSpringConfiguration(final SpringApplicationBuilder builder,
 			final BootstrapOptions options) {
@@ -274,8 +299,8 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Sets org.reflections logging to warnings, as we scan all package paths.
-	 * This causes a lot of debug messages being logged.
+	 * Sets org.reflections logging to warnings, as we scan all package paths. This
+	 * causes a lot of debug messages being logged.
 	 */
 	protected static void setLogSettings() {
 		System.setProperty("org.slf4j.simpleLogger.log.org.reflections", "warn");

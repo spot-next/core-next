@@ -82,7 +82,7 @@
 		
 		<dependency>
 			<groupId>io.spot-next</groupId>
-			<artifactId>spot-spring-web-support</artifactId>
+			<artifactId>spot-cms-base</artifactId>
 			<version>${revision}</version>
 		</dependency>
 

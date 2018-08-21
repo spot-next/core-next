@@ -18,14 +18,15 @@ public @interface Handler {
 	HttpMethod method() default HttpMethod.get;
 
 	/**
-	 * Defines the URL path that will be handled.
+	 * Defines the URL path that will be handled. It will be appended to the
+	 * {@link RemoteEndpoint#pathMapping()}.
 	 */
 	String pathMapping() default "";
 
 	/**
-	 * This is the URL path that this handler method will handle. The path
-	 * mapping defined on the containing class (via the {@link RemoteEndpoint}
-	 * annotation) will be used as suffix.
+	 * This is the URL path that this handler method will handle. The path mapping
+	 * defined on the containing class (via the {@link RemoteEndpoint} annotation)
+	 * will be used as suffix.
 	 * 
 	 * @return the URL path that will be handled.
 	 */
@@ -34,6 +35,19 @@ public @interface Handler {
 	/**
 	 * Defines the {@link ResponseTransformer} that will be used to convert the
 	 * response in the desired format.
+	 * 
+	 * @return the response transformer implementation
 	 */
 	Class<? extends ResponseTransformer> responseTransformer() default PlainTextResponseTransformer.class;
+
+	/**
+	 * Defines the filter that is used authenticate incoming requests. By default
+	 * the {@link NoAuthenticationFilter} is used, it accepts all requests.
+	 *
+	 * It overrides the {@link RemoteEndpoint#authenticationFilter()}
+	 * 
+	 * @return the defined authentication filter
+	 */
+//	Class<? extends Filter> authenticationFilter() default NoAuthenticationFilter.class;
+
 }

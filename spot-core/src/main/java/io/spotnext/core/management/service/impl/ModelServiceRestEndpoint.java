@@ -24,6 +24,7 @@ import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
+import io.spotnext.core.management.support.BasicAuthenticationFilter;
 import io.spotnext.core.management.support.data.PageableData;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
@@ -38,7 +39,7 @@ import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
 
-@RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/models")
+@RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/models", authenticationFilter = BasicAuthenticationFilter.class)
 public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 	private static final int DEFAULT_PAGE = 1;
@@ -123,8 +124,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the search query. The query is a JPQL WHERE
 	 * clause.<br />
-	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%'
-	 * <br/>
+	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 * 
 	 * @throws UnknownTypeException
 	 */
@@ -271,11 +271,10 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Updates an existing or creates the item with the given values. The PK
-	 * must be provided. If the new item is not unique, an error is
-	 * returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just
-	 * want to update a few fields, use the PATCH Method.
+	 * Updates an existing or creates the item with the given values. The PK must be
+	 * provided. If the new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just want
+	 * to update a few fields, use the PATCH Method.
 	 * 
 	 * @param request
 	 * @param response

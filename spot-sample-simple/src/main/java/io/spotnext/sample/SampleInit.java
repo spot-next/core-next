@@ -1,17 +1,16 @@
 package io.spotnext.sample;
 
-import javax.servlet.http.HttpSessionListener;
-
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.Bootstrap;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
-import io.spotnext.spring.web.session.WebSessionListener;
 
-@SpringBootApplication(scanBasePackages = { "io.spotnext.sample" })
+@EnableAutoConfiguration(exclude = { ThymeleafAutoConfiguration.class })
+@SpringBootApplication(scanBasePackages = { "io.spotnext.sample", "io.spotnext.cms.strategy", "io.spotnext.cms.service",
+		"io.spotnext.cms.rendering.transformers" })
 public class SampleInit extends ModuleInit {
 
 	@Override
@@ -27,11 +26,6 @@ public class SampleInit extends ModuleInit {
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {
 		super.importSampleData();
-	}
-
-	@Bean
-	public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
-		return new ServletListenerRegistrationBean<HttpSessionListener>(new WebSessionListener());
 	}
 
 	public static void main(final String[] args) throws Exception {
