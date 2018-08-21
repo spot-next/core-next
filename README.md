@@ -17,7 +17,7 @@
 ```
 
 # spOt micro framework
-[![Build Status](https://travis-ci.org/mojo2012/spot-framework.svg?branch=master)](https://travis-ci.org/mojo2012/spot-framework) [![Code Coverage](https://scan.coverity.com/projects/13539/badge.svg)](https://scan.coverity.com/projects/mojo2012-spot-framework) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework)
+[![Build Status](https://travis-ci.org/mojo2012/spot-framework.svg?branch=master)](https://travis-ci.org/mojo2012/spot-framework) [![Code Coverage](https://scan.coverity.com/projects/13539/badge.svg)](https://scan.coverity.com/projects/mojo2012-spot-framework) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework) [![Join the chat at https://gitter.im/spot-next/Lobby](https://badges.gitter.im/spot-next/Lobby.svg)](https://gitter.im/spot-next/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 The idea of the spOt micro framework is to take the good parts of the SAP Hybris framework and bring them to the next level.
