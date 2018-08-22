@@ -2,6 +2,7 @@ package io.spotnext.core.management.support;
 
 import org.springframework.stereotype.Service;
 
+import io.spotnext.core.infrastructure.exception.AuthenticationException;
 import spark.Request;
 import spark.Response;
 
@@ -11,7 +12,7 @@ import spark.Response;
 @Service
 public class NoAuthenticationFilter implements AuthenticationFilter {
 	@Override
-	public void handle(Request request, Response response) throws Exception {
+	public void handle(final Request request, final Response response) throws AuthenticationException {
 		// do nothing
 	}
 }

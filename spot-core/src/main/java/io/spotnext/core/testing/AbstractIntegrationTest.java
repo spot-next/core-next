@@ -40,7 +40,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 
 	private static final int waitInMillis = 100;
 
-	private int maxMillisToWaitForModuleInitialization = 10000;
+	private int maxMillisToWaitForModuleInitialization = 15000;
 
 	private ApplicationContext applicationContext;
 
@@ -96,8 +96,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 
 			if (waitedInMillis >= maxMillisToWaitForModuleInitialization) {
 				throw new IllegalStateException(
-						String.format("ModuleInit did not finish initialization within %s seconds",
-								maxMillisToWaitForModuleInitialization / 1000));
+						String.format("ModuleInit did not finish initialization within %s seconds", maxMillisToWaitForModuleInitialization / 1000));
 			}
 		}
 

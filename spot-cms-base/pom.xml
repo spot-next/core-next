@@ -12,6 +12,10 @@
 		<version>${revision}</version>
 	</parent>
 
+	<properties>
+		<ognl.version>3.1.12</ognl.version>
+	</properties>
+
 	<build>
 		<plugins>
 			<!-- RESOURCE GENERTATION -->
@@ -95,6 +99,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 			<version>${spring.boot.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
+			<version>${ognl.version}</version>
 		</dependency>
 
 		<!-- <dependency> -->

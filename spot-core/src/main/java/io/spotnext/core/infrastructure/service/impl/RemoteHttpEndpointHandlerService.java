@@ -2,13 +2,10 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.annotation.Resource;
 
@@ -37,7 +34,6 @@ import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.management.support.AuthenticationFilter;
-import io.spotnext.core.management.support.HttpAuthorizationType;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.itemtype.core.user.User;
@@ -89,22 +85,21 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	/**
 	 * Listens for {@link ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup {@link ModuleInit}
-	 * then the HTTP interfaces will be started up (cannot register new endpoints
-	 * then).
+	 * context for endpoints. If the context contains the startup
+	 * {@link ModuleInit} then the HTTP interfaces will be started up (cannot
+	 * register new endpoints then).
 	 * 
-	 * @param event that signals that the context has been started
+	 * @param event
+	 *            that signals that the context has been started
 	 * @throws RemoteServiceInitException
 	 */
 	@EventListener(classes = ApplicationReadyEvent.class)
-	public void onApplicationReady(ApplicationReadyEvent event) throws RemoteServiceInitException {
+	public void onApplicationReady(final ApplicationReadyEvent event) throws RemoteServiceInitException {
 		// TODO: refactor this
 		if (!isStarted) {
 			// scan context for remote endpoints
-			for (final Object endpoint : event.getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class)
-					.values()) {
-				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
-						RemoteEndpoint.class);
+			for (final Object endpoint : event.getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class).values()) {
+				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
 
 				if (remoteEndpoint != null) {
 					int port = remoteEndpoint.port();
@@ -118,15 +113,17 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 
 			// register all response transformers
-			event.getApplicationContext().getBeansOfType(ResponseTransformer.class).forEach(
-					(beanName, bean) -> responseTransformers.put((Class<ResponseTransformer>) bean.getClass(), bean));
-			
-			// register all authentication fitleres
-			event.getApplicationContext().getBeansOfType(AuthenticationFilter.class).forEach(
-					(beanName, bean) -> authenticationFilters.put((Class<AuthenticationFilter>) bean.getClass(), bean));
+			event.getApplicationContext().getBeansOfType(ResponseTransformer.class)
+					.forEach((beanName, bean) -> responseTransformers.put((Class<ResponseTransformer>) bean.getClass(), bean));
 
-			// wait for the all contexts to be started before starting the spark service
-			// it's not possible to add new routes to already started spark instances
+			// register all authentication fitleres
+			event.getApplicationContext().getBeansOfType(AuthenticationFilter.class)
+					.forEach((beanName, bean) -> authenticationFilters.put((Class<AuthenticationFilter>) bean.getClass(), bean));
+
+			// wait for the all contexts to be started before starting the spark
+			// service
+			// it's not possible to add new routes to already started spark
+			// instances
 			if (isBootComplete(event.getApplicationContext())) {
 				init();
 				isStarted = true;
@@ -140,19 +137,22 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	/**
 	 * Check if the given context contains the startup {@link ModuleInit}.
 	 * 
-	 * @param context the spring context that has been started/refreshed
+	 * @param context
+	 *            the spring context that has been started/refreshed
 	 * @return true if the context contains the startup {@link ModuleInit}
 	 */
-	public boolean isBootComplete(ApplicationContext context) {
+	public boolean isBootComplete(final ApplicationContext context) {
 		try {
 			context.getBean(Registry.getMainClass());
 
-			// we don't care if the ModuleInit has finished initializing (like import sample
-			// data). But if this line is reached, the most inner child context containing
-			// the startup ModuleInit has been loaded.
-			// Therefore all beans have already been scanned for remote endpoints.
+			// we don't care if the ModuleInit has finished initializing (like
+			// import sample
+			// data). But if this line is reached, the most inner child context
+			// containing
+			// the startup ModuleInit has been loaded. Therefore all beans have
+			// already been scanned for remote endpoints.
 			return true;
-		} catch (BeansException e) {
+		} catch (final BeansException e) {
 			return false;
 		}
 	}
@@ -168,16 +168,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
 			} catch (final IllegalStateException e) {
-				throw new RemoteServiceInitException(
-						String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
+				throw new RemoteServiceInitException(String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
 			}
 
 			for (final Object endpoint : endpointEntry.getValue()) {
-				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
-						RemoteEndpoint.class);
+				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
 
 				final Class<? extends Filter> autenticationFilterType = remoteEndpoint.authenticationFilter();
-				
 
 				for (final Method method : endpoint.getClass().getMethods()) {
 					final Handler handler = ClassUtil.getAnnotation(method, Handler.class);
@@ -185,7 +182,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					if (handler != null) {
 						ResponseTransformer transformer = null;
 						final String mimeType = handler.mimeType().toString();
-						final Route route = new HttpRoute(endpoint, method, mimeType);
+
+						// the authentication will not be handled in the
+						// "before" handler to allow us to have different
+						// authenticationFilters for each remote endpoint
+						final Route route = new HttpRoute(endpoint, method, authenticationFilters.get(autenticationFilterType), mimeType);
 
 						if (handler.responseTransformer() != null) {
 							transformer = responseTransformers.get(handler.responseTransformer());
@@ -247,9 +248,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					});
 
 					service.before((request, response) -> {
-						authenticationFilters.get(autenticationFilterType).handle(request, response);
-						
-						// if authentication was successful we can setup a session
+						// if authentication was successful we can setup a
+						// session
 						setupSession(service, request, response);
 						setupLocale();
 					});
@@ -277,13 +277,17 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
+	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request, final Response response) throws Exception {
+		authenticationFilters.get(autenticationFilterType).handle(request, response);
+	}
+
 	/**
 	 * Sets up sessions and handles user authentication.
 	 * 
 	 * @param request
 	 * @param response
 	 */
-	protected void setupSession(Service service, final Request request, final Response response) {
+	protected void setupSession(final Service service, final Request request, final Response response) {
 		// check if the web session has already a reference to the
 		// backend session
 		String spotSessionId = request.session().attribute("spotSessionId");
@@ -304,53 +308,18 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
 
-		if (userService.isCurrentUserAnonymous()) {
-			// authenticate
-			final User authenticatedUser = authenticate(request, response);
-
-			if (authenticatedUser != null) {
-				userService.setCurrentUser(authenticatedUser);
-			} else {
-				response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
-				service.halt(401);
-			}
-		}
-	}
-
-	protected Properties getAuthenticationExpression(Request request) {
-		return configurationService.getPropertiesForPrefix("service.remoteendpoints." + request.port());
-	}
-
-	/**
-	 * Uses the {@link AuthenticationService} to authenticate a user using a basic
-	 * authentication request header fields.
-	 * 
-	 * @param request
-	 * @param response
-	 * @param authenticationExpression
-	 */
-	protected User authenticate(final Request request, final Response response) {
-		final String encodedHeader = StringUtils.trim(
-				StringUtils.substringAfter(request.headers("Authorization"), HttpAuthorizationType.BASIC.toString()));
-
-		User authenticatedUser = null;
-
-		if (StringUtils.isNotBlank(encodedHeader)) {
-			final String decodedHeader = new String(Base64.getDecoder().decode(encodedHeader), StandardCharsets.UTF_8);
-
-			final String[] credentials = StringUtils.split(decodedHeader, ":", 2);
-
-			if (credentials != null && credentials.length == 2) {
-				/*
-				 * the http authentication password is encoded in MD5, by default we are also
-				 * using the MD5 password strategy, so we simply set {@link
-				 * AuthenticationService#isEncrypted} to true
-				 */
-				authenticatedUser = authenticationService.getAuthenticatedUser(credentials[0], credentials[1], true);
-			}
-		}
-
-		return authenticatedUser;
+		// if (userService.isCurrentUserAnonymous()) {
+		// // authenticate
+		// final User authenticatedUser = authenticate(request, response);
+		//
+		// if (authenticatedUser != null) {
+		// userService.setCurrentUser(authenticatedUser);
+		// } else {
+		// response.header("WWW-Authenticate",
+		// HttpAuthorizationType.BASIC.toString());
+		// service.halt(401);
+		// }
+		// }
 	}
 
 	/**
@@ -368,21 +337,28 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		private final Object serviceImpl;
 		private final Method httpMethodImpl;
 		private final String contentType;
+		private final AuthenticationFilter authenticationFilter;
 
-		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final AuthenticationFilter authenticationFilter) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = "text/html";
+			this.authenticationFilter = authenticationFilter;
 		}
 
-		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final String contentType) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final AuthenticationFilter authenticationFilter, final String contentType) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = contentType;
+			this.authenticationFilter = authenticationFilter;
 		}
 
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
+			if (authenticationFilter != null) {
+				authenticationFilter.handle(request, response);
+			}
+
 			response.type(contentType);
 
 			Object ret = null;
@@ -392,8 +368,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			} catch (final InvocationTargetException e) {
 				final HttpResponse<?> errorResponse = HttpResponse.internalError();
 
-				final String message = e.getTargetException() != null ? e.getTargetException().getMessage()
-						: e.getMessage();
+				final String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
 			}
@@ -402,10 +377,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the http
-		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
-		 * the actual payload is returned, not the wrapper object itself. In any other
-		 * case the given response body object is returned.
+		 * If the givn response body object is of type {@link HttpResponse} the
+		 * http status code is set according to
+		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
+		 * returned, not the wrapper object itself. In any other case the given
+		 * response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody

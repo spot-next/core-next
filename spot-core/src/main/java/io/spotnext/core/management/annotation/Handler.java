@@ -2,6 +2,7 @@ package io.spotnext.core.management.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -13,6 +14,7 @@ import spark.route.HttpMethod;
 
 @Target({ METHOD })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Handler {
 
 	HttpMethod method() default HttpMethod.get;
@@ -24,9 +26,9 @@ public @interface Handler {
 	String pathMapping() default "";
 
 	/**
-	 * This is the URL path that this handler method will handle. The path mapping
-	 * defined on the containing class (via the {@link RemoteEndpoint} annotation)
-	 * will be used as suffix.
+	 * This is the URL path that this handler method will handle. The path
+	 * mapping defined on the containing class (via the {@link RemoteEndpoint}
+	 * annotation) will be used as suffix.
 	 * 
 	 * @return the URL path that will be handled.
 	 */
@@ -41,13 +43,15 @@ public @interface Handler {
 	Class<? extends ResponseTransformer> responseTransformer() default PlainTextResponseTransformer.class;
 
 	/**
-	 * Defines the filter that is used authenticate incoming requests. By default
-	 * the {@link NoAuthenticationFilter} is used, it accepts all requests.
+	 * Defines the filter that is used authenticate incoming requests. By
+	 * default the {@link NoAuthenticationFilter} is used, it accepts all
+	 * requests.
 	 *
 	 * It overrides the {@link RemoteEndpoint#authenticationFilter()}
 	 * 
 	 * @return the defined authentication filter
 	 */
-//	Class<? extends Filter> authenticationFilter() default NoAuthenticationFilter.class;
+	// Class<? extends Filter> authenticationFilter() default
+	// NoAuthenticationFilter.class;
 
 }

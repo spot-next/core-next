@@ -29,6 +29,7 @@
 	<context:component-scan base-package="io.spotnext.core.management.converter" />
 	<context:component-scan base-package="io.spotnext.core.management.populator" />
 	<context:component-scan base-package="io.spotnext.core.management.transformer" />
+	<context:component-scan base-package="io.spotnext.core.management.support" />
 	<context:component-scan
 		base-package="io.spotnext.core.persistence.instrumentation.transformers" />
 	<context:component-scan base-package="io.spotnext.core.persistence.service" />

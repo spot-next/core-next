@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.support;
 
 public enum MimeType {
-	JAVASCRIPT("application/javascript"), JSON("application/json"), PLAINTEXT("text/plain"),;
+	JAVASCRIPT("application/javascript"), JSON("application/json"), PLAINTEXT("text/plain"), XHTML("application/xhtml+xml"), HTML("text/html");
 
 	private String mimeType;
 
