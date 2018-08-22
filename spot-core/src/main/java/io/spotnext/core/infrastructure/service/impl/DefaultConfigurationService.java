@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -102,12 +103,18 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	@Override
 	public Properties getPropertiesForPrefix(String prefix) {
 		final Properties ret = new Properties();
-		
+
+		final String sanitizedPrefix = StringUtils.trimToEmpty(prefix);
+
 		for (final PropertySource<?> s : environment.getPropertySources()) {
 			if (s instanceof EnumerablePropertySource) {
-				for (final String k : ((EnumerablePropertySource<?>) s).getPropertyNames()) {
-					if (k.startsWith(prefix) && k.length() > prefix.length()) {
-						ret.put(k.substring(prefix.length()), environment.getProperty(k));
+				for (final String propertyKey : ((EnumerablePropertySource<?>) s).getPropertyNames()) {
+					if (propertyKey.startsWith(sanitizedPrefix) && sanitizedPrefix.length() > 0) {
+						Object value = environment.getProperty(propertyKey);
+
+						if (value != null) {
+							ret.put(propertyKey, value);
+						}
 					}
 				}
 			} else {
