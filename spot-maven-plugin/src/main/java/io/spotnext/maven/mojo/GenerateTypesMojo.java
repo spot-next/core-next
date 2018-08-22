@@ -386,7 +386,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		for (final char c : fieldName.toCharArray()) {
 			if (Character.isUpperCase(c) && index > 0 && !lastCharWasUpperCase) {
 				builder.append("_");
-				lastCharWasUpperCase=true;
+				lastCharWasUpperCase = true;
 			} else {
 				lastCharWasUpperCase = false;
 			}
@@ -416,8 +416,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	/**
 	 * This generates 2 getters, one with a {@link Locale} as single parameter.
-	 * Furthermore it calls {@link Localizable#get()} on the field, which
-	 * implies that the field type is implementing {@link Localizable}!
+	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
+	 * that the field type is implementing {@link Localizable}!
 	 *
 	 * @throws MojoExecutionException
 	 */
@@ -479,8 +479,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	/**
 	 * This generates 2 getters, one with a {@link Locale} as single parameter.
-	 * Furthermore it calls {@link Localizable#get()} on the field, which
-	 * implies that the field type is implementing {@link Localizable}!
+	 * Furthermore it calls {@link Localizable#get()} on the field, which implies
+	 * that the field type is implementing {@link Localizable}!
 	 *
 	 * @param prop
 	 * @throws MojoExecutionException
@@ -556,10 +556,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 	/**
 	 * Populates the super class for the given JavaType.
 	 * 
-	 * @param javaClass
-	 *            the class to populate with a super types
-	 * @param defaultSuperclass
-	 *            is used when there is no superType given, can be null too
+	 * @param javaClass         the class to populate with a super types
+	 * @param defaultSuperclass is used when there is no superType given, can be
+	 *                          null too
 	 */
 	protected void populateSuperType(final io.spotnext.core.infrastructure.maven.xml.JavaType type,
 			final io.spotnext.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
@@ -602,13 +601,14 @@ public class GenerateTypesMojo extends AbstractMojo {
 			}
 		} else if (propType instanceof EnumType) {
 			ret = new JavaMemberType(((EnumType) propType).getName(), ((EnumType) propType).getPackage());
+		} else if (propType instanceof BeanType) {
+			ret = new JavaMemberType(((BeanType) propType).getName(), ((BeanType) propType).getPackage());
 		} else if (propType instanceof CollectionType) {
 			final CollectionType t = (CollectionType) propType;
 
 			// check if the element type is an enum or an atomic type, all
 			// others are not supported
-			if (!typeDefinitions.getAtomicTypes().containsKey(t.getElementType())
-					&& !typeDefinitions.getEnumTypes().containsKey(t.getElementType())) {
+			if (!isSupportedCollectionType(t.getElementType())) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as collection element type", t.getElementType()));
 			}
@@ -620,16 +620,14 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			// check if the key type is an enum or an atomic type, all others
 			// are not supported
-			if (!typeDefinitions.getAtomicTypes().containsKey(t.getKeyType())
-					&& !typeDefinitions.getEnumTypes().containsKey(t.getKeyType())) {
+			if (!isSupportedCollectionType(t.getKeyType())) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as map key type", t.getKeyType()));
 			}
 
 			// check if the value type is an enum or an atomic type, all others
 			// are not supported
-			if (!typeDefinitions.getAtomicTypes().containsKey(t.getValueType())
-					&& !typeDefinitions.getEnumTypes().containsKey(t.getValueType())) {
+			if (!isSupportedCollectionType(t.getValueType())) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as map key type", t.getValueType()));
 			}
@@ -645,6 +643,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Checks if the given type can be used for collections or maps.
+	 * 
+	 * @param typeName of the type to check
+	 * @return true if it is valid to use
+	 */
+	protected boolean isSupportedCollectionType(String typeName) {
+		return typeDefinitions.getAtomicTypes().containsKey(typeName)
+				|| typeDefinitions.getEnumTypes().containsKey(typeName)
+				|| typeDefinitions.getBeanTypes().containsKey(typeName);
 	}
 
 	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType)

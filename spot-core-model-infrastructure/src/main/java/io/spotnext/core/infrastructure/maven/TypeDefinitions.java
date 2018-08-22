@@ -90,6 +90,10 @@ public class TypeDefinitions {
 		BaseComplexType type = enumTypes.get(name);
 
 		if (type == null) {
+			type = beanTypes.get(name);
+		}
+
+		if (type == null) {
 			type = itemTypes.get(name);
 		}
 
