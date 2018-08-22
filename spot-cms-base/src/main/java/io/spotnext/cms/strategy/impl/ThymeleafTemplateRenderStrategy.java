@@ -16,10 +16,12 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import spark.ModelAndView;
 
 @Service
+@SuppressFBWarnings(value="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification="initialized by spring")
 public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 
 	private static final String DEFAULT_TEMPLATE_FOLDER = "templates/";
