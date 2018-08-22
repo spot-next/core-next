@@ -164,6 +164,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			Service service;
 			try {
 				service = Service.ignite();
+				service.staticFileLocation("/public");
 				service.port(endpointEntry.getKey());
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
