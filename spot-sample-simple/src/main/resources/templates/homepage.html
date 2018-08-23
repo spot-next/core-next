@@ -1,12 +1,58 @@
 <!DOCTYPE html>
-
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Party sample page">
+<meta name="author" content="meister.fuchs@gmail.com">
+
+<title th:text="${pageTitle}">Party sample page</title>
+<link rel="canonical" th:href="${canonicalUrl}">
+
+<!-- Bootstrap core CSS -->
+<link href="/css/milligram.min.css" rel="stylesheet">
 
 </head>
-<body>
-	<h1 th:text="${name}">Hi</h1>
-</body>
 
+<body>
+
+	<!-- header -->
+<!-- 	<div> -->
+<!-- 		<ul> -->
+<!-- 			<li> -->
+<!-- 				Test -->
+<!-- 			</li> -->
+<!-- 		</ul> -->
+<!-- 	</div> -->
+	
+	<!-- content -->
+	<div class="container">
+
+		<table>
+			<thead>
+				<tr>
+					<th th:text="#{party.title}"></th>
+					<th th:text="#{party.motto}"></th>
+					<th th:text="#{party.location}"></th>
+					<th th:text="#{party.date}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="party : ${parties}">
+					<td th:text="${party.title}">Title</td>
+					<td th:text="${party.motto}">Motto</td>
+					<td th:text="${party.location.streetName + ' ' + party.location.streetNumber + ', ' + party.location.postalCode + ' ' + party.location.city + ', ' + party.location.country.isoCode}">Street 10, Vienna, AT</td>
+					<td th:text="${party.date}">Date</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- Site footer -->
+		<footer class="footer">
+			<p>&copy; spOt next 2018</p>
+		</footer>
+	</div>
+
+</body>
 </html>

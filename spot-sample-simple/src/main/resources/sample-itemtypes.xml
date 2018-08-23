@@ -2,6 +2,8 @@
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
 
+	<collection elementType="UserData" name="UserDataList" />
+
 	<!-- enums -->
 
 	<enum name="UserType" package="io.spotnext.sample.types.enumerations">
@@ -11,11 +13,28 @@
 
 	<bean name="UserData" package="io.spotnext.sample.types.beans">
 		<properties>
-			<property name="type" type="UserType">
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
-			</property>
+			<property name="email" type="String" />
+			<property name="name" type="String" />
+			<property name="type" type="UserType" />
+		</properties>
+	</bean>
+	
+	<bean name="AddressData" package="io.spotnext.sample.types.beans">
+		<properties>
+			<property name="street" type="String" />
+			<property name="postalCode" type="String" />
+			<property name="city" type="String" />
+			<property name="country" type="String" />
+		</properties>
+	</bean>
+	
+	<bean name="PartyData" package="io.spotnext.sample.types.beans">
+		<properties>
+			<property name="title" type="String" />
+			<property name="motto" type="String" />
+			<property name="location" type="AddressData" />
+			<property name="date" type="Date" />
+			<property name="guests" type="UserDataList" />
 		</properties>
 	</bean>
 

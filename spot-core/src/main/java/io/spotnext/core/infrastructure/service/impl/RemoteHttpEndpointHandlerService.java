@@ -85,12 +85,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	/**
 	 * Listens for {@link ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup
-	 * {@link ModuleInit} then the HTTP interfaces will be started up (cannot
-	 * register new endpoints then).
+	 * context for endpoints. If the context contains the startup {@link ModuleInit}
+	 * then the HTTP interfaces will be started up (cannot register new endpoints
+	 * then).
 	 * 
-	 * @param event
-	 *            that signals that the context has been started
+	 * @param event that signals that the context has been started
 	 * @throws RemoteServiceInitException
 	 */
 	@EventListener(classes = ApplicationReadyEvent.class)
@@ -98,8 +97,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		// TODO: refactor this
 		if (!isStarted) {
 			// scan context for remote endpoints
-			for (final Object endpoint : event.getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class).values()) {
-				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
+			for (final Object endpoint : event.getApplicationContext().getBeansWithAnnotation(RemoteEndpoint.class)
+					.values()) {
+				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
+						RemoteEndpoint.class);
 
 				if (remoteEndpoint != null) {
 					int port = remoteEndpoint.port();
@@ -113,12 +114,12 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 
 			// register all response transformers
-			event.getApplicationContext().getBeansOfType(ResponseTransformer.class)
-					.forEach((beanName, bean) -> responseTransformers.put((Class<ResponseTransformer>) bean.getClass(), bean));
+			event.getApplicationContext().getBeansOfType(ResponseTransformer.class).forEach(
+					(beanName, bean) -> responseTransformers.put((Class<ResponseTransformer>) bean.getClass(), bean));
 
 			// register all authentication fitleres
-			event.getApplicationContext().getBeansOfType(AuthenticationFilter.class)
-					.forEach((beanName, bean) -> authenticationFilters.put((Class<AuthenticationFilter>) bean.getClass(), bean));
+			event.getApplicationContext().getBeansOfType(AuthenticationFilter.class).forEach(
+					(beanName, bean) -> authenticationFilters.put((Class<AuthenticationFilter>) bean.getClass(), bean));
 
 			// wait for the all contexts to be started before starting the spark
 			// service
@@ -137,8 +138,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	/**
 	 * Check if the given context contains the startup {@link ModuleInit}.
 	 * 
-	 * @param context
-	 *            the spring context that has been started/refreshed
+	 * @param context the spring context that has been started/refreshed
 	 * @return true if the context contains the startup {@link ModuleInit}
 	 */
 	public boolean isBootComplete(final ApplicationContext context) {
@@ -169,11 +169,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
 			} catch (final IllegalStateException e) {
-				throw new RemoteServiceInitException(String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
+				throw new RemoteServiceInitException(
+						String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
 			}
 
 			for (final Object endpoint : endpointEntry.getValue()) {
-				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(), RemoteEndpoint.class);
+				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
+						RemoteEndpoint.class);
 
 				final Class<? extends Filter> autenticationFilterType = remoteEndpoint.authenticationFilter();
 
@@ -187,7 +189,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						// the authentication will not be handled in the
 						// "before" handler to allow us to have different
 						// authenticationFilters for each remote endpoint
-						final Route route = new HttpRoute(endpoint, method, authenticationFilters.get(autenticationFilterType), mimeType);
+						final Route route = new HttpRoute(endpoint, method,
+								authenticationFilters.get(autenticationFilterType), mimeType);
 
 						if (handler.responseTransformer() != null) {
 							transformer = responseTransformers.get(handler.responseTransformer());
@@ -278,7 +281,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
-	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request, final Response response) throws Exception {
+	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request,
+			final Response response) throws Exception {
 		authenticationFilters.get(autenticationFilterType).handle(request, response);
 	}
 
@@ -308,19 +312,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			// and store the session id in the web session
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
-
-		// if (userService.isCurrentUserAnonymous()) {
-		// // authenticate
-		// final User authenticatedUser = authenticate(request, response);
-		//
-		// if (authenticatedUser != null) {
-		// userService.setCurrentUser(authenticatedUser);
-		// } else {
-		// response.header("WWW-Authenticate",
-		// HttpAuthorizationType.BASIC.toString());
-		// service.halt(401);
-		// }
-		// }
 	}
 
 	/**
@@ -340,14 +331,16 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		private final String contentType;
 		private final AuthenticationFilter authenticationFilter;
 
-		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final AuthenticationFilter authenticationFilter) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl,
+				final AuthenticationFilter authenticationFilter) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = "text/html";
 			this.authenticationFilter = authenticationFilter;
 		}
 
-		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl, final AuthenticationFilter authenticationFilter, final String contentType) {
+		public HttpRoute(final Object serviceImpl, final Method httpMethodImpl,
+				final AuthenticationFilter authenticationFilter, final String contentType) {
 			this.serviceImpl = serviceImpl;
 			this.httpMethodImpl = httpMethodImpl;
 			this.contentType = contentType;
@@ -366,10 +359,18 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			try {
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
-			} catch (final InvocationTargetException e) {
+			} catch (final Throwable e) {
 				final HttpResponse<?> errorResponse = HttpResponse.internalError();
 
-				final String message = e.getTargetException() != null ? e.getTargetException().getMessage() : e.getMessage();
+				final String message;
+
+				if (e instanceof InvocationTargetException) {
+					InvocationTargetException ie = (InvocationTargetException) e;
+					message = ie.getTargetException() != null ? ie.getTargetException().getMessage() : e.getMessage();
+				} else {
+					message = e.getMessage();
+				}
+
 				errorResponse.getBody().addError(new Status("error.internal", message));
 				ret = errorResponse;
 			}
@@ -378,11 +379,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the
-		 * http status code is set according to
-		 * {@link HttpResponse#getStatusCode()}. Also the actual payload is
-		 * returned, not the wrapper object itself. In any other case the given
-		 * response body object is returned.
+		 * If the givn response body object is of type {@link HttpResponse} the http
+		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
+		 * the actual payload is returned, not the wrapper object itself. In any other
+		 * case the given response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody

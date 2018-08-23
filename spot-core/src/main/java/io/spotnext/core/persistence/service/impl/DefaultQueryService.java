@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.ModelService;
@@ -39,6 +40,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 	@Override
 	public <T> QueryResult<T> query(final JpqlQuery<T> query) {
+		sanitizeQuery(query);
 		final List<T> resultList = persistenceService.query(query);
 		final QueryResult<T> result = new QueryResult<T>(resultList, query.getPage(), query.getPageSize());
 
@@ -50,6 +52,16 @@ public class DefaultQueryService extends AbstractService implements QueryService
 		// }
 
 		return result;
+	}
+
+	/**
+	 * Removed a trailing ";" that is not allowed for JPQL.
+	 * 
+	 * @param query the query to sanitize.
+	 */
+	protected <T> void sanitizeQuery(final JpqlQuery<T> query) {
+		String queryStr = StringUtils.remove(query.getQuery().trim(), ";");
+		query.setQuery(queryStr);
 	}
 
 	@Override
