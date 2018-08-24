@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import io.spotnext.cms.rendering.transformers.ThymeleafRendererResponseTransformer;
+import io.spotnext.core.infrastructure.http.ModelAndView;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -14,7 +15,6 @@ import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.sample.types.itemtypes.Party;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
@@ -31,7 +31,7 @@ public class HomePageEndpoint {
 		model.put("pageTitle", "Party service sample page");
 		model.put("parties", getAllParties());
 
-		return new ModelAndView(model, "homepage");
+		return ModelAndView.ok("homepage").withPayload(model);
 	}
 
 	protected List<Party> getAllParties() {

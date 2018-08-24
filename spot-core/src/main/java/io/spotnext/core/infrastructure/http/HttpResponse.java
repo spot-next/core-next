@@ -1,73 +1,26 @@
 package io.spotnext.core.infrastructure.http;
 
-import java.util.Objects;
+import spark.ResponseTransformer;
 
-/**
- * This entity extends the spring ResponseEntity with the ability to set the
- * body and status after object creation.
- */
-public class HttpResponse<T> {
-	protected Payload<T> body;
-	protected HttpStatus statusCode;
-
-	public HttpResponse() {
-		this(HttpStatus.OK);
-	}
-
-	public HttpResponse(final HttpStatus status) {
-		this(Payload.empty(), status);
-	}
-
-	public HttpResponse(final Payload<T> body, final HttpStatus status) {
-		this.body = body;
-		this.statusCode = status;
-	}
-
-	public static HttpResponse<?> internalError() {
-		return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
+public interface HttpResponse {
 	/**
-	 * Sets the HTTP status code of the response.
+	 * @return the payload. This can be of any type - conversion will be handled by
+	 *         the {@link ResponseTransformer}.
 	 */
-	public void setStatusCode(final HttpStatus status) {
-		this.statusCode = status;
-	}
+	Object getPayload();
 
 	/**
-	 * Return the HTTP status code of the response.
+	 * Returns the HTTP status code.
 	 * 
-	 * @return the HTTP status as an HttpStatus enum entry
+	 * @return the HTTP status code
 	 */
-	public HttpStatus getStatusCode() {
-		return this.statusCode;
-	}
+	HttpStatus getHttpStatus();
 
 	/**
-	 * Return the HTTP status code of the response.
+	 * Sets the payload
 	 * 
-	 * @return the HTTP status as an int value
-	 * @since 4.3
+	 * @param payload is the payload data to be returned
+	 * @return the current instance
 	 */
-	public int getStatusCodeValue() {
-		return this.statusCode.value();
-	}
-
-	public Payload<T> getBody() {
-		return this.body;
-	}
-
-	public void setBody(final Payload<T> body) {
-		this.body = body;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(this);
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		return Objects.equals(this, obj);
-	}
+	<R extends HttpResponse> R withPayload(Object payload);
 }

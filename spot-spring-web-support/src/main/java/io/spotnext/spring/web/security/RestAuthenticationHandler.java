@@ -24,9 +24,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 import io.spotnext.core.infrastructure.exception.SerializationException;
-import io.spotnext.core.infrastructure.http.Payload;
-import io.spotnext.core.infrastructure.http.HttpResponse;
-import io.spotnext.core.infrastructure.http.Status;
+import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.spring.web.dto.UserStatus;
 
@@ -154,15 +152,14 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 		response.setStatus(httpStatusCode.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-		final HttpResponse<UserStatus> ret = new HttpResponse<>();
-		ret.setBody(Payload.of(payload));
+		final DataResponse ret = DataResponse.ok().withPayload(payload);
 
 		if (exception != null) {
-			ret.getBody().getErrors().add(new Status("login.error", exception.getMessage()));
+			ret.withError("login.error", exception.getMessage());
 		}
 
 		try {
-			response.getWriter().println(serializationService.toJson(ret.getBody()));
+			response.getWriter().println(serializationService.toJson(ret));
 		} catch (final SerializationException e) {
 			throw new IOException("Could not serialize authentication response payload", e);
 		}

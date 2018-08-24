@@ -18,11 +18,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.SerializationException;
+import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
-import io.spotnext.core.infrastructure.http.HttpStatus;
-import io.spotnext.core.infrastructure.http.Payload;
 import io.spotnext.core.infrastructure.http.Session;
-import io.spotnext.core.infrastructure.http.Status;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
@@ -238,11 +236,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					service.exception(Exception.class, (exception, request, response) -> {
 						loggingService.exception(exception.getMessage(), exception);
 
-						final Payload empty = Payload.empty();
-						empty.addError(new Status("internal.error", exception.getMessage()));
-
-						final HttpResponse<?> status = new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR);
-						status.setBody(empty);
+						final DataResponse status = DataResponse.internalServerError().withError("internal.error",
+								exception.getMessage());
 
 						try {
 							response.body(serializationService.toJson(status));
@@ -259,13 +254,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					});
 
 					service.notFound((request, response) -> {
-						final Payload ret = Payload.empty();
-						ret.addError(new Status("not.found", ""));
-
-						final HttpResponse<?> status = new HttpResponse(HttpStatus.NOT_FOUND);
-						status.setBody(ret);
+						final DataResponse status = DataResponse.notFound().withError("not.found", "");
 						response.type(MimeType.JSON.toString());
-						return jsonResponseTransformer.render(ret);
+						return jsonResponseTransformer.render(status);
 					});
 
 					// after((request, response) -> {
@@ -360,8 +351,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try {
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
 			} catch (final Throwable e) {
-				final HttpResponse<?> errorResponse = HttpResponse.internalError();
-
 				final String message;
 
 				if (e instanceof InvocationTargetException) {
@@ -371,16 +360,15 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					message = e.getMessage();
 				}
 
-				errorResponse.getBody().addError(new Status("error.internal", message));
-				ret = errorResponse;
+				ret = DataResponse.internalServerError().withError("error.internal", message);
 			}
 
 			return processResponse(response, ret);
 		}
 
 		/**
-		 * If the givn response body object is of type {@link HttpResponse} the http
-		 * status code is set according to {@link HttpResponse#getStatusCode()}. Also
+		 * If the givn response body object is of type {@link DataResponse} the http
+		 * status code is set according to {@link DataResponse#getStatusCode()}. Also
 		 * the actual payload is returned, not the wrapper object itself. In any other
 		 * case the given response body object is returned.
 		 * 
@@ -389,9 +377,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		 */
 		protected Object processResponse(final Response response, final Object responseBody) {
 			if (responseBody instanceof HttpResponse) {
-				final HttpResponse<?> body = (HttpResponse<?>) responseBody;
-				response.status(body.getStatusCodeValue());
-				return body.getBody();
+				final HttpResponse body = (HttpResponse) responseBody;
+				response.status(body.getHttpStatus().ordinal());
+				return body.getPayload();
 			}
 
 			return responseBody;

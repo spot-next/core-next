@@ -3,22 +3,18 @@ package io.spotnext.core.management.support.data;
 import java.util.Collections;
 import java.util.List;
 
-public class PageableData<T> {
-	List<T> objects = Collections.EMPTY_LIST;
-	int page = 0;
-	int pageSize = 0;
-	int objectCount = 0;
+import io.spotnext.core.infrastructure.http.Payload;
 
-	public PageableData(final List<T> objects, final int page, final int pageSize) {
-		this.objects = Collections.unmodifiableList(objects);
+public class PageablePayload<T> extends Payload<List<T>> {
+	final int page;
+	final int pageSize;
+	final int objectCount;
+
+	public PageablePayload(final List<T> objects, final int page, final int pageSize) {
+		super(Collections.unmodifiableList(objects));
 		this.page = page;
 		this.pageSize = pageSize;
-
 		this.objectCount = objects.size();
-	}
-
-	public List<?> getObjects() {
-		return objects;
 	}
 
 	public int getPage() {
