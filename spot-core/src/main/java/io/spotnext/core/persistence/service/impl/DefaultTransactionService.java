@@ -15,9 +15,9 @@ import org.springframework.transaction.TransactionUsageException;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.service.TransactionService;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Initialized by spring post construct")
 @Service
@@ -123,6 +123,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	// }
 	// }
 
+	@Override
 	public boolean isTransactionActive() {
 		return currentTransaction.get() != null;
 	}

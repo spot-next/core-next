@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Exception">
+
+<title th:text="${exceptionSimpleName}">Exception</title>
+<link rel="canonical" th:href="${canonicalUrl}">
+
+<!-- Bootstrap core CSS -->
+<link href="/css/milligram.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+	
+	<div class="container">
+		<h1 th:text="'An exeption of type \'' + ${exceptionSimpleName} + '\' occurred:'">An exception of type Exception occurred:</h1>
+		<span th:text="${message}">
+			Message
+		</span>
+		<span th:text="${stackTrace}">
+			Stacktrace
+		</span>
+	</div>
+
+</body>
+</html>

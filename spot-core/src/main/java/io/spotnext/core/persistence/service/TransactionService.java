@@ -41,4 +41,10 @@ public interface TransactionService {
 	 * {@link #start()}. Nothing happens, if there is no active transaction.
 	 */
 	void rollback() throws TransactionException;
+
+	/**
+	 * @return true if there is currently a transaction active in the current
+	 *         thread.
+	 */
+	boolean isTransactionActive();
 }

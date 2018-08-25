@@ -66,8 +66,8 @@ public interface PersistenceService {
 	<T extends Item> void remove(Class<T> type, long pk);
 
 	/**
-	 * Saves the database to disk. This has to be done before the application
-	 * quits to prevent data corruption.
+	 * Saves the database to disk. This has to be done before the application quits
+	 * to prevent data corruption.
 	 */
 	void saveDataStorage();
 
@@ -82,11 +82,10 @@ public interface PersistenceService {
 	<T extends Item> void initItem(T item);
 
 	/**
-	 * Detaches a given item model from the underlying persistence
-	 * implementation. This is useful if serializing the item causes problems.
-	 * The effect can be different depending on the persistence service
-	 * implementation, but in general lazy-loading properties will not work
-	 * anymore afterwards.
+	 * Detaches a given item model from the underlying persistence implementation.
+	 * This is useful if serializing the item causes problems. The effect can be
+	 * different depending on the persistence service implementation, but in general
+	 * lazy-loading properties will not work anymore afterwards.
 	 */
 	<T extends Item> void detach(List<T> items);
 
@@ -98,8 +97,7 @@ public interface PersistenceService {
 	/**
 	 * Checks if the given item is attached to the persistence context.
 	 * 
-	 * @param item
-	 *            the item to check
+	 * @param item the item to check
 	 * @return true if the item is attached
 	 */
 	<T extends Item> boolean isAttached(T item);
@@ -113,4 +111,10 @@ public interface PersistenceService {
 	 * @throws ModelNotFoundException
 	 */
 	<T extends Item> boolean attach(T item) throws ModelNotFoundException;
+
+	/**
+	 * Unbinds the current session. This is useful to free up a session if an
+	 * uncaught exception is thrown in a thread.
+	 */
+	void unbindSession();
 }

@@ -3,10 +3,14 @@ package io.spotnext.core.infrastructure.http;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * This entity extends the spring ResponseEntity with the ability to set the
  * body and status after object creation.
  */
+// hide super properties that are not used here
+@JsonIgnoreProperties(value = { "model, viewName" })
 public class DataResponse extends AbstractResponse {
 
 	final protected List<Status> errors = new ArrayList<>();
@@ -16,31 +20,31 @@ public class DataResponse extends AbstractResponse {
 		super(httpStatus);
 	}
 
-	public static  DataResponse ok() {
+	public static DataResponse ok() {
 		return new DataResponse(HttpStatus.OK);
 	}
-	
-	public static  DataResponse created() {
+
+	public static DataResponse created() {
 		return new DataResponse(HttpStatus.CREATED);
 	}
-	
-	public static  DataResponse accepted() {
+
+	public static DataResponse accepted() {
 		return new DataResponse(HttpStatus.ACCEPTED);
 	}
 
-	public static  DataResponse notFound() {
+	public static DataResponse notFound() {
 		return new DataResponse(HttpStatus.NOT_FOUND);
 	}
-	
-	public static  DataResponse conflict() {
+
+	public static DataResponse conflict() {
 		return new DataResponse(HttpStatus.CONFLICT);
 	}
 
-	public static  DataResponse internalServerError() {
+	public static DataResponse internalServerError() {
 		return new DataResponse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	public static  DataResponse withStatus(HttpStatus httpStatus) {
+	public static DataResponse withStatus(HttpStatus httpStatus) {
 		return new DataResponse(httpStatus);
 	}
 
@@ -48,7 +52,7 @@ public class DataResponse extends AbstractResponse {
 		warnings.add(new Status(code, message));
 		return this;
 	}
-	
+
 	public DataResponse withError(String code, String message) {
 		errors.add(new Status(code, message));
 		return this;

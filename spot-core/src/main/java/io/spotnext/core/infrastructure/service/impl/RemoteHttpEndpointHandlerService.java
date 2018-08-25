@@ -17,21 +17,22 @@ import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.exception.SerializationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
+import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
+import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
-import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.management.support.AuthenticationFilter;
+import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.itemtype.core.user.User;
@@ -42,6 +43,7 @@ import spark.Response;
 import spark.ResponseTransformer;
 import spark.Route;
 import spark.Service;
+import spark.Spark;
 import spark.route.HttpMethod;
 
 /**
@@ -68,6 +70,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	@Resource
 	protected UserService<User, UserGroup> userService;
+
+	@Resource
+	protected PersistenceService persistenceService;
 
 	@Resource
 	protected ResponseTransformer jsonResponseTransformer;
@@ -234,16 +239,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				try { // create routes for HTTP methods
 
 					service.exception(Exception.class, (exception, request, response) -> {
-						loggingService.exception(exception.getMessage(), exception);
-
-						final DataResponse status = DataResponse.internalServerError().withError("internal.error",
-								exception.getMessage());
-
-						try {
-							response.body(serializationService.toJson(status));
-						} catch (final SerializationException e) {
-							response.body("Cannot serialize error response body");
-						}
+						cleanupOnException(exception);
+						Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
 					});
 
 					service.before((request, response) -> {
@@ -254,14 +251,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					});
 
 					service.notFound((request, response) -> {
-						final DataResponse status = DataResponse.notFound().withError("not.found", "");
-						response.type(MimeType.JSON.toString());
-						return jsonResponseTransformer.render(status);
+						Spark.halt(HttpStatus.NOT_FOUND.value());
+						return null;
 					});
 
-					// after((request, response) -> {
-					// response.header("Content-Encoding", "gzip");
-					// });
+//					service.after((request, response) -> {
+//						response.header("Content-Encoding", "gzip");
+//					});
 
 					service.init();
 
@@ -270,6 +266,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				}
 			}
 		}
+	}
+
+	protected void cleanupOnException(Exception exception) {
+		loggingService.exception(exception.getMessage(), exception);
+		persistenceService.unbindSession();
 	}
 
 	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request,
@@ -316,7 +317,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 * Helper class that implements a Spark {@link Route} to serve HTTP calls.
 	 *
 	 */
-	protected static class HttpRoute implements Route {
+	protected class HttpRoute implements Route {
 		private final Object serviceImpl;
 		private final Method httpMethodImpl;
 		private final String contentType;
@@ -350,17 +351,22 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			try {
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
-			} catch (final Throwable e) {
-				final String message;
+			} catch (final Exception e) {
+				// wrap the exception and forward it to the response transformer
+				// there it will be handled appropriately
 
 				if (e instanceof InvocationTargetException) {
-					InvocationTargetException ie = (InvocationTargetException) e;
-					message = ie.getTargetException() != null ? ie.getTargetException().getMessage() : e.getMessage();
-				} else {
-					message = e.getMessage();
-				}
+					final InvocationTargetException ie = (InvocationTargetException) e;
+					final Throwable inner = ie.getTargetException() != null ? ie.getTargetException() : ie;
 
-				ret = DataResponse.internalServerError().withError("error.internal", message);
+					if (inner instanceof Exception) {
+						ret = ExceptionResponse.internalServerError((Exception) inner);
+					} else {
+						throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
+					}
+
+					cleanupOnException(ie);
+				}
 			}
 
 			return processResponse(response, ret);
@@ -378,8 +384,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		protected Object processResponse(final Response response, final Object responseBody) {
 			if (responseBody instanceof HttpResponse) {
 				final HttpResponse body = (HttpResponse) responseBody;
-				response.status(body.getHttpStatus().ordinal());
-				return body.getPayload();
+				response.status(body.getHttpStatus().value());
+				return body;
 			}
 
 			return responseBody;

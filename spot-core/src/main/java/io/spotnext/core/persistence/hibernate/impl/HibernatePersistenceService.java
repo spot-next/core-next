@@ -190,8 +190,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
 					}
 
-					// optimize query
-					// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
+					// optimize query query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
 					// true);
 
 					setParameters(sourceQuery.getParams(), query);
@@ -211,9 +210,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 						for (final Tuple t : resultList) {
 							// first try to create the pojo using a constructor
-							// that
-							// matches the result's
-							// column types
+							// that matches the result's column types
 
 							final List<Object> values = t.getElements().stream().map(e -> t.get(e))
 									.collect(Collectors.toList());
@@ -623,10 +620,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	protected void unbindSession() {
-		final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
-				.unbindResource(entityManagerFactory);
-		EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+	@Override
+	public void unbindSession() {
+		if (TransactionSynchronizationManager.hasResource(entityManagerFactory)) {
+			final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
+					.unbindResource(entityManagerFactory);
+			EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+		}
 	}
 
 	public EntityManagerFactory getEntityManagerFactory() {
