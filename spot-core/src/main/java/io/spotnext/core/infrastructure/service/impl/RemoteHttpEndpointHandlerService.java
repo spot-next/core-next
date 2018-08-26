@@ -26,6 +26,7 @@ import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
+import io.spotnext.core.infrastructure.support.HttpRequestHolder;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
@@ -180,7 +181,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
 						RemoteEndpoint.class);
 
-				final Class<? extends Filter> autenticationFilterType = remoteEndpoint.authenticationFilter();
+				Class<? extends Filter> autenticationFilterType = remoteEndpoint.authenticationFilter();
 
 				for (final Method method : endpoint.getClass().getMethods()) {
 					final Handler handler = ClassUtil.getAnnotation(method, Handler.class);
@@ -188,6 +189,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					if (handler != null) {
 						ResponseTransformer transformer = null;
 						final String mimeType = handler.mimeType().toString();
+
+						if (handler.authenticationFilter() != null) {
+							autenticationFilterType = handler.authenticationFilter();
+						}
 
 						// the authentication will not be handled in the
 						// "before" handler to allow us to have different
@@ -235,35 +240,41 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						}
 					}
 				}
+			}
 
-				try { // create routes for HTTP methods
+			try { // create routes for HTTP methods
 
-					service.exception(Exception.class, (exception, request, response) -> {
-						cleanupOnException(exception);
-						Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
-					});
+				service.exception(Exception.class, (exception, request, response) -> {
+					cleanupOnException(exception);
+					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				});
 
-					service.before((request, response) -> {
-						// if authentication was successful we can setup a
-						// session
-						setupSession(service, request, response);
-						setupLocale();
-					});
+				service.before((request, response) -> {
+					// store current request for the thread
+					HttpRequestHolder.setRequest(request);
 
-					service.notFound((request, response) -> {
-						Spark.halt(HttpStatus.NOT_FOUND.value());
-						return null;
-					});
+					// if authentication was successful we can setup a
+					// session
+					setupSession(service, request, response);
+					setupLocale(request);
+				});
 
-//					service.after((request, response) -> {
-//						response.header("Content-Encoding", "gzip");
+//					service.notFound((request, response) -> {
+//						Spark.halt(HttpStatus.NOT_FOUND.value());
+//						response.status();
+//						return null;
 //					});
 
-					service.init();
+				service.after((request, response) -> {
+					HttpRequestHolder.clear();
 
-				} catch (final Exception e) {
-					throw new RemoteServiceInitException("Could not start remote endpoints", e);
-				}
+					setupEncoding(request, response);
+				});
+
+				service.init();
+
+			} catch (final Exception e) {
+				throw new RemoteServiceInitException("Could not start remote endpoints", e);
 			}
 		}
 	}
@@ -304,13 +315,31 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			// and store the session id in the web session
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
+		
+		sessionService.setCurrentSession(spotSession);
 	}
 
 	/**
 	 * Set the default locale in every new request thread that is being created
 	 */
-	protected void setupLocale() {
-		LocaleContextHolder.setLocale(i18nService.getDefaultLocale());
+	protected void setupLocale(Request request) {
+		LocaleContextHolder.setLocale(request.raw().getLocale());
+	}
+
+	/**
+	 * Checks if the client accepts compressed responses and sets the http response
+	 * headers accordingly. This will make Spark/Jetty compress the output
+	 * automatically.
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	protected void setupEncoding(Request request, Response response) {
+		String acceptEncoding = request.headers("Accept-Encoding");
+
+		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
+			response.header("Content-Encoding", "gzip");
+		}
 	}
 
 	/**

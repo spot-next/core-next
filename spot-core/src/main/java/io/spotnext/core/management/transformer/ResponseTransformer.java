@@ -34,7 +34,7 @@ public interface ResponseTransformer extends spark.ResponseTransformer {
 
 		// if yes, handle it differently
 		if (exception != null) {
-			return handleException(exception);
+			return handleException(responseObject, exception);
 		}
 
 		return handleResponse(responseObject);
@@ -56,11 +56,12 @@ public interface ResponseTransformer extends spark.ResponseTransformer {
 	 * The exception handler can throw exceptions again which will then be handled
 	 * by the default exception handler.
 	 *
-	 * @param exception that is thrown in the HTTP handler
+	 * @param responseObject the original response object
+	 * @param exception      that is thrown in the HTTP handler
 	 * @return the rendered
 	 * @throws Exception when handling fails
 	 */
-	default String handleException(Exception exception) throws Exception {
+	default String handleException(Object responseObject, Exception exception) throws Exception {
 		throw exception;
 	}
 }

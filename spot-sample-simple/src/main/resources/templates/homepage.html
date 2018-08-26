@@ -17,17 +17,20 @@
 
 <body>
 
-	<!-- header -->
-<!-- 	<div> -->
-<!-- 		<ul> -->
-<!-- 			<li> -->
-<!-- 				Test -->
-<!-- 			</li> -->
-<!-- 		</ul> -->
-<!-- 	</div> -->
-	
 	<!-- content -->
 	<div class="container">
+
+		<div th:if="${!isLoggedIn}">
+			<form action="/login" method="post">
+				<label for="username" th:text="#{login.username}">Username</label>
+				<input name="username">
+				
+				<label for="password" th:text="#{login.password}">Password</label>
+				<input name="password">
+				
+				<input type="submit" value="Login">
+			</form>
+		</div>
 
 		<table>
 			<thead>
@@ -36,6 +39,7 @@
 					<th th:text="#{party.motto}"></th>
 					<th th:text="#{party.location}"></th>
 					<th th:text="#{party.date}"></th>
+					<th th:if="${isLoggedIn}"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -44,6 +48,12 @@
 					<td th:text="${party.motto}">Motto</td>
 					<td th:text="${party.location.streetName + ' ' + party.location.streetNumber + ', ' + party.location.postalCode + ' ' + party.location.city + ', ' + party.location.country.isoCode}">Street 10, Vienna, AT</td>
 					<td th:text="${party.date}">Date</td>
+					<td th:if="${isLoggedIn}">
+						<form action="/cancel" method="post">
+							<input type="hidden" name="partyPk" th:value="${party.pk}" >
+							<input type="submit" value="Cancel party">
+						</form>
+					</td>
 				</tr>
 			</tbody>
 		</table>

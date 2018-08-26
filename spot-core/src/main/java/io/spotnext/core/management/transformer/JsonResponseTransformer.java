@@ -32,7 +32,7 @@ public class JsonResponseTransformer implements ResponseTransformer {
 	}
 
 	@Override
-	public String handleException(Exception exception) throws Exception {
+	public String handleException(final Object object, Exception exception) throws Exception {
 		final String message;
 
 		if (exception instanceof InvocationTargetException) {

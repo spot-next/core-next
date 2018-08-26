@@ -4,27 +4,139 @@
 <meta charset="utf-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="Exception">
+    <meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <title th:text="${exceptionSimpleName}">Exception</title>
 
-<title th:text="${exceptionSimpleName}">Exception</title>
-<link rel="canonical" th:href="${canonicalUrl}">
+<style type="text/css">/*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+html {
+	font-family: sans-serif;
+	line-height: 1.15;
+	-ms-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%
+}
 
-<!-- Bootstrap core CSS -->
-<link href="/css/milligram.min.css" rel="stylesheet">
+body {
+	margin: 0
+}
 
+h1 {
+	font-size: 2em;
+	margin: .67em 0
+}
+
+body, html {
+	width: 100%;
+	height: 100%;
+	background-color: #21232a
+}
+
+body {
+	color: #fff;
+	text-align: center;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
+	padding: 0;
+	min-height: 100%;
+	-webkit-box-shadow: inset 0 0 100px rgba(0, 0, 0, .8);
+	box-shadow: inset 0 0 100px rgba(0, 0, 0, .8);
+	display: table;
+	font-family: "Open Sans", Arial, sans-serif
+}
+
+h1 {
+	font-family: inherit;
+	font-weight: 500;
+	line-height: 1.1;
+	color: inherit;
+	font-size: 36px
+}
+
+h1 small {
+	font-size: 68%;
+	font-weight: 400;
+	line-height: 1;
+	color: #777
+}
+
+
+.lead {
+	color: silver;
+	font-size: 21px;
+	line-height: 1.4
+}
+
+.cover {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 0 20px
+}
+
+footer {
+	position: fixed;
+	width: 100%;
+	height: 40px;
+	left: 0;
+	bottom: 0;
+	color: #a0a0a0;
+	font-size: 14px
+}
+
+.stacktrace {
+	text-align: left;
+	margin-left: 40px;
+	margin-right: 40px;
+	white-space: pre;
+	margin-bottom: 40px;
+}
+
+</style>
 </head>
 
 <body>
-	
-	<div class="container">
-		<h1 th:text="'An exeption of type \'' + ${exceptionSimpleName} + '\' occurred:'">An exception of type Exception occurred:</h1>
-		<span th:text="${message}">
-			Message
-		</span>
-		<span th:text="${stackTrace}">
-			Stacktrace
-		</span>
-	</div>
-
+    <div class="cover">
+    		<h1><small tx:text="${httpStatusCode}">500</small>&nbsp;<span th:text="${httpStatusName}"> Internal Server error</span></h1>
+    		<p class="lead" th:text="|An exeption of type '${exceptionSimpleName}' occurred:|">
+    			An exception of type 'Exception' occurred:
+    		</p>
+    		<p th:text="${stackTrace}" class="stacktrace">
+				io.spotnext.core.persistence.exception.QueryException: Could not execute query 'SELECT p FROM aParty p'
+					at io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService.query(HibernatePersistenceService.java:251)
+					at io.spotnext.core.persistence.service.impl.DefaultQueryService.query(DefaultQueryService.java:44)
+					at io.spotnext.sample.endpoints.HomePageEndpoint.getAllParties(HomePageEndpoint.java:40)
+					at io.spotnext.sample.endpoints.HomePageEndpoint.get(HomePageEndpoint.java:32)
+					at sun.reflect.GeneratedMethodAccessor49.invoke(Unknown Source)
+					at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+					at java.lang.reflect.Method.invoke(Method.java:498)
+					at io.spotnext.core.infrastructure.service.impl.RemoteHttpEndpointHandlerService$HttpRoute.handle(RemoteHttpEndpointHandlerService.java:358)
+					at spark.ResponseTransformerRouteImpl$1.handle(ResponseTransformerRouteImpl.java:47)
+					at spark.http.matching.Routes.execute(Routes.java:61)
+					at spark.http.matching.MatcherFilter.doFilter(MatcherFilter.java:130)
+					at spark.embeddedserver.jetty.JettyHandler.doHandle(JettyHandler.java:50)
+					at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1568)
+					at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)
+					at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:132)
+					at org.eclipse.jetty.server.Server.handle(Server.java:564)
+					at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:317)
+					at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:251)
+					at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:279)
+					at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:110)
+					at org.eclipse.jetty.io.ChannelEndPoint$2.run(ChannelEndPoint.java:124)
+					at org.eclipse.jetty.util.thread.Invocable.invokePreferred(Invocable.java:128)
+					at org.eclipse.jetty.util.thread.Invocable$InvocableExecutor.invoke(Invocable.java:222)
+					at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:294)
+					at org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:199)
+					at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:673)
+					at org.eclipse.jetty.util.thread.QueuedThreadPool$2.run(QueuedThreadPool.java:591)
+					at java.lang.Thread.run(Thread.java:748)
+				Caused by: org.springframework.transaction.TransactionUsageException: Error during transactional execution.; nested exception is io.spotnext.core.persistence.exception.QueryException: Could not parse query
+					at io.spotnext.core.persistence.service.impl.DefaultTransactionService.execute(DefaultTransactionService.java:54)
+					at io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService.query(HibernatePersistenceService.java:148)
+					... 27 more
+			</p>
+    	</div>
+    
+    <footer>
+    		<p th:text="|Timestamp: ${timestamp} / Path: ${urlPath}|">Timestamp: 2018-10-10 23:10:05 | Path: /checkout  </p>
+    </footer>
 </body>
 </html>
