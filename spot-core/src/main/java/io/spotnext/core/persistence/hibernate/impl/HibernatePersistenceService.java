@@ -405,8 +405,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			transactionService.execute(() -> {
 				for (final T item : items) {
 					try {
-						attach(item);
-						getSession().refresh(item, LockMode.NONE);
+						if (attach(item)) {
+							getSession().refresh(item, LockMode.NONE);
+						}
 					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
 						throw new ModelNotFoundException(
@@ -431,7 +432,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 		try {
 			// ignore unpersisted or already attached items
-			if (getSession().contains(item)) {
+			if (isAttached(item)) {
 				return true;
 			}
 

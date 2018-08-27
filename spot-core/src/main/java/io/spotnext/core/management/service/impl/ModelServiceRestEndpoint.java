@@ -1,9 +1,9 @@
 package io.spotnext.core.management.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,10 +191,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.notunique",
 					"Another item with the same uniqueness criteria (but a different PK) was found.");
 		} catch (final ModelValidationException e) {
-			final List<String> messages = e.getConstraintViolations().stream().map((c) -> {
+			final List<String> messages = new ArrayList<>();
+			messages.add(e.getMessage());
+			
+			e.getConstraintViolations().stream().map((c) -> {
 				return String.format("%s.%s could not be set to {%s}: %s", c.getRootBean().getClass().getSimpleName(),
 						c.getPropertyPath(), c.getInvalidValue(), c.getMessage());
-			}).collect(Collectors.toList());
+			}).forEach(m -> messages.add(m));
 
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.validation",
 					String.join("\n", messages));

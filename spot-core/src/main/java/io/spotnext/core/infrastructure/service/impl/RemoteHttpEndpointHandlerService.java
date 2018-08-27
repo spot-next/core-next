@@ -202,6 +202,12 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 						if (handler.responseTransformer() != null) {
 							transformer = responseTransformers.get(handler.responseTransformer());
+
+							if (transformer == null) {
+								throw new IllegalStateException(
+										String.format("Could not initialize response transformer for class %s",
+												handler.responseTransformer()));
+							}
 						} else {
 							// use the JSON default transformer
 							transformer = jsonResponseTransformer;
@@ -245,6 +251,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try { // create routes for HTTP methods
 
 				service.exception(Exception.class, (exception, request, response) -> {
+					loggingService.exception(exception.getMessage(), exception);
 					cleanupOnException(exception);
 					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
@@ -315,7 +322,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			// and store the session id in the web session
 			request.session().attribute("spotSessionId", spotSessionId);
 		}
-		
+
 		sessionService.setCurrentSession(spotSession);
 	}
 

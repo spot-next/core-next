@@ -140,6 +140,8 @@ public class DefaultModelService extends AbstractModelService {
 		}
 
 		persistenceService.refresh(Collections.singletonList(item));
+		// initialize null collections
+		persistenceService.initItem(item);
 	}
 
 	@Override

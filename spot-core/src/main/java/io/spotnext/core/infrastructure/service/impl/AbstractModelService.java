@@ -159,12 +159,18 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 					.getValues(superTypeCode);
 
 			if (CollectionUtils.isNotEmpty(interceptors)) {
-				interceptors.stream().forEach(l -> l.onValidate(item));
+				try {
+					interceptors.stream().forEach(l -> l.onValidate(item));
+				} catch (ModelValidationException e) {
+//					errors.addAll((Collection<? extends ConstraintViolation<T>>) e.getConstraintViolations());
+					throw e;
+				}
 			}
 		}
 
 		if (!errors.isEmpty()) {
-			final String message = validationService.convertToReadableMessage(Collections.unmodifiableSet((errors)));
+			final String message = validationService.convertToReadableMessage(Collections.unmodifiableSet(errors));
+
 			throw new ModelValidationException(message, errors);
 		}
 	}

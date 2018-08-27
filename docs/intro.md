@@ -82,7 +82,7 @@ With this command you can directly initializes an empty spOt project:
 mvn -Psonatype-staging archetype:generate -B \
 		-DarchetypeGroupId=io.spot-next.archetypes \
 		-DarchetypeArtifactId=archetype-empty \
-		-DarchetypeVersion=1.0-SNAPSHOT
+		-DarchetypeVersion=1.0-SNAPSHOT \
 		-DgroupId=io.spot-next.test \
 		-DartifactId=test-project \
 		-Dpackage=io.spotnext.test \
@@ -425,6 +425,13 @@ The first option is a **synchronous approach** - an **interceptor** can slow dow
 
 A stub implementation looks like this:
 ```java
+package io.spotnext.test.listeners;
+
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
+import io.spotnext.core.infrastructure.event.ItemModificationEvent;
+import io.spotnext.test.types.itemtypes.Party;
+
 @Service
 public class PartyModificationListener {
 	@EventListener
@@ -437,6 +444,11 @@ public class PartyModificationListener {
 
 As we are only interested in **save** events of parties that have the `fixed` property set to `true`, we add a condition to the `@EventListener` annotation:
 ```java
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
+import io.spotnext.core.infrastructure.event.ItemModificationEvent;
+import io.spotnext.test.types.itemtypes.Party;
+
 @EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
 public void handleEvent(final ItemModificationEvent<Party> event) {
 	final Party fixedParty = event.getItem();
@@ -458,12 +470,16 @@ Right now spOt doesn't contain any messaging services (but this is definitely so
 
 We wrap the library in a little service:
 ```java
+package io.spotnext.test.service;
+
 import javax.annotation.PostConstruct;
+
 import org.simplejavamail.email.Email;
 import org.simplejavamail.mailer.Mailer;
 import org.simplejavamail.mailer.MailerBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 
 @Service
@@ -507,6 +523,8 @@ mail.smtp.password=
 
 Now we can extend the `PartyModificationListener` to actually create `mail` objects and send them:
 ```java
+package io.spotnext.test.listeners;
+
 import javax.annotation.Resource;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -579,6 +597,8 @@ The difference to an `ItemModificationListener` is that the interceptors are cal
 
 We will now implement a custom `PartyValidationInterceptor` that validates that both `date` and `location` are set, and that at least one guest is invited.  
 ```java
+package io.spotnext.test.interceptors;
+
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
@@ -785,9 +805,18 @@ The HTTP API that is used to provde the REST CRUD endpoints also alows us to imp
 </dependency>
 ```
 
+To enable the various spring beans in this library, we have to update our `SpringBootApplication` scan package path in the `Init` class:
+```java
+@SpringBootApplication(scanBasePackages = { "io.spotnext.test", "io.spotnext.cms.strategy", "io.spotnext.cms.service",
+		"io.spotnext.cms.rendering.transformers" })
+public class Init extends ModuleInit {
+	...
+}
+```
+
 Now we can use the Thymeleaf engine to render HTML served by our endpoint:
 ```java
-package io.spotnext.sample.endpoints;
+package io.spotnext.test.endpoints;
 
 import java.util.HashMap;
 import java.util.List;
@@ -809,8 +838,8 @@ import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
-import io.spotnext.sample.filters.IsAdminFilter;
-import io.spotnext.sample.types.itemtypes.Party;
+import io.spotnext.test.filters.IsAdminFilter;
+import io.spotnext.test.types.itemtypes.Party;
 import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
@@ -818,85 +847,85 @@ import spark.route.HttpMethod;
 @RemoteEndpoint(pathMapping = "/")
 public class HomePageEndpoint {
 
-	@Resource
-	private ModelService modelService;
+    @Resource
+    private ModelService modelService;
 
-	@Resource
-	private QueryService queryService;
+    @Resource
+    private QueryService queryService;
 
-	@Resource
-	private AuthenticationService authenticationService;
+    @Resource
+    private AuthenticationService authenticationService;
 
-	@Resource
-	private UserService<User, UserGroup> userService;
+    @Resource
+    private UserService<User, UserGroup> userService;
 
-	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
-	public ModelAndView getHomepage(final Request request, final Response response) {
-		final Map<String, Object> model = new HashMap<>();
+    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
+    public ModelAndView getHomepage(final Request request, final Response response) {
+        final Map<String, Object> model = new HashMap<>();
 
-		model.put("pageTitle", "Party service sample page");
-		model.put("parties", getAllParties());
+        model.put("pageTitle", "Party service sample page");
+        model.put("parties", getAllParties());
 
-		return ModelAndView.ok("homepage").withPayload(model);
-	}
+        return ModelAndView.ok("homepage").withPayload(model);
+    }
 
-	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
-	public ModelAndView postLogin(final Request request, final Response response) {
-		String username = request.queryParams("username");
-		String password = request.queryParams("password");
+    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
+    public ModelAndView postLogin(final Request request, final Response response) {
+        String username = request.queryParams("username");
+        String password = request.queryParams("password");
 
-		if (username != null && password != null) {
-			User user = authenticationService.getAuthenticatedUser(username, password, false);
+        if (username != null && password != null) {
+            User user = authenticationService.getAuthenticatedUser(username, password, false);
 
-			if (user != null) {
-				userService.setCurrentUser(user);
-				response.redirect("/manage");
-				return null;
-			}
-		}
+            if (user != null) {
+                userService.setCurrentUser(user);
+                response.redirect("/manage");
+                return null;
+            }
+        }
 
-		response.redirect("/");
-		return null;
-	}
+        response.redirect("/");
+        return null;
+    }
 
-	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
-	public ModelAndView postLogout(final Request request, final Response response) {
-		userService.setCurrentUser(null);
-		response.redirect("/");
-		return null;
-	}
+    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
+    public ModelAndView postLogout(final Request request, final Response response) {
+        userService.setCurrentUser(null);
+        response.redirect("/");
+        return null;
+    }
 
-	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
-	public ModelAndView getManage(final Request request, final Response response) {
-		final Map<String, Object> model = new HashMap<>();
-		model.put("pageTitle", "Party service sample page");
-		model.put("parties", getAllParties());
+    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
+    public ModelAndView getManage(final Request request, final Response response) {
+        final Map<String, Object> model = new HashMap<>();
+        model.put("pageTitle", "Party service sample page");
+        model.put("parties", getAllParties());
 
-		model.put("isLoggedIn", true);
+        model.put("isLoggedIn", true);
 
-		return ModelAndView.ok("homepage").withPayload(model);
-	}
+        return ModelAndView.ok("homepage").withPayload(model);
+    }
 
-	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
-	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
-	public ModelAndView postCancelParty(final Request request, final Response response) {
-		String partyPk = request.queryParams("partyPk");
+    @SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
+    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
+    public ModelAndView postCancelParty(final Request request, final Response response) {
+        String partyPk = request.queryParams("partyPk");
 
-		if (partyPk != null) {
-			modelService.remove(Party.class, Long.valueOf(partyPk));
-		}
+        if (partyPk != null) {
+            modelService.remove(Party.class, Long.valueOf(partyPk));
+        }
 
-		response.redirect("/manage");
-		return null;
-	}
+        response.redirect("/manage");
+        return null;
+    }
 
-	protected List<Party> getAllParties() {
-		String query = "SELECT p FROM Party p";
-		JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
-		QueryResult<Party> result = queryService.query(partyQuery);
+    protected List<Party> getAllParties() {
+        String query = "SELECT p FROM Party p";
+        JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
+        QueryResult<Party> result = queryService.query(partyQuery);
 
-		return result.getResultList();
-	}
+        return result.getResultList();
+    }
 }
 ```
 
@@ -916,7 +945,7 @@ Nothing special so far. Unlike Spring Security or many other similar frameworks,
 
 On each request the `IsAdminFilter` checks if the current user is an admin:
 ```java
-package io.spotnext.sample.filters;
+package io.spotnext.test.filters;
 
 import javax.annotation.Resource;
 
@@ -933,17 +962,17 @@ import spark.Response;
 @Service
 public class IsAdminFilter implements AuthenticationFilter {
 
-	@Resource
-	private UserService<User, UserGroup> userService;
-	
-	@Override
-	public void handle(Request request, Response response) throws AuthenticationException {
-		final User currentUser = userService.getCurrentUser();
-		
-		if (currentUser == null || !"admin".equals(currentUser.getId())) {
-			response.redirect("/");
-		}
-	}
+    @Resource
+    private UserService<User, UserGroup> userService;
+
+    @Override
+    public void handle(Request request, Response response) throws AuthenticationException {
+        final User currentUser = userService.getCurrentUser();
+
+        if (currentUser == null || !"admin".equals(currentUser.getId())) {
+            response.redirect("/");
+        }
+    }
 }
 ```
 > This is a very simple approach. But a more sophisitcated solution is easy to implement
@@ -962,7 +991,8 @@ Now that we have an endpoint we just need a template for our page (/resources/te
 <title th:text="${pageTitle}">Party sample page</title>
 <link rel="canonical" th:href="${canonicalUrl}">
 
-<link href="/css/milligram.min.css" rel="stylesheet">
+<link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+<link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
 
 <style>
 	body {
@@ -1052,7 +1082,7 @@ Now we can fire up our little backend. It looks like this (served on the default
 We can see our previously created party item(s). After we logged in using `admin:nimda` we are even able to cancel parties:
 ![Party backend management](resources/party_service_manage.png "")
 
-Compare to Spring MVC and Spring Security, spOt doesn't try to do a lot of magic, but instead followed KISS principle :-)
+Compare to Spring MVC and Spring Security, spOt doesn't try to do a lot of magic, but instead followes KISS principle :-)
 
 ### Summary
 Hopefully this little quickstart tutorial gave you a (good) first impression what spOt is all about. For more infos, just dig through the (ever-growing) documentation.  There is a whole lot of other interesting features that we haven't touched yet, like:
