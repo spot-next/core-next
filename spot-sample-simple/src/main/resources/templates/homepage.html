@@ -5,58 +5,72 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="Party sample page">
-<meta name="author" content="meister.fuchs@gmail.com">
 
 <title th:text="${pageTitle}">Party sample page</title>
 <link rel="canonical" th:href="${canonicalUrl}">
 
-<!-- Bootstrap core CSS -->
 <link href="/css/milligram.min.css" rel="stylesheet">
 
+<style>
+	body {
+		margin-top: 40px;
+	}
+	.center {
+		text-align: center;
+	}
+</style>
 </head>
-
 <body>
 
 	<!-- content -->
 	<div class="container">
 
-		<div th:if="${!isLoggedIn}">
-			<form action="/login" method="post">
-				<label for="username" th:text="#{login.username}">Username</label>
-				<input name="username">
-				
-				<label for="password" th:text="#{login.password}">Password</label>
-				<input name="password">
-				
-				<input type="submit" value="Login">
+		<div class="clearfix">
+			<form action="/login" method="post" th:if="${!isLoggedIn}">
+				<fieldset class="float-right">
+					<input type="text" name="username" th:placeholder="#{login.username}" placeholder="Username">
+					<input type="password" name="password" th:placeholder="#{login.password}" placeholder="Password">
+					<input type="submit" value="Login" class="float-right">
+				</fieldset>
+			</form>
+			
+			<form action="/logout" method="post" th:if="${isLoggedIn}">
+				<fieldset class="float-right">
+					<input type="submit" value="Logout">
+				</fieldset>
 			</form>
 		</div>
 
-		<table>
-			<thead>
-				<tr>
-					<th th:text="#{party.title}"></th>
-					<th th:text="#{party.motto}"></th>
-					<th th:text="#{party.location}"></th>
-					<th th:text="#{party.date}"></th>
-					<th th:if="${isLoggedIn}"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="party : ${parties}">
-					<td th:text="${party.title}">Title</td>
-					<td th:text="${party.motto}">Motto</td>
-					<td th:text="${party.location.streetName + ' ' + party.location.streetNumber + ', ' + party.location.postalCode + ' ' + party.location.city + ', ' + party.location.country.isoCode}">Street 10, Vienna, AT</td>
-					<td th:text="${party.date}">Date</td>
-					<td th:if="${isLoggedIn}">
-						<form action="/cancel" method="post">
-							<input type="hidden" name="partyPk" th:value="${party.pk}" >
-							<input type="submit" value="Cancel party">
-						</form>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div >
+			<table th:if="${not #lists.isEmpty(parties)}">
+				<thead>
+					<tr>
+						<th th:text="#{party.title}"></th>
+						<th th:text="#{party.motto}"></th>
+						<th th:text="#{party.location}"></th>
+						<th th:text="#{party.date}"></th>
+						<th th:if="${isLoggedIn}"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="party : ${parties}">
+						<td th:text="${party.title}">Title</td>
+						<td th:text="${party.motto}">Motto</td>
+						<td th:text="${party.location.streetName + ' ' + party.location.streetNumber + ', ' + party.location.postalCode + ' ' + party.location.city + ', ' + party.location.country.isoCode}">Street 10, Vienna, AT</td>
+						<td th:text="${party.date}">Date</td>
+						<td th:if="${isLoggedIn}">
+							<form action="/cancel" method="post">
+								<input type="hidden" name="partyPk" th:value="${party.pk}" >
+								<input type="submit" value="Cancel party">
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<!-- empty message -->
+			<h1 class="center" th:if="${#lists.isEmpty(parties)}" th:text="#{parties.empty}">There are not parties yet :-(</h1>
+		</div>
 
 		<!-- Site footer -->
 		<footer class="footer">

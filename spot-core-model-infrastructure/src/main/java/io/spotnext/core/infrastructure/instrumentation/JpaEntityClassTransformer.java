@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionType;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
@@ -78,6 +79,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_MAPPED_TO = "mappedTo";
 	protected static final String MV_TYPE = "type";
 	protected static final String MV_TYPE_CODE = "typeCode";
+	protected static final String MV_VALUE = "value";
 	protected static final String MV_UNIQUE = "unique";
 	protected static final String MV_NULLABLE = "nullable";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
@@ -270,9 +272,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Checks if the field has the {@link Property#unique()} annotation value
-	 * set. If yes, then a {@link NotNull} is added. The real uniqueness
-	 * constraint is checked using {@link Item#uniquenessHash()}.
+	 * Checks if the field has the {@link Property#unique()} annotation value set.
+	 * If yes, then a {@link NotNull} is added. The real uniqueness constraint is
+	 * checked using {@link Item#uniquenessHash()}.
 	 */
 	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtClass clazz, final CtField field,
 			final Annotation propertyAnnotation) {
@@ -306,7 +308,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// JPA Relation annotations
 			if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
-				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToMany.class));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToMany.class, null));
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -320,9 +322,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						.add(createJoinTableAnnotation(entityClass, field, propertyAnnotation, relAnnotation.get()));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.OneToMany.toString())) {
-				final Annotation o2mAnn = createJpaRelationAnnotation(entityClass, field, OneToMany.class);
-				addMappedByAnnotationValue(field, o2mAnn, entityClass, relAnnotation.get());
-				jpaAnnotations.add(o2mAnn);
+				final List<Annotation> o2mAnn = createCascadeAnnotations(entityClass, field, OneToMany.class,
+						relAnnotation.get());
+				jpaAnnotations.addAll(o2mAnn);
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
@@ -334,7 +336,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
-				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null));
 				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 				// necessary for serialization
@@ -342,12 +344,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 			} else {
 				// one to one in case the field type is a subtype of Item
-				jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, OneToOne.class));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, null));
 			}
 
 		} else if (isItemType(field.getType())) {
 			// one to one in case the field type is a subtype of Item
-			jpaAnnotations.add(createJpaRelationAnnotation(entityClass, field, ManyToOne.class));
+			jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null));
 			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 			// necessary for serialization
@@ -406,6 +408,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	protected void addMappedByAnnotationValue(final CtField field, final Annotation annotation,
 			final CtClass entityClass, final Annotation relation) {
+
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
 
@@ -423,7 +426,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		{ // ElementCollection
 			final Annotation ann = createAnnotation(clazz, ElementCollection.class);
-			addCascadeAnnotation(ann, field);
+//			addJpaCascadeAnnotation(ann, field);
 
 			// add fetch type
 			final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
@@ -435,7 +438,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		{ // CollectionTable
 			final Annotation ann = createAnnotation(clazz, CollectionTable.class);
-			addCascadeAnnotation(ann, field);
+//			addJpaCascadeAnnotation(ann, field);
 
 			// add fetch type
 			final StringMemberValue tableName = new StringMemberValue(getConstPool(clazz));
@@ -447,20 +450,22 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return ret;
 	}
 
-	protected Annotation createJpaRelationAnnotation(final CtClass clazz, final CtField field,
-			final Class<? extends java.lang.annotation.Annotation> annotationType)
+	protected List<Annotation> createCascadeAnnotations(final CtClass clazz, final CtField field,
+			final Class<? extends java.lang.annotation.Annotation> annotationType, Annotation relationAnnotation)
 			throws IllegalClassTransformationException {
 
-		final Annotation ann = createAnnotation(clazz, annotationType);
-		addCascadeAnnotation(ann, field);
+		List<Annotation> annotations = new ArrayList<>();
 
-		// add fetch type
-		final EnumMemberValue fetchType = new EnumMemberValue(getConstPool(clazz));
-		fetchType.setType(FetchType.class.getName());
-		fetchType.setValue(FetchType.LAZY.name());
-		ann.addMemberValue("fetch", fetchType);
+		Annotation x2xAnn = addJpaCascadeAnnotation(field, annotationType);
 
-		return ann;
+		annotations.add(x2xAnn);
+		annotations.add(addHibernateCascadeAnnotation(field));
+
+		if (relationAnnotation != null) {
+			addMappedByAnnotationValue(field, x2xAnn, clazz, relationAnnotation);
+		}
+
+		return annotations;
 	}
 
 	@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
@@ -496,8 +501,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property
-	 * has a unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
+	 * unique=true modifier.
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
@@ -588,12 +593,59 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return RelationNodeType.valueOf(nodeType.getValue());
 	}
 
-	protected void addCascadeAnnotation(final Annotation annotation, final CtField field) {
-		final EnumMemberValue val = new EnumMemberValue(field.getFieldInfo2().getConstPool());
-		val.setType(CascadeType.class.getName());
-		val.setValue(CascadeType.ALL.toString());
+	protected Annotation addJpaCascadeAnnotation(final CtField field,
+			Class<? extends java.lang.annotation.Annotation> annotationType) {
 
-		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(), val));
+		final Annotation annotation = createAnnotation(field.getFieldInfo2().getConstPool(), annotationType);
+		// add fetch type
+		final EnumMemberValue fetchType = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+		fetchType.setType(FetchType.class.getName());
+		fetchType.setValue(FetchType.LAZY.name());
+		annotation.addMemberValue("fetch", fetchType);
+
+		final List<EnumMemberValue> vals = new ArrayList<>();
+
+		// TODO: implement a way to set the remove cascade type via itemtypes.xml
+		// exclude ALL, as this would remove every part of a relation!
+		final CascadeType[] allowedJpaTypes = new CascadeType[] { CascadeType.DETACH, CascadeType.MERGE,
+				CascadeType.PERSIST, CascadeType.REFRESH };
+
+		for (CascadeType type : allowedJpaTypes) {
+			final EnumMemberValue val = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+			val.setType(CascadeType.class.getName());
+			val.setValue(type.toString());
+
+			vals.add(val);
+		}
+
+		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(),
+				vals.toArray(new EnumMemberValue[allowedJpaTypes.length])));
+
+		return annotation;
+	}
+
+	protected Annotation addHibernateCascadeAnnotation(final CtField field) {
+		Annotation annotation = createAnnotation(field.getFieldInfo2().getConstPool(), Cascade.class);
+		final List<EnumMemberValue> vals = new ArrayList<>();
+
+		final org.hibernate.annotations.CascadeType[] allowedHibernateCascadeTypes = new org.hibernate.annotations.CascadeType[] {
+				org.hibernate.annotations.CascadeType.DETACH, org.hibernate.annotations.CascadeType.SAVE_UPDATE,
+				org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.REPLICATE,
+				org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST,
+				org.hibernate.annotations.CascadeType.REFRESH };
+
+		for (org.hibernate.annotations.CascadeType type : allowedHibernateCascadeTypes) {
+			final EnumMemberValue val = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+			val.setType(org.hibernate.annotations.CascadeType.class.getName());
+			val.setValue(type.toString());
+
+			vals.add(val);
+		}
+
+		annotation.addMemberValue(MV_VALUE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(),
+				vals.toArray(new EnumMemberValue[allowedHibernateCascadeTypes.length])));
+
+		return annotation;
 	}
 
 	private String mapColumnTypeToHibernate(final DatabaseColumnType columnType) {

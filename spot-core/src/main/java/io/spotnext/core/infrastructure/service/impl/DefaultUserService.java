@@ -125,11 +125,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	public void setCurrentUser(final U user) {
 		final Session session = sessionService.getCurrentSession();
 
-		if (user != null) {
-			session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, user);
-		} else {
-			loggingService.warn("Cannot set a null user as current session user.");
-		}
+		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, user);
 	}
 
 	@Override

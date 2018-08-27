@@ -772,16 +772,292 @@ public class PersistenceTest extends AbstractIntegrationTest {
 ```
 > There are multiple ways to query data, even directly into Data Transfer Objects (DTO).
 
-There is a whole lot of other interesting features that we haven't touched yet, like:
+Now that we know how to operate with the persistence layer, we can write a simple web page for those backend operations.
+
+### Web backend
+
+The HTTP API that is used to provde the REST CRUD endpoints also alows us to implement our own little HTML endpoints. As we are not going to send JSON data though, we need a rendering engine. So first we add this new dependency to the `pom.xml`:
+```xml
+<dependency>
+	<groupId>io.spot-next</groupId>
+	<artifactId>spot-cms-base</artifactId>
+	<version>${revision}</version>
+</dependency>
+```
+
+Now we can use the Thymeleaf engine to render HTML served by our endpoint:
+```java
+package io.spotnext.sample.endpoints;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.cms.rendering.transformers.ThymeleafRendererResponseTransformer;
+import io.spotnext.core.infrastructure.http.ModelAndView;
+import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.service.UserService;
+import io.spotnext.core.infrastructure.support.MimeType;
+import io.spotnext.core.management.annotation.Handler;
+import io.spotnext.core.management.annotation.RemoteEndpoint;
+import io.spotnext.core.persistence.query.JpqlQuery;
+import io.spotnext.core.persistence.query.QueryResult;
+import io.spotnext.core.persistence.service.QueryService;
+import io.spotnext.core.security.service.AuthenticationService;
+import io.spotnext.itemtype.core.user.User;
+import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.sample.filters.IsAdminFilter;
+import io.spotnext.sample.types.itemtypes.Party;
+import spark.Request;
+import spark.Response;
+import spark.route.HttpMethod;
+
+@RemoteEndpoint(pathMapping = "/")
+public class HomePageEndpoint {
+
+	@Resource
+	private ModelService modelService;
+
+	@Resource
+	private QueryService queryService;
+
+	@Resource
+	private AuthenticationService authenticationService;
+
+	@Resource
+	private UserService<User, UserGroup> userService;
+
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
+	public ModelAndView getHomepage(final Request request, final Response response) {
+		final Map<String, Object> model = new HashMap<>();
+
+		model.put("pageTitle", "Party service sample page");
+		model.put("parties", getAllParties());
+
+		return ModelAndView.ok("homepage").withPayload(model);
+	}
+
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
+	public ModelAndView postLogin(final Request request, final Response response) {
+		String username = request.queryParams("username");
+		String password = request.queryParams("password");
+
+		if (username != null && password != null) {
+			User user = authenticationService.getAuthenticatedUser(username, password, false);
+
+			if (user != null) {
+				userService.setCurrentUser(user);
+				response.redirect("/manage");
+				return null;
+			}
+		}
+
+		response.redirect("/");
+		return null;
+	}
+
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
+	public ModelAndView postLogout(final Request request, final Response response) {
+		userService.setCurrentUser(null);
+		response.redirect("/");
+		return null;
+	}
+
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
+	public ModelAndView getManage(final Request request, final Response response) {
+		final Map<String, Object> model = new HashMap<>();
+		model.put("pageTitle", "Party service sample page");
+		model.put("parties", getAllParties());
+
+		model.put("isLoggedIn", true);
+
+		return ModelAndView.ok("homepage").withPayload(model);
+	}
+
+	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
+	public ModelAndView postCancelParty(final Request request, final Response response) {
+		String partyPk = request.queryParams("partyPk");
+
+		if (partyPk != null) {
+			modelService.remove(Party.class, Long.valueOf(partyPk));
+		}
+
+		response.redirect("/manage");
+		return null;
+	}
+
+	protected List<Party> getAllParties() {
+		String query = "SELECT p FROM Party p";
+		JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
+		QueryResult<Party> result = queryService.query(partyQuery);
+
+		return result.getResultList();
+	}
+}
+```
+
+Any class (in the component scan path) annotated with `@RemoteEndpoint` will be scanned for methods annotated with `@Handler`. Those two annotation define:
+* `RemoteEndpoint.pathMapping`, `Handler.pathMapping`: the final path is the combination of the basePath defined on the class and one defined on the handler
+* `RemoteEndpoint.port`: the port the endpoint is reachable on
+* `Handler.mimeType`: the mime type of the response
+* `Handler.responseTransformer`: renders the returned object, eg. using thymeleaf
+* `Handler.authenticationFilter`: checks for authorizations
+
+> The general rule for settings that can both be configured on the `RemoteEndpoint` AND the `Handler` is that the `Handler` settings have a higher priority (except for the `pathMapping`).
+
+#### Homepage
+The method `getHomepage` has no `pathMapping` defined, so it will directly handle the base URL defined on the class level. It basically just fetches all `Party` items and returns a `ModelAndView` object that needed by the Thymeleaf response transformer to render actual HTML.
+
+Nothing special so far. Unlike Spring Security or many other similar frameworks, spOt does not offer a "login" functionality by default. But a simple form-based login is only a few lines of code (`postLogin`). The `AuthorizationService` returns a `User` or null in case the authorization fails. Then the user object is then registered as the `currentUser` in the (backend) session.
+
+On each request the `IsAdminFilter` checks if the current user is an admin:
+```java
+package io.spotnext.sample.filters;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import io.spotnext.core.infrastructure.exception.AuthenticationException;
+import io.spotnext.core.infrastructure.service.UserService;
+import io.spotnext.core.management.support.AuthenticationFilter;
+import io.spotnext.itemtype.core.user.User;
+import io.spotnext.itemtype.core.user.UserGroup;
+import spark.Request;
+import spark.Response;
+
+@Service
+public class IsAdminFilter implements AuthenticationFilter {
+
+	@Resource
+	private UserService<User, UserGroup> userService;
+	
+	@Override
+	public void handle(Request request, Response response) throws AuthenticationException {
+		final User currentUser = userService.getCurrentUser();
+		
+		if (currentUser == null || !"admin".equals(currentUser.getId())) {
+			response.redirect("/");
+		}
+	}
+}
+```
+> This is a very simple approach. But a more sophisitcated solution is easy to implement
+
+Any other user will be redirected straight-forward to the homepage for any endpoint handler methods annotated with `@Handler(... authenticationFilter = IsAdminFilter.class)`.
+
+Now that we have an endpoint we just need a template for our page (/resources/templates/homepage.html):
+```HTML
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="Party sample page">
+
+<title th:text="${pageTitle}">Party sample page</title>
+<link rel="canonical" th:href="${canonicalUrl}">
+
+<link href="/css/milligram.min.css" rel="stylesheet">
+
+<style>
+	body {
+		margin-top: 40px;
+	}
+	.center {
+		text-align: center;
+	}
+</style>
+</head>
+
+<body>
+	<!-- content -->
+	<div class="container">
+
+		<div class="clearfix">
+			<form action="/login" method="post" th:if="${!isLoggedIn}">
+				<fieldset class="float-right">
+					<input type="text" name="username" th:placeholder="#{login.username}" placeholder="Username">
+					<input type="password" name="password" th:placeholder="#{login.password}" placeholder="Password">
+					<input type="submit" value="Login" class="float-right">
+				</fieldset>
+			</form>
+			
+			<form action="/logout" method="post" th:if="${isLoggedIn}">
+				<fieldset class="float-right">
+					<input type="submit" value="Logout">
+				</fieldset>
+			</form>
+		</div>
+
+		<div >
+			<table th:if="${not #lists.isEmpty(parties)}">
+				<thead>
+					<tr>
+						<th th:text="#{party.title}"></th>
+						<th th:text="#{party.motto}"></th>
+						<th th:text="#{party.location}"></th>
+						<th th:text="#{party.date}"></th>
+						<th th:if="${isLoggedIn}"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="party : ${parties}">
+						<td th:text="${party.title}">Title</td>
+						<td th:text="${party.motto}">Motto</td>
+						<td th:text="${party.location.streetName + ' ' + party.location.streetNumber + ', ' + party.location.postalCode + ' ' + party.location.city + ', ' + party.location.country.isoCode}">Street 10, Vienna, AT</td>
+						<td th:text="${party.date}">Date</td>
+						<td th:if="${isLoggedIn}">
+							<form action="/cancel" method="post">
+								<input type="hidden" name="partyPk" th:value="${party.pk}" >
+								<input type="submit" value="Cancel party">
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<!-- empty message -->
+			<h1 class="center" th:if="${#lists.isEmpty(parties)}" th:text="#{parties.empty}">There are not parties yet :-(</h1>
+		</div>
+
+		<!-- Site footer -->
+		<footer class="footer">
+			<p>&copy; spOt next 2018</p>
+		</footer>
+	</div>
+
+</body>
+</html>
+```
+
+By default Thymeleaf expects message properties in the same path as the template itself using the very same name, but with the extension `.properties` (/resources/templates/homepage.properties):
+```
+party.title = Title
+party.motto = Motto
+party.location = Location
+party.date = Date
+parties.empty= There are not parties yet :-(
+login.username=Username:
+login.password=Password:
+```
+
+Now we can fire up our little backend. It looks like this (served on the default port `8080`):
+![Party backend overview](resources/party_service_overview.png "")
+
+We can see our previously created party item(s). After we logged in using `admin:nimda` we are even able to cancel parties:
+![Party backend management](resources/party_service_manage.png "")
+
+Compare to Spring MVC and Spring Security, spOt doesn't try to do a lot of magic, but instead followed KISS principle :-)
+
+### Summary
+Hopefully this little quickstart tutorial gave you a (good) first impression what spOt is all about. For more infos, just dig through the (ever-growing) documentation.  There is a whole lot of other interesting features that we haven't touched yet, like:
 * Using interceptors to generate sequence numbers
 * Localization features (both property and database based)
-* Authentication
 * Serialization
 * Data import
 * Spring MVC integration
-
-
-### Summary
-Hopefully this little quickstart tutorial gave you a (good) first impression what spOt is all about. For more infos, just dig through the (ever-growing) documentation. 
-
-

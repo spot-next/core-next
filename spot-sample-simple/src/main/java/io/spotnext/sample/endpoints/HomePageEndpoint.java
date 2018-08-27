@@ -42,7 +42,7 @@ public class HomePageEndpoint {
 	private UserService<User, UserGroup> userService;
 
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
-	public ModelAndView get(final Request request, final Response response) {
+	public ModelAndView getHomepage(final Request request, final Response response) {
 		final Map<String, Object> model = new HashMap<>();
 
 		model.put("pageTitle", "Party service sample page");
@@ -52,7 +52,7 @@ public class HomePageEndpoint {
 	}
 
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
-	public ModelAndView login(final Request request, final Response response) {
+	public ModelAndView postLogin(final Request request, final Response response) {
 		String username = request.queryParams("username");
 		String password = request.queryParams("password");
 
@@ -70,8 +70,15 @@ public class HomePageEndpoint {
 		return null;
 	}
 
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
+	public ModelAndView postLogout(final Request request, final Response response) {
+		userService.setCurrentUser(null);
+		response.redirect("/");
+		return null;
+	}
+
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
-	public ModelAndView manage(final Request request, final Response response) {
+	public ModelAndView getManage(final Request request, final Response response) {
 		final Map<String, Object> model = new HashMap<>();
 		model.put("pageTitle", "Party service sample page");
 		model.put("parties", getAllParties());
@@ -83,13 +90,13 @@ public class HomePageEndpoint {
 
 	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
-	public ModelAndView cancelParty(final Request request, final Response response) {
+	public ModelAndView postCancelParty(final Request request, final Response response) {
 		String partyPk = request.queryParams("partyPk");
 
 		if (partyPk != null) {
 			modelService.remove(Party.class, Long.valueOf(partyPk));
 		}
-		
+
 		response.redirect("/manage");
 		return null;
 	}
