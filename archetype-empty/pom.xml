@@ -49,12 +49,6 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-
-			<!-- ECLIPSE SETTINGS -->
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
-			</plugin>
 		</plugins>
 
 		<extensions>

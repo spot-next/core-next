@@ -213,13 +213,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 							transformer = jsonResponseTransformer;
 						}
 
-						String pathMappingEndpoint = remoteEndpoint.pathMapping();
-						final String pathMappingHandler = handler.pathMapping();
-						if (!pathMappingEndpoint.endsWith("/") && !pathMappingHandler.startsWith("/")) {
-							pathMappingEndpoint += "/";
-						}
-
-						final String pathMapping = StringUtils.join(pathMappingEndpoint, pathMappingHandler);
+						final String pathMapping = StringUtils.join(remoteEndpoint.pathMapping(), handler.pathMapping()).replace("//", "/");
 
 						if (handler.method() == HttpMethod.get) {
 							service.get(pathMapping, mimeType, route, transformer);

@@ -61,12 +61,6 @@
 			</plugin>
 
 			<!-- RELEASE -->
-
-			<!-- ECLIPSE SETTINGS -->
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
-			</plugin>
 		</plugins>
 	</build>
 

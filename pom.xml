@@ -201,7 +201,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.0.1</version>
+				<version>1.0.0</version>
 				<configuration>
 					<updatePomFile>true</updatePomFile>
 					<pomElements>
@@ -230,12 +230,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-
-			<!-- ECLIPSE SETTINGS -->
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
 			</plugin>
 		</plugins>
 
@@ -622,7 +616,7 @@
 										<groupId>io.spot-next</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
-											[1.0-SNAPSHOT,)
+											[0.0,)
 										</versionRange>
 										<goals>
 											<goal>generate-types</goal>
@@ -637,7 +631,7 @@
 										<groupId>io.spot-next</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
-											[1.0-SNAPSHOT,)
+											[0.0,)
 										</versionRange>
 										<goals>
 											<goal>transform-types</goal>
