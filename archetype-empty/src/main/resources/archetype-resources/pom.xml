@@ -15,7 +15,7 @@
 	</parent>
 
 	<properties>
-		<spot.version>${project.version}</spot.version>
+		<spot.version>\${project.parent.version}</spot.version>
 		<jar.mainclass>${package}.Init</jar.mainclass>
 	</properties>
 
@@ -39,12 +39,24 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+
+		<repository> 
+			<id>sonatype-staging</id>
+			<url>https://oss.sonatype.org/content/repositories/staging/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+		</repository>
 	</repositories>
 
 	<build>
 		<plugins>
 			<!-- resolves variables and slims down POM -->
-			<!-- fixes CI-friendly ${revision} variables -->
+			<!-- fixes CI-friendly \${revision} variables -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
@@ -126,12 +138,12 @@
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			
+
 			<!-- skip the deployment for this project, it's just a sample -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -142,10 +154,10 @@
 			</plugin>
 
 			<!-- ECLIPSE SETTINGS -->
-			<!-- <plugin> -->
-			<!-- <groupId>org.eclipse.m2e</groupId> -->
-			<!-- <artifactId>lifecycle-mapping</artifactId> -->
-			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.eclipse.m2e</groupId>
+				<artifactId>lifecycle-mapping</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 

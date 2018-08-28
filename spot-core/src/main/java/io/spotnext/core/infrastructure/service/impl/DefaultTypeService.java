@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -30,12 +29,14 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.ItemType;
 import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.infrastructure.constants.InfrastructureConstants;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.maven.xml.Types;
+import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
@@ -46,7 +47,6 @@ import io.spotnext.core.support.util.FileUtils;
 import io.spotnext.core.support.util.MiscUtil;
 import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.core.types.Item;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Provides functionality to manage the type system.
@@ -54,7 +54,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	@Autowired
 	protected List<? extends Item> itemTypes;
 
 	@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
@@ -63,8 +62,11 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	final protected Map<String, Class<? extends Item>> itemTypeClasses = new HashMap<>();
 	final protected Map<String, ItemTypeDefinition> itemTypeDefinitions = new HashMap<>();
 
-	@PostConstruct
-	protected void init() throws JAXBException {
+	@Autowired
+	protected DefaultTypeService(LoggingService loggingService, List<? extends Item> itemTypes) throws JAXBException {
+		this.loggingService = loggingService;
+		this.itemTypes = itemTypes;
+
 		loadMergedItemTypeDefinitions();
 
 		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCodeForClass(i.getClass()))
@@ -140,6 +142,8 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 						String.format("Cannot instantiate class object for item type %s.", t.getTypeCode()), e);
 			}
 		}
+
+		loggingService.info(String.format("Type service initialized"));
 	}
 
 	/*

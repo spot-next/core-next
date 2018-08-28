@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,14 +40,13 @@ public class ClassUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If
-	 * the field does not exist, null is returned.
+	 * Returns a {@link Field} instance from the given {@link Class} object. If the
+	 * field does not exist, null is returned.
 	 *
 	 * @param type
 	 * @param fieldName
-	 * @param includeSuperTypes
-	 *            if this is true all super classes till and including
-	 *            {@link Object} will be invoked.
+	 * @param includeSuperTypes if this is true all super classes till and including
+	 *                          {@link Object} will be invoked.
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
 			final boolean includeSuperTypes) {
@@ -80,13 +81,11 @@ public class ClassUtil {
 	 * concrete class> to {@link Object}.
 	 *
 	 * @param type
-	 * @param stopClass
-	 *            {@link Object} if null
-	 * @param includeStopClass
-	 *            if this is true, the stop class will be included. defaults to
-	 * @param includeStartClass
-	 *            if this is true, the given {@link Class} is included in the
-	 *            result
+	 * @param stopClass         {@link Object} if null
+	 * @param includeStopClass  if this is true, the stop class will be included.
+	 *                          defaults to
+	 * @param includeStartClass if this is true, the given {@link Class} is included
+	 *                          in the result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -119,8 +118,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if
-	 * something goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if something
+	 * goes wrong. something goes wrong.
 	 *
 	 * @param object
 	 * @param fieldName
@@ -265,39 +264,55 @@ public class ClassUtil {
 	}
 
 	/**
-	 * The whole class hierarchy is searched for fields with the given
-	 * annotation.
+	 * The whole class hierarchy is searched for fields with the given annotation.
 	 * 
-	 * @param type
-	 *            the class to inspect
-	 * @param annotation
-	 *            the annotation that must be present on the field
+	 * @param type       the class to inspect
+	 * @param annotation the annotation that must be present on the field
 	 * @return all fields of the given class that have the given annotation.
 	 */
 	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
 			final Class<A> annotation) {
 
-		final Set<Field> annotatedFields = new HashSet<>();
+		return getFields(type, field -> hasAnnotation(field, annotation));
+	}
+
+	/**
+	 * Returns all fields of the type and all its super types.
+	 * 
+	 * @param type must not be null
+	 * @return all fields
+	 */
+	public static Set<Field> getAllFields(final Class<?> type) {
+		return getFields(type, null);
+	}
+
+	/**
+	 * Retrieves all fields recursively that match the given filter predicate.
+	 * 
+	 * @param type   must not be null
+	 * @param filter returns true for all selected fields. If null, all fields will
+	 *               be returned.
+	 * @return all filtered fields
+	 */
+	public static Set<Field> getFields(final Class<?> type, Predicate<Field> filter) {
+		final Set<Field> fields = new HashSet<>();
 
 		for (final Class<?> c : getAllAssignableClasses(type)) {
 			for (final Field field : c.getDeclaredFields()) {
-				if (field.isAnnotationPresent(annotation)) {
-					annotatedFields.add(field);
+				if (filter == null || filter.test(field)) {
+					fields.add(field);
 				}
 			}
 		}
 
-		return annotatedFields;
+		return fields;
 	}
 
 	/**
-	 * The whole class hierarchy is searched for methods with the given
-	 * annotation.
+	 * The whole class hierarchy is searched for methods with the given annotation.
 	 * 
-	 * @param type
-	 *            the class to inspect
-	 * @param annotation
-	 *            the annotation that must be present on the method
+	 * @param type       the class to inspect
+	 * @param annotation the annotation that must be present on the method
 	 * @return all methods of the given class that have the given annotation.
 	 */
 	public static <A extends Annotation> Set<Method> getMethodsWithAnnotation(final Class<?> type,
@@ -317,8 +332,8 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all assignable classes for the given class, starting with the
-	 * actual class.
+	 * Returns all assignable classes for the given class, starting with the actual
+	 * class.
 	 */
 	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
@@ -364,7 +379,6 @@ public class ClassUtil {
 		}
 
 		return ret;
-
 	}
 
 	/**
@@ -387,7 +401,7 @@ public class ClassUtil {
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
 			final Class<A> annotation) {
-		return getAnnotation(member, annotation) != null;
+		return member.isAnnotationPresent(annotation);
 	}
 
 	/**
@@ -495,5 +509,23 @@ public class ClassUtil {
 		}
 
 		return Optional.ofNullable(instance);
+	}
+
+	public static void visitFields(Object object, Predicate<Field> fieldFilter, BiConsumer<Field, Object> fieldConsumer,
+			boolean recursive) {
+
+		for (Field field : getFields(object.getClass(), fieldFilter)) {
+			if (fieldFilter == null || fieldFilter.test(field)) {
+				Object fieldValue = getField(object, field.getName(), true);
+
+				if (fieldValue != null) {
+					fieldConsumer.accept(field, fieldValue);
+
+					if (recursive) {
+						visitFields(fieldValue, fieldFilter, fieldConsumer, recursive);
+					}
+				}
+			}
+		}
 	}
 }

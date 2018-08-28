@@ -38,10 +38,9 @@ import io.spotnext.core.persistence.service.TransactionService;
 @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest implements ApplicationContextAware {
 
-	private static final int waitInMillis = 100;
+	private static final int waitInMillis = 500;
 
-	private int maxMillisToWaitForModuleInitialization = 15000;
-
+	private int maxMillisToWaitForModuleInitialization = 10 * 60 * 60 * 1000;
 	private ApplicationContext applicationContext;
 
 	@Resource

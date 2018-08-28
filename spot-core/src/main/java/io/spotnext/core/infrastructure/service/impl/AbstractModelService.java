@@ -173,6 +173,10 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 			throw new ModelValidationException(message, errors);
 		}
+
+		// travers all properties recursively and check field values of type Item
+		ClassUtil.visitFields(item, (field) -> Item.class.isAssignableFrom(field.getType()),
+				(field, subItem) -> validateModel((Item) subItem), true);
 	}
 
 	protected <T extends Item> void setTypeCode(final T item) {

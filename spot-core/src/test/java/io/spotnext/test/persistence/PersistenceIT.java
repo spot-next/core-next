@@ -7,7 +7,9 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.testing.AbstractIntegrationTest;
@@ -21,6 +23,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 
 public class PersistenceIT extends AbstractIntegrationTest {
 
+	@Rule
+	public ExpectedException expectedExeption = ExpectedException.none();
+	
 	@Override
 	protected void prepareTest() {
 	}
@@ -30,9 +35,9 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	/**
-	 * The catalogVersion Default:Online already be available through the
-	 * initial data. Therefore saving a second item will cause a uniqueness
-	 * constraint violation.
+	 * The catalogVersion Default:Online already be available through the initial
+	 * data. Therefore saving a second item will cause a uniqueness constraint
+	 * violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
@@ -198,5 +203,19 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
 
 		assertEquals(null, loadedAdmin.getShortName());
+	}
+
+	@Test
+	public void testValidateModelRecursively() {
+		expectedExeption.expect(ModelSaveException.class);
+		expectedExeption.expectMessage("User.id must not be null");
+
+		UserGroup group = modelService.create(UserGroup.class);
+		group.setId("test");
+
+		User user = modelService.create(User.class);
+		group.getMembers().add(user);
+
+		modelService.save(group);
 	}
 }

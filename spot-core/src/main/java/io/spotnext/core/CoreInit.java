@@ -25,15 +25,12 @@ import io.spotnext.itemtype.core.enumeration.ImportFormat;
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource(value = "classpath:/core.properties")
 @PropertySource(value = "classpath:/local.properties", ignoreResourceNotFound = true)
-// @EnableAsync
-// @EnableTransactionManagement
-// @EnableScheduling
-// @EnableJpaAuditing
 public class CoreInit extends ModuleInit {
 
 	@Resource
 	protected ImportService importService;
 
+	
 	/*
 	 * STARTUP FUNCTIONALITY
 	 */

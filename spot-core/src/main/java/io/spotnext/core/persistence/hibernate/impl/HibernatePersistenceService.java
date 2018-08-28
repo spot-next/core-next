@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
@@ -44,6 +43,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementException;
 import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
@@ -56,6 +56,8 @@ import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.service.ConfigurationService;
+import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
@@ -76,18 +78,23 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@PersistenceUnit
 	protected EntityManagerFactory entityManagerFactory;
-
-	@Resource
 	protected TransactionService transactionService;
-
-	@Resource
 	protected PlatformTransactionManager transactionManager;
 
 	@Resource
 	protected ValidationService validationService;
 
-	@PostConstruct
-	public void initialize() {
+	@Autowired
+	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
+			PlatformTransactionManager transactionManager, ConfigurationService configurationService,
+			LoggingService loggingService) {
+
+		this.entityManagerFactory = entityManagerFactory;
+		this.transactionService = transactionService;
+		this.transactionManager = transactionManager;
+		this.configurationService = configurationService;
+		this.loggingService = loggingService;
+
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
 			loggingService.info("Initializing type system schema ...");
 
@@ -137,6 +144,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		if (configurationService.getBoolean("cleantypesystem", false)) {
 			loggingService.info("Cleaning type system ... (not yet implemented)");
 		}
+
+		loggingService.info(String.format("Persistence service initialized"));
 	}
 
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
