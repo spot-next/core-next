@@ -47,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -79,19 +78,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@PersistenceUnit
 	protected EntityManagerFactory entityManagerFactory;
 	protected TransactionService transactionService;
-	protected PlatformTransactionManager transactionManager;
 
 	@Resource
 	protected ValidationService validationService;
 
 	@Autowired
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
-			PlatformTransactionManager transactionManager, ConfigurationService configurationService,
-			LoggingService loggingService) {
+			ConfigurationService configurationService, LoggingService loggingService) {
 
 		this.entityManagerFactory = entityManagerFactory;
 		this.transactionService = transactionService;
-		this.transactionManager = transactionManager;
 		this.configurationService = configurationService;
 		this.loggingService = loggingService;
 

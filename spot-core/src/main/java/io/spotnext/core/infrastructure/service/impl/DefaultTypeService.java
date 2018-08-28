@@ -54,8 +54,6 @@ import io.spotnext.core.types.Item;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	protected List<? extends Item> itemTypes;
-
 	@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 	final protected Map<String, io.spotnext.core.infrastructure.maven.xml.ItemType> xmlItemTypeDefinitions = new HashMap<>();
 
@@ -65,7 +63,6 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	@Autowired
 	protected DefaultTypeService(LoggingService loggingService, List<? extends Item> itemTypes) throws JAXBException {
 		this.loggingService = loggingService;
-		this.itemTypes = itemTypes;
 
 		loadMergedItemTypeDefinitions();
 
