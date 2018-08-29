@@ -12,7 +12,8 @@ public interface CartService {
 	/**
 	 * Returns the cart of the current session. If no cart has been created yet,
 	 * a new one is created and added to the session.
-	 * 
+	 *
+	 * @return a {@link io.spotnext.itemtype.commerce.order.Cart} object.
 	 */
 	Cart getSessionCart();
 
@@ -24,44 +25,49 @@ public interface CartService {
 	/**
 	 * Create a new session cart, overriding the current cart in the session, if
 	 * existing.
-	 * 
+	 *
+	 * @return a {@link io.spotnext.itemtype.commerce.order.Cart} object.
 	 */
 	Cart createNewSessionCart();
 
 	/**
 	 * Adds a new product to the cart.
-	 * 
-	 * @param cart
-	 * @param product
-	 * @param quantity
+	 *
+	 * @param cart a {@link io.spotnext.itemtype.commerce.order.Cart} object.
+	 * @param product a {@link io.spotnext.itemtype.commerce.catalog.Product} object.
+	 * @param quantity a int.
+	 * @return a {@link io.spotnext.itemtype.commerce.order.CartEntry} object.
 	 */
 	CartEntry addToCart(Cart cart, Product product, int quantity);
 
 	/**
 	 * Removes a product from the cart.
-	 * 
-	 * @param cart
-	 * @param product
+	 *
+	 * @param cart a {@link io.spotnext.itemtype.commerce.order.Cart} object.
+	 * @param product a {@link io.spotnext.itemtype.commerce.catalog.Product} object.
+	 * @return a {@link io.spotnext.itemtype.commerce.order.CartEntry} object.
 	 */
 	CartEntry reomveFromCart(Cart cart, Product product);
 
 	/**
 	 * Removes the cart entry with the give entry number.
-	 * 
-	 * @param cart
-	 * @param entryNumber
+	 *
+	 * @param cart a {@link io.spotnext.itemtype.commerce.order.Cart} object.
+	 * @param entryNumber a int.
+	 * @return a {@link io.spotnext.itemtype.commerce.order.CartEntry} object.
 	 */
 	CartEntry reomveFromCart(Cart cart, int entryNumber);
 
 	/**
 	 * Updates the quantity of the cart entry. If the quantity is set to 0,
-	 * depending on the {@link CartService} implementation, the cart entry might
+	 * depending on the {@link io.spotnext.commerce.service.CartService} implementation, the cart entry might
 	 * be removed as well.
-	 * 
-	 * @param cart
-	 * @param entryNumber
-	 * @param product
-	 * @param quantity
+	 *
+	 * @param cart a {@link io.spotnext.itemtype.commerce.order.Cart} object.
+	 * @param entryNumber a int.
+	 * @param product a {@link io.spotnext.itemtype.commerce.catalog.Product} object.
+	 * @param quantity a int.
+	 * @return a {@link io.spotnext.itemtype.commerce.order.CartEntry} object.
 	 */
 	CartEntry updateCart(Cart cart, int entryNumber, Product product, int quantity);
 }

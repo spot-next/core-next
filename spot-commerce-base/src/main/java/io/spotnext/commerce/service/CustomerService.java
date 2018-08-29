@@ -13,8 +13,9 @@ public interface CustomerService extends UserService<Customer, UserGroup> {
 	/**
 	 * Creates a password reset token for the given user. The token is only
 	 * valid for a certain amount of time.
-	 * 
-	 * @param customer
+	 *
+	 * @param customer a {@link io.spotnext.itemtype.commerce.customer.Customer} object.
+	 * @return a {@link java.lang.String} object.
 	 */
 	String createResetPasswordToken(Customer customer);
 

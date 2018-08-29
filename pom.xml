@@ -521,6 +521,12 @@
 						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*</excludePackageNames>
 						<excludes>**/gen/*</excludes>
 						<quiet>true</quiet>
+						<!-- does not work with revision property! -->
+						<ignoreClirr>true</ignoreClirr>
+						<version>false</version>
+						<nosince>true</nosince>
+						<author>false</author>
+						
 					</configuration>
 					<executions>
 						<execution>
