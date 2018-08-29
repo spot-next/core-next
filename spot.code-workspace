@@ -1,16 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "../plan"
-		},
-		{
-			"path": "../jfly"
-		},
-		{
 			"path": "."
 		}
 	],
 	"settings": {
-		"java.configuration.updateBuildConfiguration": "automatic"
+		"java.configuration.updateBuildConfiguration": "automatic",
 	}
 }
