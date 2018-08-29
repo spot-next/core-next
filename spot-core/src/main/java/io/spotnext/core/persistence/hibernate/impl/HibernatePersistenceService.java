@@ -68,6 +68,13 @@ import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>HibernatePersistenceService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
@@ -83,6 +90,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	protected ValidationService validationService;
 
 	@Autowired
+	/**
+	 * <p>Constructor for HibernatePersistenceService.</p>
+	 *
+	 * @param entityManagerFactory a {@link javax.persistence.EntityManagerFactory} object.
+	 * @param transactionService a {@link io.spotnext.core.persistence.service.TransactionService} object.
+	 * @param configurationService a {@link io.spotnext.core.infrastructure.service.ConfigurationService} object.
+	 * @param loggingService a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 */
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
 			ConfigurationService configurationService, LoggingService loggingService) {
 
@@ -144,6 +159,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		loggingService.info(String.format("Persistence service initialized"));
 	}
 
+	/** {@inheritDoc} */
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
 	public <T> List<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
@@ -316,6 +332,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		bindSession();
@@ -385,6 +402,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
 		bindSession();
@@ -402,6 +420,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void refresh(final List<T> items) throws ModelNotFoundException {
 		bindSession();
@@ -431,6 +450,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> boolean attach(final T item) throws ModelNotFoundException {
 		bindSession();
@@ -457,6 +477,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return false;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> List<T> load(final ModelQuery<T> sourceQuery) {
 
@@ -526,6 +547,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		});
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void remove(final List<T> items) {
 		bindSession();
@@ -538,6 +560,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		});
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		bindSession();
@@ -555,6 +578,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		});
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void saveDataStorage() {
 		bindSession();
@@ -562,6 +586,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		getSession().flush();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void clearDataStorage() {
 		bindSession();
@@ -570,6 +595,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		getSession().clear();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void initItem(final T item) {
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(item.getClass(), Property.class)) {
@@ -592,6 +618,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void detach(final List<T> items) {
 		bindSession();
@@ -601,6 +628,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> boolean isAttached(final T item) {
 		bindSession();
@@ -626,6 +654,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void unbindSession() {
 		if (TransactionSynchronizationManager.hasResource(entityManagerFactory)) {
@@ -635,10 +664,20 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
+	/**
+	 * <p>Getter for the field <code>entityManagerFactory</code>.</p>
+	 *
+	 * @return a {@link javax.persistence.EntityManagerFactory} object.
+	 */
 	public EntityManagerFactory getEntityManagerFactory() {
 		return entityManagerFactory;
 	}
 
+	/**
+	 * <p>getSessionFactory.</p>
+	 *
+	 * @return a {@link org.hibernate.SessionFactory} object.
+	 */
 	public SessionFactory getSessionFactory() {
 		return entityManagerFactory.unwrap(SessionFactory.class);
 	}

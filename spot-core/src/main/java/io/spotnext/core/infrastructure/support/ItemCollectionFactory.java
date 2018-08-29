@@ -7,8 +7,24 @@ import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>ItemCollectionFactory class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class ItemCollectionFactory {
 
+	/**
+	 * <p>wrap.</p>
+	 *
+	 * @param owner a {@link io.spotnext.core.types.Item} object.
+	 * @param propertyName a {@link java.lang.String} object.
+	 * @param collectionToWrap a {@link java.util.Collection} object.
+	 * @param <I> a I object.
+	 * @return a {@link io.spotnext.core.infrastructure.support.ProxyCollection} object.
+	 */
 	public static <I extends Item> ProxyCollection<I> wrap(Item owner, String propertyName,
 			Collection<I> collectionToWrap) {
 

@@ -13,11 +13,19 @@ import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>TypeServicePersistenceUnitPostProcessor class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class TypeServicePersistenceUnitPostProcessor extends AbstractService implements PersistenceUnitPostProcessor {
 
 	@Resource
 	protected TypeService typeService;
 
+	/** {@inheritDoc} */
 	@Override
 	public void postProcessPersistenceUnitInfo(final MutablePersistenceUnitInfo pui) {
 		for (final ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {

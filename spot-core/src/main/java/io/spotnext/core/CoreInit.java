@@ -18,9 +18,13 @@ import io.spotnext.itemtype.core.enumeration.ImportFormat;
 
 /**
  * This is the main entry point for the application. After the application has
- * been initialized, {@link CoreInit#initialize()},
- * {@link CoreInit#importInitialData()} and {@link CoreInit#importSampleData()}
+ * been initialized, {@link io.spotnext.core.CoreInit#initialize()},
+ * {@link io.spotnext.core.CoreInit#importInitialData()} and {@link io.spotnext.core.CoreInit#importSampleData()}
  * will be called in that exact order.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource(value = "classpath:/core.properties")

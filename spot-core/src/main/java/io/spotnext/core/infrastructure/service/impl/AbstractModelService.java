@@ -38,6 +38,13 @@ import io.spotnext.core.types.Localizable;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
+/**
+ * <p>Abstract AbstractModelService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressWarnings("unchecked")
 @Service
 public abstract class AbstractModelService extends AbstractService implements ModelService {
@@ -72,6 +79,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	@Resource
 	protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T create(final Class<T> type) throws ModelCreationException {
 		final String typeCode = typeService.getTypeCodeForClass(type);
@@ -183,19 +191,23 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		ClassUtil.setField(item, "typeCode", typeService.getTypeCodeForClass(item.getClass()));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void detach(final T... items) {
 		persistenceService.detach(Arrays.asList(items));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void detach(final List<T> items) {
 		detach(items.toArray(new Item[0]));
 	}
 
 	/**
-	 * Sets the {@link Item#setCreatedBy(String)} and
-	 * {@link Item#setLastModifiedBy(String)}.
+	 * Sets the {@link io.spotnext.core.types.Item#setCreatedBy(String)} and
+	 * {@link io.spotnext.core.types.Item#setLastModifiedBy(String)}.
+	 *
+	 * @param models a {@link java.util.List} object.
 	 */
 	public <T extends Item> void setUserInformation(final List<T> models) {
 		final User currentUser = userService.getCurrentUser();
@@ -234,11 +246,13 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
 		return getPropertyValue(item, propertyName, Item.class);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item, V> V getLocalizedPropertyValue(final T item, final String propertyName,
 			final Class<V> valueType, final Locale locale) {
@@ -255,11 +269,13 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
 		return (V) ClassUtil.getField(item, propertyName, true);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void setLocalizedPropertyValue(final T item, final String propertyName,
 			final Object propertyValue, final Locale locale) {
@@ -274,16 +290,19 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
 		ClassUtil.setField(item, propertyName, propertyValue);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> boolean isAttached(final T item) {
 		return persistenceService.isAttached(item);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void attach(final T item) throws ModelNotFoundException {
 		persistenceService.attach(item);

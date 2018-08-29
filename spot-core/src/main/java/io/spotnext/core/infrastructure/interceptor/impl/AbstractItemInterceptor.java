@@ -15,9 +15,13 @@ import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
 import io.spotnext.core.types.Item;
 
 /**
- * This is the base class for all {@link ItemInterceptor} implementations. It
+ * This is the base class for all {@link io.spotnext.core.infrastructure.interceptor.ItemInterceptor} implementations. It
  * handles the registration of the interceptor with the appropriate
- * {@link ItemInterceptorRegistry}.
+ * {@link io.spotnext.core.infrastructure.support.ItemInterceptorRegistry}.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public abstract class AbstractItemInterceptor<T extends Item> extends AbstractService implements ItemInterceptor<T> {
 

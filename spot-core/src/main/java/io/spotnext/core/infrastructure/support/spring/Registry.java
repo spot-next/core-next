@@ -20,6 +20,10 @@ import io.spotnext.core.persistence.service.PersistenceService;
 /**
  * This is a static provider for the current spring context. It also provides
  * some getters for commonly used Services.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 @Order(value = 0)
@@ -36,31 +40,62 @@ public class Registry implements ApplicationContextAware {
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
 
+	/**
+	 * <p>Getter for the field <code>mainClass</code>.</p>
+	 *
+	 * @return a {@link java.lang.Class} object.
+	 */
 	public static Class<? extends ModuleInit> getMainClass() {
 		return mainClass;
 	}
 
+	/**
+	 * <p>Setter for the field <code>mainClass</code>.</p>
+	 *
+	 * @param mainClass a {@link java.lang.Class} object.
+	 */
 	public static void setMainClass(final Class<? extends ModuleInit> mainClass) {
 		Registry.mainClass = mainClass;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setApplicationContext(final ApplicationContext ctx) throws BeansException {
 		context = ctx;
 	}
 
+	/**
+	 * <p>getApplicationContext.</p>
+	 *
+	 * @return a {@link org.springframework.context.ApplicationContext} object.
+	 */
 	public static ApplicationContext getApplicationContext() {
 		return context;
 	}
 
+	/**
+	 * <p>getBeanFactory.</p>
+	 *
+	 * @return a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry} object.
+	 */
 	public static BeanDefinitionRegistry getBeanFactory() {
 		return (BeanDefinitionRegistry) ((ConfigurableApplicationContext) context).getBeanFactory();
 	}
 
+	/**
+	 * <p>Getter for the field <code>mainThread</code>.</p>
+	 *
+	 * @return a {@link java.lang.Thread} object.
+	 */
 	public static Thread getMainThread() {
 		return mainThread;
 	}
 
+	/**
+	 * <p>Setter for the field <code>mainThread</code>.</p>
+	 *
+	 * @param mainThread a {@link java.lang.Thread} object.
+	 */
 	public static void setMainThread(final Thread mainThread) {
 		Registry.mainThread = mainThread;
 	}
@@ -69,6 +104,11 @@ public class Registry implements ApplicationContextAware {
 	 * SOME HELPER GETTERS FOR COMMONLY USED SERVICES
 	 */
 
+	/**
+	 * <p>Getter for the field <code>persistenceService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.persistence.service.PersistenceService} object.
+	 */
 	public static PersistenceService getPersistenceService() {
 		if (persistenceService == null)
 			persistenceService = (PersistenceService) Registry.getApplicationContext().getBean("persistenceService");
@@ -76,6 +116,11 @@ public class Registry implements ApplicationContextAware {
 		return persistenceService;
 	}
 
+	/**
+	 * <p>Getter for the field <code>typeService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 */
 	public static TypeService getTypeService() {
 		if (typeService == null)
 			typeService = (TypeService) Registry.getApplicationContext().getBean("typeService");
@@ -83,6 +128,11 @@ public class Registry implements ApplicationContextAware {
 		return typeService;
 	}
 
+	/**
+	 * <p>Getter for the field <code>modelService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 */
 	public static ModelService getModelService() {
 		if (modelService == null)
 			modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
@@ -90,6 +140,11 @@ public class Registry implements ApplicationContextAware {
 		return modelService;
 	}
 
+	/**
+	 * <p>Getter for the field <code>loggingService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 */
 	public static LoggingService getLoggingService() {
 		if (loggingService == null)
 			loggingService = (LoggingService) Registry.getApplicationContext().getBean("loggingService");
@@ -97,15 +152,31 @@ public class Registry implements ApplicationContextAware {
 		return loggingService;
 	}
 
+	/**
+	 * <p>getBean.</p>
+	 *
+	 * @param beanName a {@link java.lang.String} object.
+	 * @param beanType a {@link java.lang.Class} object.
+	 * @param <T> a T object.
+	 * @return a T object.
+	 */
 	public static <T> T getBean(final String beanName, final Class<T> beanType) {
 		return context.getBean(beanName, beanType);
 	}
 
+	/**
+	 * <p>shutdown.</p>
+	 */
 	public static void shutdown() {
 		getLoggingService().warn("SHUTTING DOWN!");
 		((AbstractApplicationContext) context).close();
 	}
 
+	/**
+	 * <p>getBuildInfos.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.support.spring.BuildInfo} object.
+	 */
 	public static BuildInfo getBuildInfos() {
 		return (BuildInfo) Registry.getApplicationContext().getBean("buildInfo");
 	}

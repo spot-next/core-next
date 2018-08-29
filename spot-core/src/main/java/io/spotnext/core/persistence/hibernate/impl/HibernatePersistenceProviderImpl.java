@@ -19,6 +19,10 @@ import org.springframework.orm.jpa.persistenceunit.SmartPersistenceUnitInfo;
 /**
  * Copy of
  * org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvider {
 
@@ -26,6 +30,7 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 
 	protected EntityManagerFactoryBuilderImpl builder;
 
+	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("rawtypes")
 	public EntityManagerFactory createContainerEntityManagerFactory(final PersistenceUnitInfo info,

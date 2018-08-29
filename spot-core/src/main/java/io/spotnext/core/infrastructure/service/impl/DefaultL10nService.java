@@ -19,6 +19,13 @@ import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.itemtype.core.internationalization.LocalizationValue;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * <p>DefaultL10nService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressFBWarnings(value = { "NP_NONNULL_RETURN_VIOLATION", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" })
 public class DefaultL10nService extends AbstractService implements L10nService {
 
@@ -30,6 +37,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	@Autowired
 	protected ModelService modelService;
 
+	/** {@inheritDoc} */
 	@Override
 	public String getMessage(final String key, final String defaultMessage, final Object... messageParams)
 			throws NoSuchMessageException {
@@ -37,6 +45,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return getMessage(key, defaultMessage, i18nService.getDefaultLocale(), messageParams);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getMessage(final String key, final String defaultMessage, final Locale locale,
 			final Object... messageParams) throws NoSuchMessageException {
@@ -58,6 +67,16 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return message;
 	}
 
+	/**
+	 * <p>getMessageFromStorage.</p>
+	 *
+	 * @param key a {@link java.lang.String} object.
+	 * @param defaultMessage a {@link java.lang.String} object.
+	 * @param locale a {@link java.util.Locale} object.
+	 * @param messageParams a {@link java.lang.Object} object.
+	 * @return a {@link java.lang.String} object.
+	 * @throws org.springframework.context.NoSuchMessageException if any.
+	 */
 	public String getMessageFromStorage(final String key, final String defaultMessage, final Locale locale,
 			final Object... messageParams) throws NoSuchMessageException {
 
@@ -75,6 +94,8 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * {@link MessageSource} and {@link MessageInterpolator} implementations
 	 */
 
@@ -83,6 +104,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return getMessage(code, defaultMessage, locale, args);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getMessage(final String code, final Object[] args, final Locale locale)
 			throws NoSuchMessageException {
@@ -90,6 +112,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return getMessage(code, null, locale, args);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getMessage(final MessageSourceResolvable resolvable, final Locale locale)
 			throws NoSuchMessageException {
@@ -108,11 +131,13 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return message;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String interpolate(final String messageTemplate, final Context context) {
 		return interpolate(messageTemplate, context, i18nService.getDefaultLocale());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String interpolate(final String messageTemplate, final Context context, final Locale locale) {
 		String key = messageTemplate;
@@ -136,15 +161,26 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 		return message;
 	}
 
+	/**
+	 * <p>Setter for the field <code>parentMessageSource</code>.</p>
+	 *
+	 * @param messageSource a {@link org.springframework.context.MessageSource} object.
+	 */
 	@Required
 	public void setParentMessageSource(final MessageSource messageSource) {
 		this.parentMessageSource = messageSource;
 	}
 
+	/**
+	 * <p>Getter for the field <code>parentMessageSource</code>.</p>
+	 *
+	 * @return a {@link org.springframework.context.MessageSource} object.
+	 */
 	public MessageSource getParentMessageSource() {
 		return parentMessageSource;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (parentMessageSource == null) {

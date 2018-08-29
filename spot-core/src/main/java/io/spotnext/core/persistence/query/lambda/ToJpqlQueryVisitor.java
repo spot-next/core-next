@@ -38,7 +38,11 @@ import io.spotnext.core.types.Item;
 
 /**
  * Visitor which translates Predicate lambda into
- * {@link PredicateTranslationResult}
+ * {@link io.spotnext.core.persistence.query.lambda.PredicateTranslationResult}
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslationResult> {
 
@@ -48,6 +52,12 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 	private final Deque<UnaryOperator<Object>> parameterModifiers = new LinkedList<>();
 	private boolean columnBlock = false;
 
+	/**
+	 * <p>Constructor for ToJpqlQueryVisitor.</p>
+	 *
+	 * @param paramGenerator a {@link io.spotnext.core.persistence.query.lambda.ParametersNameGenerator} object.
+	 * @param modelService a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 */
 	public ToJpqlQueryVisitor(final ParametersNameGenerator paramGenerator, final ModelService modelService) {
 		this.paramGenerator = paramGenerator;
 	}
@@ -78,12 +88,14 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final LambdaExpression<?> e) {
 		final Expression body = e.getBody();
 		return body.accept(this);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final BinaryExpression e) {
 
@@ -104,6 +116,7 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 		sb.getWhere().append(" ").append(operator).append(" ");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final ConstantExpression e) {
 		final Object value = e.getValue();
@@ -124,6 +137,7 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 		sb.getParameters().put(paramName, param);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final InvocationExpression e) {
 		final InvocableExpression fixedExpression = ArgumentsFixVisitor.fixArguments(e.getTarget(), e.getArguments());
@@ -181,11 +195,13 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 		return vistor;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final ParameterExpression e) {
 		return sb;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final UnaryExpression e) {
 
@@ -222,6 +238,7 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 		return DefaultLambdaQueryTranslationService.FS_MAIN_ALIAS;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public PredicateTranslationResult visit(final MemberExpression e) {
 

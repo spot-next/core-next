@@ -3,6 +3,13 @@ package io.spotnext.core.infrastructure.support.impex;
 import java.util.Locale;
 import java.util.stream.Stream;
 
+/**
+ * <p>ImpexMergeMode class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public enum ImpexMergeMode {
 	ADD("add"), APPEND("append"), REMOVE("remove"), REPLACE("replace");
 
@@ -14,7 +21,7 @@ public enum ImpexMergeMode {
 
 	/**
 	 * Returns the matching value for the given code.
-	 * 
+	 *
 	 * @param code will be transformed to lower case.
 	 * @return null in case there is no matching value found.
 	 */

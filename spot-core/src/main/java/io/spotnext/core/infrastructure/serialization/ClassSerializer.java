@@ -12,9 +12,14 @@ import com.google.gson.JsonSerializer;
 
 /**
  * De-/Serializes java classes.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class ClassSerializer implements JsonSerializer<Class<?>>, JsonDeserializer<Class<?>> {
 
+	/** {@inheritDoc} */
 	@Override
 	public JsonElement serialize(final Class<?> javaClass, final Type typeOfSrc,
 			final JsonSerializationContext context) {
@@ -27,6 +32,7 @@ public class ClassSerializer implements JsonSerializer<Class<?>>, JsonDeserializ
 		return root;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Class<?> deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
 			throws JsonParseException {

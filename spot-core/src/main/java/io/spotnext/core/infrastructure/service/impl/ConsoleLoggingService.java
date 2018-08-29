@@ -20,9 +20,13 @@ import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.support.LogLevel;
 
 /**
- * This logging service maintains a list of {@link Logger}s for each class that
- * calls a log method. It logs to the {@link System#console()} as well as to the
+ * This logging service maintains a list of {@link org.slf4j.Logger}s for each class that
+ * calls a log method. It logs to the {@link java.lang.System#console()} as well as to the
  * default log4j logger.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class ConsoleLoggingService extends BeanAware implements LoggingService {
@@ -38,11 +42,13 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 
 	Map<Class<?>, Logger> loggers = new HashMap<>();
 
+	/** {@inheritDoc} */
 	@Override
 	public void debug(final String message) {
 		log(LogLevel.DEBUG, message, null, null, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void debug(Supplier<String> message) {
 		final Class<?> callingClass = getCallingClass();
@@ -53,46 +59,55 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void debug(final String message, final Class<?> callingClass) {
 		log(LogLevel.DEBUG, message, null, null, callingClass);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void info(final String message) {
 		log(LogLevel.INFO, message, null, null, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void info(final String message, final Class<?> callingClass) {
 		log(LogLevel.INFO, message, null, null, callingClass);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void warn(final String message) {
 		log(LogLevel.WARN, message, null, null, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void warn(final String message, final Class<?> callingClass) {
 		log(LogLevel.WARN, message, null, null, callingClass);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void error(final String message) {
 		log(LogLevel.ERROR, message, null, null, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void error(final String message, final Class<?> callingClass) {
 		log(LogLevel.ERROR, message, null, null, callingClass);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void exception(final String message, final Throwable exception) {
 		log(LogLevel.FATAL, message, exception, null, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void exception(final String message, final Throwable exception, final Class<?> callingClass) {
 		log(LogLevel.FATAL, message, null, null, callingClass);
@@ -102,11 +117,13 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	 * LOG METHODS
 	 */
 
+	/** {@inheritDoc} */
 	@Override
 	public void log(final LogLevel level, final String message, final Throwable exception, final Object object) {
 		log(level, message, exception, object, getCallingClass());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void log(final LogLevel level, final String message, final Throwable exception, final Object object,
 			final Class<?> callingClass) {

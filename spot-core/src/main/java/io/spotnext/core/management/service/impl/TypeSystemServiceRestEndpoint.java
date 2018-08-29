@@ -18,12 +18,27 @@ import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import spark.Request;
 import spark.Response;
 
+/**
+ * <p>TypeSystemServiceRestEndpoint class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/types", authenticationFilter = BasicAuthenticationFilter.class)
 public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 
 	@Autowired
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
+	/**
+	 * <p>getTypes.</p>
+	 *
+	 * @param request a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return a {@link java.util.List} object.
+	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 */
 	@Handler(pathMapping = "/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public List<GenericItemDefinitionData> getTypes(final Request request, final Response response)
 			throws UnknownTypeException {
@@ -40,6 +55,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 		return types;
 	}
 
+	/**
+	 * <p>getType.</p>
+	 *
+	 * @param request a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return a {@link io.spotnext.core.management.support.data.GenericItemDefinitionData} object.
+	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 */
 	@Handler(pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public GenericItemDefinitionData getType(final Request request, final Response response)
 			throws UnknownTypeException {

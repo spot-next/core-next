@@ -21,6 +21,13 @@ import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>ItemDeserializer class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
 	private TypeService typeService;
@@ -28,15 +35,22 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
 	private final Class<I> itemType;
 
+	/**
+	 * <p>Constructor for ItemDeserializer.</p>
+	 *
+	 * @param itemType a {@link java.lang.Class} object.
+	 */
 	public ItemDeserializer(final Class<I> itemType) {
 		this.itemType = itemType;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public I deserialize(final JsonParser p, final DeserializationContext ctxt, final I intoValue) throws IOException {
 		return loadItem(p, ctxt, null, intoValue);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Object deserializeWithType(final JsonParser p, final DeserializationContext ctxt,
 			final TypeDeserializer typeDeserializer) throws IOException {
@@ -44,6 +58,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 		return loadItem(p, ctxt, (TypeDeserializerBase) typeDeserializer, null);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public I deserialize(final JsonParser p, final DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
@@ -93,11 +108,17 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 		return deserializedItem;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Class<?> handledType() {
 		return Item.class;
 	}
 
+	/**
+	 * <p>Getter for the field <code>typeService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 */
 	public TypeService getTypeService() {
 		if (typeService == null) {
 			typeService = (TypeService) Registry.getApplicationContext().getBean("typeService");
@@ -106,6 +127,11 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 		return typeService;
 	}
 
+	/**
+	 * <p>Getter for the field <code>modelService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 */
 	public ModelService getModelService() {
 		if (modelService == null) {
 			modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");

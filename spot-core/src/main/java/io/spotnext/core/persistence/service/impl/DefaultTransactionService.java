@@ -19,6 +19,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.service.TransactionService;
 
+/**
+ * <p>DefaultTransactionService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "Initialized by spring post construct")
 @Service
 public class DefaultTransactionService extends AbstractService implements TransactionService {
@@ -29,12 +36,16 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	protected TransactionTemplate transactionTemplate;
 	protected ThreadLocal<TransactionStatus> currentTransaction = new ThreadLocal<>();
 
+	/**
+	 * <p>setup.</p>
+	 */
 	@PostConstruct
 	public void setup() {
 		transactionTemplate = new TransactionTemplate(transactionManager);
 		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <R> R execute(Callable<R> body) throws TransactionException {
 		boolean transactionWasAlreadyActive = isTransactionActive();
@@ -59,6 +70,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void executeWithoutResult(Runnable body) throws TransactionException {
 		execute(() -> {
@@ -67,6 +79,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		});
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void start() throws TransactionException {
 		if (currentTransaction.get() == null) {
@@ -83,6 +96,12 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		}
 	}
 
+	/**
+	 * <p>createSavePoint.</p>
+	 *
+	 * @return a {@link java.lang.Object} object.
+	 * @throws org.springframework.transaction.TransactionException if any.
+	 */
 	public Object createSavePoint() throws TransactionException {
 		if (currentTransaction.get() != null) {
 			return currentTransaction.get().createSavepoint();
@@ -91,6 +110,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void commit() throws TransactionException {
 		if (currentTransaction.get() != null) {
@@ -102,6 +122,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void rollback() throws TransactionException {
 		if (currentTransaction.get() != null) {
@@ -123,6 +144,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	// }
 	// }
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean isTransactionActive() {
 		return currentTransaction.get() != null;

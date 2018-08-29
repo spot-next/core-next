@@ -26,10 +26,18 @@ import io.spotnext.core.persistence.service.TransactionService;
 /**
  * This is the base class for all integration tasks. Database access will be
  * reverted after the each test using a transaction rollback. Any initialized
- * {@link ModuleInit}s must be set using the {@link SpringBootTest#classes()}
- * annotation. By default {@link CoreInit} is defined. The main
- * {@link ModuleInit} has to be defined to using
- * {@link IntegrationTest#initClass()}, if the test depends on it.
+ * {@link io.spotnext.core.infrastructure.support.init.ModuleInit}s must be set
+ * using the
+ * {@link org.springframework.boot.test.context.SpringBootTest#classes()}
+ * annotation. By default {@link io.spotnext.core.CoreInit} is defined. The main
+ * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} has to be
+ * defined to using
+ * {@link io.spotnext.core.testing.IntegrationTest#initClass()}, if the test
+ * depends on it.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @TestPropertySource(locations = "classpath:/core-testing.properties")
 @RunWith(SpotJunitRunner.class)
@@ -75,8 +83,10 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 
 	/**
 	 * Called before each test is executed.
-	 * 
-	 * @throws InterruptedException
+	 *
+	 * @throws InterruptedException if the thead wait was interrupted
+	 * @throw IllegalStateException if module initialization didn't finish within
+	 *        the max allowed time.
 	 */
 	@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
 	@Before
@@ -95,7 +105,8 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 
 			if (waitedInMillis >= maxMillisToWaitForModuleInitialization) {
 				throw new IllegalStateException(
-						String.format("ModuleInit did not finish initialization within %s seconds", maxMillisToWaitForModuleInitialization / 1000));
+						String.format("ModuleInit did not finish initialization within %s seconds",
+								maxMillisToWaitForModuleInitialization / 1000));
 			}
 		}
 
@@ -130,15 +141,30 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	 */
 	protected abstract void teardownTest();
 
+	/** {@inheritDoc} */
 	@Override
 	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
+	/**
+	 * <p>
+	 * Getter for the field <code>maxMillisToWaitForModuleInitialization</code>.
+	 * </p>
+	 *
+	 * @return a int.
+	 */
 	public int getMaxMillisToWaitForModuleInitialization() {
 		return maxMillisToWaitForModuleInitialization;
 	}
 
+	/**
+	 * <p>
+	 * Setter for the field <code>maxMillisToWaitForModuleInitialization</code>.
+	 * </p>
+	 *
+	 * @param maxMillisToWaitForModuleInitialization a int.
+	 */
 	public void setMaxMillisToWaitForModuleInitialization(final int maxMillisToWaitForModuleInitialization) {
 		this.maxMillisToWaitForModuleInitialization = maxMillisToWaitForModuleInitialization;
 	}

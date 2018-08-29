@@ -16,6 +16,13 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
 
+/**
+ * <p>DefaultConfigurationService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultConfigurationService extends BeanAware implements ConfigurationService, EnvironmentAware {
 
@@ -25,11 +32,13 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	@Resource
 	protected StandardEnvironment environment;
 
+	/** {@inheritDoc} */
 	@Override
 	public String getString(final String key) {
 		return getProperty(key);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Integer getInteger(final String key) {
 		Integer value = null;
@@ -47,6 +56,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return value;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Double getDouble(final String key) {
 		Double value = null;
@@ -60,6 +70,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return value;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getString(final String key, final String defaultValue) {
 		final String val = getString(key);
@@ -67,6 +78,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return val != null ? val : defaultValue;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Integer getInteger(final String key, final Integer defaultValue) {
 		Integer val = getInteger(key);
@@ -78,6 +90,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return val != null ? val : defaultValue;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Double getDouble(final String key, final Double defaultValue) {
 		Double val = getDouble(key);
@@ -100,6 +113,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return value;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Properties getPropertiesForPrefix(String prefix) {
 		final Properties ret = new Properties();
@@ -125,6 +139,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return ret;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Boolean getBoolean(final String key) {
 		Boolean value = null;
@@ -143,6 +158,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return value;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean getBoolean(final String key, final boolean defaultValue) {
 		Boolean b = getBoolean(key);
@@ -154,6 +170,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return b;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setEnvironment(final Environment environment) {
 		this.environment = (StandardEnvironment) environment;

@@ -33,6 +33,10 @@ import io.spotnext.core.types.Item;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class DefaultJsonSerializationStrategy extends AbstractService implements SerializationStrategy {
@@ -43,6 +47,11 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	private ObjectMapper jacksonMapper;
 	private ObjectWriter jacksonWriter;
 
+	/**
+	 * <p>init.</p>
+	 *
+	 * @throws java.lang.ClassNotFoundException if any.
+	 */
 	@PostConstruct
 	public void init() throws ClassNotFoundException {
 		jacksonMapper = new ObjectMapper();
@@ -90,6 +99,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		this.jacksonWriter = jacksonMapper.writer();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> String serialize(final T object) throws SerializationException {
 		if (object == null) {
@@ -103,6 +113,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
 		try {
@@ -112,6 +123,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
 		try {

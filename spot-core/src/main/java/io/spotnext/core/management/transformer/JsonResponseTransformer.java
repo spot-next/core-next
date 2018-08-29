@@ -11,6 +11,10 @@ import io.spotnext.core.infrastructure.support.spring.Registry;
 
 /**
  * Converts the given object to JSON.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class JsonResponseTransformer implements ResponseTransformer {
@@ -18,6 +22,7 @@ public class JsonResponseTransformer implements ResponseTransformer {
 	@Autowired
 	protected SerializationService serializationService;
 
+	/** {@inheritDoc} */
 	@Override
 	public String handleResponse(final Object object) throws Exception {
 		return getSeriaizationService().toJson(object);
@@ -31,6 +36,7 @@ public class JsonResponseTransformer implements ResponseTransformer {
 		return serializationService;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String handleException(final Object object, Exception exception) throws Exception {
 		final String message;

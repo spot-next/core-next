@@ -5,17 +5,15 @@ import spark.Filter;
 import spark.Request;
 import spark.Response;
 
+/**
+ * <p>AuthenticationFilter interface.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public interface AuthenticationFilter extends Filter {
-	/**
-	 * @param request
-	 *            The request object providing information about the HTTP
-	 *            request
-	 * @param response
-	 *            The response object providing functionality for modifying the
-	 *            response
-	 * @throws AuthenticationException
-	 *             when authentication fails
-	 */
+	/** {@inheritDoc} */
 	@Override
 	void handle(Request request, Response response) throws AuthenticationException;
 }

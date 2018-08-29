@@ -18,22 +18,29 @@ import com.trigersoft.jaque.expression.UnaryExpression;
 
 /**
  * Visitor that tries to execute given Expression and returns
- * {@link ConstantExpression}
+ * {@link com.trigersoft.jaque.expression.ConstantExpression}
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class ToConstantExpressionVisitor implements ExpressionVisitor<ConstantExpression> {
 
 	private List<Expression> arguments = Collections.emptyList();
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final BinaryExpression binaryExpression) {
 		throw new UnsupportedOperationException("Binary expression unsupported " + binaryExpression);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final ConstantExpression constantExpression) {
 		return constantExpression;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final InvocationExpression invocationExpression) {
 		final List<Expression> oldArgument = arguments;
@@ -43,11 +50,13 @@ public class ToConstantExpressionVisitor implements ExpressionVisitor<ConstantEx
 		return result;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final LambdaExpression<?> lambdaExpression) {
 		return lambdaExpression.getBody().accept(this);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final MemberExpression memberExpression) {
 
@@ -70,12 +79,14 @@ public class ToConstantExpressionVisitor implements ExpressionVisitor<ConstantEx
 		throw new UnsupportedOperationException("member unsupported" + member);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final ParameterExpression parameterExpression) {
 		final Expression params = arguments.get(parameterExpression.getIndex());
 		return params.accept(this);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ConstantExpression visit(final UnaryExpression unaryExpression) {
 		throw new UnsupportedOperationException("unaryExpression unsupported" + unaryExpression);

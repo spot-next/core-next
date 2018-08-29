@@ -17,6 +17,13 @@ import io.spotnext.core.persistence.service.LambdaQueryTranslationService;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>DefaultQueryService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultQueryService extends AbstractService implements QueryService {
 
@@ -31,6 +38,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 	@Resource
 	protected LambdaQueryTranslationService lambdaQueryTranslationService;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> QueryResult<T> query(final String queryString, final Class<T> resultClass) {
 		final JpqlQuery<T> query = new JpqlQuery<>(queryString, resultClass);
@@ -38,6 +46,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 		return query(query);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> QueryResult<T> query(final JpqlQuery<T> query) {
 		sanitizeQuery(query);
@@ -64,6 +73,7 @@ public class DefaultQueryService extends AbstractService implements QueryService
 		query.setQuery(queryStr);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> QueryResult<T> query(final LambdaQuery<T> query) {
 		// translate lambda query to regular JPGL query

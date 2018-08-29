@@ -50,6 +50,10 @@ import spark.route.HttpMethod;
 /**
  * This HTTP service base class scans the implementing class for annotated
  * method and register it as Spark request endpoints.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @org.springframework.stereotype.Service
 @SuppressWarnings("PMD.TooManyStaticImports")
@@ -88,13 +92,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	final Map<Class<AuthenticationFilter>, AuthenticationFilter> authenticationFilters = new HashMap<>();
 
 	/**
-	 * Listens for {@link ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup {@link ModuleInit}
+	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding
+	 * context for endpoints. If the context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}
 	 * then the HTTP interfaces will be started up (cannot register new endpoints
 	 * then).
-	 * 
+	 *
 	 * @param event that signals that the context has been started
-	 * @throws RemoteServiceInitException
+	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException
 	 */
 	@EventListener(classes = ApplicationReadyEvent.class)
 	public void onApplicationReady(final ApplicationReadyEvent event) throws RemoteServiceInitException {
@@ -140,10 +144,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * Check if the given context contains the startup {@link ModuleInit}.
-	 * 
+	 * Check if the given context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}.
+	 *
 	 * @param context the spring context that has been started/refreshed
-	 * @return true if the context contains the startup {@link ModuleInit}
+	 * @return true if the context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}
 	 */
 	public boolean isBootComplete(final ApplicationContext context) {
 		try {
@@ -161,6 +165,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
+	/**
+	 * <p>init.</p>
+	 *
+	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
+	 */
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	public void init() throws RemoteServiceInitException {
 		for (final Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
@@ -422,6 +431,12 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
+	/**
+	 * <p>registerHandler.</p>
+	 *
+	 * @param port a int.
+	 * @param endpoint a {@link java.lang.Object} object.
+	 */
 	public void registerHandler(final int port, final Object endpoint) {
 		List<Object> handlers = this.handlersRegistry.get(port);
 		if (handlers == null) {

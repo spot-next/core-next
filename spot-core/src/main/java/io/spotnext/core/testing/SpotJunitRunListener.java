@@ -6,10 +6,18 @@ import org.junit.runner.notification.RunListener;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.support.util.ClassUtil;
 
+/**
+ * <p>SpotJunitRunListener class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class SpotJunitRunListener extends RunListener {
 
 	protected IntegrationTest testAnnotation;
 
+	/** {@inheritDoc} */
 	@Override
 	public void testRunStarted(final Description description) throws Exception {
 		if (description != null && description.getTestClass() != null) {

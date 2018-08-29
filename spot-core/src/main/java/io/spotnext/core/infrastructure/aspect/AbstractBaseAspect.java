@@ -12,6 +12,13 @@ import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.support.util.ClassUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * <p>Abstract AbstractBaseAspect class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Configurable(autowire = Autowire.BY_TYPE, dependencyCheck = true, preConstruction = true)
 @SuppressFBWarnings(value = {
 		"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" }, justification = "AspectJ compile time weaving causes wrong warning")
@@ -29,10 +36,20 @@ public abstract class AbstractBaseAspect {
 				joinPoint.getSignature().getName());
 	}
 
+	/**
+	 * <p>Getter for the field <code>loggingService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 */
 	public LoggingService getLoggingService() {
 		return loggingService;
 	}
 
+	/**
+	 * <p>Setter for the field <code>loggingService</code>.</p>
+	 *
+	 * @param loggingService a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 */
 	public void setLoggingService(final LoggingService loggingService) {
 		this.loggingService = loggingService;
 	}

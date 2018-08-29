@@ -11,8 +11,12 @@ import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.itemtype.core.UniqueIdItem;
 
 /**
- * Generates a unique value for the {@link UniqueIdItem#getId()} property if it
+ * Generates a unique value for the {@link io.spotnext.itemtype.core.UniqueIdItem#getId()} property if it
  * is not already set.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueIdItem>
@@ -21,11 +25,13 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 	@Resource
 	protected SequenceGenerator sequenceGenerator;
 
+	/** {@inheritDoc} */
 	@Override
 	public Class<UniqueIdItem> getItemType() {
 		return UniqueIdItem.class;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void onPrepare(final UniqueIdItem item) throws ItemInterceptorException {
 

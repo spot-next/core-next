@@ -17,10 +17,18 @@ import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>DefaultModelService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
 public class DefaultModelService extends AbstractModelService {
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void save(final T model)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
@@ -28,6 +36,7 @@ public class DefaultModelService extends AbstractModelService {
 		saveAll(model);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void saveAll(final T... models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
@@ -35,6 +44,7 @@ public class DefaultModelService extends AbstractModelService {
 		saveAll(Arrays.asList(models));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
@@ -48,6 +58,7 @@ public class DefaultModelService extends AbstractModelService {
 		publishEvents(models, ModificationType.SAVE);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
 		final T item = persistenceService.load(type, pk);
@@ -60,6 +71,7 @@ public class DefaultModelService extends AbstractModelService {
 		return item;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters)
 			throws ModelNotUniqueException {
@@ -67,6 +79,7 @@ public class DefaultModelService extends AbstractModelService {
 		return get(new ModelQuery<>(type, searchParameters));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
 		final List<T> items = getAllInternal(query);
@@ -85,11 +98,13 @@ public class DefaultModelService extends AbstractModelService {
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
 		return getAll(new ModelQuery<>(type, searchParameters));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> List<T> getAll(final ModelQuery<T> query) {
 		final List<T> items = getAllInternal(query);
@@ -106,6 +121,7 @@ public class DefaultModelService extends AbstractModelService {
 		return items;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T getByExample(final T example) {
 		final Map<String, Object> map = persistenceService.convertItemToMap(example);
@@ -121,6 +137,7 @@ public class DefaultModelService extends AbstractModelService {
 		return item;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> List<T> getAllByExample(final T example) {
 		final Map<String, Object> map = persistenceService.convertItemToMap(example);
@@ -133,6 +150,7 @@ public class DefaultModelService extends AbstractModelService {
 		return items;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
 		if (item == null || item.getPk() == null) {
@@ -144,6 +162,7 @@ public class DefaultModelService extends AbstractModelService {
 		persistenceService.initItem(item);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		final T itemToRemove = get(type, pk);
@@ -151,6 +170,7 @@ public class DefaultModelService extends AbstractModelService {
 		removeAll(Arrays.asList(itemToRemove));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void removeAll(final List<T> items) throws ModelNotFoundException {
 		applyRemoveInterceptors(items);
@@ -159,6 +179,7 @@ public class DefaultModelService extends AbstractModelService {
 		persistenceService.remove(items);
 	}
 
+	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Item> void remove(final T... items) throws ModelNotFoundException {

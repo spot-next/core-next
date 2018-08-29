@@ -21,10 +21,18 @@ class BootEventListener {
 	@Autowired
 	protected LoggingService loggingService;
 
+	/**
+	 * <p>Constructor for BootEventListener.</p>
+	 */
 	public BootEventListener() {
 		System.out.println("");
 	}
 
+	/**
+	 * <p>onContextStarted.</p>
+	 *
+	 * @param event a {@link org.springframework.context.event.ContextStartedEvent} object.
+	 */
 	@EventListener
 	public void onContextStarted(final ContextStartedEvent event) {
 		eventService.publishEvent(new SystemBootCompleteEvent(this));
@@ -35,11 +43,21 @@ class BootEventListener {
 		//
 	}
 
+	/**
+	 * <p>onContextStoppedEvent.</p>
+	 *
+	 * @param event a {@link org.springframework.context.event.ContextStoppedEvent} object.
+	 */
 	@EventListener
 	public void onContextStoppedEvent(final ContextStoppedEvent event) {
 		loggingService.info("Server stopped.");
 	}
 
+	/**
+	 * <p>onContextClosedEvent.</p>
+	 *
+	 * @param event a {@link org.springframework.context.event.ContextClosedEvent} object.
+	 */
 	@EventListener
 	public void onContextClosedEvent(final ContextClosedEvent event) {
 		loggingService.info("Spring context closed.");

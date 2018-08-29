@@ -23,6 +23,13 @@ import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>ReferenceValueResolver class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class ReferenceValueResolver extends AbstractService implements ImpexValueResolver {
 
@@ -32,6 +39,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 	@Resource
 	private QueryService queryService;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {

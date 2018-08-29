@@ -8,9 +8,14 @@ import spark.Response;
 
 /**
  * This filter accepts all incoming requests.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class NoAuthenticationFilter implements AuthenticationFilter {
+	/** {@inheritDoc} */
 	@Override
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		// do nothing

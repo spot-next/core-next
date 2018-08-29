@@ -14,12 +14,20 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.ValidationService;
 
+/**
+ * <p>DefaultValidationService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultValidationService implements ValidationService {
 
 	@Autowired
 	protected Validator validator;
 	
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Object> Set<ConstraintViolation<T>> validate(final T object) throws ValidationException {
 		// final Errors errors = new BeanPropertyBindingResult(object,
@@ -40,6 +48,7 @@ public class DefaultValidationService implements ValidationService {
 		return constraintViolations;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String convertToReadableMessage(final Set<ConstraintViolation<?>> violations) {
 		final ConstraintViolation<?> violation = violations.iterator().next();

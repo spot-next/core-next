@@ -19,6 +19,10 @@ import spark.Response;
 /**
  * This filter handles HTTP Basic authentication. If the password is prefixed
  * with a 3-char prefix followed by a ":" (eg. "MD5:")
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class BasicAuthenticationFilter implements AuthenticationFilter {
@@ -28,6 +32,7 @@ public class BasicAuthenticationFilter implements AuthenticationFilter {
 	@Resource
 	private UserService<User, UserGroup> userService;
 
+	/** {@inheritDoc} */
 	@Override
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final User authenticatedUser = authenticate(request, response);

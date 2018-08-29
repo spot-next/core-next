@@ -8,13 +8,35 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>ValueResolutionDescriptorParser class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class ValueResolutionDescriptorParser {
 
+	/**
+	 * <p>parse.</p>
+	 *
+	 * @param desc a {@link java.lang.String} object.
+	 * @param itemType a {@link java.lang.Class} object.
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Node> parse(String desc, Class<Item> itemType) {
 		desc = desc.replace(" ", "");
 		return parse(desc, 0, desc.length());
 	}
 
+	/**
+	 * <p>parse.</p>
+	 *
+	 * @param desc a {@link java.lang.String} object.
+	 * @param start a int.
+	 * @param end a int.
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<Node> parse(String desc, int start, int end) {
 		// I know .. it's not pretty ...
 		List<Node> nodes = new ArrayList<>();

@@ -21,17 +21,22 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.support.util.ClassUtil;
 
 /**
- * This class alters spring's {@link EventListenerMethodProcessor} to always
- * register methods annotated with {@link EventListener} on the root spring
+ * This class alters spring's {@link org.springframework.context.event.EventListenerMethodProcessor} to always
+ * register methods annotated with {@link org.springframework.context.event.EventListener} on the root spring
  * context! This enables listeners in child contexts to receive events from the
  * parent contest. Unfortunately the class is not very friendly towards
  * extension (it's an internal class!). So some reflection magic had to take
  * place (see comments in the code).
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class HierarchyAwareEventListenerMethodProcessor extends EventListenerMethodProcessor {
 
 	private ApplicationContext applicationContext;
 
+	/** {@inheritDoc} */
 	@Override
 	public void setApplicationContext(final ApplicationContext applicationContext) {
 		super.setApplicationContext(applicationContext);

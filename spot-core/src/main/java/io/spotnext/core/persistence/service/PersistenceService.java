@@ -20,9 +20,17 @@ import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>PersistenceService interface.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public interface PersistenceService {
 
+	/** Constant <code>NATIVE_DATATYPES</code> */
 	static final List<Class<?>> NATIVE_DATATYPES = Collections
 			.unmodifiableList(java.util.Arrays.asList(Boolean.class, String.class, Integer.class, Long.class,
 					Double.class, Float.class, Byte.class, Short.class, BigDecimal.class, BigInteger.class,
@@ -30,38 +38,61 @@ public interface PersistenceService {
 
 	/**
 	 * Saves the given models and all of its dependent models.
+	 *
+	 * @param models a {@link java.util.List} object.
+	 * @throws io.spotnext.core.infrastructure.exception.ModelSaveException if any.
+	 * @throws io.spotnext.core.persistence.exception.ModelNotUniqueException if any.
 	 */
 	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Refreshes the given model's properties.
-	 * 
-	 * @throws ModelNotFoundException
+	 *
+	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException
+	 * @param item a {@link java.util.List} object.
+	 * @param <T> a T object.
 	 */
 	<T extends Item> void refresh(List<T> item) throws ModelNotFoundException;
 
 	/**
 	 * Returns the paginated results for the given query.
+	 *
+	 * @param query a {@link io.spotnext.core.persistence.query.JpqlQuery} object.
+	 * @return a {@link java.util.List} object.
+	 * @throws io.spotnext.core.persistence.exception.QueryException if any.
 	 */
 	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
 	 * Returns an object based on its PK.
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param pk a long.
+	 * @return a T object.
+	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException if any.
 	 */
 	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
 	 * Returns an list of items based on the given search query.
+	 *
+	 * @param query a {@link io.spotnext.core.persistence.query.ModelQuery} object.
+	 * @return a {@link java.util.List} object.
 	 */
 	<T extends Item> List<T> load(ModelQuery<T> query);
 
 	/**
 	 * Removes the given item.
+	 *
+	 * @param items a {@link java.util.List} object.
 	 */
 	<T extends Item> void remove(List<T> items);
 
 	/**
 	 * Removes the item of the given type with the given PK.
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param pk a long.
 	 */
 	<T extends Item> void remove(Class<T> type, long pk);
 
@@ -78,6 +109,8 @@ public interface PersistenceService {
 
 	/**
 	 * Initialize a new item.
+	 *
+	 * @param item a T object.
 	 */
 	<T extends Item> void initItem(T item);
 
@@ -86,29 +119,36 @@ public interface PersistenceService {
 	 * This is useful if serializing the item causes problems. The effect can be
 	 * different depending on the persistence service implementation, but in general
 	 * lazy-loading properties will not work anymore afterwards.
+	 *
+	 * @param items a {@link java.util.List} object.
 	 */
 	<T extends Item> void detach(List<T> items);
 
 	/**
 	 * Converts the given item to a map.
+	 *
+	 * @param item a T object.
+	 * @return a {@link java.util.Map} object.
 	 */
 	<T extends Item> Map<String, Object> convertItemToMap(T item);
 
 	/**
 	 * Checks if the given item is attached to the persistence context.
-	 * 
+	 *
 	 * @param item the item to check
 	 * @return true if the item is attached
+	 * @param <T> a T object.
 	 */
 	<T extends Item> boolean isAttached(T item);
 
 	/**
 	 * Attaches the given item in case it is detached.
-	 * 
-	 * @param item
+	 *
+	 * @param item a T object.
 	 * @return true if the item was successfully attached to the persistence
 	 *         context.
-	 * @throws ModelNotFoundException
+	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException
+	 * @param <T> a T object.
 	 */
 	<T extends Item> boolean attach(T item) throws ModelNotFoundException;
 

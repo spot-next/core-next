@@ -10,12 +10,20 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 
+/**
+ * <p>DefaultSessionService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultSessionService implements SessionService {
 
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
 	ThreadLocal<Session> currentSession = new ThreadLocal<>();
 
+	/** {@inheritDoc} */
 	@Override
 	public Session createSession(final boolean registerAsCurrentSession) {
 		// if there's already a session for this thread, we remove it
@@ -41,6 +49,7 @@ public class DefaultSessionService implements SessionService {
 		return session;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Session getCurrentSession() {
 		Session session = currentSession.get();
@@ -52,16 +61,19 @@ public class DefaultSessionService implements SessionService {
 		return session;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setCurrentSession(final Session session) {
 		currentSession.set(session);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Session getSession(final String sessionId) {
 		return sessions.get(sessionId);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void closeSession(final String sessionID) {
 		final Session session = sessions.get(sessionID);
@@ -73,12 +85,14 @@ public class DefaultSessionService implements SessionService {
 		sessions.remove(sessionID);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T executeInSessionContext(final String sessionId, final Callable<T> callable) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T executeInSystemSessionContext(final Callable<T> callable) {
 		// TODO Auto-generated method stub

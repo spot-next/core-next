@@ -20,11 +20,19 @@ import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.types.Localizable;
 
+/**
+ * <p>PrimitiveValueResolver class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class PrimitiveValueResolver implements ImpexValueResolver {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {

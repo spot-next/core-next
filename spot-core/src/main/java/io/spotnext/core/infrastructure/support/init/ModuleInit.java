@@ -21,6 +21,15 @@ import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 
+/**
+ * <p>
+ * The base ModuleInit class.
+ * </p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @PropertySource(value = "classpath:/git.properties", ignoreResourceNotFound = true)
 @Configuration
 @Priority(value = -1)
@@ -40,8 +49,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Called when the spring application context has been initialized.
 	 * 
-	 * @param event
-	 * @throws ModuleInitializationException
+	 * @param event the spring application event name
+	 * @throws ModuleInitializationException in case there is an exception during
+	 *                                       post initialization
 	 */
 	@EventListener
 	protected void onApplicationEvent(final ApplicationReadyEvent event) throws ModuleInitializationException {
@@ -61,38 +71,51 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called
-	 * after {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called after
+	 * {@link Bootstrap} all spring beans are initialized.
+	 * 
+	 * @throws ModuleInitializationException if there is any unexpected error
 	 */
 	@Log(message = "Initializing module $classSimpleName", measureTime = true)
 	protected abstract void initialize() throws ModuleInitializationException;
 
 	/**
-	 * This is only called, if the corresponding command line flag is also set
+	 * Imports the initial data, if any are present.
+	 * 
+	 * @throws ModuleInitializationException in case there is any error
 	 */
 	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		//
 	}
 
+	/**
+	 * Imports the sample data, if any are present.
+	 * 
+	 * @throws ModuleInitializationException in case there is any error
+	 */
 	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		//
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
+	/**
+	 * @return the spring application context for this module.
+	 */
 	public ApplicationContext getApplicationContext() {
 		return applicationContext;
 	}
 
 	/**
 	 * Override Spring's {@link EventListenerMethodProcessor} and always use the
-	 * root spring context. This makes sure that all event listeners (even in
-	 * child contexts) get notified when events in a parent context are thrown.
+	 * root spring context. This makes sure that all event listeners (even in child
+	 * contexts) get notified when events in a parent context are thrown.
 	 * 
 	 * @return the custom event listener instance
 	 */
@@ -103,6 +126,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		return processor;
 	}
 
+	/**
+	 * @return true if post initialization has been finished.
+	 */
 	public boolean isAlreadyInitialized() {
 		return alreadyInitialized;
 	}

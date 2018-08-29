@@ -16,6 +16,13 @@ import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
+/**
+ * <p>DefaultAuthenticationService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultAuthenticationService extends AbstractService implements AuthenticationService {
 
@@ -28,6 +35,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	@Autowired
 	protected UserService<User, UserGroup> userService;
 
+	/** {@inheritDoc} */
 	@Override
 	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
 		ValidationUtil.validateNotEmpty("Password cannot be blank", password);
@@ -47,6 +55,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void setPassword(final User user, final String plainPassword) throws ModelSaveException {
 		user.setPassword(encryptPassword(plainPassword));
@@ -58,6 +67,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String encryptPassword(final String plainPassword) {
 		return passwordEncryptionStrategy.encryptPassword(plainPassword);

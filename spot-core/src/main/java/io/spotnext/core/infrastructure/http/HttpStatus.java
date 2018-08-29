@@ -17,6 +17,11 @@ import javax.annotation.Nullable;
  *      Code Registry</a>
  * @see <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">List of
  *      HTTP status codes - Wikipedia</a>
+ * @see <a href="http://www.iana.org/assignments/http-status-codes">HTTP Status
+ *      Code Registry</a>
+ * @see <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">List of
+ *      HTTP status codes - Wikipedia</a>
+ * @version 1.0
  */
 public enum HttpStatus {
 
@@ -525,6 +530,9 @@ public enum HttpStatus {
 
 	/**
 	 * Return the integer value of this status code.
+	 *
+	 * @return a int.
+	 * @since 1.0
 	 */
 	public int value() {
 		return this.value;
@@ -532,6 +540,9 @@ public enum HttpStatus {
 
 	/**
 	 * Return the reason phrase of this status code.
+	 *
+	 * @return a {@link java.lang.String} object.
+	 * @since 1.0
 	 */
 	public String getReasonPhrase() {
 		return this.reasonPhrase;
@@ -539,16 +550,22 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link Series#INFORMATIONAL}. This is a shortcut for checking the value
+	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#INFORMATIONAL}. This is a shortcut for checking the value
 	 * of {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean is1xxInformational() {
 		return Series.INFORMATIONAL.equals(series());
 	}
 
 	/**
-	 * Whether this status code is in the HTTP series {@link Series#SUCCESSFUL}.
+	 * Whether this status code is in the HTTP series {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SUCCESSFUL}.
 	 * This is a shortcut for checking the value of {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean is2xxSuccessful() {
 		return Series.SUCCESSFUL.equals(series());
@@ -556,8 +573,11 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link Series#REDIRECTION}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#REDIRECTION}. This is a shortcut for checking the value of
 	 * {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean is3xxRedirection() {
 		return Series.REDIRECTION.equals(series());
@@ -565,8 +585,11 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link Series#CLIENT_ERROR}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#CLIENT_ERROR}. This is a shortcut for checking the value of
 	 * {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean is4xxClientError() {
 		return Series.CLIENT_ERROR.equals(series());
@@ -574,8 +597,11 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link Series#SERVER_ERROR}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a shortcut for checking the value of
 	 * {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean is5xxServerError() {
 		return Series.SERVER_ERROR.equals(series());
@@ -583,8 +609,11 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link Series#CLIENT_ERROR} or {@link Series#SERVER_ERROR}. This is a
+	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#CLIENT_ERROR} or {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a
 	 * shortcut for checking the value of {@link #series()}.
+	 *
+	 * @return a boolean.
+	 * @since 1.0
 	 */
 	public boolean isError() {
 		return is4xxClientError() || is5xxServerError();
@@ -592,14 +621,18 @@ public enum HttpStatus {
 
 	/**
 	 * Returns the HTTP status series of this status code.
-	 * 
+	 *
 	 * @see HttpStatus.Series
+	 * @return a {@link io.spotnext.core.infrastructure.http.HttpStatus.Series} object.
+	 * @since 1.0
 	 */
 	public Series series() {
 		return Series.valueOf(this);
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Return a string representation of this status code.
 	 */
 	@Override
@@ -609,12 +642,13 @@ public enum HttpStatus {
 
 	/**
 	 * Return the enum constant of this type with the specified numeric value.
-	 * 
+	 *
 	 * @param statusCode
 	 *            the numeric value of the enum to be returned
 	 * @return the enum constant with the specified numeric value
-	 * @throws IllegalArgumentException
+	 * @throws java.lang.IllegalArgumentException
 	 *             if this enum has no constant for the specified numeric value
+	 * @since 1.0
 	 */
 	public static HttpStatus valueOf(final int statusCode) {
 		final HttpStatus status = resolve(statusCode);
@@ -626,7 +660,7 @@ public enum HttpStatus {
 
 	/**
 	 * Resolve the given status code to an {@code HttpStatus}, if possible.
-	 * 
+	 *
 	 * @param statusCode
 	 *            the HTTP status code (potentially non-standard)
 	 * @return the corresponding {@code HttpStatus}, or {@code null} if not

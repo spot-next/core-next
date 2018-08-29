@@ -15,16 +15,29 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.I18nService;
 
+/**
+ * <p>DefaultI18nService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultI18nService extends AbstractService implements I18nService {
 
+	/** Constant <code>DEFAULT_LOCALE_KEY="i18n.default.locale"</code> */
 	public static final String DEFAULT_LOCALE_KEY = "i18n.default.locale";
+	/** Constant <code>DEFAULT_CURRENCY_KEY="i18n.default.currency"</code> */
 	public static final String DEFAULT_CURRENCY_KEY = "i18n.default.currency";
 
+	/** Constant <code>DEFAULT_CURRENCY="EUR"</code> */
 	public static final String DEFAULT_CURRENCY = "EUR";
 
 	protected Currency defaultCurrency = null;
 
+	/**
+	 * <p>init.</p>
+	 */
 	@PostConstruct
 	public void init() {
 		final String loc = configurationService.getString(DEFAULT_LOCALE_KEY);
@@ -55,31 +68,37 @@ public class DefaultI18nService extends AbstractService implements I18nService {
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Locale getDefaultLocale() {
 		return Locale.getDefault();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Locale getCurrentLocale() {
 		return LocaleContextHolder.getLocale();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Set<Locale> getAllAvailableLocales() {
 		return new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Currency getDefaultCurrency() {
 		return defaultCurrency;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Currency getCurrentCurrency() {
 		return defaultCurrency;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Set<Currency> getAllAvailableCurrencies() {
 		return Currency.getAvailableCurrencies();

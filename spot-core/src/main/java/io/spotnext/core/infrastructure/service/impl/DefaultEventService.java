@@ -11,6 +11,13 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.EventService;
 
+/**
+ * <p>DefaultEventService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultEventService extends AbstractService implements EventService {
 
@@ -29,6 +36,7 @@ public class DefaultEventService extends AbstractService implements EventService
 		isReady = true;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <E extends ApplicationEvent> void publishEvent(final E event) {
 		if (isReady) {
@@ -36,6 +44,7 @@ public class DefaultEventService extends AbstractService implements EventService
 		}
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <E extends ApplicationEvent> void multicastEvent(final E event) {
 		if (isReady) {

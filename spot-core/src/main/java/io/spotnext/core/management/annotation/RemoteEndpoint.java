@@ -12,6 +12,13 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.management.support.AuthenticationFilter;
 import io.spotnext.core.management.support.NoAuthenticationFilter;
 
+/**
+ * <p>RemoteEndpoint class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 @Documented

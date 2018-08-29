@@ -16,6 +16,10 @@ import com.trigersoft.jaque.expression.SimpleExpressionVisitor;
  * expression 'P0.equals(test)' buf ater
  * {@link #fixArguments(InvocableExpression, List)} the expression will be
  * 'str.equals(test)'
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class ArgumentsFixVisitor extends SimpleExpressionVisitor {
 
@@ -25,12 +29,20 @@ public class ArgumentsFixVisitor extends SimpleExpressionVisitor {
 		this.args = args;
 	}
 
+	/**
+	 * <p>fixArguments.</p>
+	 *
+	 * @param e a {@link com.trigersoft.jaque.expression.InvocableExpression} object.
+	 * @param args a {@link java.util.List} object.
+	 * @return a {@link com.trigersoft.jaque.expression.InvocableExpression} object.
+	 */
 	public static InvocableExpression fixArguments(final InvocableExpression e, final List<Expression> args) {
 
 		final ArgumentsFixVisitor parameterNormalizer = new ArgumentsFixVisitor(args);
 		return (InvocableExpression) e.accept(parameterNormalizer);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Expression visit(final ParameterExpression e) {
 		final int index = e.getIndex();
@@ -45,6 +57,7 @@ public class ArgumentsFixVisitor extends SimpleExpressionVisitor {
 		return x;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Expression visit(final InvocationExpression e) {
 		final List<Expression> arguments = e.getArguments();

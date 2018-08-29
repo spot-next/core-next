@@ -16,12 +16,20 @@ import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>Abstract AbstractPersistenceService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public abstract class AbstractPersistenceService extends AbstractService implements PersistenceService {
 
 	@Autowired
 	protected TypeService typeService;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> Map<String, Object> convertItemToMap(final T item) {
 		final String typeCode = typeService.getTypeCodeForClass(item.getClass());

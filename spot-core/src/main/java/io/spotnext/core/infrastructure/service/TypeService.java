@@ -8,40 +8,61 @@ import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>TypeService interface.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public interface TypeService {
 
 	/**
 	 * Return a map of all concrete registered types. Abstract types are not
 	 * listed here.
+	 *
+	 * @return a {@link java.util.Map} object.
 	 */
 	Map<String, ItemTypeDefinition> getItemTypeDefinitions();
 
 	/**
 	 * Returns the item definition for the given type.
+	 *
+	 * @param typeCode a {@link java.lang.String} object.
+	 * @return a {@link io.spotnext.core.infrastructure.support.ItemTypeDefinition} object.
+	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
 	 */
 	ItemTypeDefinition getItemTypeDefinition(String typeCode) throws UnknownTypeException;
 
 	/**
 	 * Returns the class for the given type code.
+	 *
+	 * @param typeCode a {@link java.lang.String} object.
+	 * @return a {@link java.lang.Class} object.
+	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
 	 */
 	Class<? extends Item> getClassForTypeCode(String typeCode) throws UnknownTypeException;
 
 	/**
-	 * Returns the typeCode (from {@link ItemType#typeCode()} of the given
-	 * class. If this property is not set, the {@link Class#getSimpleName()} is
+	 * Returns the typeCode (from {@link io.spotnext.core.infrastructure.annotation.ItemType#typeCode()} of the given
+	 * class. If this property is not set, the {@link java.lang.Class#getSimpleName()} is
 	 * returned instead.
+	 *
+	 * @param itemType a {@link java.lang.Class} object.
+	 * @return a {@link java.lang.String} object.
 	 */
 	<I extends Item> String getTypeCodeForClass(final Class<I> itemType);
 
 	/**
 	 * Returns a map of all the @Property annotated properties of the given
 	 * item.
-	 * 
+	 *
 	 * @param typeCode
 	 *            of the item of which the item type properties should be
 	 *            fetched.
-	 * @return Map of {@link ItemTypePropertyDefinition}, typeCode is used as
+	 * @return Map of {@link io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition}, typeCode is used as
 	 *         key
+	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) throws UnknownTypeException;
 

@@ -2,6 +2,10 @@ package io.spotnext.core.persistence.query.lambda;
 
 /**
  * Class designed to generate unique parameters for flexible serach expressions
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class ParametersNameGenerator {
 	private static final char FIRST_CHAR = 'a';
@@ -26,7 +30,8 @@ public class ParametersNameGenerator {
 	/**
 	 * Each call to this method returns next unique String (a, b, c, ..., z, aa, ab,
 	 * ac,...)
-	 * 
+	 *
+	 * @return a {@link java.lang.String} object.
 	 */
 	public String next() {
 		return alpha(++current).toString();

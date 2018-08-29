@@ -42,13 +42,20 @@ import io.spotnext.core.support.util.PropertiesUtil;
 
 /**
  * This is the main entry point to startup a spOt instance. First the classpath
- * is scanned for {@link ModuleInit} implementations (there should be one for
- * each spot module) which it then tries to load. The init classes take care of
- * all necessary initialization for their module.
+ * is scanned for
+ * {@link io.spotnext.core.infrastructure.support.init.ModuleInit}
+ * implementations (there should be one for each spot module) which it then
+ * tries to load. The init classes take care of all necessary initialization for
+ * their module.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class Bootstrap {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
+	/** Constant <code>MAIN_THREAD_ID=Thread.currentThread().getId()</code> */
 	public static final long MAIN_THREAD_ID = Thread.currentThread().getId();
 
 	private final SpringApplicationBuilder builder;
@@ -58,6 +65,15 @@ public class Bootstrap {
 		builder = new SpringApplicationBuilder();
 	}
 
+	/**
+	 * <p>
+	 * sources.
+	 * </p>
+	 *
+	 * @param sources a {@link java.lang.Class} object.
+	 * @return a {@link org.springframework.boot.builder.SpringApplicationBuilder}
+	 *         object.
+	 */
 	public SpringApplicationBuilder sources(final Class<?>... sources) {
 		return builder.sources(sources);
 	}
@@ -67,6 +83,18 @@ public class Bootstrap {
 		return new Bootstrap().sources(initClass).registerShutdownHook(true).bannerMode(Mode.CONSOLE);
 	}
 
+	/**
+	 * <p>
+	 * bootstrap.
+	 * </p>
+	 *
+	 * @param configuration  a {@link java.lang.Class} object.
+	 * @param modelScanPaths an array of {@link java.lang.String} objects.
+	 * @param args           an array of {@link java.lang.String} objects.
+	 * @return a {@link org.springframework.boot.builder.SpringApplicationBuilder}
+	 *         object.
+	 * @throws io.spotnext.core.infrastructure.exception.BootstrapException if any.
+	 */
 	public static SpringApplicationBuilder bootstrap(final Class<? extends ModuleInit> configuration,
 			final String[] modelScanPaths, final String[] args) throws BootstrapException {
 
@@ -109,9 +137,12 @@ public class Bootstrap {
 
 	/**
 	 * This is the main entry point for the bootstrap mechanism.
-	 * 
-	 * @param options
-	 * @return
+	 *
+	 * @param options a
+	 *                {@link io.spotnext.core.infrastructure.support.init.BootstrapOptions}
+	 *                object.
+	 * @return a {@link org.springframework.boot.builder.SpringApplicationBuilder}
+	 *         object.
 	 */
 	public static SpringApplicationBuilder bootstrap(final BootstrapOptions options) {
 		setDefaultLocale();
@@ -313,10 +344,14 @@ public class Bootstrap {
 		LocaleContextHolder.setLocale(Locale.ENGLISH);
 	}
 
-	/********************************************************************************************
+	/**
+	 ******************************************************************************************
 	 * MAIN ENTRY POINT
-	 *******************************************************************************************/
-
+	 ******************************************************************************************
+	 *
+	 * @param args an array of {@link java.lang.String} objects.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static void main(final String[] args) throws Exception {
 		bootstrap(parseCommandLine(args)).run();
 	}

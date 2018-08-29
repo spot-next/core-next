@@ -14,11 +14,19 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
 
+/**
+ * <p>DefaultXmlSerializationStrategy class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultXmlSerializationStrategy implements SerializationStrategy {
 
 	private boolean prettyPrint = true;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> String serialize(final T object) throws SerializationException {
 		if (object == null) {
@@ -43,6 +51,7 @@ public class DefaultXmlSerializationStrategy implements SerializationStrategy {
 		return xmlString;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
 		T object = null;
@@ -59,15 +68,26 @@ public class DefaultXmlSerializationStrategy implements SerializationStrategy {
 		return object;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
 		throw new NotImplementedException();
 	}
 
+	/**
+	 * <p>isPrettyPrint.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public boolean isPrettyPrint() {
 		return prettyPrint;
 	}
 
+	/**
+	 * <p>Setter for the field <code>prettyPrint</code>.</p>
+	 *
+	 * @param prettyPrint a boolean.
+	 */
 	public void setPrettyPrint(final boolean prettyPrint) {
 		this.prettyPrint = prettyPrint;
 	}

@@ -13,7 +13,11 @@ import javax.validation.Payload;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.ValidationRule;
 
 /**
- * Checks a given {@link Date} object if it has a time component (= time not 00:00:00).
+ * Checks a given {@link java.util.Date} object if it has a time component (= time not 00:00:00).
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Documented
 @Constraint(validatedBy = DateHasTimeValidator.class)

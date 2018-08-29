@@ -20,6 +20,13 @@ import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
 //@Aspect
+/**
+ * <p>ItemPropertyAccessAspect class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	@Resource
@@ -28,6 +35,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	@Resource
 	protected QueryService queryService;
 
+	/**
+	 * <p>init.</p>
+	 */
 	@PostConstruct
 	public void init() {
 		loggingService.debug("Initialized item property access aspect.");
@@ -53,6 +63,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
 	// get(* *.*)")
 
+	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// get(* *.*)")
 	final protected void getField() {
 	};
 
@@ -73,12 +85,16 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
 	// set(* *.*)")
 
+	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// set(* *.*)")
 	final protected void setField() {
 	};
 
 	/**
 	 * Define the pointcut for all fields that are accessed (set) on an object of
 	 * type @Item that are annotated with @Property.
+	 *
+	 * @param joinPoint a {@link org.aspectj.lang.JoinPoint} object.
 	 */
 	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.SetProperty)
 	// && "
@@ -116,6 +132,13 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	// @Around("getField() && notFromPersistencePackage()")
+	/**
+	 * <p>getPropertyValue.</p>
+	 *
+	 * @param joinPoint a {@link org.aspectj.lang.ProceedingJoinPoint} object.
+	 * @return a {@link java.lang.Object} object.
+	 * @throws java.lang.Throwable if any.
+	 */
 	public Object getPropertyValue(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Property ann = getAnnotation(joinPoint, Property.class);
 		final Accessor getAnn = getAnnotation(joinPoint, Accessor.class);
@@ -148,18 +171,38 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		return joinPoint.proceed(joinPoint.getArgs());
 	}
 
+	/**
+	 * <p>Getter for the field <code>modelService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 */
 	public ModelService getModelService() {
 		return modelService;
 	}
 
+	/**
+	 * <p>Setter for the field <code>modelService</code>.</p>
+	 *
+	 * @param modelService a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 */
 	public void setModelService(final ModelService modelService) {
 		this.modelService = modelService;
 	}
 
+	/**
+	 * <p>Getter for the field <code>queryService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.core.persistence.service.QueryService} object.
+	 */
 	public QueryService getQueryService() {
 		return queryService;
 	}
 
+	/**
+	 * <p>Setter for the field <code>queryService</code>.</p>
+	 *
+	 * @param queryService a {@link io.spotnext.core.persistence.service.QueryService} object.
+	 */
 	public void setQueryService(final QueryService queryService) {
 		this.queryService = queryService;
 	}

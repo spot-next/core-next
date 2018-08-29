@@ -56,10 +56,19 @@ import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.core.types.Item;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 
+/**
+ * <p>DefaultImpexImportStrategy class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultImpexImportStrategy extends AbstractService implements ImpexImportStrategy {
 
+	/** Constant <code>MAP_ENTRY_SEPARATOR="->"</code> */
 	public static final String MAP_ENTRY_SEPARATOR = "->";
+	/** Constant <code>COLLECTION_VALUE_SEPARATOR=","</code> */
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
 	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\-\=]{0,}\]{0,1})
@@ -87,6 +96,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	@Resource
 	private Map<String, ImpexValueResolver> impexValueResolvers;
 
+	/** {@inheritDoc} */
 	@Override
 	public void importImpex(final ImportConfiguration config, final InputStream inputStream)
 			throws ImpexImportException {

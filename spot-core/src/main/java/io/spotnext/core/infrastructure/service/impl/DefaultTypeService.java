@@ -50,6 +50,10 @@ import io.spotnext.core.types.Item;
 
 /**
  * Provides functionality to manage the type system.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
@@ -149,6 +153,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	 * *************************************************************************
 	 */
 
+	/** {@inheritDoc} */
 	@Override
 	public Class<? extends Item> getClassForTypeCode(final String typeCode) throws UnknownTypeException {
 		Class<? extends Item> type = itemTypeClasses.get(typeCode);
@@ -166,6 +171,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		return (Class<? extends Item>) Class.forName(String.format("%s.%s", classPackage, className));
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public <I extends Item> String getTypeCodeForClass(final Class<I> itemType) {
 		final ItemType annotation = ClassUtil.getAnnotation(itemType, ItemType.class);
@@ -179,11 +185,13 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, ItemTypeDefinition> getItemTypeDefinitions() {
 		return MapUtils.unmodifiableMap(itemTypeDefinitions);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public ItemTypeDefinition getItemTypeDefinition(final String typeCode) throws UnknownTypeException {
 		ValidationUtil.validateNotEmpty("Type code cannot be empty", typeCode);
@@ -197,6 +205,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		return itemType;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) throws UnknownTypeException {
 		return getItemTypeDefinition(typeCode).getProperties();

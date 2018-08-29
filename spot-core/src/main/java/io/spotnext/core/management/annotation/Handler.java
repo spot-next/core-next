@@ -14,6 +14,13 @@ import io.spotnext.core.management.transformer.PlainTextResponseTransformer;
 import spark.ResponseTransformer;
 import spark.route.HttpMethod;
 
+/**
+ * <p>Handler class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Target({ METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

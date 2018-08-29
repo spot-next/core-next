@@ -16,6 +16,10 @@ import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 
 /**
  * Registers all item types as JPA entities.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 

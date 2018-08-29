@@ -12,8 +12,12 @@ import io.spotnext.core.management.support.data.GenericItemDefinitionData;
 import io.spotnext.core.types.Item;
 
 /**
- * Sets all properties of the source {@link Item} as property of the ItemData
+ * Sets all properties of the source {@link io.spotnext.core.types.Item} as property of the ItemData
  * target object.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @Component
 public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericItemDefinitionData>
@@ -25,6 +29,7 @@ public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericIt
 	@Autowired
 	protected LoggingService loggingService;
 
+	/** {@inheritDoc} */
 	@Override
 	public void populate(final S source, final T target) {
 		target.setTypeCode(source.getTypeCode());

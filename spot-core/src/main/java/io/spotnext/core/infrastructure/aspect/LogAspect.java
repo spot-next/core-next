@@ -16,12 +16,22 @@ import org.springframework.aop.TargetClassAware;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 
+/**
+ * Annotation-based aspect that logs method execution.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Aspect
 @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
 
 	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
+	/**
+	 * The spring init method
+	 */
 	@PostConstruct
 	public void init() {
 		getLoggingService().debug("Initialized logging aspect.");
@@ -34,6 +44,11 @@ public class LogAspect extends AbstractBaseAspect {
 	final protected void logAnnotation() {
 	};
 
+	/**
+	 * @param joinPoint a {@link ProceedingJoinPoint} object.
+	 * @return the return value of the intercepted method
+	 * @throws java.lang.Throwable in case there is any error
+	 */
 	@Around("logAnnotation()")
 	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {
 		final Log ann = getAnnotation(joinPoint, Log.class);

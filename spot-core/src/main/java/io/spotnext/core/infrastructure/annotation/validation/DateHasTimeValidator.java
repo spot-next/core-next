@@ -11,31 +11,38 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * Checks a given {@link Date} object if it has a time component (= time not
+ * Checks a given {@link java.util.Date} object if it has a time component (= time not
  * 00:00:00).
- * 
+ *
  * @see DateHasTime
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class DateHasTimeValidator implements Validator, ConstraintValidator<DateHasTime, Date> {
 
 	private String message;
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean supports(final Class<?> paramClass) {
 		return Date.class.equals(paramClass);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void validate(final Object date, final Errors errors) {
 		if (!isValid((Date) date))
 			errors.rejectValue(message, "notset");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void initialize(final DateHasTime annotation) {
 		this.message = annotation.message();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean isValid(final Date date, final ConstraintValidatorContext paramConstraintValidatorContext) {
 		return isValid(date);

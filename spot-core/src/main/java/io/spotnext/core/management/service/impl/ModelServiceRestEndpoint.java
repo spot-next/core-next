@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
-import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.http.DataResponse;
@@ -38,6 +37,13 @@ import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;
 
+/**
+ * The /model REST endpoint.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/models", authenticationFilter = BasicAuthenticationFilter.class)
 public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
@@ -52,15 +58,14 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
-	 * 
-	 * @param request
-	 * @param response
-	 * @return the fetched item instance
-	 * @throws UnknownTypeException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpResponse getModels(final Request request, final Response response)
-			throws UnknownTypeException {
+	public <T extends Item> HttpResponse getModels(final Request request, final Response response) {
 
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
@@ -77,36 +82,42 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final UnknownTypeException e) {
-			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Unknown item type.");
+			return RESPONSE_UNKNOWN_TYPE;
 		}
 	}
 
 	/**
 	 * Gets an item based on the PK.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws ModelNotFoundException
-	 * @throws UnknownTypeException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse getModel(final Request request, final Response response)
-			throws ModelNotFoundException, UnknownTypeException {
+	public <T extends Item> DataResponse getModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-		if (pk > 0) {
-			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-			final T model = modelService.get(type, pk);
+		try {
+			if (pk > 0) {
+				final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+				final T model = modelService.get(type, pk);
 
-			if (model == null) {
-				return DataResponse.notFound();
+				if (model == null) {
+					return DataResponse.notFound();
+				}
+
+				return DataResponse.ok().withPayload(model);
+			} else {
+				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onget",
+						"No valid PK provided.");
 			}
-
-			return DataResponse.ok().withPayload(model);
-		} else {
-			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onget", "No valid PK provided.");
+		} catch (ModelNotFoundException e) {
+			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Item not found.");
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
 		}
 	}
 
@@ -114,15 +125,23 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Gets an item based on the search query. The query is a JPQL WHERE
 	 * clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
-	 * 
-	 * @throws UnknownTypeException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse queryModel(final Request request, final Response response)
-			throws UnknownTypeException {
+	public <T extends Item> DataResponse queryModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		final Class<T> type;
+		try {
+			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		} catch (UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+
 		final String[] queryParamValues = request.queryParamsValues("q");
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
@@ -144,23 +163,28 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Gets item based on an example. <br/>
-	 * <br/>
-	 * {@link ModelService#get(Class, Map)} is called (=search by example).
-	 * 
-	 * @throws UnknownTypeException
+	 * <p>
+	 * Gets item based on an example.
+	 * </p>
+	 * {@link ModelService#get(Class, Map)} is called (= search by example).
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> Object queryModelByExample(final Request request, final Response response)
-			throws UnknownTypeException {
+	public <T extends Item> DataResponse queryModelByExample(final Request request, final Response response) {
 
 		try {
 			final T example = deserializeToItem(request);
 			final List<T> items = modelService.getAllByExample(example);
 
 			return DataResponse.ok().withPayload(items);
-		} catch (UnknownTypeException | DeserializationException e) {
+		} catch (UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		} catch (DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("query.unknowntype",
 					"Could not deserialize request body into valid example item.");
 		}
@@ -169,22 +193,23 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique
 	 * properties), an error is returned.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws UnknownTypeException
-	 * @throws ModelSaveException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse createModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException {
+	public <T extends Item> DataResponse createModel(final Request request, final Response response) {
 
 		try {
 			final T item = deserializeToItem(request);
 			modelService.save(item);
 
 			return DataResponse.created().withPayload(Collections.singletonMap("pk", item.getPk()));
+		} catch (UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.oncreate", e.getMessage());
 		} catch (final ModelNotUniqueException e) {
@@ -193,7 +218,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final ModelValidationException e) {
 			final List<String> messages = new ArrayList<>();
 			messages.add(e.getMessage());
-			
+
 			e.getConstraintViolations().stream().map((c) -> {
 				return String.format("%s.%s could not be set to {%s}: %s", c.getRootBean().getClass().getSimpleName(),
 						c.getPropertyPath(), c.getInvalidValue(), c.getMessage());
@@ -206,21 +231,25 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 	/**
 	 * Removes the given item. The PK or a search criteria has to be set.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws UnknownTypeException
-	 * @throws ModelSaveException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse deleteModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException {
+	public <T extends Item> DataResponse deleteModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
 		if (pk > -1) {
-			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+			final Class<T> type;
+			try {
+				type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+			} catch (UnknownTypeException e) {
+				return RESPONSE_UNKNOWN_TYPE;
+			}
 			try {
 				modelService.remove(type, pk);
 
@@ -239,26 +268,39 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want
 	 * to update a few fields, use the PATCH Method.
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws UnknownTypeException
-	 * @throws ModelSaveException
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.put, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException {
+	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
 
 		return partiallyUpdateModel(request, response);
 	}
 
+	/**
+	 * <p>
+	 * partiallyUpdateModel.
+	 * </p>
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
+	 */
 	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response)
-			throws UnknownTypeException, ModelSaveException {
+	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response) {
 
 		// get type
 		final String typeCode = request.params(":typecode");
-		final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		final Class<T> type;
+		try {
+			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		} catch (UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
 
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
@@ -279,6 +321,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				modelService.save(oldItem);
 
 				return DataResponse.accepted();
+			} catch (UnknownTypeException e) {
+				return RESPONSE_UNKNOWN_TYPE;
 			} catch (final ModelNotUniqueException | ModelValidationException e) {
 				return DataResponse.conflict().withError("error.onpartialupdate", e.getMessage());
 			} catch (final ModelNotFoundException e) {
@@ -326,4 +370,6 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		return serializationService.fromJson(content, JsonNode.class);
 	}
 
+	private static DataResponse RESPONSE_UNKNOWN_TYPE = DataResponse.withStatus(HttpStatus.BAD_REQUEST)
+			.withError("error.ongetall", "Unknown item type.");
 }

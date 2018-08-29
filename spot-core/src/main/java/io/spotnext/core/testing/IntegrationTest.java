@@ -13,6 +13,13 @@ import org.springframework.test.context.BootstrapWith;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 
+/**
+ * <p>IntegrationTest class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

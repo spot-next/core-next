@@ -19,14 +19,23 @@ import io.spotnext.core.persistence.query.lambda.ToJpqlQueryVisitor;
 import io.spotnext.core.persistence.service.LambdaQueryTranslationService;
 import io.spotnext.core.types.Item;
 
+/**
+ * <p>DefaultLambdaQueryTranslationService class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslationService {
 
+	/** Constant <code>FS_MAIN_ALIAS="item"</code> */
 	public static final String FS_MAIN_ALIAS = "item";
 
 	@Resource
 	private ModelService modelService;
 
+	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> JpqlQuery<T> translate(final LambdaQuery<T> query) {
 
