@@ -50,9 +50,11 @@ import ch.qos.logback.core.util.CloseUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * @see <a href="http://marcosemiao4j.wordpress.com">Marco4J</a>
+ * <p>TransformTypesMojo class.</p>
  *
+ * @see <a href="http://marcosemiao4j.wordpress.com">Marco4J</a>
  * @author Marco Semiao
+ * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 @Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
@@ -67,6 +69,7 @@ public class TransformTypesMojo extends AbstractMojo {
 	@Parameter
 	private boolean includeJars;
 
+	/** {@inheritDoc} */
 	@Override
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException, MojoFailureException {

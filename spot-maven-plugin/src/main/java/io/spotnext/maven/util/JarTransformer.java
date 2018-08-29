@@ -35,12 +35,11 @@ import org.apache.maven.plugin.logging.Log;
 import io.spotnext.maven.Constants;
 
 /**
+ * <p>JarTransformer class.</p>
  *
  * @see <a href="http://marcosemiao4j.wordpress.com">Marco4J</a>
- *
- *
  * @author Marco Semiao
- *
+ * @since 1.0
  */
 public class JarTransformer {
 
@@ -50,6 +49,14 @@ public class JarTransformer {
 	private final List<File> sources;
 	private final List<ClassFileTransformer> classFileTransformers;
 
+	/**
+	 * <p>Constructor for JarTransformer.</p>
+	 *
+	 * @param logger a {@link org.apache.maven.plugin.logging.Log} object.
+	 * @param loader a {@link java.lang.ClassLoader} object.
+	 * @param sources a {@link java.util.List} object.
+	 * @param classFileTransformers a {@link java.util.List} object.
+	 */
 	public JarTransformer(final Log logger, final ClassLoader loader, final List<File> sources,
 			final List<ClassFileTransformer> classFileTransformers) {
 		this.logger = logger;
@@ -58,6 +65,13 @@ public class JarTransformer {
 		this.classFileTransformers = classFileTransformers;
 	}
 
+	/**
+	 * <p>transform.</p>
+	 *
+	 * @param destination a {@link java.io.File} object.
+	 * @throws java.io.IOException if any.
+	 * @throws java.lang.instrument.IllegalClassFormatException if any.
+	 */
 	public void transform(final File destination) throws IOException, IllegalClassFormatException {
 		JarOutputStream destinationJar = null;
 
@@ -90,16 +104,38 @@ public class JarTransformer {
 		}
 	}
 
+	/**
+	 * <p>addPreResource.</p>
+	 *
+	 * @param destinationJar a {@link java.util.jar.JarOutputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws java.lang.instrument.IllegalClassFormatException if any.
+	 */
 	protected void addPreResource(final JarOutputStream destinationJar)
 			throws IOException, IllegalClassFormatException {
 
 	}
 
+	/**
+	 * <p>addPostResource.</p>
+	 *
+	 * @param destinationJar a {@link java.util.jar.JarOutputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws java.lang.instrument.IllegalClassFormatException if any.
+	 */
 	protected void addPostResource(final JarOutputStream destinationJar)
 			throws IOException, IllegalClassFormatException {
 
 	}
 
+	/**
+	 * <p>transformSource.</p>
+	 *
+	 * @param source a {@link java.util.jar.JarFile} object.
+	 * @param destinationJar a {@link java.util.jar.JarOutputStream} object.
+	 * @throws java.io.IOException if any.
+	 * @throws java.lang.instrument.IllegalClassFormatException if any.
+	 */
 	protected void transformSource(final JarFile source, final JarOutputStream destinationJar)
 			throws IOException, IllegalClassFormatException {
 		final Enumeration<JarEntry> entries = source.entries();
@@ -121,6 +157,15 @@ public class JarTransformer {
 		}
 	}
 
+	/**
+	 * <p>transformByteCode.</p>
+	 *
+	 * @param resourceName a {@link java.lang.String} object.
+	 * @param byteCode an array of {@link byte} objects.
+	 * @return an array of {@link byte} objects.
+	 * @throws java.io.IOException if any.
+	 * @throws java.lang.instrument.IllegalClassFormatException if any.
+	 */
 	protected byte[] transformByteCode(final String resourceName, final byte[] byteCode)
 			throws IOException, IllegalClassFormatException {
 		if (classFileTransformers == null || classFileTransformers.isEmpty()) {
@@ -143,6 +188,13 @@ public class JarTransformer {
 		return byteCodeModified;
 	}
 
+	/**
+	 * <p>convert.</p>
+	 *
+	 * @param inputStream a {@link java.io.InputStream} object.
+	 * @return an array of {@link byte} objects.
+	 * @throws java.io.IOException if any.
+	 */
 	protected final static byte[] convert(final InputStream inputStream) throws IOException {
 		int nRead;
 		final byte[] data = new byte[1024];

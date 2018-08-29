@@ -8,6 +8,11 @@ import java.util.stream.Collectors;
 
 import io.spotnext.maven.velocity.JavaMethodModifier;
 
+/**
+ * <p>JavaMethod class.</p>
+ *
+ * @since 1.0
+ */
 public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;
 
@@ -16,30 +21,62 @@ public class JavaMethod extends JavaMember {
 
 	protected String codeBlock;
 
+	/**
+	 * <p>Getter for the field <code>codeBlock</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	public String getCodeBlock() {
 		return codeBlock;
 	}
 
+	/**
+	 * <p>Setter for the field <code>codeBlock</code>.</p>
+	 *
+	 * @param codeBlock a {@link java.lang.String} object.
+	 */
 	public void setCodeBlock(String codeBlock) {
 		this.codeBlock = codeBlock;
 	}
 
+	/**
+	 * <p>Getter for the field <code>methodModifiers</code>.</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public Set<JavaMethodModifier> getMethodModifiers() {
 		return methodModifiers;
 	}
 
+	/**
+	 * <p>addMethodModifier.</p>
+	 *
+	 * @param modifier a {@link io.spotnext.maven.velocity.JavaMethodModifier} object.
+	 */
 	public void addMethodModifier(JavaMethodModifier modifier) {
 		this.methodModifiers.add(modifier);
 	}
 
+	/**
+	 * <p>addArgument.</p>
+	 *
+	 * @param name a {@link java.lang.String} object.
+	 * @param type a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
+	 */
 	public void addArgument(String name, JavaMemberType type) {
 		this.arguments.add(new JavaMethodArgument(type, name));
 	}
 
+	/**
+	 * <p>Getter for the field <code>arguments</code>.</p>
+	 *
+	 * @return a {@link java.util.List} object.
+	 */
 	public List<JavaMethodArgument> getArguments() {
 		return arguments;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public Set<String> getImports() {
 		final Set<String> allImports = super.getImports();

@@ -11,14 +11,20 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import io.spotnext.core.support.util.ValidationUtil;
 
+/**
+ * <p>MavenUtil class.</p>
+ *
+ * @since 1.0
+ */
 public class MavenUtil {
 
 	/**
 	 * Resolves a artifact dependency file.
-	 * 
-	 * @param repository
-	 * @param artifact
-	 * @throws IOException
+	 *
+	 * @param repository a {@link org.apache.maven.artifact.repository.ArtifactRepository} object.
+	 * @param artifact a {@link org.apache.maven.artifact.Artifact} object.
+	 * @throws java.io.IOException
+	 * @return a {@link java.io.File} object.
 	 */
 	public static File getArtiactFile(final ArtifactRepository repository, final Artifact artifact) throws IOException {
 		ValidationUtil.validateNotNull("Repository must be set", repository);

@@ -8,6 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>TemplateFile class.</p>
+ *
+ * @since 1.0
+ */
 @Documented
 @Target(TYPE)
 @Inherited
