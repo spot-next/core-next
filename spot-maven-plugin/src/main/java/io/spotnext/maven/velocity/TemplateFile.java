@@ -8,6 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * <p>TemplateFile class.</p>
+ *
+ * @since 1.0
+ */
 @Documented
 @Target(TYPE)
 @Inherited
@@ -15,7 +20,7 @@ import java.lang.annotation.Target;
 public @interface TemplateFile {
 
 	/**
-	 * This is the file name of the template file. It has to be on the classpath.
+	 * @return the file name of the template file. It has to be on the classpath.
 	 */
 	String value();
 }

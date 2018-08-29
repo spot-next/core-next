@@ -21,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
@@ -42,11 +41,30 @@ import io.spotnext.core.support.util.FileUtils;
 import io.spotnext.core.types.Item;
 import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
 
+/**
+ * <p>
+ * ItemTypeDefinitionUtil class.
+ * </p>
+ *
+ * @since 1.0
+ */
 public class ItemTypeDefinitionUtil {
 	protected MavenProject project;
 	protected ArtifactRepository localRepository;
 	protected Log log;
 
+	/**
+	 * <p>
+	 * Constructor for ItemTypeDefinitionUtil.
+	 * </p>
+	 *
+	 * @param project         a {@link org.apache.maven.project.MavenProject}
+	 *                        object.
+	 * @param localRepository a
+	 *                        {@link org.apache.maven.artifact.repository.ArtifactRepository}
+	 *                        object.
+	 * @param log             a {@link org.apache.maven.plugin.logging.Log} object.
+	 */
 	public ItemTypeDefinitionUtil(final MavenProject project, final ArtifactRepository localRepository, final Log log) {
 		this.project = project;
 		this.localRepository = localRepository;
@@ -56,11 +74,13 @@ public class ItemTypeDefinitionUtil {
 	/**
 	 * Fetches all itemtype definition files available in the maven dependency
 	 * hierarchy.
-	 * 
-	 * @throws IOException
-	 * @throws MojoExecutionException
+	 *
+	 * @return a {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 *         object.
+	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException if
+	 *         there is a problem with resolving the types
 	 */
-	public TypeDefinitions fetchItemTypeDefinitions() throws IOException, IllegalItemTypeDefinitionException {
+	public TypeDefinitions fetchItemTypeDefinitions() throws IllegalItemTypeDefinitionException {
 		final List<InputStream> definitionsFiles = findItemTypeDefinitions();
 		TypeDefinitions itemTypesDefinitions;
 		itemTypesDefinitions = aggregateTypeDefninitions(definitionsFiles);
@@ -72,9 +92,9 @@ public class ItemTypeDefinitionUtil {
 	 * Search all dependencies and the current project's resource folders to get
 	 * item type definition files.
 	 *
-	 * @throws IOException
-	 * @throws MojoExecutionException
-	 * @throws DependencyResolutionException1
+	 * @return a {@link java.util.List} object.
+	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException in
+	 *         case an artifact can't be read from the file system
 	 */
 	protected List<InputStream> findItemTypeDefinitions() throws IllegalItemTypeDefinitionException {
 		final Map<String, InputStream> definitionFiles = new LinkedHashMap<>();
@@ -140,6 +160,18 @@ public class ItemTypeDefinitionUtil {
 		return new ArrayList<>(definitionFiles.values());
 	}
 
+	/**
+	 * <p>
+	 * populateTypeDefinition.
+	 * </p>
+	 *
+	 * @param source     a {@link java.util.List} object.
+	 * @param target     a {@link java.util.Map} object.
+	 * @param mergeTypes a boolean.
+	 * @param            <T> a T object.
+	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException if
+	 *         there is a problem merging type definitions.
+	 */
 	protected <T extends BaseType> void populateTypeDefinition(final List<T> source, final Map<String, T> target,
 			final boolean mergeTypes) throws IllegalItemTypeDefinitionException {
 
@@ -163,8 +195,11 @@ public class ItemTypeDefinitionUtil {
 	/**
 	 * Aggregate all item type definitions of all definition files.
 	 *
-	 * @param definitions
-	 * @throws IllegalItemTypeDefinitionException
+	 * @param definitions a {@link java.util.List} object.
+	 * @return a {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 *         object.
+	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException if
+	 *         there is a problem merging type definitions.
 	 */
 	protected TypeDefinitions aggregateTypeDefninitions(final List<InputStream> definitions)
 			throws IllegalItemTypeDefinitionException {
@@ -291,9 +326,10 @@ public class ItemTypeDefinitionUtil {
 
 	/**
 	 * Parses a given XML item type definition file and unmarshals it to a
-	 * {@link Types} object.
+	 * {@link io.spotnext.core.infrastructure.maven.xml.Types} object.
 	 *
-	 * @param file
+	 * @param file a {@link java.io.InputStream} object.
+	 * @return a {@link io.spotnext.core.infrastructure.maven.xml.Types} object.
 	 */
 	protected Types loadTypeDefinition(final InputStream file) {
 		Types typeDef = null;
@@ -316,7 +352,8 @@ public class ItemTypeDefinitionUtil {
 	 * Checks if the given file's name matches the item type definition filename
 	 * pattern.
 	 *
-	 * @param file
+	 * @param fileName a {@link java.lang.String} object.
+	 * @return a boolean.
 	 */
 	protected boolean isItemTypeDefinitionFile(final String fileName) {
 		// ignore merged itemtypes files.
@@ -331,8 +368,11 @@ public class ItemTypeDefinitionUtil {
 
 	/**
 	 * Store merged item type definitions in the build folder.
-	 * 
-	 * @param itemTypesDefinitions
+	 *
+	 * @param itemTypesDefinitions     a
+	 *                                 {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 *                                 object.
+	 * @param targetResourcesDirectory a {@link java.io.File} object.
 	 */
 	public void saveTypeDefinitions(final TypeDefinitions itemTypesDefinitions, final File targetResourcesDirectory) {
 		if (!targetResourcesDirectory.exists() && !targetResourcesDirectory.mkdir()) {
