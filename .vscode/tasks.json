@@ -7,13 +7,14 @@
             "label": "clean install",
             "type": "shell",
             "command": "mvn -B clean install",
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         },
         {
             "label": "install",
             "type": "shell",
             "command": "mvn -B install",
             "group": "build"
-        },
+        }
     ]
 }

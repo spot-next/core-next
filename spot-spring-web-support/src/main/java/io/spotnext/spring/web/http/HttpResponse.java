@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
  * This entity extends the spring {@link ResponseEntity} with the ability to set
  * the body and status after object creation.
  * 
- * @param <T>
+ * @param <T> the type of the payload
  */
 public class HttpResponse<T> extends ResponseEntity<Payload<T>> {
 	protected Payload<T> body;
@@ -35,8 +35,7 @@ public class HttpResponse<T> extends ResponseEntity<Payload<T>> {
 
 	/**
 	 * Sets the HTTP status code of the response.
-	 * 
-	 * @return the HTTP status as an HttpStatus enum entry
+	 * @param status the HTTP status enum
 	 */
 	public void setStatusCode(final HttpStatus status) {
 		this.statusCode = status;
