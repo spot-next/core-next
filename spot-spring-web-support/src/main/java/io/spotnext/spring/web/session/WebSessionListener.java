@@ -20,18 +20,24 @@ import io.spotnext.spring.web.constants.SpringWebSupportConstants;
 
 /**
  * Implements a session listener that connects the application containers
- * session to the {@link SessionService}. It also listens to authentications and
+ * session to the {@link io.spotnext.core.infrastructure.service.SessionService}. It also listens to authentications and
  * sets the authenticated used to the backend session.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @WebListener
 public class WebSessionListener
 		implements HttpSessionListener, ApplicationListener<InteractiveAuthenticationSuccessEvent> {
 
+	/** {@inheritDoc} */
 	@Override
 	public void sessionCreated(final HttpSessionEvent event) {
 		//
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void sessionDestroyed(final HttpSessionEvent event) {
 		String spotSessionId = getSpotSessionid(event.getSession());
@@ -45,6 +51,7 @@ public class WebSessionListener
 		return (String) session.getAttribute(SpringWebSupportConstants.SPOT_SESSION_ID);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void onApplicationEvent(final InteractiveAuthenticationSuccessEvent event) {
 		final UserDetails userDetails = (UserDetails) event.getAuthentication().getDetails();

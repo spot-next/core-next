@@ -31,6 +31,10 @@ import io.spotnext.spring.web.dto.UserStatus;
 /**
  * This handler implementation combines a few spring security handlers together.
  * It is primarily useful for RESTful services.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class RestAuthenticationHandler implements AuthenticationEntryPoint, AuthenticationSuccessHandler,
 		AuthenticationFailureHandler, LogoutSuccessHandler, AccessDeniedHandler {
@@ -42,6 +46,8 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	protected SerializationService serializationService;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Aborts a request in case it is not authenticated. It don't sends the
 	 * www-authenticate header though as this would show a login box in the
 	 * browser..
@@ -58,6 +64,8 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Called when authentication was success.
 	 */
 	@Override
@@ -75,6 +83,8 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Called when authentication failed.
 	 */
 	@Override
@@ -90,6 +100,8 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Called when access to resource is denied.
 	 */
 	@Override
@@ -107,6 +119,8 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Called when logout was successful.
 	 */
 	@Override

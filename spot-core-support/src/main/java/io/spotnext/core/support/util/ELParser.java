@@ -8,17 +8,19 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
- * <p>ELParser class.</p>
+ * <p>
+ * ELParser class.
+ * </p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 public class ELParser<I extends Object, O extends Object> implements Transformer<I, O> {
 	private final String expression;
 
 	/**
-	 * <p>Constructor for ELParser.</p>
-	 *
-	 * @param expression a {@link java.lang.String} object.
+	 * @param expression to evaluate
 	 */
 	public ELParser(final String expression) {
 		this.expression = expression;
@@ -31,13 +33,15 @@ public class ELParser<I extends Object, O extends Object> implements Transformer
 	}
 
 	/**
-	 * <p>evaluate.</p>
+	 * <p>
+	 * evaluate.
+	 * </p>
 	 *
-	 * @param object a I object.
-	 * @param property a {@link java.lang.String} object.
-	 * @param <I> a I object.
-	 * @param <O> a O object.
-	 * @return a O object.
+	 * @param          <I> the generic input type
+	 * @param          <O> the generic output type
+	 * @param object   the input value to evaluate
+	 * @param property the property of the input value
+	 * @return the value of the given property
 	 */
 	public static <I extends Object, O extends Object> O evaluate(final I object, final String property) {
 		final ExpressionParser parser = new SpelExpressionParser();

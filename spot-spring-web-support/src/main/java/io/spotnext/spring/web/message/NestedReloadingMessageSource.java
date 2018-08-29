@@ -6,6 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
+/**
+ * <p>NestedReloadingMessageSource class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 public class NestedReloadingMessageSource extends ReloadableResourceBundleMessageSource {
 
 	protected boolean ignoreMissingMessageCode = false;
@@ -41,10 +48,10 @@ public class NestedReloadingMessageSource extends ReloadableResourceBundleMessag
 
 	/**
 	 * If no message is found and this is set to true, then the key will be
-	 * returned as message. Otherwise a {@link NoSuchMessageException} is
+	 * returned as message. Otherwise a {@link org.springframework.context.NoSuchMessageException} is
 	 * thrown.
-	 * 
-	 * @param ignoreMissingMessageCode
+	 *
+	 * @param ignoreMissingMessageCode a boolean.
 	 */
 	public void setIgnoreMissingMessageCode(final boolean ignoreMissingMessageCode) {
 		this.ignoreMissingMessageCode = ignoreMissingMessageCode;

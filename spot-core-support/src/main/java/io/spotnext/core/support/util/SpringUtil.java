@@ -14,6 +14,8 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
  * <p>SpringUtil class.</p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 public class SpringUtil {
 

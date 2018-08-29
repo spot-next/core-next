@@ -4,6 +4,8 @@ package io.spotnext.core.support.exception;
  * <p>CannotInvokeException class.</p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 public class CannotInvokeException extends Exception {
 	private static final long serialVersionUID = 1L;

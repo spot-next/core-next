@@ -14,6 +14,8 @@ import io.spotnext.core.support.exception.CannotInvokeException;
  * object and retrieve it again - although without type-safety.
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 public class DynamicObject {
 	/** Constant <code>DATE_FORMAT="yyyy-MM-dd HH:mm:ss"</code> */
@@ -28,7 +30,7 @@ public class DynamicObject {
 	 * Sets the given value for the property.
 	 *
 	 * @param propertyName a {@link java.lang.String} object.
-	 * @param value a {@link java.lang.Object} object.
+	 * @param value        a {@link java.lang.Object} object.
 	 * @return the object
 	 */
 	public DynamicObject prop(final String propertyName, final Object value) {
@@ -47,12 +49,14 @@ public class DynamicObject {
 	}
 
 	/**
-	 * Invoke (= run) a {@link java.util.concurrent.Callable} object and return the return value. If
+	 * Invoke (= run) a {@link Callable} object and return the
+	 * return value.
 	 *
-	 * @param propertyName a {@link java.lang.String} object.
-	 * @param <R> a R object.
-	 * @return a R object.
-	 * @throws io.spotnext.core.support.exception.CannotInvokeException if any.
+	 * @param propertyName the property name of the {@link Callable} value
+	 * @return the return value of the callable, can be null
+	 * @throws CannotInvokeException if the given property is not of type
+	 *                               {@link Callable} or any other exception is
+	 *                               thrown during invoking the property value
 	 */
 	public <R extends Object> R invoke(final String propertyName) throws CannotInvokeException {
 		final Object callable = properties.get(propertyName);

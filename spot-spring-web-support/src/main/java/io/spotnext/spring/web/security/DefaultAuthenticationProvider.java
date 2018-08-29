@@ -21,12 +21,22 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.spring.web.security.exception.AuthenticationException;
 
 /**
- * Authenticates users using the {@link AuthenticationService} and the
+ * Authenticates users using the
+ * {@link io.spotnext.core.security.service.AuthenticationService} and the
  * configured admin config property.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
+	/**
+	 * Constant
+	 * <code>ADMIN_USER_NAME_KEY="security.authentication.admin.username"</code>
+	 */
 	public static final String ADMIN_USER_NAME_KEY = "security.authentication.admin.username";
+	/** Constant <code>DEFAULT_ADMIN_USER_NAME="admin"</code> */
 	public static final String DEFAULT_ADMIN_USER_NAME = "admin";
 
 	@Autowired
@@ -42,8 +52,12 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	protected UserService<User, UserGroup> userService;
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Authenticates the given user and the credentials using the
 	 * {@link AuthenticationService}.
+	 * 
+	 * @param authentication the authentication object
 	 */
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -80,13 +94,13 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	/**
-	 * Compares the given {@link User#uid} against the
+	 * Compares the given {@link User#getId()} against the
 	 * {@link DefaultAuthenticationProvider#ADMIN_USER_NAME_KEY} using
-	 * {@link DefaultAuthenticationProvider#DEFAULT_ADMIN_USER_NAME} as
-	 * fallback.<br />
-	 * If the username matches, then the user will be given the admin role.
+	 * {@link DefaultAuthenticationProvider#DEFAULT_ADMIN_USER_NAME} as fallback. If
+	 * the username matches, then the user will be given the admin role.
 	 * 
-	 * @param user
+	 * @param user the user to check
+	 * @return true if the given user is admin
 	 */
 	protected boolean isAdminUser(final User user) {
 		final String adminUserName = configurationService.getString(ADMIN_USER_NAME_KEY, DEFAULT_ADMIN_USER_NAME);
@@ -94,6 +108,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 		return StringUtils.equals(user.getId(), adminUserName);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean supports(final Class<?> authentication) {
 		return authentication.equals(UsernamePasswordAuthenticationToken.class);

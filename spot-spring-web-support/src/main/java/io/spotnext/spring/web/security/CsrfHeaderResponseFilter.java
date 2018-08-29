@@ -16,9 +16,13 @@ import io.spotnext.spring.web.constants.SpringWebSupportConstants;
 /**
  * This filter sets a header field with the current CSRF token to the response.
  * This can be useful for pure REST-based applications.
- * 
- * Hint: set this filter after the {@link CsrfFilter} in the security filter
+ *
+ * Hint: set this filter after the {@link org.springframework.security.web.csrf.CsrfFilter} in the security filter
  * chain.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 public class CsrfHeaderResponseFilter extends OncePerRequestFilter {
 

@@ -14,15 +14,24 @@ import io.spotnext.spring.web.http.HttpResponse;
 import io.spotnext.spring.web.http.Status;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * <p>Abstract AbstractBaseRestController class.</p>
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
+ */
 @ControllerAdvice
 @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 public abstract class AbstractBaseRestController extends AbstractBaseController {
 
 	/**
 	 * Handles all thrown exceptions and returns error details as JSON.
-	 * 
-	 * @param request
-	 * @param exception
+	 *
+	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+	 * @param exception a {@link java.lang.Exception} object.
+	 * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+	 * @return a {@link io.spotnext.spring.web.http.HttpResponse} object.
 	 */
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody

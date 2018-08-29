@@ -14,16 +14,20 @@ import org.apache.commons.lang3.StringUtils;
 import io.spotnext.core.support.exception.UnsupportedLocale;
 
 /**
- * <p>MiscUtil class.</p>
+ * <p>
+ * MiscUtil class.
+ * </p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 @SuppressWarnings({ "unchecked", "REC_CATCH_EXCEPTION" })
 public class MiscUtil {
 
 	/**
-	 * Calls close() on all given objects that implement the {@link java.io.Closeable}
-	 * interface. Doesn't throw any exceptions at all.
+	 * Calls close() on all given objects that implement the
+	 * {@link java.io.Closeable} interface. Doesn't throw any exceptions at all.
 	 *
 	 * @param closableObjects a {@link java.io.Closeable} object.
 	 */
@@ -41,9 +45,11 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>intOrDefault.</p>
+	 * <p>
+	 * intOrDefault.
+	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a int.
 	 * @return a int.
 	 */
@@ -56,9 +62,11 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>longOrDefault.</p>
+	 * <p>
+	 * longOrDefault.
+	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a long.
 	 * @return a long.
 	 */
@@ -71,9 +79,11 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>doubleOrDefault.</p>
+	 * <p>
+	 * doubleOrDefault.
+	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a double.
 	 * @return a double.
 	 */
@@ -86,9 +96,11 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>floatOrDefault.</p>
+	 * <p>
+	 * floatOrDefault.
+	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a float.
 	 * @return a float.
 	 */
@@ -101,7 +113,9 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>removeEnclosingQuotes.</p>
+	 * <p>
+	 * removeEnclosingQuotes.
+	 * </p>
 	 *
 	 * @param string a {@link java.lang.String} object.
 	 * @return a {@link java.lang.String} object.
@@ -111,11 +125,13 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>toArray.</p>
+	 * <p>
+	 * toArray.
+	 * </p>
 	 *
 	 * @param collection a {@link java.util.Collection} object.
-	 * @param arrayType a {@link java.lang.Class} object.
-	 * @param <T> a T object.
+	 * @param arrayType  a {@link java.lang.Class} object.
+	 * @param            <T> a T object.
 	 * @return an array of T[] objects.
 	 */
 	public static <T> T[] toArray(final Collection<T> collection, final Class<T> arrayType) {
@@ -127,12 +143,15 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>parseLocale.</p>
+	 * <p>
+	 * parseLocale.
+	 * </p>
 	 *
-	 * @throws java.lang.IllegalStateException if the locale can be parsed but is not
-	 *                               available/valid.
+	 * @throws java.lang.IllegalStateException if the locale can be parsed but is
+	 *         not available/valid.
 	 * @param localeString a {@link java.lang.String} object.
 	 * @return a {@link java.util.Locale} object.
+	 * @throws java.lang.IllegalStateException if any.
 	 */
 	public static Locale parseLocale(String localeString) throws IllegalStateException {
 		Locale locale = null;
@@ -155,13 +174,17 @@ public class MiscUtil {
 	}
 
 	/**
-	 * <p>getCountryLocale.</p>
+	 * <p>
+	 * getCountryLocale.
+	 * </p>
 	 *
 	 * @param locale the locale that doesn't contain a country part, eg. for
 	 *               {@link java.util.Locale#ENGLISH}
-	 * @return a the corresponding locale with country part, eg. {@link java.util.Locale#UK}
-	 * @throws io.spotnext.core.support.exception.UnsupportedLocale when there is no country locale defined for the
-	 *                           given locale.
+	 * @return a the corresponding locale with country part, eg.
+	 *         {@link java.util.Locale#UK}
+	 * @throws io.spotnext.core.support.exception.UnsupportedLocale when there is no
+	 *         country locale defined for the given locale.
+	 * @throws io.spotnext.core.support.exception.UnsupportedLocale if any.
 	 */
 	public static Locale getCountryLocale(Locale locale) throws UnsupportedLocale {
 		Locale ret = locale;
@@ -194,7 +217,7 @@ public class MiscUtil {
 	 * Evaluates the given expression in a null-safe way (even for nested
 	 * expressions)
 	 * <p>
-	 * Example: $(() -> order.getOrderEntries().get(0).getCode()) will never fail
+	 * Example: $(() -&gt; order.getOrderEntries().get(0).getCode()) will never fail
 	 * with a {@link java.lang.NullPointerException}!
 	 * </p>
 	 *

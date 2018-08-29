@@ -21,11 +21,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Sets the current session calling
- * {@link SessionService#setCurrentSession(Session)}.
+ * {@link io.spotnext.core.infrastructure.service.SessionService#setCurrentSession(Session)}.
+ *
+ * @author mojo2012
+ * @version 1.0
+ * @since 1.0
  */
 @SuppressFBWarnings("MS_PKGPROTECT")
 public class WebSessionFilter extends OncePerRequestFilter {
 
+	/** Constant <code>RESOURCE_SUFFIXES</code> */
 	public final static String[] RESOURCE_SUFFIXES = { ".map", ".css", ".js", ".jpg", ".jpeg", ".gif", ".png", ".txt" };
 
 	@Override

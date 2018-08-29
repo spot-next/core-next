@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
  * <p>PropertiesUtil class.</p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 public class PropertiesUtil {
 

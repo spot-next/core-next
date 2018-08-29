@@ -19,6 +19,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * <p>FileUtils class.</p>
  *
  * @since 1.0
+ * @author mojo2012
+ * @version 1.0
  */
 @SuppressFBWarnings({ "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "OS_OPEN_STREAM" })
 public class FileUtils {
@@ -63,8 +65,8 @@ public class FileUtils {
 	 * Reads a file into an {@link java.io.InputStream}.
 	 *
 	 * @param filePath a {@link java.lang.String} object.
-	 * @throws java.io.FileNotFoundException
 	 * @return a {@link java.io.InputStream} object.
+	 * @throws java.io.FileNotFoundException if any.
 	 */
 	public static InputStream readFile(final String filePath) throws FileNotFoundException {
 		return new FileInputStream(filePath);
@@ -74,8 +76,8 @@ public class FileUtils {
 	 * Reads a file into an {@link java.io.InputStream}.
 	 *
 	 * @param file a {@link java.io.File} object.
-	 * @throws java.io.FileNotFoundException
 	 * @return a {@link java.io.InputStream} object.
+	 * @throws java.io.FileNotFoundException if any.
 	 */
 	public static InputStream readFile(final File file) throws FileNotFoundException {
 		return readFile(file.getAbsolutePath());
@@ -118,8 +120,8 @@ public class FileUtils {
 	 *
 	 * @param zipFilePath a {@link java.lang.String} object.
 	 * @param relativeFilePath a {@link java.lang.String} object.
-	 * @throws java.io.FileNotFoundException
 	 * @return a {@link java.io.InputStream} object.
+	 * @throws java.io.FileNotFoundException if any.
 	 */
 	public static InputStream readFileFromZipFile(final String zipFilePath, final String relativeFilePath)
 			throws FileNotFoundException {
@@ -136,8 +138,8 @@ public class FileUtils {
 	 * List the content of the given jar
 	 *
 	 * @param jarPath a {@link java.lang.String} object.
-	 * @throws java.io.IOException
 	 * @return a {@link java.util.List} object.
+	 * @throws java.io.IOException if any.
 	 */
 	public static List<String> getFileListFromJar(final String jarPath) throws IOException {
 		final List<String> content = new ArrayList<String>();
