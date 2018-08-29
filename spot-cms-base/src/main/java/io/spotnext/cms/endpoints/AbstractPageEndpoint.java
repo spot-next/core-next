@@ -1,4 +1,4 @@
-package io.spotnext.cms.controller;
+package io.spotnext.cms.endpoints;
 
 import java.util.Map;
 

@@ -2,7 +2,7 @@ package io.spotnext.commerce.controller;
 
 import org.springframework.stereotype.Controller;
 
-import io.spotnext.cms.controller.AbstractCmsEndpoint;
+import io.spotnext.cms.endpoints.AbstractPageEndpoint;
 import io.spotnext.cms.service.CmsPageService;
 
 /**
@@ -10,6 +10,6 @@ import io.spotnext.cms.service.CmsPageService;
  * {@link CmsPageService}.
  */
 @Controller(value = "/*")
-public class CmsBaseEndpoint extends AbstractCmsEndpoint {
+public class CmsBaseEndpoint extends AbstractPageEndpoint {
 
 }
