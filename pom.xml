@@ -130,7 +130,6 @@
 		<module>spot-cms-base</module>
 		<!-- <module>spot-mail</module> -->
 		<module>spot-sample-simple</module>
-		<module>spot-sample-spring-mvc</module>
 		<module>archetype-empty</module>
 	</modules>
 
@@ -518,7 +517,7 @@
 					<configuration>
 						<failOnError>false</failOnError>
 						<additionalparam>-Xdoclint:none</additionalparam>
-						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*</excludePackageNames>
+						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*:*Mojo*</excludePackageNames>
 						<excludes>**/gen/*</excludes>
 						<quiet>true</quiet>
 						<!-- does not work with revision property! -->
