@@ -34,19 +34,22 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * Helper utility to handle all kinds of reflection stuff.
+ *
+ * @since 1.0
  */
 public class ClassUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link Field} instance from the given {@link Class} object. If the
+	 * Returns a {@link java.lang.reflect.Field} instance from the given {@link java.lang.Class} object. If the
 	 * field does not exist, null is returned.
 	 *
-	 * @param type
-	 * @param fieldName
+	 * @param type a {@link java.lang.Class} object.
+	 * @param fieldName a {@link java.lang.String} object.
 	 * @param includeSuperTypes if this is true all super classes till and including
-	 *                          {@link Object} will be invoked.
+	 *                          {@link java.lang.Object} will be invoked.
+	 * @return a {@link java.lang.reflect.Field} object.
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
 			final boolean includeSuperTypes) {
@@ -77,14 +80,14 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all super classes of the given {@link Class} in the order <most
-	 * concrete class> to {@link Object}.
+	 * Returns all super classes of the given {@link java.lang.Class} in the order <most
+	 * concrete class> to {@link java.lang.Object}.
 	 *
-	 * @param type
-	 * @param stopClass         {@link Object} if null
+	 * @param type a {@link java.lang.Class} object.
+	 * @param stopClass         {@link java.lang.Object} if null
 	 * @param includeStopClass  if this is true, the stop class will be included.
 	 *                          defaults to
-	 * @param includeStartClass if this is true, the given {@link Class} is included
+	 * @param includeStartClass if this is true, the given {@link java.lang.Class} is included
 	 *                          in the result
 	 * @return a sorted list of all super classes of the given class.
 	 */
@@ -121,9 +124,9 @@ public class ClassUtil {
 	 * Set the field value for the given object. This silently fails if something
 	 * goes wrong. something goes wrong.
 	 *
-	 * @param object
-	 * @param fieldName
-	 * @param value
+	 * @param object a {@link java.lang.Object} object.
+	 * @param fieldName a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.Object} object.
 	 */
 	public static void setField(final Object object, final String fieldName, final Object value) {
 		boolean fieldSet = false;
@@ -151,6 +154,11 @@ public class ClassUtil {
 	/**
 	 * Returns the field value for the given object. This silently fails if
 	 * something goes wrong. something goes wrong.
+	 *
+	 * @param object a {@link java.lang.Object} object.
+	 * @param fieldName a {@link java.lang.String} object.
+	 * @param includeInAccessableFields a boolean.
+	 * @return a {@link java.lang.Object} object.
 	 */
 	public static Object getField(final Object object, final String fieldName,
 			final boolean includeInAccessableFields) {
@@ -183,6 +191,11 @@ public class ClassUtil {
 		return retVal;
 	}
 
+	/**
+	 * <p>setAccessable.</p>
+	 *
+	 * @param object a {@link java.lang.reflect.AccessibleObject} object.
+	 */
 	protected static void setAccessable(final AccessibleObject object) {
 		AccessController.doPrivileged(new PrivilegedAction<Void>() {
 			@Override
@@ -196,6 +209,11 @@ public class ClassUtil {
 	/**
 	 * Invokes a method on a given object. This silently fails if something goes
 	 * wrong.
+	 *
+	 * @param object a {@link java.lang.Object} object.
+	 * @param methodName a {@link java.lang.String} object.
+	 * @param args a {@link java.lang.Object} object.
+	 * @return a {@link java.lang.Object} object.
 	 */
 	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
 		Object retVal = null;
@@ -265,10 +283,11 @@ public class ClassUtil {
 
 	/**
 	 * The whole class hierarchy is searched for fields with the given annotation.
-	 * 
+	 *
 	 * @param type       the class to inspect
 	 * @param annotation the annotation that must be present on the field
 	 * @return all fields of the given class that have the given annotation.
+	 * @param <A> a A object.
 	 */
 	public static <A extends Annotation> Set<Field> getFieldsWithAnnotation(final Class<?> type,
 			final Class<A> annotation) {
@@ -278,7 +297,7 @@ public class ClassUtil {
 
 	/**
 	 * Returns all fields of the type and all its super types.
-	 * 
+	 *
 	 * @param type must not be null
 	 * @return all fields
 	 */
@@ -288,7 +307,7 @@ public class ClassUtil {
 
 	/**
 	 * Retrieves all fields recursively that match the given filter predicate.
-	 * 
+	 *
 	 * @param type   must not be null
 	 * @param filter returns true for all selected fields. If null, all fields will
 	 *               be returned.
@@ -310,10 +329,11 @@ public class ClassUtil {
 
 	/**
 	 * The whole class hierarchy is searched for methods with the given annotation.
-	 * 
+	 *
 	 * @param type       the class to inspect
 	 * @param annotation the annotation that must be present on the method
 	 * @return all methods of the given class that have the given annotation.
+	 * @param <A> a A object.
 	 */
 	public static <A extends Annotation> Set<Method> getMethodsWithAnnotation(final Class<?> type,
 			final Class<A> annotation) {
@@ -334,6 +354,9 @@ public class ClassUtil {
 	/**
 	 * Returns all assignable classes for the given class, starting with the actual
 	 * class.
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @return a {@link java.util.List} object.
 	 */
 	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
 		final List<Class<?>> classes = new ArrayList<>();
@@ -345,6 +368,10 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given joinPoint.
+	 *
+	 * @param joinPoint a {@link org.aspectj.lang.JoinPoint} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a boolean.
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		return getAnnotation(joinPoint, annotation) != null;
@@ -353,6 +380,10 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
+	 *
+	 * @param joinPoint a {@link org.aspectj.lang.JoinPoint} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a A object.
 	 */
 	public static <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {
 		A ret = null;
@@ -383,6 +414,10 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given class.
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a boolean.
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final Class<?> type, final Class<A> annotation) {
 		return getAnnotation(type, annotation) != null;
@@ -391,6 +426,10 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a A object.
 	 */
 	public static <A extends Annotation> A getAnnotation(final Class<?> type, final Class<A> annotation) {
 		return type.getAnnotation(annotation);
@@ -398,6 +437,10 @@ public class ClassUtil {
 
 	/**
 	 * Checks for the presence of the given annotation on the given member.
+	 *
+	 * @param member a {@link java.lang.reflect.AccessibleObject} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a boolean.
 	 */
 	public static <A extends Annotation> boolean hasAnnotation(final AccessibleObject member,
 			final Class<A> annotation) {
@@ -407,11 +450,24 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not
 	 * found, null is returned.
+	 *
+	 * @param member a {@link java.lang.reflect.AccessibleObject} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @return a A object.
 	 */
 	public static <A extends Annotation> A getAnnotation(final AccessibleObject member, final Class<A> annotation) {
 		return member.getAnnotation(annotation);
 	}
 
+	/**
+	 * <p>getAnnotation.</p>
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param fieldName a {@link java.lang.String} object.
+	 * @param annotation a {@link java.lang.Class} object.
+	 * @param <A> a A object.
+	 * @return a A object.
+	 */
 	public static <A extends Annotation> A getAnnotation(final Class<?> type, final String fieldName,
 			final Class<A> annotation) {
 
@@ -428,10 +484,22 @@ public class ClassUtil {
 		return null;
 	}
 
+	/**
+	 * <p>getGenericCollectionType.</p>
+	 *
+	 * @param field a {@link org.aspectj.lang.reflect.FieldSignature} object.
+	 * @return a {@link java.lang.Class} object.
+	 */
 	public static Class<?> getGenericCollectionType(final FieldSignature field) {
 		return getGenericCollectionType(field.getField());
 	}
 
+	/**
+	 * <p>getGenericCollectionType.</p>
+	 *
+	 * @param field a {@link java.lang.reflect.Field} object.
+	 * @return a {@link java.lang.Class} object.
+	 */
 	public static Class<?> getGenericCollectionType(final Field field) {
 		final ParameterizedType paramType = (ParameterizedType) field.getGenericType();
 
@@ -440,6 +508,14 @@ public class ClassUtil {
 		return collectionType;
 	}
 
+	/**
+	 * <p>instantiate.</p>
+	 *
+	 * @param type a {@link java.lang.Class} object.
+	 * @param constructorArgs a {@link java.lang.Object} object.
+	 * @param <T> a T object.
+	 * @return a {@link java.util.Optional} object.
+	 */
 	public static <T> Optional<T> instantiate(final Class<T> type, final Object... constructorArgs) {
 		T instance = null;
 
@@ -511,6 +587,14 @@ public class ClassUtil {
 		return Optional.ofNullable(instance);
 	}
 
+	/**
+	 * <p>visitFields.</p>
+	 *
+	 * @param object a {@link java.lang.Object} object.
+	 * @param fieldFilter a {@link java.util.function.Predicate} object.
+	 * @param fieldConsumer a {@link java.util.function.BiConsumer} object.
+	 * @param recursive a boolean.
+	 */
 	public static void visitFields(Object object, Predicate<Field> fieldFilter, BiConsumer<Field, Object> fieldConsumer,
 			boolean recursive) {
 

@@ -12,9 +12,13 @@ import io.spotnext.core.support.exception.CannotInvokeException;
 /**
  * The dynamic object works similar like a javascript object. You can store any
  * object and retrieve it again - although without type-safety.
+ *
+ * @since 1.0
  */
 public class DynamicObject {
+	/** Constant <code>DATE_FORMAT="yyyy-MM-dd HH:mm:ss"</code> */
 	protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	/** Constant <code>GSON</code> */
 	protected static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().serializeNulls()
 			.setDateFormat(DATE_FORMAT).create();
 
@@ -22,9 +26,9 @@ public class DynamicObject {
 
 	/**
 	 * Sets the given value for the property.
-	 * 
-	 * @param propertyName
-	 * @param value
+	 *
+	 * @param propertyName a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.Object} object.
 	 * @return the object
 	 */
 	public DynamicObject prop(final String propertyName, final Object value) {
@@ -34,17 +38,21 @@ public class DynamicObject {
 
 	/**
 	 * Returns the value of the given property or null.
-	 * 
-	 * @param propertyName
+	 *
+	 * @param propertyName a {@link java.lang.String} object.
+	 * @return a {@link java.lang.Object} object.
 	 */
 	public Object prop(final String propertyName) {
 		return properties.get(propertyName);
 	}
 
 	/**
-	 * Invoke (= run) a {@link Callable} object and return the return value. If
-	 * 
-	 * @param propertyName
+	 * Invoke (= run) a {@link java.util.concurrent.Callable} object and return the return value. If
+	 *
+	 * @param propertyName a {@link java.lang.String} object.
+	 * @param <R> a R object.
+	 * @return a R object.
+	 * @throws io.spotnext.core.support.exception.CannotInvokeException if any.
 	 */
 	public <R extends Object> R invoke(final String propertyName) throws CannotInvokeException {
 		final Object callable = properties.get(propertyName);
@@ -61,6 +69,8 @@ public class DynamicObject {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Returns the object representation as JSON.
 	 */
 	@Override

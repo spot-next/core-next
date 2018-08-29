@@ -10,6 +10,11 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueH
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 
+/**
+ * <p>SpringUtil class.</p>
+ *
+ * @since 1.0
+ */
 public class SpringUtil {
 
 	public enum BeanScope {
@@ -18,13 +23,15 @@ public class SpringUtil {
 
 	/**
 	 * Registers a new bean of the given type in the given spring context.
-	 * 
-	 * @param context
-	 * @param type
+	 *
+	 * @param type a {@link java.lang.Class} object.
 	 * @param beanId
 	 *            if this is not empty it will override the default bean id
-	 * @param scope
-	 * @constructorArguments
+	 * @param scope a {@link io.spotnext.core.support.util.SpringUtil.BeanScope} object.
+	 * @param beanFactory a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry} object.
+	 * @param alias a {@link java.lang.String} object.
+	 * @param constructorArguments a {@link java.util.List} object.
+	 * @param lazyInit a boolean.
 	 */
 	public static void registerBean(final BeanDefinitionRegistry beanFactory, final Class<?> type, final String beanId,
 			final String alias, final BeanScope scope, final List<? extends Object> constructorArguments,
@@ -64,6 +71,13 @@ public class SpringUtil {
 		}
 	}
 
+	/**
+	 * <p>registerAlias.</p>
+	 *
+	 * @param beanFactory a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry} object.
+	 * @param beanId a {@link java.lang.String} object.
+	 * @param alias a {@link java.lang.String} object.
+	 */
 	public static void registerAlias(final BeanDefinitionRegistry beanFactory, final String beanId,
 			final String alias) {
 

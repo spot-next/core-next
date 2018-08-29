@@ -13,12 +13,17 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>PropertiesUtil class.</p>
+ *
+ * @since 1.0
+ */
 public class PropertiesUtil {
 
 	private static Logger LOG = LoggerFactory.getLogger(PropertiesUtil.class);
 
 	/**
-	 * Loads a {@link Properties} from a file.
+	 * Loads a {@link java.util.Properties} from a file.
 	 *
 	 * @param propertyFile
 	 *            if it is a relative path "user.dir" will be used to resolve
@@ -37,9 +42,10 @@ public class PropertiesUtil {
 	}
 
 	/**
-	 * Loads {@link Properties} from the classpath.
+	 * Loads {@link java.util.Properties} from the classpath.
 	 *
-	 * @param classPathFileName
+	 * @param classPathFileName a {@link java.lang.String} object.
+	 * @return a {@link java.util.Properties} object.
 	 */
 	public static Properties loadPropertiesFromClasspath(final String classPathFileName) {
 		final InputStream input = PropertiesUtil.class.getClassLoader().getResourceAsStream(classPathFileName);
@@ -56,9 +62,9 @@ public class PropertiesUtil {
 	}
 
 	/**
-	 * Loads {@link Properties} from a file.
+	 * Loads {@link java.util.Properties} from a file.
 	 *
-	 * @param file
+	 * @param file a {@link java.io.File} object.
 	 * @return null if file can't be found
 	 */
 	public static Properties loadPropertiesFromFile(final File file) {
