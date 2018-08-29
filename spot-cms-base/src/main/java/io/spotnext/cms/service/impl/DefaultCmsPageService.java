@@ -22,6 +22,9 @@ import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 import io.spotnext.itemtype.cms.model.CmsPage;
 import io.spotnext.itemtype.cms.model.CmsPageTemplate;
 
+/**
+ * <p>DefaultCmsPageService class.</p>
+ */
 public class DefaultCmsPageService implements CmsPageService {
 
 	@Autowired
@@ -36,29 +39,34 @@ public class DefaultCmsPageService implements CmsPageService {
 	@Autowired
 	protected I18nService i18nService;
 
+	/** {@inheritDoc} */
 	@Override
 	public CmsPage getPageById(final String pageId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public CmsPageTemplate getPageTemplateById(final String pageTemplateId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String renderPage(final CmsPage page) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public CmsPage getPageForUrl(final String url) {
 		return null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void renderRequest(final HttpServletRequest request, final HttpServletResponse response) {
 		final CmsPage page = getPageForUrl(request.getRequestURI());
@@ -116,11 +124,25 @@ public class DefaultCmsPageService implements CmsPageService {
 		renderErrorPage(request, response, page, exception);
 	}
 
+	/**
+	 * <p>renderErrorPage.</p>
+	 *
+	 * @param request a {@link javax.servlet.http.HttpServletRequest} object.
+	 * @param response a {@link javax.servlet.http.HttpServletResponse} object.
+	 * @param page a {@link io.spotnext.itemtype.cms.model.CmsPage} object.
+	 * @param e a {@link java.lang.Exception} object.
+	 */
 	protected void renderErrorPage(final HttpServletRequest request, final HttpServletResponse response,
 			final CmsPage page, final Exception e) {
 
 	}
 
+	/**
+	 * <p>getTemplateScript.</p>
+	 *
+	 * @param page a {@link io.spotnext.itemtype.cms.model.CmsPage} object.
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected String getTemplateScript(final CmsPage page) {
 		String templateScript = "";
 

@@ -518,7 +518,9 @@
 					<configuration>
 						<failOnError>false</failOnError>
 						<additionalparam>-Xdoclint:none</additionalparam>
-						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml</excludePackageNames>
+						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*</excludePackageNames>
+						<excludes>**/gen/*</excludes>
+						<quiet>true</quiet>
 					</configuration>
 					<executions>
 						<execution>

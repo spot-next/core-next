@@ -9,12 +9,16 @@ import io.spotnext.cms.service.TemplateRenderService;
 import io.spotnext.cms.strategy.impl.ThymeleafTemplateRenderStrategy;
 import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 
+/**
+ * <p>DefaultTemplateRenderService class.</p>
+ */
 @Service
 public class DefaultTemplateRenderService implements TemplateRenderService {
 
 	@Resource
 	private ThymeleafTemplateRenderStrategy thymeleafTemplateRenderStrategy;
 
+	/** {@inheritDoc} */
 	@Override
 	public String renderTemplate(TemplateRenderEngine engine, String templateName, Object context) {
 		if (TemplateRenderEngine.THYMELEAF.equals(engine)) {

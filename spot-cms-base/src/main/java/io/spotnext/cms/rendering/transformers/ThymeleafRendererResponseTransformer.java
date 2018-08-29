@@ -20,7 +20,7 @@ import spark.ModelAndView;
 import spark.Request;
 
 /**
- * Renders the given object (has to be an instance of {@link ModelAndView})
+ * Renders the given object (has to be an instance of {@link spark.ModelAndView})
  * using thymeleaf rendering engine.
  */
 @Service
@@ -29,6 +29,7 @@ public class ThymeleafRendererResponseTransformer implements ResponseTransformer
 	@Autowired
 	protected TemplateRenderService templateRenderService;
 
+	/** {@inheritDoc} */
 	@Override
 	public String handleResponse(final Object object) throws Exception {
 		ValidationUtil.validateEquals("Only instances of ModelAndView can be rendered", object instanceof ModelAndView);
@@ -38,6 +39,7 @@ public class ThymeleafRendererResponseTransformer implements ResponseTransformer
 				viewModel);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String handleException(final Object object, Exception exception) throws Exception {
 		Map<String, Object> model = new HashMap<>();
@@ -61,6 +63,11 @@ public class ThymeleafRendererResponseTransformer implements ResponseTransformer
 		return handleResponse(ret);
 	}
 
+	/**
+	 * <p>Getter for the field <code>templateRenderService</code>.</p>
+	 *
+	 * @return a {@link io.spotnext.cms.service.TemplateRenderService} object.
+	 */
 	protected TemplateRenderService getTemplateRenderService() {
 		if (templateRenderService == null)
 			templateRenderService = Registry.getApplicationContext().getBean("templateRenderService",

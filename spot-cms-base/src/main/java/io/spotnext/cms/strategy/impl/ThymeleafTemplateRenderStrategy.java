@@ -20,6 +20,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import spark.ModelAndView;
 
+/**
+ * <p>ThymeleafTemplateRenderStrategy class.</p>
+ */
 @Service
 @SuppressFBWarnings(value="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification="initialized by spring")
 public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
@@ -52,6 +55,13 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		templateEngine.addDialect(new Java8TimeDialect());
 	}
 
+	/**
+	 * <p>createDefaultTemplateResolver.</p>
+	 *
+	 * @param templateFolder a {@link java.lang.String} object.
+	 * @param templateExtension a {@link java.lang.String} object.
+	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver} object.
+	 */
 	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder, final String templateExtension) {
 		final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 		templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -76,16 +86,11 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Process the specified template (usually the template name). Output will
 	 * be written into a String that will be returned from calling this method,
 	 * once template processing has finished.
-	 * 
-	 * @param templateName
-	 *            the name of the template, will be resolved from resources
-	 *            folder on the class path
-	 * @param context
-	 *            the context holding the template variables
-	 * @return rendered template
 	 */
 	@Override
 	public String renderTemplate(final String templateName, final Object context) {
