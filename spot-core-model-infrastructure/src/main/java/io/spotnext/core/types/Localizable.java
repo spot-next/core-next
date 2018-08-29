@@ -28,7 +28,8 @@ public interface Localizable<R> {
 	}
 
 	/**
-	 * @see Localizable#get(Locale). The default locale will be used.
+	 * See also {@link Localizable#get(Locale)}. The default locale will be used.
+	 * 
 	 * @return the value for the {@link Locale#getDefault()} locale or null.
 	 */
 	default R get() {
@@ -48,7 +49,8 @@ public interface Localizable<R> {
 	}
 
 	/**
-	 * @see Localizable#set(Locale, Object). The default locale will be used.
+	 * See also {@link Localizable#set(Locale, Object)}. The default locale will be
+	 *      used.
 	 * 
 	 * @param value the value that will be stored localized with the
 	 *              {@link Locale#getDefault()} locale.

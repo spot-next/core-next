@@ -75,16 +75,18 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected boolean deleted = false;
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as
-	 * unique (with the {@link Property} annotation). This is necessary to
-	 * implement extendible combined unique constraints, regardless of which JPA
-	 * inheritance strategy is used
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation). This is necessary to implement
+	 * extendible combined unique constraints, regardless of which JPA inheritance
+	 * strategy is used
 	 */
 	@Column(name = "uniquenessHash", unique = true, nullable = false)
 	private Integer uniquenessHash = null;
 
 	/**
 	 * A value of -1 indicates that this is an unpersisted item.
+	 * 
+	 * @return the internal version of the Item, used for optimistic locking
 	 */
 	public long getVersion() {
 		return version;
@@ -145,8 +147,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing
-	 *         item with the same PK will be overwritten.
+	 *         before. If you set a PK manually and save the item, an existing item
+	 *         with the same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -161,9 +163,10 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Returns the names and the values of all properties annotated
-	 * with @Unique.
-	 *
+	 * Returns the names and the values of all properties annotated with @Unique.
+	 * 
+	 * @return a map containing all the unique properties for this Item (key =
+	 *         property name)
 	 */
 	public Map<String, Object> getUniqueProperties() {
 		final Map<String, Object> uniqueProps = new HashMap<>();
@@ -186,8 +189,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current
-	 * object, both are equal.
+	 * If the type and the pk of the given object is the same as the current object,
+	 * both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

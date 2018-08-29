@@ -16,7 +16,14 @@ import io.spotnext.core.infrastructure.type.AccessorType;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Accessor {
+
+	/**
+	 * @return the type of the accessor.
+	 */
 	public AccessorType type();
 
+	/**
+	 * @return the name of the property
+	 */
 	public String propertyName();
 }

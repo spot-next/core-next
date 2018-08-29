@@ -25,12 +25,16 @@ public @interface ItemType {
 
 	/**
 	 * This is the bean name of the item.
+	 * 
+	 * @return the type code of the annotated item type
 	 */
 	String typeCode();
 
 	/**
 	 * Determines if the annotated item type can be persisted by the persistence
 	 * framework.
+	 *
+	 * @return if the given type is persistable.
 	 */
 	boolean persistable() default true;
 }

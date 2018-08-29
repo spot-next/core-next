@@ -15,6 +15,9 @@ import io.spotnext.core.infrastructure.type.RelationType;
 public @interface Relation {
 	boolean DEFAULT_CASCADE_ON_DELETE = false;
 
+	/**
+	 * @return the relation type
+	 */
 	RelationType type();
 
 	/**
@@ -28,18 +31,24 @@ public @interface Relation {
 	/**
 	 * The name of the relation. Depending on the underlying persistence framework,
 	 * this might be used for the relation table name.
+	 * If not set, then it will be automatically generated.
+	 * 
+	 * @return the relation name or an empty string if not defined
 	 */
 	String relationName() default "";
 
-	RelationCollectionType collectionType() default RelationCollectionType.List;
+	/**
+	 * @return the collection type used for this relation
+	 */
+	RelationCollectionType collectionType() default RelationCollectionType.Set;
 
 	/**
-	 * This is the name of the property of the referenced item.
+	 * @return the name of the property of the referenced item.
 	 */
 	String mappedTo();
 
 	/**
-	 * Defines at which end of the relation the current object is.
+	 * @return defines at which end of the relation the current object is.
 	 */
 	RelationNodeType nodeType();
 

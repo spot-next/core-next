@@ -126,7 +126,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 								propertyAnn.get());
 
 						{ // mark property as unique
-							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(clazz, field,
+							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(field,
 									propertyAnn.get());
 
 							if (uniqueAnn.isPresent()) {
@@ -275,8 +275,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Checks if the field has the {@link Property#unique()} annotation value set.
 	 * If yes, then a {@link NotNull} is added. The real uniqueness constraint is
 	 * checked using {@link Item#uniquenessHash()}.
+	 * 
+	 * @param field              for which the annotation will be created
+	 * @param propertyAnnotation the property annotation that holds information
+	 *                           about the item type property.
+	 * 
+	 * @return the created annotation
 	 */
-	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtClass clazz, final CtField field,
+	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtField field,
 			final Annotation propertyAnnotation) {
 
 		Annotation ann = null;
@@ -290,6 +296,13 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	/**
 	 * Checks if {@link Property#unique()} = true.
+	 * 
+	 * @param field              the field which should be checked for a uniqueness
+	 *                           constraint
+	 * @param propertyAnnotation annotation containing item type property
+	 *                           information
+	 * 
+	 * @return true if the property has a unique constraint
 	 */
 	protected boolean isUniqueProperty(final CtField field, final Annotation propertyAnnotation) {
 		final BooleanMemberValue unique = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
@@ -369,6 +382,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	/**
 	 * Annotates relation collections with an {@link OrderBy} annotation to make
 	 * FETCH JOINS work correctly.
+	 * 
+	 * @param entityClass for which the annotations are created
+	 * @param field       for which the annotations are created
+	 * 
+	 * @return list of created annotations, never null
+	 * @throws IllegalClassTransformationException in case there is an error
+	 *                                             accessing class or field
+	 *                                             internals
 	 */
 	protected List<Annotation> createOrderedListAnnotation(final CtClass entityClass, final CtField field)
 			throws IllegalClassTransformationException {
@@ -393,6 +414,16 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	/**
 	 * Necessary to prohibit infinite loops when serializing using Jackson
+	 * 
+	 * @param entityClass         the class of the field
+	 * @param field               the field which will be annotated with a
+	 *                            JsonSerialize annotation.
+	 * @param serializerClassName the name of the serialzed
+	 * 
+	 * @return the created annotation, never null
+	 * @throws IllegalClassTransformationException in case there is an error
+	 *                                             accessing class or field
+	 *                                             internals
 	 */
 	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
 			final String serializerClassName) throws IllegalClassTransformationException {
@@ -468,6 +499,15 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return annotations;
 	}
 
+	/**
+	 * @param clazz the class of the given field
+	 * @param field the field for which the annotation is created
+	 * 
+	 * @return the creataed collection type annotation
+	 * @throws IllegalClassTransformationException in case there is an error
+	 *                                             accessing class or field
+	 *                                             internals
+	 */
 	@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
 	protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
@@ -497,12 +537,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		return ann;
-
 	}
 
 	/**
 	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
 	 * unique=true modifier.
+	 * 
+	 * @param clazz the class containing the field
+	 * @param field for which the annotation will be created
+	 * @return the created annotation
+	 * 
+	 * @throws IllegalClassTransformationException in case there is an error
+	 *                                             accessing class or field
+	 *                                             internals
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {

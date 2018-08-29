@@ -59,7 +59,7 @@ public class TypeDefinitions {
 	/**
 	 * Looks up the {@link BaseType} with the given name.
 	 * 
-	 * @param name
+	 * @param name of the type
 	 * @return null if no matching type is found
 	 */
 	public BaseType getType(String name) {
@@ -83,7 +83,7 @@ public class TypeDefinitions {
 	/**
 	 * Looks up the {@link BaseComplexType} with the given name.
 	 * 
-	 * @param name
+	 * @param name of the type
 	 * @return null if no matching type is found
 	 */
 	public BaseComplexType getComplexType(String name) {
