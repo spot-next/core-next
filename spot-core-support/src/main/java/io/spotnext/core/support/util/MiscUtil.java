@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -133,5 +135,45 @@ public class MiscUtil {
 		}
 
 		return ret;
+	}
+
+	/**
+	 * Evaluates the given expression in a null-safe way (even for nested
+	 * expressions)
+	 * <p>
+	 * Example: $(() -> order.getOrderEntries().get(0).getCode()) will never fail
+	 * with a {@link NullPointerException}!
+	 * </p>
+	 * 
+	 * @param expression the java expression to evaluate
+	 * @return returns an optional of the evaluated return value
+	 */
+	public static <T> Optional<T> $(Supplier<T> expression) {
+		try {
+			return Optional.ofNullable(expression.get());
+		} catch (NullPointerException e) {
+			return Optional.empty();
+		}
+	}
+
+	/**
+	 * Basically the same as {@link #$(Supplier)} but instead of an empty
+	 * {@link Optional} it returns the given default value.
+	 * 
+	 * @param expression   the java expression to evaluate
+	 * @param defaultValue the default value to return in case of null (or an
+	 *                     {@link NullPointerException}
+	 * @return returns the evaluated result or the default value in case it's null
+	 */
+	public static <T> T $(Supplier<T> expression, T defaultValue) {
+		T ret = null;
+
+		try {
+			ret = expression.get();
+		} catch (NullPointerException e) {
+			//
+		}
+
+		return ret != null ? ret : defaultValue;
 	}
 }
