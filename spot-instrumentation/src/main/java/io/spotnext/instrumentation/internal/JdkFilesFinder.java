@@ -13,12 +13,20 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * <p>JdkFilesFinder class.</p>
+ *
+ * @since 1.0
+ */
 @NotThreadSafe
 @SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class JdkFilesFinder {
 
 	private final Set<File> potentialFolders;
 
+	/**
+	 * <p>Constructor for JdkFilesFinder.</p>
+	 */
 	public JdkFilesFinder() {
 		// determine the java home via the system variables
 		final Set<File> javaHomes = new LinkedHashSet<File>();
@@ -76,6 +84,11 @@ public class JdkFilesFinder {
 		}
 	}
 
+	/**
+	 * <p>findToolsJar.</p>
+	 *
+	 * @return a {@link java.io.File} object.
+	 */
 	public File findToolsJar() {
 		File toolsJar = null;
 		final String potentialFileName = "tools.jar";
@@ -96,6 +109,11 @@ public class JdkFilesFinder {
 				.exists();
 	}
 
+	/**
+	 * <p>findAttachLib.</p>
+	 *
+	 * @return a {@link java.io.File} object.
+	 */
 	public File findAttachLib() {
 		File attachLib = null;
 		final List<String> potentialFileNames = Arrays.asList("attach.dll", "libattach.so", "libattach.dylib");

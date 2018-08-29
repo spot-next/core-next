@@ -8,6 +8,11 @@ import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.io.FileUtils;
 
+/**
+ * <p>DynamicInstrumentationProperties class.</p>
+ *
+ * @since 1.0
+ */
 @Immutable
 public final class DynamicInstrumentationProperties {
 
@@ -25,6 +30,12 @@ public final class DynamicInstrumentationProperties {
 
     private DynamicInstrumentationProperties() {}
 
+    /**
+     * <p>newTempDirectory.</p>
+     *
+     * @param baseDirectory a {@link java.io.File} object.
+     * @return a {@link java.io.File} object.
+     */
     public static File newTempDirectory(final File baseDirectory) {
         final File tempDir = findEmptyTempDir(baseDirectory);
         try {
@@ -52,6 +63,11 @@ public final class DynamicInstrumentationProperties {
         return tempDir;
     }
 
+    /**
+     * <p>getProcessId.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
     public static String getProcessId() {
         final String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
         final String pid = nameOfRunningVM.substring(0, nameOfRunningVM.indexOf('@'));

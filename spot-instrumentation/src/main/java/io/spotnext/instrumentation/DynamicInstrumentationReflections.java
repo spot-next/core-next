@@ -20,6 +20,11 @@ import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * <p>DynamicInstrumentationReflections class.</p>
+ *
+ * @since 1.0
+ */
 @Immutable
 public final class DynamicInstrumentationReflections {
 
@@ -30,6 +35,8 @@ public final class DynamicInstrumentationReflections {
 
 	/**
 	 * http://stackoverflow.com/questions/1010919/adding-files-to-java-classpath-at-runtime
+	 *
+	 * @param dirOrJar a {@link java.io.File} object.
 	 */
 	public static void addPathToSystemClassLoader(final File dirOrJar) {
 		if (dirOrJar == null) {
@@ -63,6 +70,11 @@ public final class DynamicInstrumentationReflections {
 		}
 	}
 
+	/**
+	 * <p>isBeforeJava9.</p>
+	 *
+	 * @return a boolean.
+	 */
 	public static boolean isBeforeJava9() {
 		return getSystemClassLoader() instanceof URLClassLoader;
 	}
@@ -103,6 +115,11 @@ public final class DynamicInstrumentationReflections {
 		}
 	}
 
+	/**
+	 * <p>getUnsafe.</p>
+	 *
+	 * @return a {@link sun.misc.Unsafe} object.
+	 */
 	@SuppressWarnings("restriction")
 	public static sun.misc.Unsafe getUnsafe() {
 		try {
@@ -121,20 +138,37 @@ public final class DynamicInstrumentationReflections {
 		}
 	}
 
+	/**
+	 * <p>getContextClassLoader.</p>
+	 *
+	 * @return a {@link java.lang.ClassLoader} object.
+	 */
 	public static ClassLoader getContextClassLoader() {
 		return Thread.currentThread().getContextClassLoader();
 	}
 
+	/**
+	 * <p>getSystemClassLoader.</p>
+	 *
+	 * @return a {@link java.lang.ClassLoader} object.
+	 */
 	public static ClassLoader getSystemClassLoader() {
 		return ClassLoader.getSystemClassLoader();
 	}
 
+	/**
+	 * <p>Getter for the field <code>pathsAddedToSystemClassLoader</code>.</p>
+	 *
+	 * @return a {@link java.util.Set} object.
+	 */
 	public static Set<String> getPathsAddedToSystemClassLoader() {
 		return Collections.unmodifiableSet(pathsAddedToSystemClassLoader);
 	}
 
 	/**
 	 * http://stackoverflow.com/questions/11134159/how-to-load-attachprovider-attach-dll-dynamically
+	 *
+	 * @param dir a {@link java.io.File} object.
 	 */
 	public static void addPathToJavaLibraryPath(final File dir) {
 		if (dir == null) {
@@ -174,6 +208,13 @@ public final class DynamicInstrumentationReflections {
 		}
 	}
 
+	/**
+	 * <p>getClassInputStream.</p>
+	 *
+	 * @param clazz a {@link java.lang.Class} object.
+	 * @return a {@link java.io.InputStream} object.
+	 * @throws java.lang.ClassNotFoundException if any.
+	 */
 	public static InputStream getClassInputStream(final Class<?> clazz) throws ClassNotFoundException {
 		final String name = "/" + clazz.getName().replace(".", "/") + ".class";
 		final InputStream classIn = clazz.getResourceAsStream(name);

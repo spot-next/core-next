@@ -28,6 +28,8 @@ import io.spotnext.instrumentation.internal.JdkFilesFinder;
 
 /**
  * This class installs dynamic instrumentation into the current JVM.
+ *
+ * @since 1.0
  */
 @ThreadSafe
 public final class DynamicInstrumentationLoader {
@@ -45,9 +47,17 @@ public final class DynamicInstrumentationLoader {
 	 */
 	static GenericXmlApplicationContext ltwCtx;
 
+	/**
+	 * <p>Constructor for DynamicInstrumentationLoader.</p>
+	 */
 	protected DynamicInstrumentationLoader() {
 	}
 
+	/**
+	 * <p>initialize.</p>
+	 *
+	 * @param transformers a {@link java.lang.Class} object.
+	 */
 	public static void initialize(final Class<? extends ClassFileTransformer>... transformers) {
 		registeredTranformers = transformers;
 
@@ -69,6 +79,8 @@ public final class DynamicInstrumentationLoader {
 
 	/**
 	 * Checks if the instrumentation is enabled.
+	 *
+	 * @return a boolean.
 	 */
 	public static boolean isInstrumentationAvailable() {
 		return InstrumentationLoadTimeWeaver.isInstrumentationAvailable();
@@ -76,6 +88,8 @@ public final class DynamicInstrumentationLoader {
 
 	/**
 	 * Creates a generic spring context with enabled load time weaving.
+	 *
+	 * @return a {@link org.springframework.context.support.GenericXmlApplicationContext} object.
 	 */
 	public static synchronized GenericXmlApplicationContext initLoadTimeWeavingSpringContext() {
 		org.assertj.core.api.Assertions.assertThat(isInstrumentationAvailable()).isTrue();
@@ -131,6 +145,13 @@ public final class DynamicInstrumentationLoader {
 		}
 	}
 
+	/**
+	 * <p>loadAgent.</p>
+	 *
+	 * @param tempAgentJar a {@link java.io.File} object.
+	 * @param pid a {@link java.lang.String} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	protected static void loadAgent(final File tempAgentJar, final String pid) throws Exception {
 		if (DynamicInstrumentationReflections.isBeforeJava9()) {
 			DynamicInstrumentationLoadAgentMain.loadAgent(pid, tempAgentJar.getAbsolutePath());
@@ -155,18 +176,33 @@ public final class DynamicInstrumentationLoader {
 		}
 	}
 
+	/**
+	 * <p>getJavaHome.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getJavaHome() {
 		// CHECKSTYLE:OFF
 		return System.getProperty("java.home");
 		// CHECKSTYLE:ON
 	}
 
+	/**
+	 * <p>getJavaVersion.</p>
+	 *
+	 * @return a {@link java.lang.String} object.
+	 */
 	protected static String getJavaVersion() {
 		// CHECKSTYLE:OFF
 		return System.getProperty("java.version");
 		// CHECKSTYLE:ON
 	}
 
+	/**
+	 * <p>setAgentClassLoaderReference.</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	protected static void setAgentClassLoaderReference() throws Exception {
 		final Class<AgentClassLoaderReference> agentClassLoaderReferenceClass = AgentClassLoaderReference.class;
 		final File tempAgentClassLoaderJar = createTempJar(agentClassLoaderReferenceClass, false);
@@ -179,6 +215,12 @@ public final class DynamicInstrumentationLoader {
 		setAgentClassLoaderMethod.invoke(null, DynamicInstrumentationReflections.getContextClassLoader());
 	}
 
+	/**
+	 * <p>createTempAgentJar.</p>
+	 *
+	 * @return a {@link java.io.File} object.
+	 * @throws java.lang.ClassNotFoundException if any.
+	 */
 	protected static File createTempAgentJar() throws ClassNotFoundException {
 		try {
 			return createTempJar(DynamicInstrumentationAgent.class, true);
@@ -195,6 +237,11 @@ public final class DynamicInstrumentationLoader {
 	/**
 	 * Creates a new jar that only contains the DynamicInstrumentationAgent
 	 * class.
+	 *
+	 * @param clazz a {@link java.lang.Class} object.
+	 * @param agent a boolean.
+	 * @return a {@link java.io.File} object.
+	 * @throws java.lang.Exception if any.
 	 */
 	protected static File createTempJar(final Class<?> clazz, final boolean agent) throws Exception {
 		final String className = clazz.getName();

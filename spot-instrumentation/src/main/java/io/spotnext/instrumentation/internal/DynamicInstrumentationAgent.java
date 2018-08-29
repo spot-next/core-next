@@ -11,11 +11,23 @@ import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.ImplementingClassMatchProcessor;
 
 // @Immutable
+/**
+ * <p>DynamicInstrumentationAgent class.</p>
+ *
+ * @since 1.0
+ */
 public final class DynamicInstrumentationAgent {
 
 	private DynamicInstrumentationAgent() {
 	}
 
+	/**
+	 * <p>premain.</p>
+	 *
+	 * @param args a {@link java.lang.String} object.
+	 * @param inst a {@link java.lang.instrument.Instrumentation} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static void premain(final String args, final Instrumentation inst)
 			throws Exception {
 		final ClassLoader agentClassLoader = AgentClassLoaderReference
@@ -35,12 +47,25 @@ public final class DynamicInstrumentationAgent {
 		initializeMethod.invoke(null, args, inst);
 	}
 
+	/**
+	 * <p>agentmain.</p>
+	 *
+	 * @param args a {@link java.lang.String} object.
+	 * @param inst a {@link java.lang.instrument.Instrumentation} object.
+	 * @throws java.lang.Exception if any.
+	 */
 	public static void agentmain(final String args, final Instrumentation inst)
 			throws Exception {
 
 		premain(args, inst);
 	}
 
+	/**
+	 * <p>findClassTransformers.</p>
+	 *
+	 * @param <T> a T object.
+	 * @return a {@link java.util.List} object.
+	 */
 	protected static <T extends ClassFileTransformer> List<T> findClassTransformers() {
 		final List<T> transformers = new ArrayList<>();
 
