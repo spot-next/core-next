@@ -1,5 +1,7 @@
 package io.spotnext.core.infrastructure.support.init;
 
+import java.io.InputStream;
+
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 
@@ -15,11 +17,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.event.EventListenerMethodProcessor;
 
+import ch.qos.logback.core.util.CloseUtil;
+import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
+import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
+import io.spotnext.itemtype.core.beans.ImportConfiguration;
+import io.spotnext.itemtype.core.enumeration.ImportFormat;
 
 /**
  * <p>
@@ -46,12 +54,16 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	@Resource
 	protected LoggingService loggingService;
 
+	@Resource
+	protected ImportService importService;
+
 	/**
 	 * Called when the spring application context has been initialized.
 	 * 
-	 * @param event the spring application event name
-	 * @throws ModuleInitializationException in case there is an exception during
-	 *                                       post initialization
+	 * @param event
+	 *            the spring application event name
+	 * @throws ModuleInitializationException
+	 *             in case there is an exception during post initialization
 	 */
 	@EventListener
 	protected void onApplicationEvent(final ApplicationReadyEvent event) throws ModuleInitializationException {
@@ -71,10 +83,11 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called after
-	 * {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called
+	 * after {@link Bootstrap} all spring beans are initialized.
 	 * 
-	 * @throws ModuleInitializationException if there is any unexpected error
+	 * @throws ModuleInitializationException
+	 *             if there is any unexpected error
 	 */
 	@Log(message = "Initializing module $classSimpleName", measureTime = true)
 	protected abstract void initialize() throws ModuleInitializationException;
@@ -82,7 +95,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Imports the initial data, if any are present.
 	 * 
-	 * @throws ModuleInitializationException in case there is any error
+	 * @throws ModuleInitializationException
+	 *             in case there is any error
 	 */
 	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
@@ -92,7 +106,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Imports the sample data, if any are present.
 	 * 
-	 * @throws ModuleInitializationException in case there is any error
+	 * @throws ModuleInitializationException
+	 *             in case there is any error
 	 */
 	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
@@ -114,8 +129,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 	/**
 	 * Override Spring's {@link EventListenerMethodProcessor} and always use the
-	 * root spring context. This makes sure that all event listeners (even in child
-	 * contexts) get notified when events in a parent context are thrown.
+	 * root spring context. This makes sure that all event listeners (even in
+	 * child contexts) get notified when events in a parent context are thrown.
 	 * 
 	 * @return the custom event listener instance
 	 */
@@ -131,5 +146,21 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 */
 	public boolean isAlreadyInitialized() {
 		return alreadyInitialized;
+	}
+
+	protected void importScript(final String path, final String logMessage) throws ImportException {
+		loggingService.debug(logMessage);
+
+		InputStream stream = null;
+		try {
+			final ImportConfiguration conf = new ImportConfiguration();
+			conf.setIgnoreErrors(true);
+			conf.setScriptIdentifier(path);
+
+			stream = CoreInit.class.getResourceAsStream(conf.getScriptIdentifier());
+			importService.importItems(ImportFormat.ImpEx, conf, stream);
+		} finally {
+			CloseUtil.closeQuietly(stream);
+		}
 	}
 }
