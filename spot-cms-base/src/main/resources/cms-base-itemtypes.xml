@@ -29,33 +29,38 @@
 	</enum>
 
 	<!-- image media -->
-	<type name="ImageMedia" extends="FileMedia" package="io.spotnext.core.model.media">
+	<type name="ImageMedia" extends="FileMedia" package="io.spotnext.core.media">
 		<properties>
 		</properties>
 	</type>
 
 	<!-- cms item types -->
 
-	<type name="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms.model"
+	<type name="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms"
 		extends="UniqueIdItem">
 		<properties>
-			<property name="catalog" type="Catalog">
+			<property name="catalogVersion" type="CatalogVersion">
 				<description>The content catalog of the item.</description>
 				<modifiers unique="true" />
 				<validators>
 					<validator javaClass="javax.validation.constraints.NotNull" />
 				</validators>
 			</property>
-			<property name="onlyOneRestrictionMustApply" type="Boolean">
-				<description>
-					f set to true, only one restriction must evaluate to "show cms item" 
-					for the item to be visible.
-				</description>
+			<property name="renderEngine" type="TemplateRenderEngine">
+				<validators>
+					<validator javaClass="javax.validation.constraints.NotNull" />
+				</validators>
+			</property>
+			<property name="renderTemplateFile" type="String">
+				<description>The path (in the resources/templates folder) to the render template file used to render this CMS item.</description>
+			</property>
+			<property name="renderTemplateScript" type="String">
+				<description>The template script used to render this CMS item. This has priority over the ${@link #getRenderTemplateFile} property.</description>
 			</property>
 		</properties>
 	</type>
 
-	<type name="CmsRestriction" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model">
+	<type name="CmsRestriction" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="evaluator" type="String">
 				<description>The spring bean id of the corresponding evaluator implementation.</description>
@@ -67,68 +72,54 @@
 	</type>
 
 	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem"
-		package="io.spotnext.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms">
 		<properties>
-			<property name="renderContextProvider" type="String">
+			<property name="onlyOneRestrictionMustApply" type="Boolean">
 				<description>
-					The spring bean id of the context provider implementation.
+					If set to true, only one restriction must evaluate to "show cms item" 
+					for the item to be visible.
 				</description>
-			</property>
-			<property name="renderContextPreparationScript" type="String">
-				<description>
-				Beanshell code that is executed before the page rendering.
-				It can be used to prepare the render context variables.
-			</description>
-			</property>
-			<property name="content" type="String">
-			</property>
-			<property name="renderEngine" type="TemplateRenderEngine">
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
 			</property>
 		</properties>
 	</type>
 
 	<type name="AbstractCmsContainerComponent" abstract="true"
-		extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms.model">
+		extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="CmsComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms.model">
+	<type name="CmsComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="ContentSlot" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms.model">
+	<type name="ContentSlot" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="name" type="String">
+				<description>The name will be used to render the containing components into the actual HTML template.</description>
+			</property>
+			<property name="component" type="AbstractCmsComponent">
+				<description>The CMS component that should be rendered into the content slot.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="MetaTag" extends="ConfigEntry" package="io.spotnext.itemtype.cms">
+	</type>
+
+	<type name="CmsPageLayout" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="MetaTag" extends="ConfigEntry" package="io.spotnext.itemtype.cms.model">
-	</type>
-
-	<type name="CmsPageTemplate" extends="AbstractCmsContainerComponent"
-		package="io.spotnext.itemtype.cms.model">
+	<type name="CmsPage" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="title" type="LocalizedString">
 			</property>
-			<property name="favIconPath" type="LocalizedString">
+			<property name="favIconPath" type="String">
 			</property>
 			<property name="favIcon" type="ImageMedia">
-			</property>
-			<property name="metaTags" type="StringList" />
-		</properties>
-	</type>
-
-	<type name="CmsPage" extends="CmsPageTemplate" package="io.spotnext.itemtype.cms.model">
-		<properties>
-			<property name="urlMatches" type="StringList">
-				<description>Holds the regex string to determine which URL should
-						be handler by this page.</description>
-			</property>
-			<property name="template" type="CmsPageTemplate">
 			</property>
 		</properties>
 	</type>
@@ -136,7 +127,7 @@
 	<!-- special cms components -->
 
 	<type name="AbstractNavigationEntry" abstract="true" extends="CmsComponent"
-		package="io.spotnext.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="name" type="String">
 				<description>The navigation entry name.</description>
@@ -145,7 +136,7 @@
 	</type>
 
 	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry"
-		package="io.spotnext.itemtype.cms.model">
+		package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="href" type="String">
 				<description>The href of the link.</description>
@@ -156,24 +147,43 @@
 		</properties>
 	</type>
 
-	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent" abstract="true"
-		package="io.spotnext.itemtype.cms.model">
+	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent"
+		abstract="true" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
 	<type name="NavigationBar" extends="AbstractNavigationContainer"
-		package="io.spotnext.itemtype.cms.model" />
+		package="io.spotnext.itemtype.cms" />
 
-	<type name="Footer" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms.model" />
+	<type name="Footer" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms" />
 
-
-	<relation name="AbstractCmsItem2CmsRestriction">
-		<source itemType="AbstractCmsItem" cardinality="one" mappedBy="cmsItem" />
-		<target itemType="CmsRestriction" cardinality="many" mappedBy="cmsRestrictions">
-			<description>The restrictions evaluate if the current cms item should be rendered.</description>
+	<!-- RELATIONS -->
+	<relation name="CmsPageLayout2CmsPage">
+		<source itemType="CmsPageLayout" mappedBy="layout" cardinality="one">
+			<description>The layout that is used for rendering.</description>
+		</source>
+		<target itemType="CmsPage" mappedBy="pages" cardinality="many">
+			<description>The CmsPages that use this layout.</description>
 		</target>
 	</relation>
+
+	<relation name="CmsPageLayout2Contentslot">
+		<source itemType="CmsPageLayout" cardinality="one" />
+		<target itemType="ContentSlot" mappedBy="contentSlots"
+			cardinality="many">
+			<description>The available content slots that hold the predefined components. Can be overwritten in the CmsPage</description>
+		</target>
+	</relation>
+
+	<!-- <relation name="AbstractCmsItem2CmsRestriction"> -->
+	<!-- <source itemType="AbstractCmsItem" cardinality="one" mappedBy="cmsItem" 
+		/> -->
+	<!-- <target itemType="CmsRestriction" cardinality="many" mappedBy="cmsRestrictions"> -->
+	<!-- <description>The restrictions evaluate if the current cms item should 
+		be rendered.</description> -->
+	<!-- </target> -->
+	<!-- </relation> -->
 
 	<relation name="AbstractCmsContainerComponent2AbstractCmsComponent">
 		<source itemType="AbstractCmsContainerComponent" cardinality="many"
@@ -182,9 +192,11 @@
 			mappedBy="components" />
 	</relation>
 
-	<relation name="ContentSlot2CmsComponent">
-		<source itemType="ContentSlot" cardinality="many" mappedBy="contentSlot" />
-		<target itemType="CmsComponent" cardinality="many" mappedBy="components" />
-	</relation>
+	<!-- <relation name="ContentSlot2CmsComponent"> -->
+	<!-- <source itemType="ContentSlot" cardinality="many" mappedBy="contentSlot" 
+		/> -->
+	<!-- <target itemType="CmsComponent" cardinality="many" mappedBy="components" 
+		/> -->
+	<!-- </relation> -->
 
 </types>
