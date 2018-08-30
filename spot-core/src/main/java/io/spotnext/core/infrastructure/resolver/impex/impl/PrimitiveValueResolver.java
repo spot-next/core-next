@@ -21,7 +21,9 @@ import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.types.Localizable;
 
 /**
- * <p>PrimitiveValueResolver class.</p>
+ * <p>
+ * PrimitiveValueResolver class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -34,8 +36,8 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments,
-			final ColumnDefinition columnDefinition) throws ValueResolverException {
+	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition)
+			throws ValueResolverException {
 
 		if (StringUtils.isBlank(value)) {
 			return null;
@@ -56,8 +58,7 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 					}
 				} else {
 					throw new ValueResolverException(
-							String.format("Cannot resolve generic value of localizable for %s.%s", type.getSimpleName(),
-									columnDefinition.getPropertyName()));
+							String.format("Cannot resolve generic value of localizable for %s.%s", type.getSimpleName(), columnDefinition.getPropertyName()));
 				}
 
 				return (T) resolve(value, genericType, genericArguments, columnDefinition);
@@ -68,6 +69,8 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 				return (T) toBoolean(value);
 			} else if (type.isAssignableFrom(Number.class) && NumberUtils.isCreatable(value)) {
 				return (T) toNumber(value);
+			} else if (Enum.class.isAssignableFrom(type)) {
+				return (T) Enum.valueOf((Class<? extends Enum>) type, value);
 			} else {
 
 				// shortcut for locales

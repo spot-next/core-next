@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
+import static io.spotnext.core.support.util.MiscUtil.$;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
@@ -57,7 +59,9 @@ import io.spotnext.core.types.Item;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 
 /**
- * <p>DefaultImpexImportStrategy class.</p>
+ * <p>
+ * DefaultImpexImportStrategy class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -72,8 +76,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
 	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\-\=]{0,}\]{0,1})
-	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
-			"^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\-\\=]{0,}\\]{0,1})");
+	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern
+			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\-\\=]{0,}\\]{0,1})");
 
 	@Resource
 	private TypeService typeService;
@@ -98,8 +102,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	/** {@inheritDoc} */
 	@Override
-	public void importImpex(final ImportConfiguration config, final InputStream inputStream)
-			throws ImpexImportException {
+	public void importImpex(final ImportConfiguration config, final InputStream inputStream) throws ImpexImportException {
 
 		ValidationUtil.validateNotNull("Import config cannot be null", config);
 		ValidationUtil.validateNotNull("Script input stream cannot be null", inputStream);
@@ -109,8 +112,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		try {
 			fileContent = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
 		} catch (final IOException e) {
-			throw new ImpexImportException(String.format("Could not read impex file %s", config.getScriptIdentifier()),
-					e);
+			throw new ImpexImportException(String.format("Could not read impex file %s", config.getScriptIdentifier()), e);
 		}
 
 		if (CollectionUtils.isNotEmpty(fileContent)) {
@@ -144,8 +146,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			}
 
 			// looks for commands
-			final Optional<ImpexCommand> command = Stream.of(ImpexCommand.values())
-					.filter(c -> StringUtils.startsWithIgnoreCase(trimmedLine, c.toString())).findFirst();
+			final Optional<ImpexCommand> command = Stream.of(ImpexCommand.values()).filter(c -> StringUtils.startsWithIgnoreCase(trimmedLine, c.toString()))
+					.findFirst();
 
 			if (command.isPresent()) {
 				// start of a new import workunit
@@ -184,8 +186,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				unit.setHeaderColumns(parseHeaderColumns(parsedRows.get(0)));
 				unit.setDataRows(parsedRows.subList(1, parsedRows.size()));
 			} catch (final IOException e) {
-				throw new ImpexImportException(String.format("Cannot process work unit '%s' for type %s",
-						unit.getCommand(), unit.getItemType()), e);
+				throw new ImpexImportException(String.format("Cannot process work unit '%s' for type %s", unit.getCommand(), unit.getItemType()), e);
 			}
 		}
 	}
@@ -202,8 +203,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected void importWorkUnits(final List<WorkUnit> workUnits, final ImportConfiguration config)
-			throws ImpexImportException {
+	protected void importWorkUnits(final List<WorkUnit> workUnits, final ImportConfiguration config) throws ImpexImportException {
 
 		final List<JpqlQuery<Void>> itemsToRemove = new ArrayList<>();
 
@@ -229,8 +229,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 						final ColumnDefinition col = unit.getHeaderColumns().get(headerIndex);
 						final String val = row.get(x);
 
-						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode)
-								.get(col.getPropertyName());
+						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode).get(col.getPropertyName());
 
 						if (propDef != null) {
 							final Class<?> returnType = propDef.getReturnType();
@@ -239,20 +238,19 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							// resolve values using the default or the
 							// configured value resolvers
 							try {
-								final Object propertyValue = resolveValue(val, returnType,
-										propDef.getGenericTypeArguments(), col);
+								final Object propertyValue = resolveValue(val, returnType, propDef.getGenericTypeArguments(), col);
 								rawItem.put(col, propertyValue);
 							} catch (final ValueResolverException e) {
 								if (config.getIgnoreErrors()) {
 									loggingService.warn(String.format("Could not resolve value '%s' for %s.%s", val,
-											unit.getItemType().getSimpleName(), col.getPropertyName()));
+											$(() -> unit.getItemType().getSimpleName(), "<null>"), col.getPropertyName()));
 								} else {
 									throw e;
 								}
 							}
 						} else {
-							loggingService.warn(String.format("Ignoring unknown column %s for type %s",
-									col.getPropertyName(), unit.getItemType().getSimpleName()));
+							loggingService
+									.warn(String.format("Ignoring unknown column %s for type %s", col.getPropertyName(), unit.getItemType().getSimpleName()));
 						}
 					}
 
@@ -263,8 +261,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 					} else if (ImpexCommand.UPDATE.equals(unit.getCommand())) {
 
 						// First we fetch the item based on the unique columns
-						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
-								rawItem, config);
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem, config);
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
 
 						// if no matching item is found, we tread this the same
@@ -273,8 +270,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							setItemValues(existingItem, rawItem);
 							saveItem(config, existingItem);
 						} else {
-							final String message = String
-									.format("Could not find item for update with unique properties: %s", uniqueParams);
+							final String message = String.format("Could not find item for update with unique properties: %s", uniqueParams);
 
 							if (config.getIgnoreErrors()) {
 								loggingService.warn(message);
@@ -285,8 +281,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 					} else if (ImpexCommand.INSERT_UPDATE.equals(unit.getCommand())) {
 						// First we fetch the item based on the unique columns
-						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(),
-								rawItem, config);
+						final Map<String, Object> uniqueParams = getUniqueAttributValues(unit.getHeaderColumns(), rawItem, config);
 						final Item existingItem = modelService.get(new ModelQuery<>(unit.getItemType(), uniqueParams));
 
 						// if a matching item is found, we update it
@@ -303,8 +298,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 					}
 				}
 			} catch (final Throwable e) {
-				final String message = String.format("Could not import item of type %s, line: %s",
-						unit.getItemType().getName(), StringUtils.join(currentRow, ", "));
+				final String message = String.format("Could not import item of type %s, line: %s", unit.getItemType().getName(),
+						StringUtils.join(currentRow, ", "));
 
 				if (!config.getIgnoreErrors()) {
 					throw new ImpexImportException(message, e);
@@ -324,18 +319,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	protected void saveItem(final ImportConfiguration config, final Item item) {
 		if (config.getIgnoreErrors()) {
-			executeWithIgnoreErrors(Arrays.asList(item), (i) -> modelService.save(i), (i, e) -> loggingService
-					.log(LogLevel.WARN, String.format("Could not save item %s: %s", i, e.getMessage()), null, item));
+			executeWithIgnoreErrors(Arrays.asList(item), (i) -> modelService.save(i),
+					(i, e) -> loggingService.log(LogLevel.WARN, String.format("Could not save item %s: %s", i, e.getMessage()), null, item));
 		} else {
 			modelService.saveAll(Arrays.asList(item));
 		}
 	}
 
-	private <T, E extends Exception> void executeWithIgnoreErrors(final Collection<T> objects,
-			final Consumer<T> consumer, final BiConsumer<T, E> exceptionHandler) {
+	private <T, E extends Exception> void executeWithIgnoreErrors(final Collection<T> objects, final Consumer<T> consumer,
+			final BiConsumer<T, E> exceptionHandler) {
 
-		loggingService.debug(
-				() -> "Import config is set to 'ignoreErrors' - this might negativly influence persistence operations!");
+		loggingService.debug(() -> "Import config is set to 'ignoreErrors' - this might negativly influence persistence operations!");
 
 		for (final T o : objects) {
 			try {
@@ -361,8 +355,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	@SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
-	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem,
-			final Set<String> propertyToIgnore) {
+	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem, final Set<String> propertyToIgnore) {
 
 		final List<String> whereClauses = new ArrayList<>();
 		final Map<String, Object> params = new HashMap<>();
@@ -380,8 +373,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		params.put("pk", item.getPk());
 
-		final JpqlQuery<Void> query = new JpqlQuery<>(
-				String.format("UPDATE %s AS %s SET %s WHERE %s.pk = :pk", typeName, typeName, whereClause, typeName),
+		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("UPDATE %s AS %s SET %s WHERE %s.pk = :pk", typeName, typeName, whereClause, typeName),
 				params, Void.class);
 		query.setClearCaches(true);
 
@@ -400,8 +392,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final String whereClause = whereClauses.stream().collect(Collectors.joining(" AND "));
 
-		final JpqlQuery<Void> query = new JpqlQuery<>(
-				String.format("DELETE FROM %s AS %s WHERE %s", typeName, typeName, whereClause), params, Void.class);
+		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("DELETE FROM %s AS %s WHERE %s", typeName, typeName, whereClause), params, Void.class);
 		query.setClearCaches(true);
 
 		return query;
@@ -414,8 +405,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	 *             if one of the given columns is a collection or a map, as this
 	 *             is not supported.
 	 */
-	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns,
-			final Map<ColumnDefinition, Object> rawItem, final ImportConfiguration config) throws ImpexImportException {
+	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns, final Map<ColumnDefinition, Object> rawItem,
+			final ImportConfiguration config) throws ImpexImportException {
 
 		final Map<String, Object> ret = new HashMap<>();
 
@@ -448,12 +439,10 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setItemPropertyValue(final Item item, final ColumnDefinition columnDefinition,
-			final Object propertyValue) {
+	private void setItemPropertyValue(final Item item, final ColumnDefinition columnDefinition, final Object propertyValue) {
 
 		if (isCollectionType(columnDefinition)) {
-			Collection<?> colValue = (Collection<?>) modelService.getPropertyValue(item,
-					columnDefinition.getPropertyName());
+			Collection<?> colValue = (Collection<?>) modelService.getPropertyValue(item, columnDefinition.getPropertyName());
 
 			switch (getMergeMode(columnDefinition)) {
 			case APPEND:
@@ -478,8 +467,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			setPropertyValue(item, columnDefinition, colValue);
 
 		} else if (isMapType(columnDefinition)) {
-			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item,
-					columnDefinition.getPropertyName());
+			Map<Object, Object> mapValue = (Map<Object, Object>) modelService.getPropertyValue(item, columnDefinition.getPropertyName());
 
 			switch (getMergeMode(columnDefinition)) {
 			case APPEND:
@@ -539,8 +527,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return mode;
 	}
 
-	private Object resolveValue(final String value, final Class<?> type, final List<Class<?>> genericArguments,
-			final ColumnDefinition columnDefinition) {
+	private Object resolveValue(final String value, final Class<?> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition) {
 
 		Object ret = null;
 
@@ -574,8 +561,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return ret;
 	}
 
-	private Object resolveSingleValue(final String value, final Class<?> type,
-			final ColumnDefinition columnDefinition) {
+	private Object resolveSingleValue(final String value, final Class<?> type, final ColumnDefinition columnDefinition) {
 
 		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
 			return referenceValueResolver.resolve(value, type, null, columnDefinition);
