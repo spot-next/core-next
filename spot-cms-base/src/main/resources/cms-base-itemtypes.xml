@@ -94,7 +94,7 @@
 		</properties>
 	</type>
 
-	<type name="ContentSlot" package="io.spotnext.itemtype.cms">
+	<type name="ContentSlot" extends="UniqueIdItem" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="name" type="String">
 				<description>The name will be used to render the containing components into the actual HTML template.</description>
@@ -169,7 +169,7 @@
 	</relation>
 
 	<relation name="CmsPageLayout2Contentslot">
-		<source itemType="CmsPageLayout" cardinality="one" />
+		<source itemType="CmsPageLayout" mappedBy="pageLayout" cardinality="one" />
 		<target itemType="ContentSlot" mappedBy="contentSlots"
 			cardinality="many">
 			<description>The available content slots that hold the predefined components. Can be overwritten in the CmsPage</description>
