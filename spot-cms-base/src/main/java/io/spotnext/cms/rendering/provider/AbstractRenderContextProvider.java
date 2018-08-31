@@ -3,7 +3,7 @@ package io.spotnext.cms.rendering.provider;
 import javax.servlet.http.HttpServletRequest;
 
 import io.spotnext.cms.rendering.view.View;
-import io.spotnext.itemtype.cms.model.CmsPage;
+import io.spotnext.itemtype.cms.CmsPage;
 
 /**
  * <p>Abstract AbstractRenderContextProvider class.</p>

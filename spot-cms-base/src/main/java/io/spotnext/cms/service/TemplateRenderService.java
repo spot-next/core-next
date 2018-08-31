@@ -1,6 +1,5 @@
 package io.spotnext.cms.service;
 
-import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 
 /**

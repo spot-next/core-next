@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -17,8 +19,10 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -99,18 +103,36 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@PrePersist
 	public void prePersist() {
 		this.createdAt = LocalDateTime.now();
-		uptedateUniquenessHash();
+		updateUniquenessHash();
 	}
 
-	protected void uptedateUniquenessHash() {
-		// update uniqueness hash. This is the only column that has unique-key
-		// constraint!
+	/**
+	 * Update uniqueness hash. This is the only column that has JPA unique-key
+	 * constraint! This is necessary to make the {@link Column#unique()} annotation
+	 * work with all JPA inheritance strategies.
+	 */
+	protected void updateUniquenessHash() {
+		final Map<String, Object> uniqueProperties = getUniqueHashProperties();
 
-		final Collection<Object> uniquePropertyValues = getUniqueProperties().values();
+		// check
+		if (uniqueProperties.size() > 0) {
+			final Collection<Object> uniquePropertyValues = uniqueProperties.values().stream().map(v -> {
+				final Object prop;
+				// transform all sub items into uniqueness hashes, use the real value of all
+				// other properties
+				if (v instanceof Item) {
+					prop = ((Item) v).uniquenessHash();
+				} else {
+					prop = v;
+				}
 
-		if (uniquePropertyValues.size() > 0) {
+				return prop;
+			}).collect(Collectors.toList());
+
+			// create a hashcode
 			this.uniquenessHash = Objects.hash(uniquePropertyValues.toArray());
 		} else {
+			// use the PK as fallback, if no unique properties exist or all are null
 			this.uniquenessHash = Objects.hash(this.pk);
 		}
 	}
@@ -118,7 +140,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@PreUpdate
 	protected void preUpdate() {
 		setLastModifiedAt();
-		uptedateUniquenessHash();
+		updateUniquenessHash();
 	}
 
 	protected void setLastModifiedAt() {
@@ -126,7 +148,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	public int uniquenessHash() {
-		return getUniqueProperties().hashCode();
+		return getUniqueHashProperties().hashCode();
 	}
 
 	public void setCreatedBy(final String createdBy) {
@@ -168,24 +190,41 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * @return a map containing all the unique properties for this Item (key =
 	 *         property name)
 	 */
-	public Map<String, Object> getUniqueProperties() {
-		final Map<String, Object> uniqueProps = new HashMap<>();
+	public Map<String, Object> getUniqueHashProperties() {
+		return getProperties(this::isUniqueField);
+	}
 
-		for (final Field uniqueField : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
-			final Property prop = ClassUtil.getAnnotation(uniqueField, Property.class);
+	/**
+	 * Returns all fields annotated with the {@link Property} annotation.
+	 * 
+	 * @param filter can be null or a predicate that further filters the returned
+	 *               item properties.
+	 * @return all filtered item properties
+	 */
+	public Map<String, Object> getProperties(BiPredicate<Field, Object> filter) {
+		if (this instanceof HibernateProxy) {
+			if (!Hibernate.isInitialized(this)) {
+				Hibernate.initialize(this);
+			}
+		}
+		
+		final Map<String, Object> props = new HashMap<>();
 
-			if (prop.unique()) {
-				Object propertyValue = ClassUtil.getField(this, uniqueField.getName(), true);
+		for (final Field field : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
+			final Object propertyValue = ClassUtil.getField(this, field.getName(), true);
 
-				if (propertyValue instanceof Item) {
-					propertyValue = ((Item) propertyValue).uniquenessHash();
-				}
-
-				uniqueProps.put(uniqueField.getName(), propertyValue);
+			if (filter == null || filter.test(field, propertyValue)) {
+				props.put(field.getName(), propertyValue);
 			}
 		}
 
-		return uniqueProps;
+		return props;
+	}
+
+	private boolean isUniqueField(Field field, Object fieldValue) {
+		final Property prop = ClassUtil.getAnnotation(field, Property.class);
+
+		return prop != null && prop.unique();
 	}
 
 	/**

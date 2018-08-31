@@ -1,19 +1,19 @@
 package io.spotnext.cms.service;
 
 import io.spotnext.cms.restriction.RestrictionEvaluationResult;
-import io.spotnext.itemtype.cms.model.CmsPage;
+import io.spotnext.itemtype.cms.AbstractCmsComponent;
 
 /**
- * <p>CmsRestrictionService interface.</p>
+ * Checks CMS components for visibility restrictions.
  */
 public interface CmsRestrictionService {
 
 	/**
-	 * <p>checkRestrictions.</p>
+	 * Checks CMS components for visibility restrictions.
 	 *
-	 * @param page a {@link io.spotnext.itemtype.cms.model.CmsPage} object.
-	 * @return a {@link io.spotnext.cms.restriction.RestrictionEvaluationResult} object.
+	 * @param component to check for restrictions
+	 * @return the result of the restriction evaluation
 	 */
-	RestrictionEvaluationResult checkRestrictions(CmsPage page);
+	RestrictionEvaluationResult checkRestrictions(AbstractCmsComponent component);
 
 }

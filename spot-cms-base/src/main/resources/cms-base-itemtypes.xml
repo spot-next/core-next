@@ -101,8 +101,6 @@
 					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
 				</annotations>
 			</property>
-		</properties>
-		<properties>
 			<property name="footer" type="AbstractCmsComponent">
 				<description>The component that will be used as footer at the bottom of the page.</description>
 				<annotations>

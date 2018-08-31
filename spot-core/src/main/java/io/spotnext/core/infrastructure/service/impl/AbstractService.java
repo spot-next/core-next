@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
+import io.spotnext.core.infrastructure.service.ModelService;
 
 /**
- * <p>Abstract AbstractService class.</p>
+ * <p>
+ * The base class for all services - provides useful services.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -22,22 +25,28 @@ public abstract class AbstractService extends BeanAware {
 	@Autowired
 	protected ConfigurationService configurationService;
 
+	@Autowired
+	protected ModelService modelService;
+
 	/**
-	 * <p>Getter for the field <code>loggingService</code>.</p>
-	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 * @return the {@link LoggingService}
 	 */
 	public LoggingService getLoggingService() {
 		return loggingService;
 	}
 
 	/**
-	 * <p>Getter for the field <code>configurationService</code>.</p>
-	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.ConfigurationService} object.
+	 * @return the {@link ConfigurationService}
 	 */
 	public ConfigurationService getConfigurationService() {
 		return configurationService;
+	}
+
+	/**
+	 * @return the {@link ModelService}
+	 */
+	public ModelService getModelService() {
+		return modelService;
 	}
 
 }

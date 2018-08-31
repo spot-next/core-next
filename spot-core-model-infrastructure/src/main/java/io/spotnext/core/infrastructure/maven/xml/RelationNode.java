@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="modifiers" type="{}Modifiers" minOccurs="0"/>
- *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
+ *         &lt;element name="annotations" type="{}Annotations" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="itemType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="mappedBy" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -36,13 +36,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RelationNode", propOrder = {
     "description",
     "modifiers",
-    "validators"
+    "annotations"
 })
 public class RelationNode {
 
     protected String description;
     protected Modifiers modifiers;
-    protected Validators validators;
+    protected Annotations annotations;
     @XmlAttribute(name = "itemType", required = true)
     protected String itemType;
     @XmlAttribute(name = "mappedBy")
@@ -101,27 +101,27 @@ public class RelationNode {
     }
 
     /**
-     * Gets the value of the validators property.
+     * Gets the value of the annotations property.
      * 
      * @return
      *     possible object is
-     *     {@link Validators }
+     *     {@link Annotations }
      *     
      */
-    public Validators getValidators() {
-        return validators;
+    public Annotations getAnnotations() {
+        return annotations;
     }
 
     /**
-     * Sets the value of the validators property.
+     * Sets the value of the annotations property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Validators }
+     *     {@link Annotations }
      *     
      */
-    public void setValidators(Validators value) {
-        this.validators = value;
+    public void setAnnotations(Annotations value) {
+        this.annotations = value;
     }
 
     /**

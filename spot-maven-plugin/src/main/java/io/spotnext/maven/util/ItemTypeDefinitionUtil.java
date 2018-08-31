@@ -33,6 +33,7 @@ import io.spotnext.core.infrastructure.maven.xml.CollectionType;
 import io.spotnext.core.infrastructure.maven.xml.EnumType;
 import io.spotnext.core.infrastructure.maven.xml.EnumValue;
 import io.spotnext.core.infrastructure.maven.xml.ItemType;
+import io.spotnext.core.infrastructure.maven.xml.JavaType.Properties;
 import io.spotnext.core.infrastructure.maven.xml.MapType;
 import io.spotnext.core.infrastructure.maven.xml.Property;
 import io.spotnext.core.infrastructure.maven.xml.RelationType;
@@ -263,10 +264,19 @@ public class ItemTypeDefinitionUtil {
 					if (typeDef.getProperties() != null
 							&& CollectionUtils.isNotEmpty(typeDef.getProperties().getProperty())) {
 						for (final Property p : typeDef.getProperties().getProperty()) {
-							final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
-									.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
+							boolean add = true;
 
-							if (!existingProp.isPresent()) {
+							if (existingType.getProperties() != null) {
+								final Optional<Property> existingProp = existingType.getProperties().getProperty()
+										.stream().filter((prop) -> StringUtils.equals(prop.getName(), p.getName()))
+										.findFirst();
+
+								add = !existingProp.isPresent();
+							} else {
+								existingType.setProperties(new Properties());
+							}
+
+							if (add) {
 								existingType.getProperties().getProperty().add(p);
 							}
 						}
@@ -299,10 +309,19 @@ public class ItemTypeDefinitionUtil {
 					if (typeDef.getProperties() != null
 							&& CollectionUtils.isNotEmpty(typeDef.getProperties().getProperty())) {
 						for (final Property p : typeDef.getProperties().getProperty()) {
-							final Optional<Property> existingProp = existingType.getProperties().getProperty().stream()
-									.filter((prop) -> StringUtils.equals(prop.getName(), p.getName())).findFirst();
+							boolean add = true;
 
-							if (!existingProp.isPresent()) {
+							if (existingType.getProperties() != null) {
+								final Optional<Property> existingProp = existingType.getProperties().getProperty()
+										.stream().filter((prop) -> StringUtils.equals(prop.getName(), p.getName()))
+										.findFirst();
+
+								add = !existingProp.isPresent();
+							} else {
+								existingType.setProperties(new Properties());
+							}
+
+							if (add) {
 								existingType.getProperties().getProperty().add(p);
 							}
 						}
@@ -341,7 +360,7 @@ public class ItemTypeDefinitionUtil {
 			// "itemtypes.xsd");
 
 			typeDef = (Types) jaxb.unmarshal(file);
-		} catch (final JAXBException e) {
+		} catch (final Exception e) {
 			log.error(e);
 		}
 
