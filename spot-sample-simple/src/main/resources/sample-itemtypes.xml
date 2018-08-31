@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
 
 	<collection elementType="UserData" name="UserDataList" />
 
@@ -43,9 +43,9 @@
 	<type name="User" package="io.spotnext.itemtype.core.user">
 		<properties>
 			<property name="type" type="UserType">
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 				<defaultValue>io.spotnext.sample.types.enumerations.UserType.REGISTERED
 				</defaultValue>
 			</property>
@@ -57,9 +57,9 @@
 			<property name="title" type="String">
 				<description>The unique title of the party</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="motto" type="LocalizedString" localized="true">
 				<description>The localized motto of the party</description>

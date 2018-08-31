@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
 
 	<!-- enums -->
 
@@ -72,9 +72,9 @@
 			<property name="productId" type="String">
 				<description>The product id the price is used for.</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="userGroup" type="UserGroup">
 				<description>The assigned user group.</description>
@@ -111,9 +111,9 @@
 		<properties>
 			<property name="productId" type="String">
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="value" type="Integer">
 				<description>The actual stock level.</description>
@@ -131,9 +131,9 @@
 		<properties>
 			<property name="availableAt" type="String">
 				<description>Defines a future stock and when it will be available.</description>
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
@@ -146,9 +146,9 @@
 		<properties>
 			<property name="customer" type="Customer">
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
@@ -158,9 +158,9 @@
 		<properties>
 			<property name="product" type="Product">
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>

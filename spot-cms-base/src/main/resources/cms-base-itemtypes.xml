@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
 
 	<!-- enums -->
 
@@ -36,20 +35,19 @@
 
 	<!-- cms item types -->
 
-	<type name="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms"
-		extends="UniqueIdItem">
+	<type name="AbstractCmsItem" abstract="true" package="io.spotnext.itemtype.cms" extends="UniqueIdItem">
 		<properties>
 			<property name="catalogVersion" type="CatalogVersion">
 				<description>The content catalog of the item.</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="renderEngine" type="TemplateRenderEngine">
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="renderTemplateFile" type="String">
 				<description>The path (in the resources/templates folder) to the render template file used to render this CMS item.</description>
@@ -71,8 +69,7 @@
 		</properties>
 	</type>
 
-	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem"
-		package="io.spotnext.itemtype.cms">
+	<type name="AbstractCmsComponent" abstract="true" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="onlyOneRestrictionMustApply" type="Boolean">
 				<description>
@@ -83,51 +80,66 @@
 		</properties>
 	</type>
 
-	<type name="AbstractCmsContainerComponent" abstract="true"
-		extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
+	<type name="AbstractCmsContainerComponent" abstract="true" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
 		<properties>
-		</properties>
-	</type>
-
-	<type name="CmsComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
-		<properties>
-		</properties>
-	</type>
-
-	<type name="ContentSlot" extends="UniqueIdItem" package="io.spotnext.itemtype.cms">
-		<properties>
-			<property name="name" type="String">
-				<description>The name will be used to render the containing components into the actual HTML template.</description>
-			</property>
-			<property name="component" type="AbstractCmsComponent">
-				<description>The CMS component that should be rendered into the content slot.</description>
-			</property>
 		</properties>
 	</type>
 
 	<type name="MetaTag" extends="ConfigEntry" package="io.spotnext.itemtype.cms">
 	</type>
 
-	<type name="CmsPageLayout" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
+	<type name="CmsBaseLayout" abstract="true" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="CmsPage" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
+	<type name="CmsOneColumnLayout" extends="CmsBaseLayout" package="io.spotnext.itemtype.cms">
 		<properties>
-			<property name="title" type="LocalizedString">
+			<property name="header" type="AbstractCmsComponent">
+				<description>The component that will be used as header on top of the page.</description>
+				<annotations>
+					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+				</annotations>
 			</property>
-			<property name="favIconPath" type="String">
-			</property>
-			<property name="favIcon" type="ImageMedia">
+		</properties>
+		<properties>
+			<property name="footer" type="AbstractCmsComponent">
+				<description>The component that will be used as footer at the bottom of the page.</description>
+				<annotations>
+					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
+
+	<type name="CmsPage" abstract="true" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="title" type="LocalizedString">
+				<description>The page title (in the browser window).</description>
+				<annotations>
+					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+				</annotations>
+			</property>
+			<property name="favIconPath" type="String">
+				<description>The (publicly available) path to the favIcon.</description>
+				<annotations>
+					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+				</annotations>
+			</property>
+			<property name="favIcon" type="ImageMedia">
+				<description>The image media containing the favIcon.</description>
+				<annotations>
+					<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+				</annotations>
+			</property>
+		</properties>
+	</type>
+
+	<type name="CmsHomePage" extends="CmsPage" package="io.spotnext.itemtype.cms" />
 
 	<!-- special cms components -->
 
-	<type name="AbstractNavigationEntry" abstract="true" extends="CmsComponent"
-		package="io.spotnext.itemtype.cms">
+	<type name="AbstractNavigationEntry" abstract="true" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="name" type="String">
 				<description>The navigation entry name.</description>
@@ -135,8 +147,7 @@
 		</properties>
 	</type>
 
-	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry"
-		package="io.spotnext.itemtype.cms">
+	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="href" type="String">
 				<description>The href of the link.</description>
@@ -147,20 +158,25 @@
 		</properties>
 	</type>
 
-	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent"
-		abstract="true" package="io.spotnext.itemtype.cms">
+	<type name="AbstractNavigationContainer" extends="AbstractCmsContainerComponent" abstract="true" package="io.spotnext.itemtype.cms">
 		<properties>
 		</properties>
 	</type>
 
-	<type name="NavigationBar" extends="AbstractNavigationContainer"
-		package="io.spotnext.itemtype.cms" />
+	<type name="NavigationBar" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms" />
 
-	<type name="Footer" extends="AbstractNavigationContainer" package="io.spotnext.itemtype.cms" />
+	<type name="HtmlComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="content" type="String">
+				<description>The HTML content, that will be rendered. Can contain any valid HTML, even scripts and styles.</description>
+				<persistence columnType="LONGVARCHAR" />
+			</property>
+		</properties>
+	</type>
 
 	<!-- RELATIONS -->
-	<relation name="CmsPageLayout2CmsPage">
-		<source itemType="CmsPageLayout" mappedBy="layout" cardinality="one">
+	<relation name="CmsLayout2CmsPage">
+		<source itemType="CmsBaseLayout" mappedBy="layout" cardinality="one">
 			<description>The layout that is used for rendering.</description>
 		</source>
 		<target itemType="CmsPage" mappedBy="pages" cardinality="many">
@@ -168,35 +184,16 @@
 		</target>
 	</relation>
 
-	<relation name="CmsPageLayout2Contentslot">
-		<source itemType="CmsPageLayout" mappedBy="pageLayout" cardinality="one" />
-		<target itemType="ContentSlot" mappedBy="contentSlots"
-			cardinality="many">
-			<description>The available content slots that hold the predefined components. Can be overwritten in the CmsPage</description>
+	<relation name="AbstractCmsComponent2CmsRestriction">
+		<source itemType="AbstractCmsComponent" cardinality="many" mappedBy="cmsItem" />
+		<target itemType="CmsRestriction" cardinality="many" mappedBy="cmsRestrictions">
+			<description>The restrictions evaluate if the current cms item should be rendered.</description>
 		</target>
 	</relation>
 
-	<!-- <relation name="AbstractCmsItem2CmsRestriction"> -->
-	<!-- <source itemType="AbstractCmsItem" cardinality="one" mappedBy="cmsItem" 
-		/> -->
-	<!-- <target itemType="CmsRestriction" cardinality="many" mappedBy="cmsRestrictions"> -->
-	<!-- <description>The restrictions evaluate if the current cms item should 
-		be rendered.</description> -->
-	<!-- </target> -->
-	<!-- </relation> -->
-
 	<relation name="AbstractCmsContainerComponent2AbstractCmsComponent">
-		<source itemType="AbstractCmsContainerComponent" cardinality="many"
-			mappedBy="container" />
-		<target itemType="AbstractCmsComponent" cardinality="many"
-			mappedBy="components" />
+		<source itemType="AbstractCmsContainerComponent" cardinality="many" mappedBy="container" />
+		<target itemType="AbstractCmsComponent" cardinality="many" mappedBy="components" />
 	</relation>
-
-	<!-- <relation name="ContentSlot2CmsComponent"> -->
-	<!-- <source itemType="ContentSlot" cardinality="many" mappedBy="contentSlot" 
-		/> -->
-	<!-- <target itemType="CmsComponent" cardinality="many" mappedBy="components" 
-		/> -->
-	<!-- </relation> -->
 
 </types>

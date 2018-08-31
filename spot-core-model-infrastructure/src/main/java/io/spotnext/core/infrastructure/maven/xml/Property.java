@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="modifiers" type="{}Modifiers" minOccurs="0"/>
  *         &lt;element name="accessors" type="{}Accessors" minOccurs="0"/>
- *         &lt;element name="validators" type="{}Validators" minOccurs="0"/>
+ *         &lt;element name="annotations" type="{}Annotations" minOccurs="0"/>
  *         &lt;element name="defaultValue" type="{}DefaultValue" minOccurs="0"/>
  *         &lt;element name="persistence" type="{}Persistence" minOccurs="0"/>
  *       &lt;/sequence>
@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
     "description",
     "modifiers",
     "accessors",
-    "validators",
+    "annotations",
     "defaultValue",
     "persistence"
 })
@@ -48,7 +48,7 @@ public class Property {
     protected String description;
     protected Modifiers modifiers;
     protected Accessors accessors;
-    protected Validators validators;
+    protected Annotations annotations;
     protected DefaultValue defaultValue;
     protected Persistence persistence;
     @XmlAttribute(name = "name", required = true)
@@ -131,27 +131,27 @@ public class Property {
     }
 
     /**
-     * Gets the value of the validators property.
+     * Gets the value of the annotations property.
      * 
      * @return
      *     possible object is
-     *     {@link Validators }
+     *     {@link Annotations }
      *     
      */
-    public Validators getValidators() {
-        return validators;
+    public Annotations getAnnotations() {
+        return annotations;
     }
 
     /**
-     * Sets the value of the validators property.
+     * Sets the value of the annotations property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Validators }
+     *     {@link Annotations }
      *     
      */
-    public void setValidators(Validators value) {
-        this.validators = value;
+    public void setAnnotations(Annotations value) {
+        this.annotations = value;
     }
 
     /**

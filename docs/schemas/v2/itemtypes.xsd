@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+
+	<xs:element name="types">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="atomic" type="AtomicType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="collection" type="CollectionType"
+					minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="map" type="MapType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="enum" type="EnumType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="bean" type="BeanType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="type" type="ItemType" minOccurs="0"
+					maxOccurs="unbounded" />
+				<xs:element name="relation" type="RelationType"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="BaseType" abstract="true">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the name of the item type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="JavaType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="BaseComplexType">
+				<xs:sequence>
+					<xs:element name="properties" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>
+								Defines the list of item properties.
+							</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="property" type="Property"
+									minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="extends" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the super class of the given type.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="abstract" type="xs:boolean">
+					<xs:annotation>
+						<xs:documentation>
+							Defines if the type is abstract.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BaseComplexType" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:sequence>
+					<xs:element name="interfaces" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the interfaces the type implements.
+								Only interfaces with default methods or no method at all are
+								supported. All other interfaces will lead to build errors!
+							</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="interface" type="Interface"
+									minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="package" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							Defines the java package of the item type.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CollectionType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="elementType" type="xs:string" use="required" />
+				<xs:attribute name="collectionType" type="CollectionsType"
+					default="List" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="MapType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="keyType" type="xs:string" use="required" />
+				<xs:attribute name="valueType" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AtomicType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:attribute name="className" type="xs:string" use="required" />
+				<xs:attribute name="array" type="xs:boolean" default="false" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EnumType">
+		<xs:complexContent>
+			<xs:extension base="BaseComplexType">
+				<xs:sequence>
+					<xs:element name="value" type="EnumValue" minOccurs="0"
+						maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EnumValue">
+		<xs:attribute name="code" type="xs:string" use="required" />
+		<xs:attribute name="value" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="BeanType">
+		<xs:complexContent>
+			<xs:extension base="JavaType">
+				<xs:sequence>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ItemType">
+		<xs:complexContent>
+			<xs:extension base="JavaType">
+				<xs:attribute name="typeCode" type="xs:string" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							The internal code of the item type, used for
+							storage and other internal functionality.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="persistable" type="xs:boolean"
+					default="true">
+					<xs:annotation>
+						<xs:documentation>
+							Determines if this item type can be stored by
+							the underlying persistence framework.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DefaultValue" mixed="true">
+		<xs:attribute name="value" use="optional" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Persistence" mixed="true">
+		<xs:attribute name="columnType" use="required" type="DatabaseColumnType" />
+	</xs:complexType>
+
+	<xs:complexType name="Property">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="modifiers" type="Modifiers" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="accessors" type="Accessors" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="annotations" type="Annotations" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="defaultValue" type="DefaultValue"
+				minOccurs="0" maxOccurs="1" />
+			<xs:element name="persistence" type="Persistence"
+				minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the name of the property.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the type of the property
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="localized" type="xs:boolean"
+			default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies if additional localized getters and
+					setters should be created. This is only valid for types that
+					implement the interface 'io.spotnext.core.types.Localizable'
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Annotations">
+		<xs:sequence>
+			<xs:element name="annotation" type="Annotation" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Annotation">
+		<xs:sequence>
+			<xs:element name="argument" type="AnnotationArgument"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="javaClass" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="AnnotationArgument">
+		<xs:attribute name="name" use="required" />
+		<xs:attribute name="numberValue" use="optional" />
+		<xs:attribute name="stringValue" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="Interfaces">
+		<xs:sequence>
+			<xs:element name="interface" type="Interface" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Interface">
+		<xs:sequence>
+			<xs:element name="genericType" type="Argument" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="javaClass" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Argument">
+		<xs:attribute name="value" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Modifiers">
+		<xs:attribute name="unique" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>Defines if the property is part of the uniqueness
+					criteria of the given type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="readable" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the property is readable.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="writable" type="xs:boolean" default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the property is writable.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="initial" type="xs:boolean" default="false">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the property can only be written once
+					on item creation.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Accessors">
+		<xs:attribute name="valueProvider" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the spring bean id that handles read and
+					write access to the property.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<!-- <xs:attribute name="getter" type="xs:boolean" default="true"> -->
+		<!-- <xs:annotation> -->
+		<!-- <xs:documentation> -->
+		<!-- Defines if a getter method should be generated for -->
+		<!-- the given property. -->
+		<!-- </xs:documentation> -->
+		<!-- </xs:annotation> -->
+		<!-- </xs:attribute> -->
+		<!-- <xs:attribute name="setter" type="xs:boolean" default="true"> -->
+		<!-- <xs:annotation> -->
+		<!-- <xs:documentation> -->
+		<!-- Defines if a setter method should be generated for -->
+		<!-- the given property. -->
+		<!-- </xs:documentation> -->
+		<!-- </xs:annotation> -->
+		<!-- </xs:attribute> -->
+	</xs:complexType>
+
+	<xs:complexType name="RelationType">
+		<xs:complexContent>
+			<xs:extension base="BaseType">
+				<xs:sequence>
+					<xs:element name="source" type="RelationNode" minOccurs="1"
+						maxOccurs="1" />
+					<xs:element name="target" type="RelationNode" minOccurs="1"
+						maxOccurs="1" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="RelationNode">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="modifiers" type="Modifiers" minOccurs="0"
+				maxOccurs="1" />
+			<xs:element name="annotations" type="Annotations" minOccurs="0"
+				maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="itemType" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Defines the itemtype of the relation endpoint.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="mappedBy" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the name of the property that references
+					this endpoint item type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="cardinality" type="RelationshipCardinality"
+			use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Defines if the cardinality of the relation
+					endpoint.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="collectionType" type="CollectionsType"
+			default="Set">
+			<xs:annotation>
+				<xs:documentation>
+					Defines the collection type of the property
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:simpleType name="RelationshipCardinality">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="one" />
+			<xs:enumeration value="many" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="RelationshipType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OneToMany" />
+			<xs:enumeration value="OneToOne" />
+			<xs:enumeration value="ManyToMany" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CollectionsType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="List" />
+			<xs:enumeration value="Set" />
+			<xs:enumeration value="Collection" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="DatabaseColumnType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="DEFAULT">
+				<xs:annotation>
+					<xs:documentation>Empty placeholder, type will be automatically
+						detected.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHAR">
+				<xs:annotation>
+					<xs:documentation>Single char</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VARCHAR">
+				<xs:annotation>
+					<xs:documentation>Short string</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LONGVARCHAR">
+				<xs:annotation>
+					<xs:documentation>Long string or text</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BLOB">
+				<xs:annotation>
+					<xs:documentation>Large binary object</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CLOB">
+				<xs:annotation>
+					<xs:documentation>Large character object</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TIME">
+				<xs:annotation>
+					<xs:documentation>Time</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TIMESTAMP">
+				<xs:annotation>
+					<xs:documentation>Timestamp</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DATE">
+				<xs:annotation>
+					<xs:documentation>Date</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VARBINARY">
+				<xs:annotation>
+					<xs:documentation>Byte array</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BIT">
+				<xs:annotation>
+					<xs:documentation>0 or 1, like a boolean</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DOUBLE">
+				<xs:annotation>
+					<xs:documentation>Double</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FLOAT">
+				<xs:annotation>
+					<xs:documentation>Float</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TINYINT">
+				<xs:annotation>
+					<xs:documentation>Byte</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SMALLINT">
+				<xs:annotation>
+					<xs:documentation>Short</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="INTEGER">
+				<xs:annotation>
+					<xs:documentation>Integer</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BIGINT">
+				<xs:annotation>
+					<xs:documentation>BigInteger</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="NUMERIC">
+				<xs:annotation>
+					<xs:documentation>BigDecimal</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

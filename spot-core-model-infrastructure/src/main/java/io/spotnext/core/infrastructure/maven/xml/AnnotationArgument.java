@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ValidatorArgument complex type.
+ * <p>Java-Klasse für AnnotationArgument complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="ValidatorArgument">
+ * &lt;complexType name="AnnotationArgument">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
@@ -28,8 +28,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ValidatorArgument")
-public class ValidatorArgument {
+@XmlType(name = "AnnotationArgument")
+public class AnnotationArgument {
 
     @XmlAttribute(name = "name", required = true)
     @XmlSchemaType(name = "anySimpleType")
@@ -42,7 +42,7 @@ public class ValidatorArgument {
     protected String stringValue;
 
     /**
-     * Gets the value of the name property.
+     * Ruft den Wert der name-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -54,7 +54,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Sets the value of the name property.
+     * Legt den Wert der name-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -66,7 +66,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Gets the value of the numberValue property.
+     * Ruft den Wert der numberValue-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Sets the value of the numberValue property.
+     * Legt den Wert der numberValue-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is
@@ -90,7 +90,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Gets the value of the stringValue property.
+     * Ruft den Wert der stringValue-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -102,7 +102,7 @@ public class ValidatorArgument {
     }
 
     /**
-     * Sets the value of the stringValue property.
+     * Legt den Wert der stringValue-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

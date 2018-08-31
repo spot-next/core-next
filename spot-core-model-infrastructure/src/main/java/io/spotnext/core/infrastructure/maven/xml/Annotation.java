@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Validator complex type.
+ * <p>Java-Klasse für Annotation complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Validator">
+ * &lt;complexType name="Annotation">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="argument" type="{}ValidatorArgument" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="argument" type="{}AnnotationArgument" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="javaClass" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Validator", propOrder = {
+@XmlType(name = "Annotation", propOrder = {
     "argument"
 })
-public class Validator {
+public class Annotation {
 
-    protected List<ValidatorArgument> argument;
+    protected List<AnnotationArgument> argument;
     @XmlAttribute(name = "javaClass", required = true)
     protected String javaClass;
 
@@ -57,19 +57,19 @@ public class Validator {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ValidatorArgument }
+     * {@link AnnotationArgument }
      * 
      * 
      */
-    public List<ValidatorArgument> getArgument() {
+    public List<AnnotationArgument> getArgument() {
         if (argument == null) {
-            argument = new ArrayList<ValidatorArgument>();
+            argument = new ArrayList<AnnotationArgument>();
         }
         return this.argument;
     }
 
     /**
-     * Gets the value of the javaClass property.
+     * Ruft den Wert der javaClass-Eigenschaft ab.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class Validator {
     }
 
     /**
-     * Sets the value of the javaClass property.
+     * Legt den Wert der javaClass-Eigenschaft fest.
      * 
      * @param value
      *     allowed object is

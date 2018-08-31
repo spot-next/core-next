@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v1/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
 
 	<!-- atomic java types -->
 	<!-- primitive types -->
@@ -62,9 +62,9 @@
 		<properties>
 			<property name="scriptIdentifier" type="String">
 				<description>Holds the filename or abstract identifier of the import data</description>
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="ignoreErrors" type="Boolean">
 				<description>If true import errors are ignored are ignored and processing is continued</description>
@@ -95,12 +95,12 @@
 			<property name="id" type="String">
 				<description>The unique id of the object.</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="org.hibernate.validator.constraints.Length">
+				<annotations>
+					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
-					</validator>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+					</annotation>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
@@ -112,9 +112,9 @@
 			<property name="catalogVersion" type="CatalogVersion">
 				<description>The catalog version this item belongs to.</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
@@ -271,26 +271,26 @@
                     @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
                 </description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-					<validator javaClass="org.hibernate.validator.constraints.Length">
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="2" />
 						<argument name="max" numberValue="2" />
-					</validator>
-				</validators>
+					</annotation>
+				</annotations>
 			</property>
 			<property name="iso3Code" type="String">
 				<description>
 				The ISO-3 code of the country.
 				@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
 			</description>
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-					<validator javaClass="org.hibernate.validator.constraints.Length">
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 						<argument name="max" numberValue="3" />
-					</validator>
-				</validators>
+					</annotation>
+				</annotations>
 			</property>
 			<property name="shortName" type="LocalizedString" localized="true">
 				<description>The short name of the country, eg. "Austria".</description>
@@ -313,24 +313,24 @@
                     @see https://en.wikipedia.org/wiki/ISO_639-3.
                 </description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-					<validator javaClass="org.hibernate.validator.constraints.Length">
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 						<argument name="max" numberValue="3" />
-					</validator>
-				</validators>
+					</annotation>
+				</annotations>
 			</property>
 			<property name="isoCode" type="String">
 				<description>
                     The ISO-3 code of the language.
                     @see https://en.wikipedia.org/wiki/ISO_639-1.
                 </description>
-				<validators>
-					<validator javaClass="org.hibernate.validator.constraints.Length">
+				<annotations>
+					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="max" numberValue="2" />
-					</validator>
-				</validators>
+					</annotation>
+				</annotations>
 			</property>
 			<property name="name" type="LocalizedString" localized="true">
 				<description>The international name of the language.</description>
@@ -344,9 +344,9 @@
 			<property name="isoCode" type="String">
 				<description>The iso code of the currency.</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="name" type="LocalizedString" localized="true">
 				<description>The localized name of the currency.</description>
@@ -410,9 +410,9 @@
 				The locale of the translation key.
 			</description>
 				<modifiers unique="true" />
-				<validators>
-					<validator javaClass="javax.validation.constraints.NotNull" />
-				</validators>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 			<property name="value" type="String">
 				<description>The localized value of the key.</description>

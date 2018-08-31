@@ -118,11 +118,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AnnotationArgument }
+     * 
+     */
+    public AnnotationArgument createAnnotationArgument() {
+        return new AnnotationArgument();
+    }
+
+    /**
      * Create an instance of {@link DefaultValue }
      * 
      */
     public DefaultValue createDefaultValue() {
         return new DefaultValue();
+    }
+
+    /**
+     * Create an instance of {@link Annotations }
+     * 
+     */
+    public Annotations createAnnotations() {
+        return new Annotations();
     }
 
     /**
@@ -142,11 +158,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ValidatorArgument }
+     * Create an instance of {@link Annotation }
      * 
      */
-    public ValidatorArgument createValidatorArgument() {
-        return new ValidatorArgument();
+    public Annotation createAnnotation() {
+        return new Annotation();
     }
 
     /**
@@ -163,22 +179,6 @@ public class ObjectFactory {
      */
     public io.spotnext.core.infrastructure.maven.xml.Interfaces createInterfaces() {
         return new io.spotnext.core.infrastructure.maven.xml.Interfaces();
-    }
-
-    /**
-     * Create an instance of {@link Validators }
-     * 
-     */
-    public Validators createValidators() {
-        return new Validators();
-    }
-
-    /**
-     * Create an instance of {@link Validator }
-     * 
-     */
-    public Validator createValidator() {
-        return new Validator();
     }
 
     /**

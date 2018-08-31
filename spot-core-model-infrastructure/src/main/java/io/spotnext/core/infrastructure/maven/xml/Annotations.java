@@ -9,16 +9,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for Validators complex type.
+ * <p>Java-Klasse für Annotations complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
  * 
  * <pre>
- * &lt;complexType name="Validators">
+ * &lt;complexType name="Annotations">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="validator" type="{}Validator" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="annotation" type="{}Annotation" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -28,40 +28,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Validators", propOrder = {
-    "validator"
+@XmlType(name = "Annotations", propOrder = {
+    "annotation"
 })
-public class Validators {
+public class Annotations {
 
-    protected List<Validator> validator;
+    protected List<Annotation> annotation;
 
     /**
-     * Gets the value of the validator property.
+     * Gets the value of the annotation property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the validator property.
+     * This is why there is not a <CODE>set</CODE> method for the annotation property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getValidator().add(newItem);
+     *    getAnnotation().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Validator }
+     * {@link Annotation }
      * 
      * 
      */
-    public List<Validator> getValidator() {
-        if (validator == null) {
-            validator = new ArrayList<Validator>();
+    public List<Annotation> getAnnotation() {
+        if (annotation == null) {
+            annotation = new ArrayList<Annotation>();
         }
-        return this.validator;
+        return this.annotation;
     }
 
 }
