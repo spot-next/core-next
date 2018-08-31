@@ -49,12 +49,6 @@
 					<annotation javaClass="javax.validation.constraints.NotNull" />
 				</annotations>
 			</property>
-			<property name="renderTemplateFile" type="String">
-				<description>The path (in the resources/templates folder) to the render template file used to render this CMS item.</description>
-			</property>
-			<property name="renderTemplateScript" type="String">
-				<description>The template script used to render this CMS item. This has priority over the ${@link #getRenderTemplateFile} property.</description>
-			</property>
 		</properties>
 	</type>
 
@@ -73,7 +67,7 @@
 		<properties>
 			<property name="onlyOneRestrictionMustApply" type="Boolean">
 				<description>
-					If set to true, only one restriction must evaluate to "show cms item" 
+					If set to true, only one restriction must evaluate to "show cms item"
 					for the item to be visible.
 				</description>
 			</property>
@@ -90,6 +84,12 @@
 
 	<type name="CmsBaseLayout" abstract="true" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
 		<properties>
+			<property name="renderTemplateFile" type="String">
+				<description>The path (in the resources/templates folder) to the render template file used to render this CMS item.</description>
+			</property>
+			<property name="renderTemplateScript" type="String">
+				<description>The template script used to render this CMS item. This has priority over the ${@link #getRenderTemplateFile} property.</description>
+			</property>
 		</properties>
 	</type>
 
@@ -110,7 +110,7 @@
 		</properties>
 	</type>
 
-	<type name="CmsPage" abstract="true" extends="AbstractCmsItem" package="io.spotnext.itemtype.cms">
+	<type name="CmsPage" abstract="true" extends="CmsBaseLayout" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="title" type="LocalizedString">
 				<description>The page title (in the browser window).</description>

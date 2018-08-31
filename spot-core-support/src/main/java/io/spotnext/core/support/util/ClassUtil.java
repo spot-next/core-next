@@ -333,6 +333,28 @@ public class ClassUtil {
 	}
 
 	/**
+	 * Retrieves all methods recursively that match the given filter predicate.
+	 *
+	 * @param type   must not be null
+	 * @param filter returns true for all selected methods. If null, all methods
+	 *               will be returned.
+	 * @return all filtered methods
+	 */
+	public static Set<Method> getMethods(final Class<?> type, Predicate<Method> filter) {
+		final Set<Method> methods = new HashSet<>();
+
+		for (final Class<?> c : getAllAssignableClasses(type)) {
+			for (final Method method : c.getDeclaredMethods()) {
+				if (filter == null || filter.test(method)) {
+					methods.add(method);
+				}
+			}
+		}
+
+		return methods;
+	}
+
+	/**
 	 * The whole class hierarchy is searched for methods with the given annotation.
 	 *
 	 * @param            <A> the subtype of annotation
@@ -632,5 +654,42 @@ public class ClassUtil {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Invokes the getter method for the given property name (= field name). The
+	 * method MUST not have any parameters.
+	 * 
+	 * @param object       to read from
+	 * @param propertyName the name of the property/field
+	 * @return the property value. If no matching getter is found, null is returned
+	 *         also.
+	 */
+	public static Object getProperty(Object object, String propertyName) {
+		return invokeMethod(object, createGetterMethodName(propertyName));
+	}
+
+	/**
+	 * Invokes the setter method for the given property name (= field name). The
+	 * method MUST only have one parameter.
+	 * 
+	 * @param object       to write to
+	 * @param propertyName the name of the property/field
+	 * @param value        to write to the property. Missing setters are ignored.
+	 */
+	public static void setProperty(Object object, String propertyName, Object value) {
+		invokeMethod(object, createSetterMethodName(propertyName), value);
+	}
+
+	private static String createGetterMethodName(String propertyName) {
+		return createAccessorMethodName("get", propertyName);
+	}
+
+	private static String createSetterMethodName(String propertyName) {
+		return createAccessorMethodName("set", propertyName);
+	}
+
+	private static String createAccessorMethodName(String accessType, String propertyName) {
+		return accessType + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
 	}
 }

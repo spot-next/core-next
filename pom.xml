@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.spot-next</groupId>
@@ -235,6 +234,22 @@
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.1.0</version>
+					<configuration>
+						<filesets>
+							<fileset>
+								<directory>data/store</directory>
+								<includes>
+									<include>**/*.*</include>
+								</includes>
+								<followSymlinks>false</followSymlinks>
+							</fileset>
+						</filesets>
+					</configuration>
+				</plugin>
+
 				<!-- RESOURCE GENERATION -->
 				<plugin>
 					<groupId>io.spot-next</groupId>
@@ -412,8 +427,7 @@
 					<version>3.0.5</version>
 					<configuration>
 						<effort>Max</effort>
-						<!-- Enables analysis which takes more memory but finds more bugs. 
-							If you run out of memory, changes the value of the effort element to 'low'. -->
+						<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
 						<effort>medium</effort>
 						<!-- Reports all bugs (other values are medium and max) -->
 						<threshold>Low</threshold>
@@ -613,8 +627,7 @@
 				</plugin>
 
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -706,8 +719,7 @@
 				<version>3.0.5</version>
 				<configuration>
 					<skip>true</skip>
-					<!-- Enables analysis which takes more memory but finds more bugs. If 
-						you run out of memory, changes the value of the effort element to 'low'. -->
+					<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
 
 					<effort>Max</effort>
 					<!-- Reports all bugs (other values are medium and max) -->

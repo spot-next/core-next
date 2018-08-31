@@ -49,7 +49,7 @@ public abstract class AbstractPageEndpoint {
 
 		// every template has to to have a "page" variable that contains the actual page
 		// to render.
-		mergedContext.put("page", page.getRenderTemplateFile());
+		mergedContext.put("pageTemplate", page.getRenderTemplateFile());
 
 		return renderTemplatePage(page.getLayout().getRenderTemplateFile(), page.getRenderTemplateFile(),
 				mergedContext);

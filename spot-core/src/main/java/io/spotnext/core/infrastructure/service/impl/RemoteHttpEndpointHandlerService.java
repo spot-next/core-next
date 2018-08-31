@@ -20,14 +20,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
-import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.HttpRequestHolder;
-import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -44,7 +42,6 @@ import spark.Response;
 import spark.ResponseTransformer;
 import spark.Route;
 import spark.Service;
-import spark.Spark;
 import spark.route.HttpMethod;
 
 /**
@@ -256,7 +253,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service.exception(Exception.class, (exception, request, response) -> {
 					loggingService.exception(exception.getMessage(), exception);
 					cleanupOnException(exception);
-					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
 
 				service.before((request, response) -> {

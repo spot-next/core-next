@@ -207,7 +207,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 				Hibernate.initialize(this);
 			}
 		}
-		
+
 		final Map<String, Object> props = new HashMap<>();
 
 		for (final Field field : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
@@ -219,6 +219,26 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		}
 
 		return props;
+	}
+
+	/**
+	 * Gets the property value for the given property name.
+	 * 
+	 * @param propertyName of the field to get the value from
+	 * @return the field value
+	 */
+	public Object getProperty(String propertyName) {
+		return ClassUtil.getProperty(this, propertyName);
+	}
+
+	/**
+	 * Sets the given property value. Unknown properties are ignored.
+	 * 
+	 * @param propertyName the name of the property to write to
+	 * @param value        the property value
+	 */
+	public void setProperty(String propertyName, Object value) {
+		ClassUtil.setProperty(this, propertyName, value);
 	}
 
 	private boolean isUniqueField(Field field, Object fieldValue) {
