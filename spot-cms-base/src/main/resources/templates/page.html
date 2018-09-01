@@ -1,0 +1,11 @@
+<!--/*
+	This is the main entry point for all CMS page based templates
+	It renders the layout set on the cms page and injects the necessary content slots and other context information
+ */-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="${this.getProperty('layout').getProperty('renderTemplateFile')}">
+<body>
+	<!-- CMS page placeholder -->
+</body>
+</html>

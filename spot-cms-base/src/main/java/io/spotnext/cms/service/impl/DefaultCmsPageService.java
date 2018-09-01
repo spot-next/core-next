@@ -2,7 +2,6 @@ package io.spotnext.cms.service.impl;
 
 import java.util.Collections;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +21,6 @@ import io.spotnext.itemtype.cms.CmsPage;
 public class DefaultCmsPageService extends AbstractService implements CmsPageService {
 
 //	@Autowired
-//	protected Map<TemplateRenderEngine, CmsRenderService> renderServices;
-
-//	@Autowired
 //	protected CmsRestrictionService cmsRestrictionService;
 
 	@Autowired
@@ -37,11 +33,9 @@ public class DefaultCmsPageService extends AbstractService implements CmsPageSer
 	public CmsPage getPageById(String pageId) throws PageNotFoundException {
 		final ModelQuery<CmsPage> query = new ModelQuery<>(CmsPage.class,
 				Collections.singletonMap(CmsPage.PROPERTY_ID, pageId));
-		query.setEagerFetchRelations(true);
 		final CmsPage page = getModelService().get(query);
 
 		if (page != null) {
-			Hibernate.initialize(page);
 			return page;
 		}
 

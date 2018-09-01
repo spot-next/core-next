@@ -1,5 +1,6 @@
 package io.spotnext.cms.strategy.impl;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -17,14 +19,20 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.cms.annotations.Renderable;
+import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
-import spark.ModelAndView;
+import io.spotnext.core.infrastructure.http.ModelAndView;
+import io.spotnext.itemtype.cms.CmsPage;
+import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 
 /**
- * <p>ThymeleafTemplateRenderStrategy class.</p>
+ * <p>
+ * ThymeleafTemplateRenderStrategy class.
+ * </p>
  */
 @Service
-@SuppressFBWarnings(value="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification="initialized by spring")
+@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "initialized by spring")
 public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 
 	private static final String DEFAULT_TEMPLATE_FOLDER = "templates/";
@@ -42,7 +50,7 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@Value("${service.templaterenderer.thymeleaf.cache:false}")
 	private boolean cacheEnabled;
 
-	private org.thymeleaf.TemplateEngine templateEngine;
+	private SpringTemplateEngine templateEngine;
 
 	/**
 	 * Constructs a thymeleaf template engine.
@@ -50,19 +58,23 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@PostConstruct
 	public void setup() {
 		final ITemplateResolver templateResolver = createDefaultTemplateResolver(templateFolder, templateExtension);
-		templateEngine = new org.thymeleaf.TemplateEngine();
+		templateEngine = new SpringTemplateEngine();
 		templateEngine.setTemplateResolver(templateResolver);
+		templateEngine.setEnableSpringELCompiler(true);
 		templateEngine.addDialect(new Java8TimeDialect());
 	}
 
 	/**
-	 * <p>createDefaultTemplateResolver.</p>
+	 * <p>
+	 * createDefaultTemplateResolver.
+	 * </p>
 	 *
-	 * @param templateFolder a {@link java.lang.String} object.
+	 * @param templateFolder    a {@link java.lang.String} object.
 	 * @param templateExtension a {@link java.lang.String} object.
 	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver} object.
 	 */
-	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder, final String templateExtension) {
+	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder,
+			final String templateExtension) {
 		final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 
@@ -76,7 +88,8 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		}
 
 		templateResolver.setPrefix(folder);
-		templateResolver.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
+		templateResolver
+				.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
 		templateResolver.setCacheTTLMs(2000l);
 		templateResolver.setCacheable(cacheEnabled);
 
@@ -85,12 +98,38 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		return templateResolver;
 	}
 
+	@Override
+	public ModelAndView prepareCmsPage(CmsPage page, Map<String, Object> context)
+			throws PageNotFoundException {
+
+		// create a new context and put both the page item (converted to a map, and the
+		// given context) into it
+		final Map<String, Object> mergedContext = new HashMap<>();
+
+		// first include the layout renderable properties of the page
+		mergedContext.putAll(page.getLayout().getProperties((f, v) -> f.isAnnotationPresent(Renderable.class)));
+
+		// then let the page properties overwrite the layout properties, if not null!
+		mergedContext.putAll(page.getProperties((f, v) -> f.isAnnotationPresent(Renderable.class) && v != null));
+
+		// finally add the given context
+		if (context != null) {
+			mergedContext.putAll(context);
+		}
+
+		// the "main entry point" for the rendered is the page.html template. It renders the layout and the page.
+		// for this to work, the current page needs to be references with "this"
+		mergedContext.put("this", page);
+
+		return ModelAndView.ok("page").withPayload(mergedContext);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Process the specified template (usually the template name). Output will
-	 * be written into a String that will be returned from calling this method,
-	 * once template processing has finished.
+	 * Process the specified template (usually the template name). Output will be
+	 * written into a String that will be returned from calling this method, once
+	 * template processing has finished.
 	 */
 	@Override
 	public String renderTemplate(final String templateName, final Object context) {
@@ -109,6 +148,11 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		final Context ctx = new Context(Locale.getDefault(), renderingContext);
 
 		return templateEngine.process(templateName, ctx);
+	}
+
+	@Override
+	public TemplateRenderEngine supportsEngine() {
+		return TemplateRenderEngine.THYMELEAF;
 	}
 
 }
