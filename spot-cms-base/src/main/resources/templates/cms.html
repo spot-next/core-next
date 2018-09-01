@@ -1,0 +1,27 @@
+<!--/* 
+	This is a helper fragment that renders components and pages.
+*/-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<!--/* render components */-->
+	<div th:fragment="component(this)">
+		<div th:if="${this}">
+			<div th:replace="${'components/' + this.typeCode}" th:with="this = ${this}">
+				<!-- component script -->
+			</div>
+		</div>
+	</div>
+	
+	<!--/* render page */-->
+	<div th:fragment="page(this)">
+		<div th:if="${this}">
+			<div th:replace="${this.getProperty('renderTemplateFile')}" th:with="this = ${this}">
+				<!-- component script -->
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

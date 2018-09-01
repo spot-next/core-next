@@ -47,12 +47,11 @@ public abstract class AbstractPageEndpoint {
 			mergedContext.putAll(context);
 		}
 
-		// every template has to to have a "page" variable that contains the actual page
-		// to render.
-		mergedContext.put("pageTemplate", page.getRenderTemplateFile());
+		// the "main entry point" for the rendered is the page.html template. It renders the layout and the page.
+		// for this to work, the current page needs to be references with "this"
+		mergedContext.put("this", page);
 
-		return renderTemplatePage(page.getLayout().getRenderTemplateFile(), page.getRenderTemplateFile(),
-				mergedContext);
+		return ModelAndView.ok("page").withPayload(mergedContext);
 	}
 
 	/**

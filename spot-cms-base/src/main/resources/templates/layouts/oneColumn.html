@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Party sample page">
+	
+	<title th:text="${this.title}"></title>
+	<link rel="canonical" th:href="${canonicalUrl}">
+	
+	<link rel="stylesheet"
+		href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+	<link rel="stylesheet"
+		href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+	<link rel="stylesheet" href="https://milligram.io/styles/main.css">
+	
+	
+	<style>
+		body {
+			margin-top: 40px;
+		}
+		.center {
+			text-align: center;
+		}
+		</style>
+	</head>
+<body>
+	
+	<header class="header">
+		<div th:replace="cms::component(${header})">
+			<!--  -->
+		</div>
+	</header>
+
+	<main class="content">
+		<!-- CmsPage -->
+		<div th:replace="cms::page(${this})">
+			<!--  -->
+		</div>
+	</main>
+
+	<footer class="footer">
+		<div th:replace="cms::component(${footer})">
+			<!--  -->
+		</div>
+	</footer>
+
+</body>
+</html>
