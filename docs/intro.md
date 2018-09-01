@@ -815,10 +815,10 @@ The HTTP API that is used to provde the REST CRUD endpoints also alows us to imp
 </dependency>
 ```
 
-To enable the various spring beans in this library, we have to update our `SpringBootApplication` scan package path in the `Init` class:
+To enable the various spring beans in this library, we have to add the `CmsBaseConfiguration` to our `Init` class:
 ```java
-@SpringBootApplication(scanBasePackages = { "io.spotnext.test", "io.spotnext.cms.strategy", "io.spotnext.cms.service",
-		"io.spotnext.cms.rendering.transformers" })
+@Import(value = io.spotnext.cms.CmsBaseConfiguration.class)
+@SpringBootApplication(scanBasePackages = { "io.spotnext.test" })
 public class Init extends ModuleInit {
 	...
 }
@@ -857,85 +857,85 @@ import spark.route.HttpMethod;
 @RemoteEndpoint(pathMapping = "/")
 public class HomePageEndpoint {
 
-    @Resource
-    private ModelService modelService;
+	@Resource
+	private ModelService modelService;
 
-    @Resource
-    private QueryService queryService;
+	@Resource
+	private QueryService queryService;
 
-    @Resource
-    private AuthenticationService authenticationService;
+	@Resource
+	private AuthenticationService authenticationService;
 
-    @Resource
-    private UserService<User, UserGroup> userService;
+	@Resource
+	private UserService<User, UserGroup> userService;
 
-    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
-    public ModelAndView getHomepage(final Request request, final Response response) {
-        final Map<String, Object> model = new HashMap<>();
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)
+	public ModelAndView getHomepage(final Request request, final Response response) {
+		final Map<String, Object> model = new HashMap<>();
 
-        model.put("pageTitle", "Party service sample page");
-        model.put("parties", getAllParties());
+		model.put("pageTitle", "Party service sample page");
+		model.put("parties", getAllParties());
 
-        return ModelAndView.ok("homepage").withPayload(model);
-    }
+		return ModelAndView.ok("homepage").withPayload(model);
+	}
 
-    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
-    public ModelAndView postLogin(final Request request, final Response response) {
-        String username = request.queryParams("username");
-        String password = request.queryParams("password");
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/login", mimeType = MimeType.HTML, method = HttpMethod.post)
+	public ModelAndView postLogin(final Request request, final Response response) {
+		String username = request.queryParams("username");
+		String password = request.queryParams("password");
 
-        if (username != null && password != null) {
-            User user = authenticationService.getAuthenticatedUser(username, password, false);
+		if (username != null && password != null) {
+			User user = authenticationService.getAuthenticatedUser(username, password, false);
 
-            if (user != null) {
-                userService.setCurrentUser(user);
-                response.redirect("/manage");
-                return null;
-            }
-        }
+			if (user != null) {
+				userService.setCurrentUser(user);
+				response.redirect("/manage");
+				return null;
+			}
+		}
 
-        response.redirect("/");
-        return null;
-    }
+		response.redirect("/");
+		return null;
+	}
 
-    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
-    public ModelAndView postLogout(final Request request, final Response response) {
-        userService.setCurrentUser(null);
-        response.redirect("/");
-        return null;
-    }
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/logout", mimeType = MimeType.HTML, method = HttpMethod.post)
+	public ModelAndView postLogout(final Request request, final Response response) {
+		userService.setCurrentUser(null);
+		response.redirect("/");
+		return null;
+	}
 
-    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
-    public ModelAndView getManage(final Request request, final Response response) {
-        final Map<String, Object> model = new HashMap<>();
-        model.put("pageTitle", "Party service sample page");
-        model.put("parties", getAllParties());
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/manage", mimeType = MimeType.HTML, authenticationFilter = IsAdminFilter.class)
+	public ModelAndView getManage(final Request request, final Response response) {
+		final Map<String, Object> model = new HashMap<>();
+		model.put("pageTitle", "Party service sample page");
+		model.put("parties", getAllParties());
 
-        model.put("isLoggedIn", true);
+		model.put("isLoggedIn", true);
 
-        return ModelAndView.ok("homepage").withPayload(model);
-    }
+		return ModelAndView.ok("homepage").withPayload(model);
+	}
 
-    @SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
-    @Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
-    public ModelAndView postCancelParty(final Request request, final Response response) {
-        String partyPk = request.queryParams("partyPk");
+	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
+	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
+	public ModelAndView postCancelParty(final Request request, final Response response) {
+		String partyPk = request.queryParams("partyPk");
 
-        if (partyPk != null) {
-            modelService.remove(Party.class, Long.valueOf(partyPk));
-        }
+		if (partyPk != null) {
+			modelService.remove(Party.class, Long.valueOf(partyPk));
+		}
 
-        response.redirect("/manage");
-        return null;
-    }
+		response.redirect("/manage");
+		return null;
+	}
 
-    protected List<Party> getAllParties() {
-        String query = "SELECT p FROM Party p";
-        JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
-        QueryResult<Party> result = queryService.query(partyQuery);
+	protected List<Party> getAllParties() {
+		String query = "SELECT p FROM Party p";
+		JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
+		QueryResult<Party> result = queryService.query(partyQuery);
 
-        return result.getResultList();
-    }
+		return result.getResultList();
+	}
 }
 ```
 
