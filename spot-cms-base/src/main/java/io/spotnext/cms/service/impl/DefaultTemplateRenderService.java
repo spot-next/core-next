@@ -62,6 +62,6 @@ public class DefaultTemplateRenderService implements TemplateRenderService {
 		}
 
 		throw new TemplateRenderException(
-				String.format("No suitable TemplateRenderStrategy was found for engine.", engine));
+				String.format("No suitable TemplateRenderStrategy was found for engine '%s'.", engine));
 	}
 }
