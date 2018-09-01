@@ -11,7 +11,7 @@ import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.support.AuthenticationFilter;
 import io.spotnext.core.management.support.NoAuthenticationFilter;
 import io.spotnext.core.management.transformer.PlainTextResponseTransformer;
-import spark.ResponseTransformer;
+import io.spotnext.core.management.transformer.ResponseTransformer;
 import spark.route.HttpMethod;
 
 /**

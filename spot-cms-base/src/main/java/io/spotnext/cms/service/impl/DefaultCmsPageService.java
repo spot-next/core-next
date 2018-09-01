@@ -1,7 +1,6 @@
 package io.spotnext.cms.service.impl;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +8,10 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.service.CmsPageService;
-import io.spotnext.cms.service.CmsRenderService;
-import io.spotnext.cms.service.CmsRestrictionService;
-import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.itemtype.cms.CmsPage;
-import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 
 /**
  * <p>
@@ -27,16 +22,16 @@ import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 public class DefaultCmsPageService extends AbstractService implements CmsPageService {
 
 //	@Autowired
-	protected Map<TemplateRenderEngine, CmsRenderService> renderServices;
+//	protected Map<TemplateRenderEngine, CmsRenderService> renderServices;
 
 //	@Autowired
-	protected CmsRestrictionService cmsRestrictionService;
+//	protected CmsRestrictionService cmsRestrictionService;
 
 	@Autowired
 	protected QueryService queryService;
 
-	@Autowired
-	protected I18nService i18nService;
+//	@Autowired
+//	protected I18nService i18nService;
 
 	@Override
 	public CmsPage getPageById(String pageId) throws PageNotFoundException {

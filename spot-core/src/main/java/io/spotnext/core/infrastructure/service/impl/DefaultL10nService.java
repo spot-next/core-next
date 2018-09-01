@@ -13,11 +13,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.L10nService;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.itemtype.core.internationalization.LocalizationValue;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>DefaultL10nService class.</p>
@@ -33,9 +32,6 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 	@Autowired
 	protected I18nService i18nService;
-
-	@Autowired
-	protected ModelService modelService;
 
 	/** {@inheritDoc} */
 	@Override

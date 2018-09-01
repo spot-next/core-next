@@ -2,10 +2,10 @@ package io.spotnext.core.management.transformer;
 
 import org.springframework.stereotype.Service;
 
-import spark.ResponseTransformer;
-
 /**
- * <p>PlainTextResponseTransformer class.</p>
+ * <p>
+ * PlainTextResponseTransformer class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -18,5 +18,14 @@ public class PlainTextResponseTransformer implements ResponseTransformer {
 	@Override
 	public String render(final Object arg) throws Exception {
 		return arg.toString();
+	}
+
+	@Override
+	public String handleResponse(Object responseObject) throws Exception {
+		if (responseObject instanceof String) {
+			return (String) responseObject;
+		}
+
+		return responseObject.toString();
 	}
 }

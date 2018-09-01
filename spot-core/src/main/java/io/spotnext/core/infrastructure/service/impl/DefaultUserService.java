@@ -16,7 +16,6 @@ import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.http.Session;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.model.ItemTypeConstants;
@@ -37,9 +36,6 @@ import io.spotnext.itemtype.core.user.UserGroup;
 @Service
 public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
 		implements UserService<U, G> {
-
-	@Autowired
-	protected ModelService modelService;
 
 	@Autowired
 	protected SessionService sessionService;

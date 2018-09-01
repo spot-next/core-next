@@ -7,7 +7,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService;
 import io.spotnext.core.persistence.query.JpqlQuery;
@@ -31,9 +30,6 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 	@Resource
 	protected HibernatePersistenceService persistenceService;
-
-	@Resource
-	protected ModelService modelService;
 
 	@Resource
 	protected LambdaQueryTranslationService lambdaQueryTranslationService;

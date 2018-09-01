@@ -244,6 +244,19 @@
 								<includes>
 									<include>**/*.*</include>
 								</includes>
+								<excludes>
+									<exclude>**/.empty</exclude>
+								</excludes>
+								<followSymlinks>false</followSymlinks>
+							</fileset>
+							<fileset>
+								<directory>src/gen/</directory>
+								<includes>
+									<include>**/*.*</include>
+								</includes>
+								<excludes>
+									<exclude>**/.empty</exclude>
+								</excludes>
 								<followSymlinks>false</followSymlinks>
 							</fileset>
 						</filesets>
@@ -297,10 +310,6 @@
 				</plugin>
 
 				<!-- COMPILING -->
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.1.0</version>

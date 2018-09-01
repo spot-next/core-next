@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
@@ -25,9 +24,6 @@ import io.spotnext.itemtype.core.user.UserGroup;
  */
 @Service
 public class DefaultAuthenticationService extends AbstractService implements AuthenticationService {
-
-	@Autowired
-	protected ModelService modelService;
 
 	@Autowired
 	protected PasswordEncryptionStrategy passwordEncryptionStrategy;

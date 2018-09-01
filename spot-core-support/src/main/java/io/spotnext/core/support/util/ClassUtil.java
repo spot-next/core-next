@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -690,6 +691,6 @@ public class ClassUtil {
 	}
 
 	private static String createAccessorMethodName(String accessType, String propertyName) {
-		return accessType + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+		return accessType + propertyName.substring(0, 1).toUpperCase(Locale.getDefault()) + propertyName.substring(1);
 	}
 }
