@@ -1,4 +1,5 @@
-# spOt
+
+<img src="/resources/spot_logo.svg" width="400">
 > microservice done easy
 
 * easy to learn
@@ -8,3 +9,6 @@
 [Get started](intro)
 [API documentation](api)
 [Javadoc](javadoc)
+
+
+![color](red)
