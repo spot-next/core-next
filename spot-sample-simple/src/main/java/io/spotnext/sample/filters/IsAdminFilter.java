@@ -17,13 +17,16 @@ public class IsAdminFilter implements AuthenticationFilter {
 
 	@Resource
 	private UserService<User, UserGroup> userService;
-	
+
 	@Override
-	public void handle(Request request, Response response) throws AuthenticationException {
+	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final User currentUser = userService.getCurrentUser();
-		
+
 		if (currentUser == null || !"admin".equals(currentUser.getId())) {
+			request.attribute("isLoggedIn", false);
 			response.redirect("/");
 		}
+
+		request.attribute("isLoggedIn", true);
 	}
 }

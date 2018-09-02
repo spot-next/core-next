@@ -1,5 +1,6 @@
 package io.spotnext.core;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
@@ -19,6 +20,7 @@ import io.spotnext.core.infrastructure.support.init.ModuleInit;
  * @version 1.0
  * @since 1.0
  */
+@EnableAutoConfiguration
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource(value = "classpath:/core.properties")
 @PropertySource(value = "classpath:/local.properties", ignoreResourceNotFound = true)

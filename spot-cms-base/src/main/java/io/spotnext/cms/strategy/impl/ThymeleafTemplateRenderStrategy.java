@@ -9,9 +9,9 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -50,7 +50,7 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@Value("${service.templaterenderer.thymeleaf.cache:false}")
 	private boolean cacheEnabled;
 
-	private SpringTemplateEngine templateEngine;
+	private TemplateEngine templateEngine;
 
 	/**
 	 * Constructs a thymeleaf template engine.
@@ -58,9 +58,9 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@PostConstruct
 	public void setup() {
 		final ITemplateResolver templateResolver = createDefaultTemplateResolver(templateFolder, templateExtension);
-		templateEngine = new SpringTemplateEngine();
+		templateEngine = new TemplateEngine();
 		templateEngine.setTemplateResolver(templateResolver);
-		templateEngine.setEnableSpringELCompiler(true);
+		// templateEngine.setEnableSpringELCompiler(true);
 		templateEngine.addDialect(new Java8TimeDialect());
 	}
 
@@ -69,12 +69,14 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	 * createDefaultTemplateResolver.
 	 * </p>
 	 *
-	 * @param templateFolder    a {@link java.lang.String} object.
-	 * @param templateExtension a {@link java.lang.String} object.
-	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver} object.
+	 * @param templateFolder
+	 *            a {@link java.lang.String} object.
+	 * @param templateExtension
+	 *            a {@link java.lang.String} object.
+	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver}
+	 *         object.
 	 */
-	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder,
-			final String templateExtension) {
+	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder, final String templateExtension) {
 		final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 
@@ -88,8 +90,7 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		}
 
 		templateResolver.setPrefix(folder);
-		templateResolver
-				.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
+		templateResolver.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
 		templateResolver.setCacheTTLMs(2000l);
 		templateResolver.setCacheable(cacheEnabled);
 
@@ -99,17 +100,18 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	}
 
 	@Override
-	public ModelAndView prepareCmsPage(CmsPage page, Map<String, Object> context)
-			throws PageNotFoundException {
+	public ModelAndView prepareCmsPage(final CmsPage page, final Map<String, Object> context) throws PageNotFoundException {
 
-		// create a new context and put both the page item (converted to a map, and the
+		// create a new context and put both the page item (converted to a map,
+		// and the
 		// given context) into it
 		final Map<String, Object> mergedContext = new HashMap<>();
 
 		// first include the layout renderable properties of the page
 		mergedContext.putAll(page.getLayout().getProperties((f, v) -> f.isAnnotationPresent(Renderable.class)));
 
-		// then let the page properties overwrite the layout properties, if not null!
+		// then let the page properties overwrite the layout properties, if not
+		// null!
 		mergedContext.putAll(page.getProperties((f, v) -> f.isAnnotationPresent(Renderable.class) && v != null));
 
 		// finally add the given context
@@ -117,19 +119,20 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 			mergedContext.putAll(context);
 		}
 
-		// the "main entry point" for the rendered is the page.html template. It renders the layout and the page.
+		// the "main entry point" for the rendered is the page.html template. It
+		// renders the layout and the page.
 		// for this to work, the current page needs to be references with "this"
 		mergedContext.put("this", page);
 
 		return ModelAndView.ok("page").withPayload(mergedContext);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Process the specified template (usually the template name). Output will be
-	 * written into a String that will be returned from calling this method, once
-	 * template processing has finished.
+	 * Process the specified template (usually the template name). Output will
+	 * be written into a String that will be returned from calling this method,
+	 * once template processing has finished.
 	 */
 	@Override
 	public String renderTemplate(final String templateName, final Object context) {
@@ -138,8 +141,8 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		if (context instanceof Map) {
 			renderingContext = (Map<String, Object>) context;
 		} else {
-			if (context instanceof ModelAndView) {
-				renderingContext = objectMapper.convertValue(((ModelAndView) context).getModel(), Map.class);
+			if (context instanceof spark.ModelAndView) {
+				renderingContext = objectMapper.convertValue(((spark.ModelAndView) context).getModel(), Map.class);
 			} else {
 				renderingContext = objectMapper.convertValue(context, Map.class);
 			}
