@@ -191,7 +191,11 @@
 
 	<relation name="AbstractCmsContainerComponent2AbstractCmsComponent">
 		<source itemType="AbstractCmsContainerComponent" cardinality="many" mappedBy="container" />
-		<target itemType="AbstractCmsComponent" cardinality="many" mappedBy="components" />
+		<target itemType="AbstractCmsComponent" cardinality="many" mappedBy="components">
+			<annotations>
+				<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+			</annotations>
+		</target>
 	</relation>
 
 </types>
