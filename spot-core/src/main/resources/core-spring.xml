@@ -93,6 +93,14 @@
 		<property name="parentMessageSource" ref="reloadableMessageSource" />
 	</bean>
 
+	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="formatters">
+			<set>
+				<bean class="io.spotnext.core.infrastructure.support.spring.BooleanConverter" />
+			</set>
+		</property>
+	</bean>
+
 	<!-- event handling -->
 	<bean id="applicationEventMulticaster"
 		class="org.springframework.context.event.SimpleApplicationEventMulticaster">

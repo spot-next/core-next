@@ -1,14 +1,27 @@
 package io.spotnext.core.infrastructure.support.spring;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.stereotype.Service;
+import java.text.ParseException;
+import java.util.Locale;
 
-@Service
-public class BooleanConverter implements Converter<Boolean, Boolean> {
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.Formatter;
+
+public class BooleanConverter implements Converter<Boolean, Boolean>, Formatter<Boolean> {
 
 	@Override
 	public Boolean convert(final Boolean value) {
 		return value != null ? value : false;
+	}
+
+	@Override
+	public String print(Boolean object, Locale locale) {
+		return convert(object).toString();
+	}
+
+	@Override
+	public Boolean parse(String text, Locale locale) throws ParseException {
+		return BooleanUtils.toBoolean(text);
 	}
 
 }

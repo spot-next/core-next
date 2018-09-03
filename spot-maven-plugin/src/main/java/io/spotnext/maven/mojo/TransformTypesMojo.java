@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -42,15 +44,17 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
+import ch.qos.logback.core.util.CloseUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.support.util.FileUtils;
 import io.spotnext.instrumentation.transformer.AbstractBaseClassTransformer;
 import io.spotnext.maven.Constants;
 import io.spotnext.maven.util.JarTransformer;
-import ch.qos.logback.core.util.CloseUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * <p>TransformTypesMojo class.</p>
+ * <p>
+ * TransformTypesMojo class.
+ * </p>
  *
  * @see <a href="http://marcosemiao4j.wordpress.com">Marco4J</a>
  * @author Marco Semiao
@@ -75,52 +79,55 @@ public class TransformTypesMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		final ClassLoader cl = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
+		
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
 
 		if (CollectionUtils.isNotEmpty(transformers)) {
 			for (final File f : FileUtils.getFiles(project.getBuild().getOutputDirectory())) {
 				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
-					String relativeClassFilePath = StringUtils.remove(f.getPath(),
-							project.getBuild().getOutputDirectory());
-					relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
-					final String className = relativeClassFilePath.substring(0,
-							relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
-
-					byte[] byteCode;
-					try {
-						byteCode = Files.readAllBytes(f.toPath());
-					} catch (final IOException e) {
-						throw new MojoExecutionException(String.format("Can't read bytecode for class %s", className),
-								e);
-					}
-
-					byte[] modifiedByteCode = byteCode;
-
-					for (final ClassFileTransformer t : transformers) {
+					executorService.submit(() -> {
+						String relativeClassFilePath = StringUtils.remove(f.getPath(),
+								project.getBuild().getOutputDirectory());
+						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
+						final String className = relativeClassFilePath.substring(0,
+								relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
+	
+						byte[] byteCode;
 						try {
-							modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
-						} catch (final IllegalClassFormatException e) {
-							getLog().warn(String.format("Can't transform class %s, transformer %s", className,
-									t.getClass().getSimpleName()));
-						}
-					}
-
-					if (modifiedByteCode != null && modifiedByteCode.length > 0 && modifiedByteCode != byteCode) {
-						OutputStream fileWriter = null;
-
-						try {
-							fileWriter = new FileOutputStream(f);
-							fileWriter.write(modifiedByteCode);
+							byteCode = Files.readAllBytes(f.toPath());
 						} catch (final IOException e) {
-							throw new MojoExecutionException(
-									"Could not write modified class: " + relativeClassFilePath);
-						} finally {
-							CloseUtil.closeQuietly(fileWriter);
-							getLog().info("Applied transformation to type: " + f.getAbsolutePath());
+							throw new IllegalStateException(String.format("Can't read bytecode for class %s", className),
+									e);
 						}
-					} else {
-						getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
-					}
-
+	
+						byte[] modifiedByteCode = byteCode;
+	
+						for (final ClassFileTransformer t : transformers) {
+							try {
+								modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
+							} catch (final IllegalClassFormatException e) {
+								getLog().warn(String.format("Can't transform class %s, transformer %s", className,
+										t.getClass().getSimpleName()));
+							}
+						}
+	
+						if (modifiedByteCode != null && modifiedByteCode.length > 0 && modifiedByteCode != byteCode) {
+							OutputStream fileWriter = null;
+	
+							try {
+								fileWriter = new FileOutputStream(f);
+								fileWriter.write(modifiedByteCode);
+							} catch (final IOException e) {
+								throw new IllegalStateException(
+										"Could not write modified class: " + relativeClassFilePath);
+							} finally {
+								CloseUtil.closeQuietly(fileWriter);
+								getLog().info("Applied transformation to type: " + f.getAbsolutePath());
+							}
+						} else {
+							getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
+						}
+					});
 				}
 			}
 
@@ -152,6 +159,7 @@ public class TransformTypesMojo extends AbstractMojo {
 				}
 			}
 		}
+
 	}
 
 	private ClassLoader getClassloader() throws MojoExecutionException {
