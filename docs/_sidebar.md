@@ -1,4 +1,5 @@
 - [Introduction](/intro)
+- [Quick Start](quickstart)
 - [API documentation](/api)
 - [Javadoc](/javadoc)
 
