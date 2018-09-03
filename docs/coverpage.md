@@ -1,5 +1,5 @@
 
-<img src="/resources/spot_logo.svg" width="400">
+<img class="logo-coverpage" src="/resources/spot_logo.svg" width="400">
 > microservice done easy
 
 * easy to learn
