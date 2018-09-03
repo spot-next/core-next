@@ -1,19 +1,18 @@
-
-${AnsiColor.BRIGHT_GREEN}                                               ███████                         
-${AnsiColor.BRIGHT_GREEN}                                           ███████████████       ██████        
-${AnsiColor.BRIGHT_GREEN}                                         ███████████████████     ██████        
-${AnsiColor.BRIGHT_GREEN}                                        ████████     ████████    ██████        
-${AnsiColor.BRIGHT_GREEN}          ████████    ███████████      ███████         ███████   █████████     
-${AnsiColor.BRIGHT_GREEN}         █████████  ███████████████    ███████         ███████   █████████     
-${AnsiColor.BRIGHT_GREEN}        █████████  █████████████████   ███████         ███████   █████████     
-${AnsiColor.BRIGHT_GREEN}        ██████     ██████     ██████   ███████         ███████   ██████        
-${AnsiColor.BRIGHT_GREEN}        ██████     ██████    ███████    ████████     ████████    ███████       
-${AnsiColor.BRIGHT_GREEN}     █████████     ██████ ██████████     ███████████████████      ████████     
-${AnsiColor.BRIGHT_GREEN}    █████████      ██████ ████████         ███████████████        ███████     
-${AnsiColor.BRIGHT_GREEN}    ███████        ██████ ██████               ███████             █████     
-${AnsiColor.BRIGHT_GREEN}                   ██████                                  
-${AnsiColor.BRIGHT_GREEN}                   ██████  
-${AnsiColor.BRIGHT_GREEN}                   ██████                                INNOVATIVE CODING
+${AnsiColor.BRIGHT_GREEN}                                                                      
+${AnsiColor.BRIGHT_GREEN}                                                            ██████    
+${AnsiColor.BRIGHT_GREEN}                                                            ██████    
+${AnsiColor.BRIGHT_GREEN}                                                            ██████    
+${AnsiColor.BRIGHT_GREEN}           ███████    ███████████          █████████        █████████ 
+${AnsiColor.BRIGHT_GREEN}         █████████  ███████████████     █████    ██████     █████████ 
+${AnsiColor.BRIGHT_GREEN}        █████████  █████████████████  ██████       ██████   █████████ 
+${AnsiColor.BRIGHT_GREEN}        ██████     ██████     ██████  █████████       ████  ██████    
+${AnsiColor.BRIGHT_GREEN}        ██████     ██████    ███████  █████████       ████  ██████    
+${AnsiColor.BRIGHT_GREEN}     █████████     ██████ ██████████  ██████       ██████   █████████ 
+${AnsiColor.BRIGHT_GREEN}    █████████      ██████ ████████      █████    ██████      ████████ 
+${AnsiColor.BRIGHT_GREEN}    ███████        ██████ ██████           █████████           ██████ 
+${AnsiColor.BRIGHT_GREEN}                   ██████                                             
+${AnsiColor.BRIGHT_GREEN}                   ██████                                             
+${AnsiColor.BRIGHT_GREEN}                   ██████                                             
 
 ${groupId}:${artifactId} ${application.version}
                                                          
