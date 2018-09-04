@@ -31,13 +31,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -61,13 +61,13 @@ import io.spotnext.maven.util.JarTransformer;
  * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = true)
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES,  requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
 public class TransformTypesMojo extends AbstractMojo {
 
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
-	@Parameter(property = "classFileTransformers", name = "classFileTransformers", alias = "transformers", required = true)
+	@Parameter(property = "classFileTransformers", required = true)
 	private List<String> classFileTransformers;
 
 	@Parameter
@@ -76,10 +76,10 @@ public class TransformTypesMojo extends AbstractMojo {
 	/** {@inheritDoc} */
 	@Override
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException {
 		final ClassLoader cl = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
-		
+
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
 
 		if (CollectionUtils.isNotEmpty(transformers)) {
@@ -91,7 +91,7 @@ public class TransformTypesMojo extends AbstractMojo {
 						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
 						final String className = relativeClassFilePath.substring(0,
 								relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
-	
+
 						byte[] byteCode;
 						try {
 							byteCode = Files.readAllBytes(f.toPath());
@@ -99,9 +99,9 @@ public class TransformTypesMojo extends AbstractMojo {
 							throw new IllegalStateException(String.format("Can't read bytecode for class %s", className),
 									e);
 						}
-	
+
 						byte[] modifiedByteCode = byteCode;
-	
+
 						for (final ClassFileTransformer t : transformers) {
 							try {
 								modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
@@ -110,10 +110,10 @@ public class TransformTypesMojo extends AbstractMojo {
 										t.getClass().getSimpleName()));
 							}
 						}
-	
+
 						if (modifiedByteCode != null && modifiedByteCode.length > 0 && modifiedByteCode != byteCode) {
 							OutputStream fileWriter = null;
-	
+
 							try {
 								fileWriter = new FileOutputStream(f);
 								fileWriter.write(modifiedByteCode);
@@ -129,6 +129,13 @@ public class TransformTypesMojo extends AbstractMojo {
 						}
 					});
 				}
+			}
+
+			executorService.shutdown();
+			try {
+				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			} catch (InterruptedException e) {
+				throw new MojoExecutionException("Could not execute type transformation", e);
 			}
 
 			if (includeJars) {

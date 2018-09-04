@@ -201,7 +201,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
@@ -292,6 +292,14 @@
 					<groupId>io.spot-next</groupId>
 					<artifactId>spot-maven-plugin</artifactId>
 					<version>${revision}</version>
+					<configuration>
+						<classFileTransformers>
+							<classFileTransformer>
+								io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
+							</classFileTransformer>
+						</classFileTransformers>
+						<includeJars>false</includeJars>
+					</configuration>
 					<executions>
 						<execution>
 							<id>Item type generation</id>
@@ -306,14 +314,6 @@
 							<goals>
 								<goal>transform-types</goal>
 							</goals>
-							<configuration>
-								<includeJars>false</includeJars>
-								<classFileTransformers>
-									<classFileTransformer>
-										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
-									</classFileTransformer>
-								</classFileTransformers>
-							</configuration>
 						</execution>
 						<execution>
 							<id>Item type post-processing (test)</id>
@@ -321,14 +321,6 @@
 							<goals>
 								<goal>transform-types</goal>
 							</goals>
-							<configuration>
-								<includeJars>false</includeJars>
-								<classFileTransformers>
-									<classFileTransformer>
-										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
-									</classFileTransformer>
-								</classFileTransformers>
-							</configuration>
 						</execution>
 					</executions>
 				</plugin>
@@ -696,7 +688,7 @@
 									</pluginExecutionFilter>
 									<action>
 										<execute>
-											<runOnIncremental>false</runOnIncremental>
+											<runOnIncremental>true</runOnIncremental>
 											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
@@ -732,7 +724,7 @@
 									<action>
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>false</runOnConfiguration>
+											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>

@@ -94,7 +94,7 @@ import io.spotnext.maven.velocity.util.VelocityUtil;
  * @description Generates the java source code for the defined item types.
  * @since 1.0
  */
-@Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = true)
+@Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = false)
 public class GenerateTypesMojo extends AbstractMojo {
 
 	protected Jalopy jalopy = new Jalopy();

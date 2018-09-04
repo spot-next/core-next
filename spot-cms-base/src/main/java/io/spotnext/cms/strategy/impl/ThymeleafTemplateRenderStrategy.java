@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.annotations.Renderable;
 import io.spotnext.cms.exception.PageNotFoundException;
+import io.spotnext.cms.service.impl.CmsMessageResolver;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import io.spotnext.core.infrastructure.http.ModelAndView;
 import io.spotnext.itemtype.cms.CmsPage;
@@ -50,7 +52,11 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@Value("${service.templaterenderer.thymeleaf.cache:false}")
 	private boolean cacheEnabled;
 
+	@Resource
 	private SpringTemplateEngine templateEngine;
+
+	@Resource
+	private CmsMessageResolver cmsMessageResolver;
 
 	/**
 	 * Constructs a thymeleaf template engine.
@@ -60,8 +66,10 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		final ITemplateResolver templateResolver = createDefaultTemplateResolver(templateFolder, templateExtension);
 		templateEngine = new SpringTemplateEngine();
 		templateEngine.setTemplateResolver(templateResolver);
+		templateEngine.setMessageResolver(cmsMessageResolver);
 		templateEngine.setEnableSpringELCompiler(true);
 		templateEngine.addDialect(new Java8TimeDialect());
+		
 	}
 
 	/**
@@ -92,7 +100,6 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 				.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
 		templateResolver.setCacheTTLMs(2000l);
 		templateResolver.setCacheable(cacheEnabled);
-
 		templateResolver.setCacheTTLMs(DEFAULT_CACHE_TTL_MS);
 
 		return templateResolver;

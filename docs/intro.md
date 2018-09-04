@@ -39,7 +39,7 @@ The **predefined domain models comprises basic functionality**: users, localizat
 There are services alot of default services available for: user authentication, persistence, i18n, l10n, data import, serialization.
 All those services are not re-implemented from scratch but rather "wrap" well-known technologies into a new API, eg. Hibernate is used for persistence, Jackson is used for serialization.
 
-All these various technologies are integrated (actually abstracted away) and follows the **Principle of Least Surprise**. Every tried to **serialize a Hibernate entity** using Gson or Jackson? Have fun!
+All these various technologies are integrated (actually abstracted away) and follow the **Principle of Least Surprise**. Ever tried to **serialize a Hibernate entity** using Gson or Jackson? Have fun!
 
 Not only does serialization work as expected - spOt even provides a generic REST interface for you, to manipulate every aspect of your domain objects.
 Every (new) type is automatically available as REST endpoint, offering functionality like search/filter, load, save, delete and update single properties.
@@ -47,7 +47,7 @@ Every (new) type is automatically available as REST endpoint, offering functiona
 ### Sane defaults
 The open-source world spawned some very awesome peaces of software. But sometimes they are a bit overengineered and hard to use for common scenarios. spOt tried to **dumb down the APIs** and make them more **usable by setting better defaults** and **hiding the most obscure features**.
 
-Probably every newcomer to Hibernate is struck by awe when seeing the "FETCH JOIN" in work and a few days is truck by anger only to see it fail with some obscure exceptions like:
+Probably every newcomer to Hibernate is struck by awe when seeing the "FETCH JOIN" in work and a few days is struck by anger only to see it fail with some obscure exceptions like:
 
 ```
 org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags
