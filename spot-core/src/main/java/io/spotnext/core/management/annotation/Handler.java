@@ -3,6 +3,7 @@ package io.spotnext.core.management.annotation;
 import static java.lang.annotation.ElementType.METHOD;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -24,6 +25,7 @@ import spark.route.HttpMethod;
 @Target({ METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Inherited
 public @interface Handler {
 
 	HttpMethod method() default HttpMethod.get;

@@ -33,3 +33,5 @@ local.properties
 spot-core/data
 data
 .flattened-pom.xml
+.settings
+.classpath

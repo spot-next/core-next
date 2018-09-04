@@ -69,7 +69,6 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		templateEngine.setMessageResolver(cmsMessageResolver);
 		templateEngine.setEnableSpringELCompiler(true);
 		templateEngine.addDialect(new Java8TimeDialect());
-		
 	}
 
 	/**
