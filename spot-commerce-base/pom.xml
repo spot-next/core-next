@@ -76,5 +76,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>io.spot-next</groupId>
+			<artifactId>spot-cms-base</artifactId>
+			<version>${revision}</version>
+		</dependency>
 	</dependencies>
 </project>

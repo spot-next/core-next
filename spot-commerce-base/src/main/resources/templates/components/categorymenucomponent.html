@@ -1,0 +1,14 @@
+<div lang="en" xmlns:th="http://www.thymeleaf.org" class="category-menu">
+	<ul th:fragment="categoryList(categories)">
+		<li th:each="category : ${categories}">
+			<span class="entry" th:text="${category.name}">Category name</span>
+			<ul th:if="${not empty category.subCategories}" th:fragment="::categoryList(${category})">
+				<li>Sub category</li>
+			</ul>
+		</li>
+	</ul>
+
+	<ul th:replace="::categoryList(${this.categories})">
+		<li>Menu categories</li>
+	</ul>
+</div>

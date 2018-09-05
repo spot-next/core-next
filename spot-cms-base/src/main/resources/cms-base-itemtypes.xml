@@ -137,21 +137,44 @@
 
 	<!-- special cms components -->
 
-	<type name="AbstractNavigationEntry" abstract="true" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
+	<type name="LinkComponent" extends="AbstractCmsComponent" package="io.spotnext.itemtype.cms">
 		<properties>
-			<property name="name" type="String">
+			<property name="name" type="LocalizedString">
 				<description>The navigation entry name.</description>
 			</property>
-		</properties>
-	</type>
-
-	<type name="NavigationLinkEntry" extends="AbstractNavigationEntry" package="io.spotnext.itemtype.cms">
-		<properties>
 			<property name="href" type="String">
 				<description>The href of the link.</description>
 			</property>
 			<property name="target" type="HtmlLinkTarget">
 				<description>The HTML link target.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="ButtonComponent" extends="LinkComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="onClick" type="String">
+				<description>The javascript onClick handler.</description>
+			</property>
+		</properties>
+	</type>
+
+	<type name="AbstractMenuComponent" extends="LinkComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+		</properties>
+	</type>
+
+	<type name="MenuComponent" extends="AbstractMenuComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+		</properties>
+	</type>
+
+	<type name="ImageComponent" extends="LinkComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="media" type="Media">
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</type>
@@ -192,6 +215,15 @@
 	<relation name="AbstractCmsContainerComponent2AbstractCmsComponent">
 		<source itemType="AbstractCmsContainerComponent" cardinality="many" mappedBy="container" />
 		<target itemType="AbstractCmsComponent" cardinality="many" mappedBy="components">
+			<annotations>
+				<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
+			</annotations>
+		</target>
+	</relation>
+
+	<relation name="MenuComponent2AbstractMenuComponent">
+		<source itemType="MenuComponent" cardinality="one" mappedBy="parent" />
+		<target itemType="AbstractMenuComponent" cardinality="many" mappedBy="entries">
 			<annotations>
 				<annotation javaClass="io.spotnext.cms.annotations.Renderable" />
 			</annotations>

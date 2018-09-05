@@ -32,10 +32,10 @@
 	<!-- product related types -->
 
 	<type name="Product" typeCode="Product"
-		package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
+		package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
-			<property name="name" type="String">
+			<property name="name" type="LocalizedString">
 				<description>The name of the product.</description>
 			</property>
 			<property name="description" type="LocalizedString">
@@ -48,10 +48,10 @@
 	</type>
 
 	<type name="Category" typeCode="Category"
-		package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
+		package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>Categories are used to group products.</description>
 		<properties>
-			<property name="name" type="String">
+			<property name="name" type="LocalizedString">
 			</property>
 			<property name="description" type="LocalizedString">
 			</property>
@@ -194,6 +194,27 @@
 			</property>
 		</properties>
 	</type>
+	
+	<!-- CMS components -->
+	
+	<type name="CategoryMenuComponent" extends="AbstractMenuComponent" package="io.spotnext.itemtype.cms">
+		<properties>
+			<property name="category" type="Category">
+				<description>
+					The parent category, that will be used to render sub menu entries based on the sub categories and product.
+				</description>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
+			</property>
+			<property name="showOnlyCategories" type="boolean">
+				<description>Defines if only categories should be rendered, or products too.</description>
+				<defaultValue>false</defaultValue>
+			</property>
+		</properties>
+	</type>
+	
+	<!-- relations -->
 
 	<relation name="Category2Product">
 		<description>The categories the product is referenced by.</description>
@@ -201,6 +222,12 @@
 		<target cardinality="many" itemType="Product" mappedBy="products">
 			<description>The products in this catalog.</description>
 		</target>
+	</relation>
+	
+	<relation name="Category2Category">
+		<description>The categories that are included as sub categories.</description>
+		<source cardinality="many" itemType="Category" mappedBy="superCategories" />
+		<target cardinality="many" itemType="Category" mappedBy="subCategories" />
 	</relation>
 
 	<relation name="AbstractOrder2AbstractOrderEntry">
