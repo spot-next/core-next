@@ -1039,21 +1039,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 			}
 
 			if (sourceNode != null || targetNode != null) {
-				final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
-
-				// only create relation properties if an actual relation exists
-				final JavaField property = new JavaField();
-				property.setDescription(rel.getDescription());
-
-				relationAnn.addParameter("relationName", rel.getName(), JavaValueType.STRING);
-
 				// use the mappedBy value of the other node as the property name
 				if (sourceNode != null) {
-					populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, property,
-							relationAnn);
-				} else if (targetNode != null) {
-					populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, property,
-							relationAnn);
+					populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, rel);
+				} 
+				
+				if (targetNode != null) {
+					populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, rel);
 				}
 			}
 		}
@@ -1068,14 +1060,22 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param to          a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
 	 * @param nodeType    a {@link io.spotnext.core.infrastructure.type.RelationNodeType} object.
 	 * @param javaClass   a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
+	 * @param relationType 
 	 * @param property    a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 * @param relationAnn a {@link io.spotnext.maven.velocity.type.annotation.JavaAnnotation} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
 	protected void populateRelationProperty(final RelationNode from, final RelationNode to,
-			final RelationNodeType nodeType, final JavaClass javaClass, final JavaField property,
-			final JavaAnnotation relationAnn) throws MojoExecutionException {
+			final RelationNodeType nodeType, final JavaClass javaClass, RelationType relation) throws MojoExecutionException {
 
+		final JavaAnnotation relationAnn = new JavaAnnotation(Relation.class);
+
+		// only create relation properties if an actual relation exists
+		final JavaField property = new JavaField();
+		property.setDescription(relation.getDescription());
+
+		relationAnn.addParameter("relationName", relation.getName(), JavaValueType.STRING);
+		
 		final String mappedTo = to.getMappedBy();
 		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
 

@@ -437,7 +437,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setItemPropertyValue(final Item item, final ColumnDefinition columnDefinition, final Object propertyValue) {
+	private void setItemPropertyValue(final Item item, final ColumnDefinition columnDefinition, final Object propertyValue) throws ImpexImportException {
 
 		if (isCollectionType(columnDefinition)) {
 			Collection<?> colValue = (Collection<?>) modelService.getPropertyValue(item, columnDefinition.getPropertyName());
@@ -457,7 +457,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				}
 				break;
 			case REPLACE:
-				colValue = (Collection<?>) propertyValue;
+				if (colValue == null) {
+					throw new ImpexImportException(String.format("Collection property of item type %s was not initialized.", item.getTypeCode()));
+				}
+
+				if (propertyValue != null) {
+					colValue.addAll((Collection) propertyValue);
+				} else {
+					colValue.clear();
+				}
 
 				break;
 			}
@@ -484,7 +492,16 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				}
 				break;
 			case REPLACE:
-				mapValue = (Map) propertyValue;
+				if (mapValue == null) {
+					throw new ImpexImportException(String.format("Map property of item type %s was not initialized.", item.getTypeCode()));
+				}
+
+				if (propertyValue != null) {
+					mapValue.putAll((Map) propertyValue);
+				} else {
+					mapValue.clear();
+				}
+
 				break;
 			}
 
@@ -516,7 +533,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 	private ImpexMergeMode getMergeMode(final ColumnDefinition columnDefinition) {
 		final String modeVal = columnDefinition.getModifiers().get("mode");
-		ImpexMergeMode mode = ImpexMergeMode.ADD;
+		ImpexMergeMode mode = ImpexMergeMode.REPLACE;
 
 		if (StringUtils.isNotBlank(modeVal)) {
 			mode = ImpexMergeMode.forCode(modeVal);
@@ -532,28 +549,33 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		// if value is null, check for default value in the column definition
 		final String val = StringUtils.isNotBlank(value) ? value : columnDefinition.getModifiers().get("default");
 
-		if (Collection.class.isAssignableFrom(type)) {
-			final String[] collectionValues = val.split(COLLECTION_VALUE_SEPARATOR);
-			final List<Object> resolvedValues = new ArrayList<>();
-			ret = resolvedValues;
+		if (StringUtils.isNotBlank(val)) {
+			if (Collection.class.isAssignableFrom(type)) {
+				final String[] collectionValues = val.split(COLLECTION_VALUE_SEPARATOR);
+				final List<Object> resolvedValues = new ArrayList<>();
+				ret = resolvedValues;
 
-			for (final String v : collectionValues) {
-				resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition));
-			}
-		} else if (Map.class.isAssignableFrom(type)) {
-			final String[] mapEntryValues = val.split(COLLECTION_VALUE_SEPARATOR);
-			final Map<Object, Object> resolvedValues = new HashMap<>();
-			ret = resolvedValues;
+				for (final String v : collectionValues) {
+					resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition));
+				}
+			} else if (Map.class.isAssignableFrom(type)) {
+				final String[] mapEntryValues = val.split(COLLECTION_VALUE_SEPARATOR);
+				final Map<Object, Object> resolvedValues = new HashMap<>();
+				ret = resolvedValues;
 
-			// resolve both key and value of the map
-			for (final String v : mapEntryValues) {
-				final String[] splitEntry = StringUtils.split(v, MAP_ENTRY_SEPARATOR);
-				final Object entryKey = resolveSingleValue(splitEntry[0], genericArguments.get(0), columnDefinition);
-				final Object entryValue = resolveSingleValue(splitEntry[0], genericArguments.get(1), columnDefinition);
-				resolvedValues.put(entryKey, entryValue);
+				// resolve both key and value of the map
+				for (final String v : mapEntryValues) {
+					final String[] splitEntry = StringUtils.split(v, MAP_ENTRY_SEPARATOR);
+					final Object entryKey = resolveSingleValue(splitEntry[0], genericArguments.get(0), columnDefinition);
+					final Object entryValue = resolveSingleValue(splitEntry[0], genericArguments.get(1), columnDefinition);
+					resolvedValues.put(entryKey, entryValue);
+				}
+			} else {
+				ret = resolveSingleValue(val, type, columnDefinition);
 			}
 		} else {
-			ret = resolveSingleValue(val, type, columnDefinition);
+			loggingService.debug(() -> String.format("Ignoring empty value and default value for %s.%s", type.getClass().getSimpleName(),
+					columnDefinition.getPropertyName()));
 		}
 
 		return ret;
@@ -567,7 +589,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			String resolverClass = columnDefinition.getModifiers().get("resolver");
 			if (StringUtils.isNotBlank(resolverClass)) {
 				final ImpexValueResolver resolver = impexValueResolvers.get(resolverClass);
-				
+
 				return resolver.resolve(value, type, null, columnDefinition);
 			} else {
 				return primitiveValueResolver.resolve(value, type, null, columnDefinition);
