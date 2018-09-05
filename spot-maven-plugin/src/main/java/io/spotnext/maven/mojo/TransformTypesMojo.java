@@ -61,7 +61,7 @@ import io.spotnext.maven.util.JarTransformer;
  * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES,  requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.COMPILE,  requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
 public class TransformTypesMojo extends AbstractMojo {
 
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)

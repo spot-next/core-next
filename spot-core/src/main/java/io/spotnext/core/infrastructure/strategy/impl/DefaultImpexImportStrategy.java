@@ -1,5 +1,7 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
+import static io.spotnext.core.support.util.MiscUtil.$;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -29,8 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
-
-import static io.spotnext.core.support.util.MiscUtil.$;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
@@ -75,9 +75,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/** Constant <code>COLLECTION_VALUE_SEPARATOR=","</code> */
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,_\-\=]{0,}\]{0,1})
+	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,._\-\=]{0,}\]{0,1})
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern
-			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,_\\-\\=]{0,}\\]{0,1})");
+			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,._\\-\\=]{0,}\\]{0,1})");
 
 	@Resource
 	private TypeService typeService;
@@ -401,9 +401,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/**
 	 * Return the unique resolved (!) properties.
 	 * 
-	 * @throws ImpexImportException
-	 *             if one of the given columns is a collection or a map, as this
-	 *             is not supported.
+	 * @throws ImpexImportException if one of the given columns is a collection or a map, as this is not supported.
 	 */
 	private Map<String, Object> getUniqueAttributValues(final List<ColumnDefinition> headerColumns, final Map<ColumnDefinition, Object> rawItem,
 			final ImportConfiguration config) throws ImpexImportException {
@@ -566,7 +564,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
 			return referenceValueResolver.resolve(value, type, null, columnDefinition);
 		} else {
-			return primitiveValueResolver.resolve(value, type, null, columnDefinition);
+			String resolverClass = columnDefinition.getModifiers().get("resolver");
+			if (StringUtils.isNotBlank(resolverClass)) {
+				final ImpexValueResolver resolver = impexValueResolvers.get(resolverClass);
+				
+				return resolver.resolve(value, type, null, columnDefinition);
+			} else {
+				return primitiveValueResolver.resolve(value, type, null, columnDefinition);
+			}
 		}
 	}
 
