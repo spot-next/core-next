@@ -12,7 +12,6 @@ package $packagePath;
 	 * $description
 	 */
 #end
-@SuppressWarnings("unchecked")
 public enum $name {
 
 	#foreach($value in $values)

@@ -310,14 +310,12 @@
 						</execution>
 						<execution>
 							<id>Item type post-processing</id>
-							<phase>compile</phase>
 							<goals>
 								<goal>transform-types</goal>
 							</goals>
 						</execution>
 						<execution>
 							<id>Item type post-processing (test)</id>
-							<phase>test-compile</phase>
 							<goals>
 								<goal>transform-types</goal>
 							</goals>

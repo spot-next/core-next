@@ -1,6 +1,7 @@
 package io.spotnext.core.infrastructure.resolver.impex.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,11 +64,11 @@ public class FileValueResolver extends AbstractService implements ImpexValueReso
 			}
 
 			if (String.class.isAssignableFrom(targetType)) {
-				fileContent = new String(fileByteContent);
+				fileContent = new String(fileByteContent, StandardCharsets.UTF_8);
+			} else if (char[].class.isAssignableFrom(targetType)) {
+				fileContent = new String(fileByteContent, StandardCharsets.UTF_8).toCharArray();
 			} else if (byte[].class.isAssignableFrom(targetType)) {
 				fileContent = fileByteContent;
-			} else if (char[].class.isAssignableFrom(targetType)) {
-				fileContent = new String(fileByteContent).toCharArray();
 			} else {
 				throw new ValueResolverException(String.format("Cannot load file into object of type '%s'", targetType.getClass()));
 			}

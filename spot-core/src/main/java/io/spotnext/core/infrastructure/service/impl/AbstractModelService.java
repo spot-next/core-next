@@ -1,9 +1,11 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -280,10 +282,25 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	public <T extends Item> void setLocalizedPropertyValue(final T item, final String propertyName,
 			final Object propertyValue, final Locale locale) {
 
-		final Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+		Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+
+		if (localizable == null) {
+			Field property = ClassUtil.getFieldDefinition(item.getClass(), propertyName, true);
+
+			if (property != null) {
+				Class<?> propertyType = property.getType();
+
+				Optional<Localizable<Object>> newLocalizable = (Optional<Localizable<Object>>) ClassUtil.instantiate(propertyType);
+
+				if (newLocalizable.isPresent()) {
+					localizable = newLocalizable.get();
+				}
+			}
+		}
 
 		if (localizable != null) {
 			localizable.set(locale, propertyValue);
+			setPropertyValue(item, propertyName, localizable);
 		} else {
 			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
 					item.getClass().getSimpleName()));

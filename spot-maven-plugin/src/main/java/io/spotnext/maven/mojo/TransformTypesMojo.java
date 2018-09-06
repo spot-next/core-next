@@ -17,7 +17,7 @@
 package io.spotnext.maven.mojo;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.instrument.ClassFileTransformer;
@@ -25,6 +25,8 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,14 +37,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import ch.qos.logback.core.util.CloseUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -61,8 +66,11 @@ import io.spotnext.maven.util.JarTransformer;
  * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.COMPILE,  requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
 public class TransformTypesMojo extends AbstractMojo {
+
+	@Component
+	protected BuildContext buildContext;
 
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
@@ -80,7 +88,7 @@ public class TransformTypesMojo extends AbstractMojo {
 		final ClassLoader cl = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
 
-		ExecutorService executorService = Executors.newFixedThreadPool(4);
+		final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
 		if (CollectionUtils.isNotEmpty(transformers)) {
 			for (final File f : FileUtils.getFiles(project.getBuild().getOutputDirectory())) {
@@ -96,18 +104,26 @@ public class TransformTypesMojo extends AbstractMojo {
 						try {
 							byteCode = Files.readAllBytes(f.toPath());
 						} catch (final IOException e) {
-							throw new IllegalStateException(String.format("Can't read bytecode for class %s", className),
-									e);
+							String message = String.format("Can't read bytecode for class %s", className);
+							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+							throw new IllegalStateException(message, e);
 						}
 
 						byte[] modifiedByteCode = byteCode;
 
 						for (final ClassFileTransformer t : transformers) {
 							try {
+
+								// log exceptions into separate folder, to be able to inspect them even if Eclipse swallows them ...
+								if (t instanceof AbstractBaseClassTransformer) {
+									((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
+								}
+
 								modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
 							} catch (final IllegalClassFormatException e) {
-								getLog().warn(String.format("Can't transform class %s, transformer %s", className,
-										t.getClass().getSimpleName()));
+								String message = String.format("Can't transform class %s, transformer %s", className,
+										t.getClass().getSimpleName());
+								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
 							}
 						}
 
@@ -115,11 +131,12 @@ public class TransformTypesMojo extends AbstractMojo {
 							OutputStream fileWriter = null;
 
 							try {
-								fileWriter = new FileOutputStream(f);
+								fileWriter = buildContext.newFileOutputStream(f);
 								fileWriter.write(modifiedByteCode);
 							} catch (final IOException e) {
-								throw new IllegalStateException(
-										"Could not write modified class: " + relativeClassFilePath);
+								String message = "Could not write modified class: " + relativeClassFilePath;
+								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+								throw new IllegalStateException(message);
 							} finally {
 								CloseUtil.closeQuietly(fileWriter);
 								getLog().info("Applied transformation to type: " + f.getAbsolutePath());
@@ -132,6 +149,7 @@ public class TransformTypesMojo extends AbstractMojo {
 			}
 
 			executorService.shutdown();
+
 			try {
 				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 			} catch (InterruptedException e) {
@@ -142,31 +160,53 @@ public class TransformTypesMojo extends AbstractMojo {
 				final String packaging = project.getPackaging();
 				final Artifact artifact = project.getArtifact();
 
-				try {
-					if ("jar".equals(packaging) && artifact != null) {
+				if ("jar".equals(packaging) && artifact != null) {
+					try {
 						final File source = artifact.getFile();
 
 						if (source.isFile()) {
 							final File destination = new File(source.getParent(), "instrument.jar");
 
-							final JarTransformer transform = new JarTransformer(getLog(), cl, Arrays.asList(source),
+							final JarTransformer transformer = new JarTransformer(getLog(), cl, Arrays.asList(source),
 									transformers);
-							transform.transform(destination);
+							transformer.transform(destination);
 
 							final File sourceRename = new File(source.getParent(), "notransform-" + source.getName());
 
 							source.renameTo(sourceRename);
-							destination.renameTo(source);
+							destination.renameTo(sourceRename);
+
+							buildContext.refresh(destination);
 						}
-					} else {
-						getLog().debug("Not a jar file");
+					} catch (final Exception e) {
+						buildContext.addMessage(artifact.getFile(), 0, 0, e.getMessage(), BuildContext.SEVERITY_ERROR, e);
+						throw new MojoExecutionException(e.getMessage(), e);
 					}
-				} catch (final Exception e) {
-					throw new MojoExecutionException(e.getMessage(), e);
+				} else {
+					getLog().debug("Not a jar file");
 				}
 			}
 		}
+	}
 
+	@SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "false positive")
+	protected void logError(Throwable cause) {
+		final String tempFolder = System.getProperty("java.io.tmpdir");
+		final Path logFilePath = Paths.get(tempFolder, "spot-transform.types.log");
+		final File logFile = logFilePath.toFile();
+
+		if (logFile.canWrite()) {
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(logFile);
+				writer.write(cause.getMessage());
+				writer.write(ExceptionUtils.getStackTrace(cause));
+			} catch (Exception e) {
+				getLog().error("Can't log to separete error log file " + logFilePath.toString());
+			} finally {
+				CloseUtil.closeQuietly(writer);
+			}
+		}
 	}
 
 	private ClassLoader getClassloader() throws MojoExecutionException {

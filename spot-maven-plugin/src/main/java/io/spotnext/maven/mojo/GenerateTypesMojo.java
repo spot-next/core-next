@@ -29,6 +29,7 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -37,6 +38,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import de.hunsicker.jalopy.Jalopy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -97,6 +99,9 @@ import io.spotnext.maven.velocity.util.VelocityUtil;
 @Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = false)
 public class GenerateTypesMojo extends AbstractMojo {
 
+	@Component
+	protected BuildContext buildContext;
+
 	protected Jalopy jalopy = new Jalopy();
 	protected VelocityEngine velocityEngine = new VelocityEngine();
 
@@ -139,7 +144,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 		// do the actual work
 		try {
-			loader = new ItemTypeDefinitionUtil(project, localRepository, getLog());
+			loader = new ItemTypeDefinitionUtil(project, localRepository, buildContext, getLog());
 			typeDefinitions = loader.fetchItemTypeDefinitions();
 			loader.saveTypeDefinitions(typeDefinitions, getGeneratedResourcesFolder());
 			generateTypes();
@@ -899,9 +904,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			Writer writer = null;
 
+			final File outputFile = filePath.toFile();
+			
 			try {
 				writer = new BufferedWriter(
-						new OutputStreamWriter(new FileOutputStream(filePath.toFile()), StandardCharsets.UTF_8));
+						new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8));
 
 				final String encodedType = encodeType(type);
 				writer.write(encodedType);
@@ -911,8 +918,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			// format code
 			if (formatSource) {
-				formatSourceCode(filePath.toFile());
+				formatSourceCode(outputFile);
 			}
+			
+			buildContext.refresh(outputFile);
 		}
 	}
 
@@ -1042,8 +1051,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 				// use the mappedBy value of the other node as the property name
 				if (sourceNode != null) {
 					populateRelationProperty(sourceNode, rel.getTarget(), RelationNodeType.SOURCE, javaClass, rel);
-				} 
-				
+				}
+
 				if (targetNode != null) {
 					populateRelationProperty(targetNode, rel.getSource(), RelationNodeType.TARGET, javaClass, rel);
 				}
@@ -1056,13 +1065,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populateRelationProperty.
 	 * </p>
 	 *
-	 * @param from        a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @param to          a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @param nodeType    a {@link io.spotnext.core.infrastructure.type.RelationNodeType} object.
-	 * @param javaClass   a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
-	 * @param relationType 
-	 * @param property    a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
-	 * @param relationAnn a {@link io.spotnext.maven.velocity.type.annotation.JavaAnnotation} object.
+	 * @param from         a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
+	 * @param to           a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
+	 * @param nodeType     a {@link io.spotnext.core.infrastructure.type.RelationNodeType} object.
+	 * @param javaClass    a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
+	 * @param relationType
+	 * @param property     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
+	 * @param relationAnn  a {@link io.spotnext.maven.velocity.type.annotation.JavaAnnotation} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
 	protected void populateRelationProperty(final RelationNode from, final RelationNode to,
@@ -1075,7 +1084,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		property.setDescription(relation.getDescription());
 
 		relationAnn.addParameter("relationName", relation.getName(), JavaValueType.STRING);
-		
+
 		final String mappedTo = to.getMappedBy();
 		RelationCollectionType collectionType = getCollectionType(from.getCollectionType());
 

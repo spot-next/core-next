@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractBaseClassTransformer.class);
 
 	protected final List<String> classPaths = new ArrayList<>();
+	protected Consumer<Throwable> errorLogger = null;
 
 	/** {@inheritDoc} */
 	@Override
@@ -129,16 +131,11 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * transform.
 	 * </p>
 	 *
-	 * @param loader              the defining loader of the class to be
-	 *                            transformed, may be null if the bootstrap loader
+	 * @param loader              the defining loader of the class to be transformed, may be null if the bootstrap loader
 	 * @param clazz               the class in the internal form of the JVM.
-	 * @param classBeingRedefined if this is triggered by a redefine or retransform,
-	 *                            the class being redefined or retransformed; if
-	 *                            this is a class load, null
-	 * @param protectionDomain    the protection domain of the class being defined
-	 *                            or redefined
-	 * @return the transformed class object. If the class was not changed, return
-	 *         null instead.
+	 * @param classBeingRedefined if this is triggered by a redefine or retransform, the class being redefined or retransformed; if this is a class load, null
+	 * @param protectionDomain    the protection domain of the class being defined or redefined
+	 * @return the transformed class object. If the class was not changed, return null instead.
 	 * @throws IllegalClassTransformationException in case there is an error
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
@@ -167,10 +164,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns the {@link javassist.bytecode.ClassFile} of the given class. If
-	 * defrost = true, and the {@link javassist.CtClass#getClassFile2()} is null,
-	 * the class is defrosted and {@link javassist.CtClass#getClassFile()} is
-	 * returned instead.
+	 * Returns the {@link javassist.bytecode.ClassFile} of the given class. If defrost = true, and the {@link javassist.CtClass#getClassFile2()} is null, the
+	 * class is defrosted and {@link javassist.CtClass#getClassFile()} is returned instead.
 	 *
 	 * @param clazz   a {@link javassist.CtClass} object.
 	 * @param defrost a boolean.
@@ -333,8 +328,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 *
 	 * @param clazz       a {@link javassist.CtClass} object.
 	 * @param annotations a {@link java.util.List} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException
-	 *         if any.
+	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
 	 */
 	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations)
 			throws IllegalClassTransformationException {
@@ -356,8 +350,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 *
 	 * @param clazz a {@link javassist.CtClass} object.
 	 * @return a {@link javassist.bytecode.ConstPool} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException
-	 *         if any.
+	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
 	 */
 	protected ConstPool getConstPool(final CtClass clazz) throws IllegalClassTransformationException {
 		final ClassFile cfile = getClassFile(clazz, false);
@@ -578,6 +571,21 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 			}
 
 			return null;
+		}
+	}
+
+	/**
+	 * @param the consumer that can do additional logging when exceptions occur. Can be null.
+	 */
+	public void setErrorLogger(Consumer<Throwable> errorLogger) {
+		this.errorLogger = errorLogger;
+	}
+
+	protected void logException(Throwable cause) {
+		LOG.error(cause.getMessage(), cause);
+
+		if (errorLogger != null) {
+			errorLogger.accept(cause);
 		}
 	}
 }
