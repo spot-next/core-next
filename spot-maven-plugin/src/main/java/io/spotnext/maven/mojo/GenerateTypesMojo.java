@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -39,6 +42,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.springframework.util.DigestUtils;
 
 import de.hunsicker.jalopy.Jalopy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -128,6 +132,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	@Parameter(property = "title")
 	protected String title;
+	
+	@Parameter(property = "skip", required = false)
+	private boolean skip = false;
 
 	protected ItemTypeDefinitionUtil loader;
 
@@ -137,6 +144,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 	/** {@inheritDoc} */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (skip) {
+			getLog().info("Skipping type generation!");
+		}
+		
 		getLog().info("Generting item types from XML.");
 
 		initTemplateEngine();
@@ -199,6 +210,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 		velocityEngine.setProperty("resource.loader", "class");
 		velocityEngine.setProperty("class.resource.loader.class",
 				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		velocityEngine.setProperty("file.resource.loader.cache", true);
+		velocityEngine.setProperty("velocimacro.library.autoreload", false);
+		velocityEngine.setProperty("file.resource.loader.modificationCheckInterval", -1);
+		velocityEngine.setProperty("parser.pool.siz", 50);
+		
 		velocityEngine.init();
 	}
 
@@ -892,35 +908,54 @@ public class GenerateTypesMojo extends AbstractMojo {
 				throw new IOException("Could not read access target file path");
 			}
 
-			if (Files.exists(filePath)) {
-				Files.delete(filePath);
-			} else {
+			if (!Files.exists(filePath)) {
 				if (filePath.getParent() != null && !Files.exists(filePath.getParent())) {
 					Files.createDirectories(filePath.getParent());
 				}
+
+				Files.createFile(filePath);
 			}
 
-			Files.createFile(filePath);
-
+			final File outputFile = filePath.toFile();
 			Writer writer = null;
 
-			final File outputFile = filePath.toFile();
-			
 			try {
-				writer = new BufferedWriter(
-						new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8));
+				String encodedType = encodeType(type);
 
-				final String encodedType = encodeType(type);
-				writer.write(encodedType);
+				// format code
+				if (formatSource) {
+					StringWriter tempWriter = new StringWriter(encodedType.length());
+					formatSourceCode(outputFile, IOUtils.toInputStream(encodedType, StandardCharsets.UTF_8), tempWriter);
+
+					encodedType = tempWriter.toString();
+				}
+
+				boolean write = true;
+
+				// if the file exists, compare the md5 hashes, and only write if a change has been detected
+				// this prevents maven from unnecessary building
+				if (outputFile.exists()) {
+					InputStream fileStream = Files.newInputStream(filePath);
+
+					byte[] fileHash = DigestUtils.md5Digest(fileStream);
+					byte[] memoryHash = DigestUtils.md5Digest(encodedType.getBytes());
+
+					if (Arrays.equals(fileHash, memoryHash)) {
+						write = false;
+					}
+				}
+
+				if (write) {
+					writer = new BufferedWriter(
+							new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8));
+					writer.write(encodedType);
+				}
+			} catch (Exception e) {
+				throw new MojoExecutionException(String.format("Failed to write generated type %s to file %s", type.getName(), outputFile.getAbsolutePath()));
 			} finally {
 				MiscUtil.closeQuietly(writer);
 			}
 
-			// format code
-			if (formatSource) {
-				formatSourceCode(outputFile);
-			}
-			
 			buildContext.refresh(outputFile);
 		}
 	}
@@ -933,9 +968,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param sourceFile a {@link java.io.File} object.
 	 * @throws java.io.FileNotFoundException if any.
 	 */
-	protected void formatSourceCode(final File sourceFile) throws FileNotFoundException {
-		jalopy.setInput(sourceFile);
-		jalopy.setOutput(sourceFile);
+	protected void formatSourceCode(File sourceFile, final InputStream input, Writer writer) throws FileNotFoundException {
+		jalopy.setInput(input, sourceFile.getAbsolutePath());
+		jalopy.setOutput(writer);
 		jalopy.format();
 	}
 
@@ -959,7 +994,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		final Template t = velocityEngine.getTemplate("templates/" + template.value());
 		final Context context = VelocityUtil.createSingletonObjectContext(type);
 
-		final StringWriter writer = new StringWriter();
+		final StringWriter writer = new StringWriter(500);
 		t.merge(context, writer);
 
 		return writer.toString();

@@ -205,40 +205,45 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<configuration>
-					<updatePomFile>true</updatePomFile>
-					<pomElements>
-						<profiles />
-						<pluginManagement />
-						<properties />
-						<dependencyManagement />
-						<reporting />
-						<modules />
-					</pomElements>
-					<flattenMode>oss</flattenMode>
-				</configuration>
-				<executions>
-					<execution>
-						<id>flatten</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>flatten</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>flatten.clean</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<updatePomFile>true</updatePomFile>
+						<pomElements>
+							<profiles />
+							<pluginManagement />
+							<properties />
+							<dependencyManagement />
+							<reporting />
+							<modules />
+						</pomElements>
+						<flattenMode>oss</flattenMode>
+					</configuration>
+					<executions>
+						<execution>
+							<id>flatten</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>flatten</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>flatten.clean</id>
+							<phase>clean</phase>
+							<goals>
+								<goal>clean</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
@@ -280,7 +285,7 @@
 							</goals>
 							<configuration>
 								<sources>
-									<source>src/gen/java</source>
+									<source>${project.basedir}/src/gen/java</source>
 								</sources>
 							</configuration>
 						</execution>
@@ -312,6 +317,13 @@
 								<goal>compile</goal>
 							</goals>
 						</execution>
+						<execution>
+							<id>default-test-compile</id>
+							<phase>none</phase>
+							<goals>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
 					</executions>
 				</plugin>
 
@@ -341,6 +353,7 @@
 								<artifactId>spring-aspects</artifactId>
 							</aspectLibrary>
 						</aspectLibraries>
+						
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>false</showWeaveInfo>
 						<source>${java.version}</source>
@@ -353,7 +366,6 @@
 						<forceAjcCompile>false</forceAjcCompile>
 						<preserveAllLocals>true</preserveAllLocals>
 						<proceedOnError>true</proceedOnError>
-						<!-- <Xreweavable>true</Xreweavable> -->
 
 					</configuration>
 					<executions>

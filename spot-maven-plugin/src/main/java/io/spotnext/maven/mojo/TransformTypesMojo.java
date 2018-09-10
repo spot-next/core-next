@@ -19,26 +19,29 @@ package io.spotnext.maven.mojo;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
@@ -66,7 +69,7 @@ import io.spotnext.maven.util.JarTransformer;
  * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE, threadSafe = false)
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TransformTypesMojo extends AbstractMojo {
 
 	@Component
@@ -78,6 +81,12 @@ public class TransformTypesMojo extends AbstractMojo {
 	@Parameter(property = "classFileTransformers", required = true)
 	private List<String> classFileTransformers;
 
+	@Parameter(property = "debug", required = false)
+	private boolean debug = false;
+
+	@Parameter(property = "skip", required = false)
+	private boolean skip = false;
+
 	@Parameter
 	private boolean includeJars;
 
@@ -85,13 +94,23 @@ public class TransformTypesMojo extends AbstractMojo {
 	@Override
 	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException {
-		final ClassLoader cl = getClassloader();
-		final List<ClassFileTransformer> transformers = getClassFileTransformers(cl);
+		if (skip) {
+			getLog().info("Skipping type transformation!");
+			return;
+		}
+
+		trackExecution("start");
+
+		final ClassLoader classLoader = getClassloader();
+		final List<ClassFileTransformer> transformers = getClassFileTransformers(classLoader);
 
 		final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
+		List<File> classFiles = FileUtils.getFiles(project.getBuild().getOutputDirectory(), f -> f.getAbsolutePath().endsWith(".class"));
+		getLog().debug("Found class files for processing: " + classFiles.stream().map(f -> f.getName()).collect(Collectors.joining(", ")));
+
 		if (CollectionUtils.isNotEmpty(transformers)) {
-			for (final File f : FileUtils.getFiles(project.getBuild().getOutputDirectory())) {
+			for (final File f : classFiles) {
 				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
 					executorService.submit(() -> {
 						String relativeClassFilePath = StringUtils.remove(f.getPath(),
@@ -99,6 +118,8 @@ public class TransformTypesMojo extends AbstractMojo {
 						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
 						final String className = relativeClassFilePath.substring(0,
 								relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
+
+						trackExecution("Loading class: " + f.getAbsolutePath());
 
 						byte[] byteCode;
 						try {
@@ -108,6 +129,8 @@ public class TransformTypesMojo extends AbstractMojo {
 							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
 							throw new IllegalStateException(message, e);
 						}
+
+						trackExecution("Loaded class: " + f.getAbsolutePath());
 
 						byte[] modifiedByteCode = byteCode;
 
@@ -119,26 +142,28 @@ public class TransformTypesMojo extends AbstractMojo {
 									((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
 								}
 
-								modifiedByteCode = t.transform(cl, className, null, null, modifiedByteCode);
-							} catch (final IllegalClassFormatException e) {
-								String message = String.format("Can't transform class %s, transformer %s", className,
-										t.getClass().getSimpleName());
+								modifiedByteCode = t.transform(classLoader, className, null, null, modifiedByteCode);
+							} catch (final Exception e) {
+								String message = String.format("Can't transform class %s, transformer %s: %s", className,
+										t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
 								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
 							}
 						}
 
-						if (modifiedByteCode != null && modifiedByteCode.length > 0 && modifiedByteCode != byteCode) {
-							OutputStream fileWriter = null;
+						trackExecution("Transformed class: " + f.getAbsolutePath());
 
+						if (modifiedByteCode != null && modifiedByteCode.length > 0 && !Arrays.equals(modifiedByteCode, byteCode)) {
 							try {
-								fileWriter = buildContext.newFileOutputStream(f);
-								fileWriter.write(modifiedByteCode);
+								Files.write(f.toPath(), modifiedByteCode, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+										StandardOpenOption.TRUNCATE_EXISTING);
+
+								trackExecution("Saved transformed class: " + f.getAbsolutePath());
 							} catch (final IOException e) {
 								String message = "Could not write modified class: " + relativeClassFilePath;
 								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
 								throw new IllegalStateException(message);
 							} finally {
-								CloseUtil.closeQuietly(fileWriter);
+								buildContext.refresh(f);
 								getLog().info("Applied transformation to type: " + f.getAbsolutePath());
 							}
 						} else {
@@ -147,6 +172,8 @@ public class TransformTypesMojo extends AbstractMojo {
 					});
 				}
 			}
+
+			trackExecution("Class transformeds executed");
 
 			executorService.shutdown();
 
@@ -167,7 +194,7 @@ public class TransformTypesMojo extends AbstractMojo {
 						if (source.isFile()) {
 							final File destination = new File(source.getParent(), "instrument.jar");
 
-							final JarTransformer transformer = new JarTransformer(getLog(), cl, Arrays.asList(source),
+							final JarTransformer transformer = new JarTransformer(getLog(), classLoader, Arrays.asList(source),
 									transformers);
 							transformer.transform(destination);
 
@@ -211,16 +238,13 @@ public class TransformTypesMojo extends AbstractMojo {
 
 	private ClassLoader getClassloader() throws MojoExecutionException {
 		try {
-			final List<String> compileClasspathElements = project.getCompileClasspathElements();
-			final List<URL> classPathUrls = new ArrayList<URL>();
-
-			for (final String path : compileClasspathElements) {
-				classPathUrls.add(new File(path).toURI().toURL());
-			}
+			final List<URL> classPathUrls = getClasspath();
 
 			final URLClassLoader urlClassLoader = URLClassLoader.newInstance(
 					classPathUrls.toArray(new URL[classPathUrls.size()]),
 					Thread.currentThread().getContextClassLoader());
+
+			trackExecution("Classpath: " + classPathUrls.stream().map(u -> u.toString()).collect(Collectors.joining(",")));
 
 			return urlClassLoader;
 		} catch (final Exception e) {
@@ -228,14 +252,20 @@ public class TransformTypesMojo extends AbstractMojo {
 		}
 	}
 
+	private List<URL> getClasspath() throws MalformedURLException, DependencyResolutionRequiredException {
+		final List<String> compileClasspathElements = project.getCompileClasspathElements();
+		final List<URL> classPathUrls = new ArrayList<URL>();
+
+		for (final String path : compileClasspathElements) {
+			classPathUrls.add(new File(path).toURI().toURL());
+		}
+
+		return classPathUrls;
+	}
+
 	private List<ClassFileTransformer> getClassFileTransformers(final ClassLoader cl) throws MojoExecutionException {
 		try {
-			final List<String> compileClasspathElements = project.getCompileClasspathElements();
-			final List<String> classPathUrls = new ArrayList<>();
-
-			for (final String path : compileClasspathElements) {
-				classPathUrls.add(new File(path).toURI().toURL().getFile());
-			}
+			final List<URL> classPathUrls = getClasspath();
 
 			if (CollectionUtils.isNotEmpty(classFileTransformers)) {
 				final List<ClassFileTransformer> list = new ArrayList<>(classFileTransformers.size());
@@ -248,7 +278,7 @@ public class TransformTypesMojo extends AbstractMojo {
 						final AbstractBaseClassTransformer baseClassTransformer = ((AbstractBaseClassTransformer) transformer);
 
 						baseClassTransformer.addClassPaths(project.getBuild().getOutputDirectory());
-						baseClassTransformer.addClassPaths(classPathUrls);
+						baseClassTransformer.addClassPaths(classPathUrls.stream().map(u -> u.getFile()).collect(Collectors.toList()));
 					}
 
 					list.add(transformer);
@@ -261,6 +291,17 @@ public class TransformTypesMojo extends AbstractMojo {
 			}
 		} catch (final Exception e) {
 			throw new MojoExecutionException(e.getMessage(), e);
+		}
+	}
+
+	private void trackExecution(String message) throws IllegalStateException {
+		if (debug) {
+			try {
+				Files.write(Paths.get("/var/tmp/", "transform-classes.log"), (new Date().toString() + ": " + message + "\n").getBytes(),
+						StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			} catch (Exception e) {
+				throw new IllegalStateException("error", e);
+			}
 		}
 	}
 }

@@ -8,15 +8,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * <p>FileUtils class.</p>
+ * <p>
+ * FileUtils class.
+ * </p>
  *
  * @since 1.0
  * @author mojo2012
@@ -31,7 +35,7 @@ public class FileUtils {
 	 * @param paths a {@link java.lang.String} object.
 	 * @return a {@link java.util.List} object.
 	 */
-	public static List<File> getFiles(final String paths) {
+	public static List<File> getFiles(final String paths, Predicate<File> filter) {
 		final List<File> filesList = new ArrayList<>();
 		for (final String path : paths.split(File.pathSeparator)) {
 			final File file = new File(path);
@@ -41,14 +45,17 @@ public class FileUtils {
 				filesList.add(file);
 			}
 		}
-		return filesList;
+
+		return filesList.stream().filter(f -> filter == null || filter.test(f)).collect(Collectors.toList());
 	}
 
 	/**
-	 * <p>recurse.</p>
+	 * <p>
+	 * recurse.
+	 * </p>
 	 *
 	 * @param filesList a {@link java.util.List} object.
-	 * @param f a {@link java.io.File} object.
+	 * @param f         a {@link java.io.File} object.
 	 */
 	protected static void recurse(final List<File> filesList, final File f) {
 		final File[] list = f.listFiles();
@@ -84,9 +91,11 @@ public class FileUtils {
 	}
 
 	/**
-	 * <p>readFileFromZipFile.</p>
+	 * <p>
+	 * readFileFromZipFile.
+	 * </p>
 	 *
-	 * @param zipFile a {@link java.util.zip.ZipFile} object.
+	 * @param zipFile          a {@link java.util.zip.ZipFile} object.
 	 * @param relativeFilePath a {@link java.lang.String} object.
 	 * @return a {@link java.io.InputStream} object.
 	 * @throws java.io.FileNotFoundException if any.
@@ -115,10 +124,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * Reads a file from a zip file and returns an {@link java.io.InputStream} object.
-	 * If the file is not found, an exception is thrown.
+	 * Reads a file from a zip file and returns an {@link java.io.InputStream} object. If the file is not found, an exception is thrown.
 	 *
-	 * @param zipFilePath a {@link java.lang.String} object.
+	 * @param zipFilePath      a {@link java.lang.String} object.
 	 * @param relativeFilePath a {@link java.lang.String} object.
 	 * @return a {@link java.io.InputStream} object.
 	 * @throws java.io.FileNotFoundException if any.

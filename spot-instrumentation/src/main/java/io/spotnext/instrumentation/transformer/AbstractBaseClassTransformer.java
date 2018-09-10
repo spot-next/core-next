@@ -68,13 +68,14 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		if (StringUtils.isNotBlank(className)) {
 			final String classId = className.replaceAll("/", ".");
 
-			pool.insertClassPath(new ClassClassPath(this.getClass()));
 			pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 
 			// why is javassist.DirClassPath not public?
 			for (final String classPath : classPaths) {
 				pool.insertClassPath(new FileClassPath(classPath));
 			}
+			
+			pool.insertClassPath(new ClassClassPath(this.getClass()));
 
 			CtClass clazz = null;
 

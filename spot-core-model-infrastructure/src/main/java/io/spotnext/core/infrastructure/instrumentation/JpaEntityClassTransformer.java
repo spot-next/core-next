@@ -147,21 +147,6 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					}
 				}
 
-//				try {
-//					final File file = new File("/var/tmp/" + clazz.getName() +
-//							CLASS_FILE_SUFFIX);
-//
-//					if (file.exists()) {
-//						file.delete();
-//					}
-//
-//					writeClass(clazz, file);
-//				} catch (final IOException e) {
-//					throw new IllegalClassTransformationException(
-				// String.format("Unable to write class file %s",
-				// clazz.getName()), e);
-//				}
-
 				return Optional.of(clazz);
 			}
 		} catch (final Exception e) {

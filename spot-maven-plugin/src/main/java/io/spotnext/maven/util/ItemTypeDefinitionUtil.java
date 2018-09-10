@@ -113,7 +113,7 @@ public class ItemTypeDefinitionUtil {
 				// final File file = deps.get(0).getFile();
 				log.info(String.format("Resolved artfact %s: %s", a.getArtifactId(), file.getAbsolutePath()));
 
-				for (final File f : FileUtils.getFiles(file.getAbsolutePath())) {
+				for (final File f : FileUtils.getFiles(file.getAbsolutePath(), null)) {
 					if (f.getName().endsWith(".jar")) {
 						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 						for (final String c : jarContent) {
@@ -142,7 +142,7 @@ public class ItemTypeDefinitionUtil {
 
 		// get all resource files in the current project
 		for (final Resource r : (List<Resource>) project.getResources()) {
-			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory());
+			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory(), null);
 
 			for (final File f : projectFiles) {
 				if (isItemTypeDefinitionFile(f.getName())) {

@@ -17,7 +17,7 @@
 	<!--/* render page */-->
 	<div th:fragment="page(this)">
 		<div th:if="${this}">
-			<div th:replace="${this.getProperty('renderTemplateFile')}" th:with="this = ${this}">
+			<div th:replace="${this.get('renderTemplateFile')}" th:with="this = ${this}">
 				<!-- component script -->
 			</div>
 		</div>
