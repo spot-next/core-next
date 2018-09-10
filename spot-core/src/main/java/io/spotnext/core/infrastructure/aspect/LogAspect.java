@@ -55,10 +55,12 @@ public class LogAspect extends AbstractBaseAspect {
 
 		final long startTime = System.currentTimeMillis();
 
+		Class<?> targetClass = getRealClass(joinPoint.getTarget());
+
 		if (ann != null && ann.before()) {
 			getLoggingService().log(ann.logLevel(),
-					createLogMessage(joinPoint, "Before", ann.message(), ann.messageArguments(), null), null, null,
-					joinPoint.getTarget().getClass());
+					createLogMessage(joinPoint, "Before", ann.message(), targetClass, ann.messageArguments(), null), null, null,
+					targetClass);
 		}
 
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
@@ -67,42 +69,45 @@ public class LogAspect extends AbstractBaseAspect {
 			final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
 
 			getLoggingService().log(ann.logLevel(),
-					createLogMessage(joinPoint, "After", null, ann.messageArguments(), runDuration), null, null,
-					joinPoint.getTarget().getClass());
+					createLogMessage(joinPoint, "After", null, targetClass, ann.messageArguments(), runDuration), null, null,
+					targetClass);
 		}
 
 		return ret;
 	}
 
-	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message,
+	private Class<?> getRealClass(Object object) {
+		Class<?> objectClass = null;
+
+		if (object instanceof TargetClassAware) {
+			final TargetClassAware targetAware = ((TargetClassAware) object);
+
+			if (targetAware.getTargetClass() != null) {
+				objectClass = targetAware.getTargetClass();
+			} else {
+				objectClass = targetAware.getClass();
+			}
+		} else if (object != null) {
+			if (object.getClass().getName().contains("CGLIB")) {
+				objectClass = object.getClass().getSuperclass();
+			} else {
+				objectClass = object.getClass();
+			}
+		}
+		return objectClass;
+	}
+
+	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message, Class<?> klass,
 			final Object[] arguments, final Long duration) {
 
 		String msg = null;
-		final Object target = joinPoint.getTarget();
-		Class<?> targetClass = null;
-
-		if (target instanceof TargetClassAware) {
-			final TargetClassAware targetAware = ((TargetClassAware) target);
-
-			if (targetAware.getTargetClass() != null) {
-				targetClass = targetAware.getTargetClass();
-			} else {
-				targetClass = targetAware.getClass();
-			}
-		} else if (target != null) {
-			if (target.getClass().getName().contains("CGLIB")) {
-				targetClass = target.getClass().getSuperclass();
-			} else {
-				targetClass = target.getClass();
-			}
-		}
 
 		final String className;
 		final String classSimpleName;
 
-		if (targetClass != null) {
-			className = targetClass.getName();
-			classSimpleName = targetClass.getSimpleName();
+		if (klass != null) {
+			className = klass.getName();
+			classSimpleName = klass.getSimpleName();
 		} else {
 			className = "<null>";
 			classSimpleName = "<null>";

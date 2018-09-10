@@ -32,9 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -104,7 +101,7 @@ public class TransformTypesMojo extends AbstractMojo {
 		final ClassLoader classLoader = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(classLoader);
 
-		final ExecutorService executorService = Executors.newFixedThreadPool(4);
+//		final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
 		List<File> classFiles = FileUtils.getFiles(project.getBuild().getOutputDirectory(), f -> f.getAbsolutePath().endsWith(".class"));
 		getLog().debug("Found class files for processing: " + classFiles.stream().map(f -> f.getName()).collect(Collectors.joining(", ")));
@@ -112,7 +109,7 @@ public class TransformTypesMojo extends AbstractMojo {
 		if (CollectionUtils.isNotEmpty(transformers)) {
 			for (final File f : classFiles) {
 				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
-					executorService.submit(() -> {
+//					executorService.submit(() -> {
 						String relativeClassFilePath = StringUtils.remove(f.getPath(),
 								project.getBuild().getOutputDirectory());
 						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
@@ -169,19 +166,19 @@ public class TransformTypesMojo extends AbstractMojo {
 						} else {
 							getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
 						}
-					});
+//					});
 				}
 			}
 
 			trackExecution("Class transformeds executed");
 
-			executorService.shutdown();
-
-			try {
-				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-			} catch (InterruptedException e) {
-				throw new MojoExecutionException("Could not execute type transformation", e);
-			}
+//			executorService.shutdown();
+//
+//			try {
+//				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//			} catch (InterruptedException e) {
+//				throw new MojoExecutionException("Could not execute type transformation", e);
+//			}
 
 			if (includeJars) {
 				final String packaging = project.getPackaging();
