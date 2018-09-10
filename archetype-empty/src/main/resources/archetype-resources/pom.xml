@@ -91,16 +91,16 @@
 				</executions>
 			</plugin>
 
-			<!-- RESOURCE GENERTATION -->
-			<plugin>
-				<groupId>io.spot-next</groupId>
-				<artifactId>spot-maven-plugin</artifactId>
-			</plugin>
-
 			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- RESOURCE GENERTATION -->
+			<plugin>
+				<groupId>io.spot-next</groupId>
+				<artifactId>spot-maven-plugin</artifactId>
 			</plugin>
 
 			<!-- CODE ANALYSIS -->
@@ -157,8 +157,7 @@
 		<pluginManagement>
 			<plugins>
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -194,7 +193,7 @@
 									</pluginExecutionFilter>
 									<action>
 										<execute>
-											<runOnIncremental>false</runOnIncremental>
+											<runOnIncremental>true</runOnIncremental>
 											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
@@ -230,7 +229,7 @@
 									<action>
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>false</runOnConfiguration>
+											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>
