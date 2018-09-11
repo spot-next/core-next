@@ -38,7 +38,7 @@ script: "mvn clean install findbugs:check"
 
 deploy:
   - provider: script
-    script: "mvn -q -P travis,release -Dmaven.test.skip=true clean install deploy"
+    script: "mvn -q -P travis,release -Dmaven.test.skip=true clean deploy"
     skip_cleanup: true
     on:
       branch: develop
