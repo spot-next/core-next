@@ -10,6 +10,9 @@ env:
 #  directories:
 #  - "$HOME/.cache"
 
+before_cache:
+  script: "rm -R ~/.m2/repository/io/spot-next/"
+
 cache:
   directories:
     - ~/.m2/repository
