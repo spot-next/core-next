@@ -1,0 +1,3 @@
+INSERT_UPDATE Country ; iso3Code[unique=true] ; isoCode ; shortName[lang=de_DE] ; shortName[lang=en]
+                      ; TES                   ; TS      ; Testland              ; test land
+                   

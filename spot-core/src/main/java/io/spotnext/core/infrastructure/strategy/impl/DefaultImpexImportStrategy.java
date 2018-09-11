@@ -105,7 +105,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	public void importImpex(final ImportConfiguration config, final InputStream inputStream) throws ImpexImportException {
 
 		ValidationUtil.validateNotNull("Import config cannot be null", config);
-		ValidationUtil.validateNotNull("Script input stream cannot be null", inputStream);
+		ValidationUtil.validateNotNull(String.format("Script input stream cannot be null (identifier='%s')", config.getScriptIdentifier()), inputStream);
 
 		List<String> fileContent = null;
 
