@@ -182,6 +182,24 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
+										<goals>
+											<goal>compile</goal>
+											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>io.spot-next</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
@@ -196,26 +214,9 @@
 											<runOnIncremental>true</runOnIncremental>
 											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
+										<!-- <ignore /> -->
 									</action>
 								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>aspectj-maven-plugin</artifactId>
-										<versionRange>[1.8,)</versionRange>
-										<goals>
-											<goal>compile</goal>
-											<goal>test-compile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
@@ -229,7 +230,7 @@
 									<action>
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
+											<runOnConfiguration>false</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>

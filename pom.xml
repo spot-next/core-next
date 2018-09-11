@@ -353,7 +353,7 @@
 								<artifactId>spring-aspects</artifactId>
 							</aspectLibrary>
 						</aspectLibraries>
-						
+
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>false</showWeaveInfo>
 						<source>${java.version}</source>
@@ -391,6 +391,7 @@
 							</classFileTransformer>
 						</classFileTransformers>
 						<includeJars>false</includeJars>
+						<debug>true</debug>
 					</configuration>
 					<executions>
 						<execution>
@@ -700,6 +701,24 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
+										<goals>
+											<goal>compile</goal>
+											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
 										<groupId>io.spot-next</groupId>
 										<artifactId>spot-maven-plugin</artifactId>
 										<versionRange>
@@ -714,26 +733,9 @@
 											<runOnIncremental>true</runOnIncremental>
 											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
+										<!-- <ignore /> -->
 									</action>
 								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>aspectj-maven-plugin</artifactId>
-										<versionRange>[1.8,)</versionRange>
-										<goals>
-											<goal>compile</goal>
-											<goal>test-compile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
@@ -747,7 +749,7 @@
 									<action>
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
+											<runOnConfiguration>false</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>

@@ -165,4 +165,7 @@ public class FileUtils {
 		return content;
 	}
 
+	public static File getTempDirectory() {
+		return new File(System.getProperty("java.io.tmpdir"));
+	}
 }

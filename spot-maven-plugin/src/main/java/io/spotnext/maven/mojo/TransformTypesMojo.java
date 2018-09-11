@@ -23,6 +23,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,7 +67,7 @@ import io.spotnext.maven.util.JarTransformer;
  * @since 1.0
  */
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
-@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class TransformTypesMojo extends AbstractMojo {
 
 	@Component
@@ -110,67 +111,66 @@ public class TransformTypesMojo extends AbstractMojo {
 			for (final File f : classFiles) {
 				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
 //					executorService.submit(() -> {
-						String relativeClassFilePath = StringUtils.remove(f.getPath(),
-								project.getBuild().getOutputDirectory());
-						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
-						final String className = relativeClassFilePath.substring(0,
-								relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
+					String relativeClassFilePath = StringUtils.remove(f.getPath(),
+							project.getBuild().getOutputDirectory());
+					relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
+					final String className = relativeClassFilePath.substring(0,
+							relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
 
-						trackExecution("Loading class: " + f.getAbsolutePath());
+					trackExecution("Loading class: " + f.getAbsolutePath());
 
-						byte[] byteCode;
+					byte[] byteCode;
+					try {
+						byteCode = Files.readAllBytes(f.toPath());
+					} catch (final IOException e) {
+						String message = String.format("Can't read bytecode for class %s", className);
+						buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+						throw new IllegalStateException(message, e);
+					}
+
+					trackExecution("Loaded class: " + f.getAbsolutePath());
+
+					for (final ClassFileTransformer t : transformers) {
 						try {
-							byteCode = Files.readAllBytes(f.toPath());
-						} catch (final IOException e) {
-							String message = String.format("Can't read bytecode for class %s", className);
+
+							// log exceptions into separate folder, to be able to inspect them even if Eclipse swallows them ...
+							if (t instanceof AbstractBaseClassTransformer) {
+								((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
+							}
+
+							// returns null if nothing has been transformed
+							byteCode = t.transform(classLoader, className, null, null, byteCode);
+						} catch (final Exception e) {
+							trackExecution("Exception during transformation of class: " + f.getAbsolutePath() + "\n" + e.getMessage());
+							String message = String.format("Can't transform class %s, transformer %s: %s", className,
+									t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
 							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-							throw new IllegalStateException(message, e);
 						}
+					}
 
-						trackExecution("Loaded class: " + f.getAbsolutePath());
+					if (byteCode != null && byteCode.length > 0) {
+						try {
+							Files.write(f.toPath(), byteCode, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+									StandardOpenOption.TRUNCATE_EXISTING);
 
-						byte[] modifiedByteCode = byteCode;
-
-						for (final ClassFileTransformer t : transformers) {
-							try {
-
-								// log exceptions into separate folder, to be able to inspect them even if Eclipse swallows them ...
-								if (t instanceof AbstractBaseClassTransformer) {
-									((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
-								}
-
-								modifiedByteCode = t.transform(classLoader, className, null, null, modifiedByteCode);
-							} catch (final Exception e) {
-								String message = String.format("Can't transform class %s, transformer %s: %s", className,
-										t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
-								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-							}
+							trackExecution("Saved transformed class: " + f.getAbsolutePath());
+						} catch (final IOException e) {
+							String message = "Could not write modified class: " + relativeClassFilePath;
+							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+							throw new IllegalStateException(message);
+						} finally {
+							buildContext.refresh(f);
+							getLog().info("Applied transformation to type: " + f.getAbsolutePath());
 						}
-
-						trackExecution("Transformed class: " + f.getAbsolutePath());
-
-						if (modifiedByteCode != null && modifiedByteCode.length > 0 && !Arrays.equals(modifiedByteCode, byteCode)) {
-							try {
-								Files.write(f.toPath(), modifiedByteCode, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
-										StandardOpenOption.TRUNCATE_EXISTING);
-
-								trackExecution("Saved transformed class: " + f.getAbsolutePath());
-							} catch (final IOException e) {
-								String message = "Could not write modified class: " + relativeClassFilePath;
-								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-								throw new IllegalStateException(message);
-							} finally {
-								buildContext.refresh(f);
-								getLog().info("Applied transformation to type: " + f.getAbsolutePath());
-							}
-						} else {
-							getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
-						}
+					} else {
+						trackExecution("No changes made for class: " + f.getAbsolutePath());
+						getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
+					}
 //					});
 				}
 			}
 
-			trackExecution("Class transformeds executed");
+			trackExecution("All classes in build output folder transformed");
 
 //			executorService.shutdown();
 //
@@ -235,13 +235,17 @@ public class TransformTypesMojo extends AbstractMojo {
 
 	private ClassLoader getClassloader() throws MojoExecutionException {
 		try {
+			final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+
 			final List<URL> classPathUrls = getClasspath();
 
 			final URLClassLoader urlClassLoader = URLClassLoader.newInstance(
 					classPathUrls.toArray(new URL[classPathUrls.size()]),
-					Thread.currentThread().getContextClassLoader());
+					contextClassLoader);
 
 			trackExecution("Classpath: " + classPathUrls.stream().map(u -> u.toString()).collect(Collectors.joining(",")));
+
+			Thread.currentThread().setContextClassLoader(urlClassLoader);
 
 			return urlClassLoader;
 		} catch (final Exception e) {
@@ -250,14 +254,22 @@ public class TransformTypesMojo extends AbstractMojo {
 	}
 
 	private List<URL> getClasspath() throws MalformedURLException, DependencyResolutionRequiredException {
-		final List<String> compileClasspathElements = project.getCompileClasspathElements();
 		final List<URL> classPathUrls = new ArrayList<URL>();
 
-		for (final String path : compileClasspathElements) {
+		final List<String> classpathElements = project.getRuntimeClasspathElements();
+
+		// add build output folder to classpath
+		classpathElements.add(computeDir(project.getBuild().getOutputDirectory()));
+
+		for (final String path : classpathElements) {
 			classPathUrls.add(new File(path).toURI().toURL());
 		}
 
 		return classPathUrls;
+	}
+
+	private String computeDir(String dir) {
+		return new File(dir).getAbsolutePath();
 	}
 
 	private List<ClassFileTransformer> getClassFileTransformers(final ClassLoader cl) throws MojoExecutionException {
@@ -294,7 +306,10 @@ public class TransformTypesMojo extends AbstractMojo {
 	private void trackExecution(String message) throws IllegalStateException {
 		if (debug) {
 			try {
-				Files.write(Paths.get("/var/tmp/", "transform-classes.log"), (new Date().toString() + ": " + message + "\n").getBytes(),
+				File tempDir = FileUtils.getTempDirectory();
+
+				Files.write(Paths.get(tempDir.getAbsolutePath(), "transform-classes.log"),
+						(new Date().toString() + ": " + message + "\n").getBytes(StandardCharsets.UTF_8),
 						StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 			} catch (Exception e) {
 				throw new IllegalStateException("error", e);

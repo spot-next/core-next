@@ -100,7 +100,7 @@ import io.spotnext.maven.velocity.util.VelocityUtil;
  * @description Generates the java source code for the defined item types.
  * @since 1.0
  */
-@Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE, requiresProject = true, threadSafe = false)
+@Mojo(name = "generate-types", defaultPhase = LifecyclePhase.GENERATE_SOURCES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresProject = true)
 public class GenerateTypesMojo extends AbstractMojo {
 
 	@Component
@@ -132,7 +132,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	@Parameter(property = "title")
 	protected String title;
-	
+
 	@Parameter(property = "skip", required = false)
 	private boolean skip = false;
 
@@ -147,7 +147,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (skip) {
 			getLog().info("Skipping type generation!");
 		}
-		
+
 		getLog().info("Generting item types from XML.");
 
 		initTemplateEngine();
@@ -214,7 +214,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		velocityEngine.setProperty("velocimacro.library.autoreload", false);
 		velocityEngine.setProperty("file.resource.loader.modificationCheckInterval", -1);
 		velocityEngine.setProperty("parser.pool.siz", 50);
-		
+
 		velocityEngine.init();
 	}
 
@@ -938,7 +938,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 					InputStream fileStream = Files.newInputStream(filePath);
 
 					byte[] fileHash = DigestUtils.md5Digest(fileStream);
-					byte[] memoryHash = DigestUtils.md5Digest(encodedType.getBytes());
+					byte[] memoryHash = DigestUtils.md5Digest(encodedType.getBytes(StandardCharsets.UTF_8));
 
 					if (Arrays.equals(fileHash, memoryHash)) {
 						write = false;
@@ -950,8 +950,6 @@ public class GenerateTypesMojo extends AbstractMojo {
 							new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8));
 					writer.write(encodedType);
 				}
-			} catch (Exception e) {
-				throw new MojoExecutionException(String.format("Failed to write generated type %s to file %s", type.getName(), outputFile.getAbsolutePath()));
 			} finally {
 				MiscUtil.closeQuietly(writer);
 			}

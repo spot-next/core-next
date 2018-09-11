@@ -31,6 +31,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.LoaderClassPath;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
@@ -63,25 +64,28 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
-		final ClassPool pool = new ClassPool(true);
+		final ClassPool classPool = new ClassPool(ClassPool.getDefault());
+		classPool.childFirstLookup = true;
+		classPool.appendClassPath(new LoaderClassPath(Thread.currentThread().getContextClassLoader()));
+		classPool.appendSystemPath();
 
 		if (StringUtils.isNotBlank(className)) {
 			final String classId = className.replaceAll("/", ".");
 
-			pool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
+			classPool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 
 			// why is javassist.DirClassPath not public?
 			for (final String classPath : classPaths) {
-				pool.insertClassPath(new FileClassPath(classPath));
+				classPool.insertClassPath(new FileClassPath(classPath));
 			}
-			
-			pool.insertClassPath(new ClassClassPath(this.getClass()));
+
+			classPool.insertClassPath(new ClassClassPath(this.getClass()));
 
 			CtClass clazz = null;
 
 			if (isValidClass(classId)) {
 				try {
-					clazz = pool.get(classId);
+					clazz = classPool.get(classId);
 
 				} catch (final NotFoundException e) {
 					final String message = String.format("Could not process class '%s'", classId);
@@ -110,7 +114,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 				LOG.debug(String.format("Ignoring proxy class %s", classId));
 			}
 		} else {
-			LOG.debug("Ignoring class with empty name");
+			throw new IllegalClassTransformationException("Invalid empty class name");
 		}
 
 		return null;
