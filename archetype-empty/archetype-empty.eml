@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_1_8" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/target/test-classes"/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/src/test/resources"/>
+		<excludeFolder url="file://$MODULE_DIR$/target"/>
+	</contentEntry>
+	<levels>
+		<level name="Maven: org.springframework:spring-aspects:5.0.8.RELEASE" value="project"/>
+		<level name="Maven: org.aspectj:aspectjweaver:1.8.13" value="project"/>
+		<level name="Maven: org.aspectj:aspectjrt:1.9.1" value="project"/>
+		<level name="Maven: com.google.code.findbugs:annotations:3.0.1" value="project"/>
+		<level name="Maven: org.apache.commons:commons-lang3:3.6" value="project"/>
+		<level name="Maven: org.apache.commons:commons-collections4:4.1" value="project"/>
+	</levels>
+</component>

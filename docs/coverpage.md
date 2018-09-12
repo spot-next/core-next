@@ -9,6 +9,3 @@
 [Get started](intro)
 [API documentation](api)
 [Javadoc](javadoc)
-
-
-![color](red)

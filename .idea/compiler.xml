@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <excludeFromCompile>
+      <directory url="file://$PROJECT_DIR$/archetype-empty/src/main/resources/archetype-resources" includeSubdirectories="true" />
+    </excludeFromCompile>
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="archetype-empty" />
+        <module name="build-tools" />
+        <module name="spot-cms-base" />
+        <module name="spot-commerce-base" />
+        <module name="spot-commerce-spring-base" />
+        <module name="spot-core" />
+        <module name="spot-core-base-models" />
+        <module name="spot-core-model-infrastructure" />
+        <module name="spot-core-shell" />
+        <module name="spot-core-support" />
+        <module name="spot-instrumentation" />
+        <module name="spot-maven-plugin" />
+        <module name="spot-sample-simple" />
+        <module name="spot-spring-web-support" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="archetype-empty" target="1.8" />
+      <module name="build-tools" target="1.8" />
+      <module name="spot-cms-base" target="1.8" />
+      <module name="spot-commerce-base" target="1.8" />
+      <module name="spot-commerce-spring-base" target="1.8" />
+      <module name="spot-core" target="1.8" />
+      <module name="spot-core-base-models" target="1.8" />
+      <module name="spot-core-model-infrastructure" target="1.8" />
+      <module name="spot-core-shell" target="1.8" />
+      <module name="spot-core-support" target="1.8" />
+      <module name="spot-framework" target="1.8" />
+      <module name="spot-framework (1)" target="1.8" />
+      <module name="spot-framework (2)" target="1.8" />
+      <module name="spot-instrumentation" target="1.8" />
+      <module name="spot-maven-plugin" target="1.8" />
+      <module name="spot-sample-simple" target="1.8" />
+      <module name="spot-spring-web-support" target="1.8" />
+      <module name="test-project" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
