@@ -2,19 +2,21 @@ package io.spotnext.core.infrastructure.support.init;
 
 import java.io.InputStream;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.event.EventListener;
 import org.springframework.context.event.EventListenerMethodProcessor;
 
 import ch.qos.logback.core.util.CloseUtil;
@@ -26,6 +28,7 @@ import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
+import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 import io.spotnext.itemtype.core.enumeration.ImportFormat;
 
@@ -38,6 +41,7 @@ import io.spotnext.itemtype.core.enumeration.ImportFormat;
  * @version 1.0
  * @since 1.0
  */
+@DependsOn("persistenceService")
 @PropertySource(value = "classpath:/git.properties", ignoreResourceNotFound = true)
 @Configuration
 @Priority(value = -1)
@@ -60,13 +64,11 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Called when the spring application context has been initialized.
 	 * 
-	 * @param event
-	 *            the spring application event name
-	 * @throws ModuleInitializationException
-	 *             in case there is an exception during post initialization
+	 * @param event the spring application event name
+	 * @throws ModuleInitializationException in case there is an exception during post initialization
 	 */
-	@EventListener
-	protected void onApplicationEvent(final ApplicationReadyEvent event) throws ModuleInitializationException {
+	@PostConstruct
+	public void setup() throws ModuleInitializationException {
 		if (!alreadyInitialized) {
 			initialize();
 			if (configurationService.getBoolean("core.setup.import.initialdata", false)) {
@@ -83,11 +85,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	/**
-	 * This is a hook to customize the initialization process. It is called
-	 * after {@link Bootstrap} all spring beans are initialized.
+	 * This is a hook to customize the initialization process. It is called after {@link Bootstrap} all spring beans are initialized.
 	 * 
-	 * @throws ModuleInitializationException
-	 *             if there is any unexpected error
+	 * @throws ModuleInitializationException if there is any unexpected error
 	 */
 	@Log(message = "Initializing module $classSimpleName", measureTime = true)
 	protected abstract void initialize() throws ModuleInitializationException;
@@ -95,10 +95,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Imports the initial data, if any are present.
 	 * 
-	 * @throws ModuleInitializationException
-	 *             in case there is any error
+	 * @throws ModuleInitializationException in case there is any error
 	 */
-	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
+//	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		//
 	}
@@ -106,10 +105,9 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	/**
 	 * Imports the sample data, if any are present.
 	 * 
-	 * @throws ModuleInitializationException
-	 *             in case there is any error
+	 * @throws ModuleInitializationException in case there is any error
 	 */
-	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
+//	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		//
 	}
@@ -128,9 +126,8 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	/**
-	 * Override Spring's {@link EventListenerMethodProcessor} and always use the
-	 * root spring context. This makes sure that all event listeners (even in
-	 * child contexts) get notified when events in a parent context are thrown.
+	 * Override Spring's {@link EventListenerMethodProcessor} and always use the root spring context. This makes sure that all event listeners (even in child
+	 * contexts) get notified when events in a parent context are thrown.
 	 * 
 	 * @return the custom event listener instance
 	 */
@@ -154,7 +151,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		InputStream stream = null;
 		try {
 			final ImportConfiguration conf = new ImportConfiguration();
-			conf.setIgnoreErrors(true);
+			conf.setIgnoreErrors(false);
 			conf.setScriptIdentifier(path);
 
 			stream = CoreInit.class.getResourceAsStream(conf.getScriptIdentifier());
@@ -162,5 +159,21 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		} finally {
 			CloseUtil.closeQuietly(stream);
 		}
+	}
+
+	public static void bootstrap(Class<? extends ModuleInit> init, String... commandLineArgs) {
+		bootstrap(init, null, commandLineArgs);
+	}
+
+	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit, String... commandLineArgs) {
+		Registry.setMainClass(childInit != null ? childInit : parentInit);
+
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(parentInit).addCommandLineProperties(true);
+
+		if (childInit != null) {
+			builder = builder.child(childInit).bannerMode(Mode.OFF).addCommandLineProperties(true);
+		}
+
+		builder.build(commandLineArgs).run(commandLineArgs);
 	}
 }

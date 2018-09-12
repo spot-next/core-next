@@ -1,7 +1,7 @@
 - [Introduction](/intro)
 - [Quick Start](quickstart)
 - [API documentation](/api)
-- [Javadoc](http://javadoc.io/doc/io.spot-next/spot-core/)
+- [Javadoc](https://javadoc.io/doc/io.spot-next/spot-core/)
 ****
 - [Changelog](changelog.md)
 - [Roadmap](/roadmap)

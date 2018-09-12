@@ -40,13 +40,13 @@ mvn -Psonatype-staging-archetypes archetype:generate -B \
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
 java -jar target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar \
-		-initializetypesystem -importinitialdata -importsampledata```
+		--core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true```
 > If you changed the variables above you also have to adapt the JAR-filename!
 
 So what is the meaning of the command line arguments?
-* **initializetypesystem** creates the necessary database schema based on the domain model
-* **importinitialdata** imports some basic data, like the admin user, country and language data
-* **importsampledata** imports some test users and media files
+* **core.setup.typesystem.initialize** creates the necessary database schema based on the domain model
+* **core.setup.import.initialdata** imports some basic data, like the admin user, country and language data
+* **core.setup.import.sampledata=true** imports some test users and media files
 
 > The **first two** arguments are **necessary** if you boot up spOt the first time.
 
@@ -181,10 +181,6 @@ First we add the new `Party` type:
 ```
 > The `motto` property is somewhat special as it is a `LocalizedString`, which allows you to store a separate string per `Locale` 
 > Each time the *itemtypes.xml is changed, we can either run a full `mvn install` or the faster `mvn spot:generate-types spot:transform-types`
-> Make sure that the package you choose is a subpackge of the one defined in the `Init` class:
-> ```java
-> Bootstrap.bootstrap(Init.class, new String[] { "io.spotnext.test.types" }, args).run();
-> ```
 
 > Add the /src/gen/java` folder to your IDE's build path, otherwise the IDE might not be able to resolve the newly generated classes!
 

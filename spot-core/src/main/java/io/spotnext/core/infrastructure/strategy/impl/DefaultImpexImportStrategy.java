@@ -44,6 +44,7 @@ import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.infrastructure.support.impex.ImpexCommand;
@@ -116,13 +117,13 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 
 		if (CollectionUtils.isNotEmpty(fileContent)) {
-			loggingService.debug(String.format("Transforming %s to work units", config.getScriptIdentifier()));
+			Log.debug(String.format("Transforming %s to work units", config.getScriptIdentifier()));
 			final List<WorkUnit> workUnits = transformImpex(fileContent);
 
-			loggingService.debug(String.format("Processing %s work units", workUnits.size()));
+			Log.debug(String.format("Processing %s work units", workUnits.size()));
 			processWorkUnits(workUnits);
 
-			loggingService.debug(String.format("Importing %s work units", workUnits.size()));
+			Log.debug(String.format("Importing %s work units", workUnits.size()));
 			transactionService.executeWithoutResult(() -> importWorkUnits(workUnits, config));
 		} else {
 			loggingService.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));

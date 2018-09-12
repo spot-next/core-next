@@ -36,11 +36,11 @@ import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.infrastructure.constants.InfrastructureConstants;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.maven.xml.Types;
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyRelationDefinition;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.support.util.FileUtils;
@@ -65,21 +65,19 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	final protected Map<String, ItemTypeDefinition> itemTypeDefinitions = new HashMap<>();
 
 	@Autowired
-	protected DefaultTypeService(LoggingService loggingService, List<? extends Item> itemTypes) throws JAXBException {
-		this.loggingService = loggingService;
-
+	protected DefaultTypeService(List<? extends Item> itemTypes) throws JAXBException {
 		loadMergedItemTypeDefinitions();
 
 		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCodeForClass(i.getClass()))
 				.collect(Collectors.toList());
-		loggingService.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
+		Log.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
 	}
 
 	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
 	protected void loadMergedItemTypeDefinitions() {
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 
-		loggingService.info(String.format("Detected application root path: %s", applicationRoot.toString()));
+		Log.info(String.format("Detected application root path: %s", applicationRoot.toString()));
 
 		InputStream mergedItemDef = null;
 
@@ -111,7 +109,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 
-		loggingService.debug(String.format("Loading merged item type definitions from %s", applicationRoot.toString()));
+		Log.debug(String.format("Loading merged item type definitions from %s", applicationRoot.toString()));
 
 		Types typeDef = null;
 
@@ -125,7 +123,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			MiscUtil.closeQuietly(mergedItemDef);
 		}
 
-		loggingService.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
+		Log.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
 				typeDef.getType().size()));
 
 		for (final io.spotnext.core.infrastructure.maven.xml.ItemType t : typeDef.getType()) {
@@ -144,7 +142,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 
-		loggingService.info(String.format("Type service initialized"));
+		Log.info(String.format("Type service initialized"));
 	}
 
 	/*
@@ -180,7 +178,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			return annotation.typeCode();
 		}
 
-		loggingService.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
+		Log.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
 
 		return null;
 	}
@@ -251,7 +249,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 					} else if (t instanceof Class) {
 						genericTypeArguments.add((Class<?>) t);
 					} else {
-						loggingService.warn(String.format("Unsupported generic argument type: %s", t.getClass()));
+						Log.warn(String.format("Unsupported generic argument type: %s", t.getClass()));
 					}
 				}
 

@@ -1,11 +1,11 @@
-
+<a href="http://localhost:3000/#/quickstart">
 <img class="logo-coverpage" src="/resources/spot_logo.svg" width="400">
-> microservice done easy
+</a>
+<h1>easy to learn • powerful • versatile</h1>
 
-* easy to learn
-* powerful
-* versatile
+
 
 [Get started](intro)
 [API documentation](api)
-[Javadoc](javadoc)
+[Javadoc](https://javadoc.io/doc/io.spot-next/spot-core/)
+

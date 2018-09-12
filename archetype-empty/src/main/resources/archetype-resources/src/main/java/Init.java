@@ -2,9 +2,11 @@ package $package;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.Bootstrap;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
+import io.spotnext.sample.SampleInit;
 
 @SpringBootApplication(scanBasePackages = { "$package" })
 public class Init extends ModuleInit {
@@ -24,7 +26,7 @@ public class Init extends ModuleInit {
 	}
 
 	public static void main(final String[] args) throws Exception {
-		Bootstrap.bootstrap(Init.class, new String[] { "${package}.types" }, args).run();
+		ModuleInit.bootstrap(CoreInit.class, Init.class, args);
 	}
 
 }

@@ -1,4 +1,4 @@
-package io.spotnext.core.infrastructure.service.impl;
+package io.spotnext.core.infrastructure.support;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,47 +10,29 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.infrastructure.exception.SerializationException;
-import io.spotnext.core.infrastructure.service.ConfigurationService;
-import io.spotnext.core.infrastructure.service.LoggingService;
-import io.spotnext.core.infrastructure.service.SerializationService;
-import io.spotnext.core.infrastructure.support.LogLevel;
-
 /**
- * This logging service maintains a list of {@link org.slf4j.Logger}s for each class that
- * calls a log method. It logs to the {@link java.lang.System#console()} as well as to the
- * default log4j logger.
+ * This logging service maintains a list of {@link org.slf4j.Logger}s for each class that calls a log method. It logs to the {@link java.lang.System#console()}
+ * as well as to the default log4j logger.
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 @Service
-public class ConsoleLoggingService extends BeanAware implements LoggingService {
-
-	private static final String CONFIG_KEY_LOG_TO_CONSOLE = "service.logging.sys.console";
+public class Log {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
 
-	@Autowired
-	protected ConfigurationService configurationService;
-
-	@Autowired
-	protected SerializationService serializationService;
-
-	Map<Class<?>, Logger> loggers = new HashMap<>();
+	private static final Map<Class<?>, Logger> loggers = new HashMap<>();
 
 	/** {@inheritDoc} */
-	@Override
-	public void debug(final String message) {
+	public static void debug(final String message) {
 		log(LogLevel.DEBUG, message, null, null, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void debug(Supplier<String> message) {
+	public static void debug(Supplier<String> message) {
 		final Class<?> callingClass = getCallingClass();
 		final Logger logger = getLoggerForClass(getCallingClass());
 
@@ -60,56 +42,47 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void debug(final String message, final Class<?> callingClass) {
+	public static void debug(final String message, final Class<?> callingClass) {
 		log(LogLevel.DEBUG, message, null, null, callingClass);
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void info(final String message) {
+	public static void info(final String message) {
 		log(LogLevel.INFO, message, null, null, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void info(final String message, final Class<?> callingClass) {
+	public static void info(final String message, final Class<?> callingClass) {
 		log(LogLevel.INFO, message, null, null, callingClass);
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void warn(final String message) {
+	public static void warn(final String message) {
 		log(LogLevel.WARN, message, null, null, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void warn(final String message, final Class<?> callingClass) {
+	public static void warn(final String message, final Class<?> callingClass) {
 		log(LogLevel.WARN, message, null, null, callingClass);
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void error(final String message) {
+	public static void error(final String message) {
 		log(LogLevel.ERROR, message, null, null, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void error(final String message, final Class<?> callingClass) {
+	public static void error(final String message, final Class<?> callingClass) {
 		log(LogLevel.ERROR, message, null, null, callingClass);
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void exception(final String message, final Throwable exception) {
+	public static void exception(final String message, final Throwable exception) {
 		log(LogLevel.FATAL, message, exception, null, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void exception(final String message, final Throwable exception, final Class<?> callingClass) {
+	public static void exception(final String message, final Throwable exception, final Class<?> callingClass) {
 		log(LogLevel.FATAL, message, null, null, callingClass);
 	}
 
@@ -118,14 +91,12 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	 */
 
 	/** {@inheritDoc} */
-	@Override
-	public void log(final LogLevel level, final String message, final Throwable exception, final Object object) {
+	public static void log(final LogLevel level, final String message, final Throwable exception, final Object object) {
 		log(level, message, exception, object, getCallingClass());
 	}
 
 	/** {@inheritDoc} */
-	@Override
-	public void log(final LogLevel level, final String message, final Throwable exception, final Object object,
+	public static void log(final LogLevel level, final String message, final Throwable exception, final Object object,
 			final Class<?> callingClass) {
 
 		String msg = message;
@@ -138,12 +109,8 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 		String objectJson = "";
 
 		if (object != null) {
-			try {
-				objectJson = "\nObject: " + serializationService.toJson(object);
-				objectJson = StringUtils.removeAll(objectJson, "\\s");
-			} catch (final SerializationException e) {
-				objectJson = "Could not convert info object to JSON";
-			}
+			objectJson = "\nObject: " + toJson(object);
+			objectJson = StringUtils.removeAll(objectJson, "\\s");
 		}
 
 		msg += objectJson;
@@ -171,21 +138,24 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	 * Helper functions
 	 */
 
-	protected boolean logToConsole() {
-		return configurationService.getBoolean(CONFIG_KEY_LOG_TO_CONSOLE, false);
+	private static String toJson(Object object) {
+		return "";
 	}
 
-	protected String getTimeStamp() {
+	protected static boolean logToConsole() {
+		return false;
+	}
+
+	protected static String getTimeStamp() {
 		return LocalDateTime.now().format(DATE_FORMAT);
 	}
 
 	/**
-	 * Returns the {@link Logger} object for the given class. It is also stored
-	 * internally and created if it doesn't exist yet.
+	 * Returns the {@link Logger} object for the given class. It is also stored internally and created if it doesn't exist yet.
 	 * 
 	 * @param type
 	 */
-	protected Logger getLoggerForClass(final Class<?> type) {
+	protected static Logger getLoggerForClass(final Class<?> type) {
 		Logger logger = loggers.get(type);
 
 		if (logger == null) {
@@ -197,10 +167,9 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 	}
 
 	/**
-	 * The calling class is parsed out of the stacktrace. This might not work in
-	 * case any calls are intercepted (like with AspectJ).
+	 * The calling class is parsed out of the stacktrace. This might not work in case any calls are intercepted (like with AspectJ).
 	 */
-	protected Class<?> getCallingClass() {
+	public static Class<?> getCallingClass() {
 		Class<?> callingClass = null;
 
 		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -208,7 +177,7 @@ public class ConsoleLoggingService extends BeanAware implements LoggingService {
 		for (int i = 1; i < stack.length; i++) {
 			final StackTraceElement o = stack[i];
 
-			if (!StringUtils.equalsIgnoreCase(o.getClassName(), this.getClass().getName())) {
+			if (!StringUtils.equalsIgnoreCase(o.getClassName(), Log.class.getName())) {
 				try {
 					callingClass = Class.forName(o.getClassName());
 				} catch (final ClassNotFoundException e) {
