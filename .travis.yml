@@ -48,7 +48,7 @@ deploy:
       tags: false
   - provider: script
     # add "`git log --pretty=format:'%h' -n 1`" for git commit hash
-    script: "mvn -e -P travis,release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`"
+    script: "mvn -e -P travis,release -Dmaven.test.skip=true clean deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`"
     skip_cleanup: true
     on:
       branch: master
