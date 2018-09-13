@@ -37,18 +37,18 @@ before_install:
 
 install: true
 
-script: "mvn clean install findbugs:check"
+script: "mvn -e clean install findbugs:check"
 
 deploy:
   - provider: script
-    script: "mvn -q -P travis,release -Dmaven.test.skip=true clean deploy"
+    script: "mvn -e -q -P travis,release -Dmaven.test.skip=true clean deploy"
     skip_cleanup: true
     on:
       branch: develop
       tags: false
   - provider: script
     # add "`git log --pretty=format:'%h' -n 1`" for git commit hash
-    script: "mvn -P travis,release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`"
+    script: "mvn -e -P travis,release -Dmaven.test.skip=true clean install deploy -Drevision=$TRAVIS_TAG-`date +%Y%m%d`"
     skip_cleanup: true
     on:
       branch: master
