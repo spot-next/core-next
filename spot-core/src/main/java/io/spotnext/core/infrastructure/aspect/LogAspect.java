@@ -12,9 +12,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.context.annotation.DependsOn;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.support.Log;
 
 /**
  * Annotation-based aspect that logs method execution.
@@ -23,6 +24,7 @@ import io.spotnext.core.infrastructure.annotation.logging.Log;
  * @version 1.0
  * @since 1.0
  */
+@DependsOn("loggingService")
 @Aspect
 @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
@@ -34,11 +36,11 @@ public class LogAspect extends AbstractBaseAspect {
 	 */
 	@PostConstruct
 	public void init() {
-		getLoggingService().debug("Initialized logging aspect.");
+		Log.debug("Initialized logging aspect.");
 	}
 
 	/**
-	 * Define the pointcut for all methods that are annotated with {@link Log}.
+	 * Define the pointcut for all methods that are annotated with {@link io.spotnext.core.infrastructure.annotation.logging.Log}.
 	 */
 	@Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.logging.Log) && execution(* *.*(..))")
 	final protected void logAnnotation() {
@@ -51,14 +53,16 @@ public class LogAspect extends AbstractBaseAspect {
 	 */
 	@Around("logAnnotation()")
 	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {
-		final Log ann = getAnnotation(joinPoint, Log.class);
+		final io.spotnext.core.infrastructure.annotation.logging.Log ann = getAnnotation(joinPoint, io.spotnext.core.infrastructure.annotation.logging.Log.class);
 
 		final long startTime = System.currentTimeMillis();
 
+		Class<?> targetClass = getRealClass(joinPoint.getTarget());
+
 		if (ann != null && ann.before()) {
-			getLoggingService().log(ann.logLevel(),
-					createLogMessage(joinPoint, "Before", ann.message(), ann.messageArguments(), null), null, null,
-					joinPoint.getTarget().getClass());
+			Log.log(ann.logLevel(),
+					createLogMessage(joinPoint, "Before", ann.message(), targetClass, ann.messageArguments(), null), null, null,
+					targetClass);
 		}
 
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
@@ -66,43 +70,46 @@ public class LogAspect extends AbstractBaseAspect {
 		if (ann != null && ann.after()) {
 			final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
 
-			getLoggingService().log(ann.logLevel(),
-					createLogMessage(joinPoint, "After", null, ann.messageArguments(), runDuration), null, null,
-					joinPoint.getTarget().getClass());
+			Log.log(ann.logLevel(),
+					createLogMessage(joinPoint, "After", null, targetClass, ann.messageArguments(), runDuration), null, null,
+					targetClass);
 		}
 
 		return ret;
 	}
 
-	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message,
+	private Class<?> getRealClass(Object object) {
+		Class<?> objectClass = null;
+
+		if (object instanceof TargetClassAware) {
+			final TargetClassAware targetAware = ((TargetClassAware) object);
+
+			if (targetAware.getTargetClass() != null) {
+				objectClass = targetAware.getTargetClass();
+			} else {
+				objectClass = targetAware.getClass();
+			}
+		} else if (object != null) {
+			if (object.getClass().getName().contains("CGLIB")) {
+				objectClass = object.getClass().getSuperclass();
+			} else {
+				objectClass = object.getClass();
+			}
+		}
+		return objectClass;
+	}
+
+	protected String createLogMessage(final JoinPoint joinPoint, final String marker, final String message, Class<?> klass,
 			final Object[] arguments, final Long duration) {
 
 		String msg = null;
-		final Object target = joinPoint.getTarget();
-		Class<?> targetClass = null;
-
-		if (target instanceof TargetClassAware) {
-			final TargetClassAware targetAware = ((TargetClassAware) target);
-
-			if (targetAware.getTargetClass() != null) {
-				targetClass = targetAware.getTargetClass();
-			} else {
-				targetClass = targetAware.getClass();
-			}
-		} else if (target != null) {
-			if (target.getClass().getName().contains("CGLIB")) {
-				targetClass = target.getClass().getSuperclass();
-			} else {
-				targetClass = target.getClass();
-			}
-		}
 
 		final String className;
 		final String classSimpleName;
 
-		if (targetClass != null) {
-			className = targetClass.getName();
-			classSimpleName = targetClass.getSimpleName();
+		if (klass != null) {
+			className = klass.getName();
+			classSimpleName = klass.getSimpleName();
 		} else {
 			className = "<null>";
 			classSimpleName = "<null>";

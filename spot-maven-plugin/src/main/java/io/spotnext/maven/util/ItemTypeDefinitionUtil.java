@@ -23,6 +23,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 import io.spotnext.core.infrastructure.constants.InfrastructureConstants;
 import io.spotnext.core.infrastructure.maven.TypeDefinitions;
@@ -52,6 +53,7 @@ import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
 public class ItemTypeDefinitionUtil {
 	protected MavenProject project;
 	protected ArtifactRepository localRepository;
+	private BuildContext buildContext;
 	protected Log log;
 
 	/**
@@ -59,16 +61,15 @@ public class ItemTypeDefinitionUtil {
 	 * Constructor for ItemTypeDefinitionUtil.
 	 * </p>
 	 *
-	 * @param project         a {@link org.apache.maven.project.MavenProject}
-	 *                        object.
-	 * @param localRepository a
-	 *                        {@link org.apache.maven.artifact.repository.ArtifactRepository}
-	 *                        object.
+	 * @param project         a {@link org.apache.maven.project.MavenProject} object.
+	 * @param localRepository a {@link org.apache.maven.artifact.repository.ArtifactRepository} object.
+	 * @param buildContext    the plexus utils build context for Eclipse intergration
 	 * @param log             a {@link org.apache.maven.plugin.logging.Log} object.
 	 */
-	public ItemTypeDefinitionUtil(final MavenProject project, final ArtifactRepository localRepository, final Log log) {
+	public ItemTypeDefinitionUtil(final MavenProject project, final ArtifactRepository localRepository, BuildContext buildContext, final Log log) {
 		this.project = project;
 		this.localRepository = localRepository;
+		this.buildContext = buildContext;
 		this.log = log;
 	}
 
@@ -112,7 +113,7 @@ public class ItemTypeDefinitionUtil {
 				// final File file = deps.get(0).getFile();
 				log.info(String.format("Resolved artfact %s: %s", a.getArtifactId(), file.getAbsolutePath()));
 
-				for (final File f : FileUtils.getFiles(file.getAbsolutePath())) {
+				for (final File f : FileUtils.getFiles(file.getAbsolutePath(), null)) {
 					if (f.getName().endsWith(".jar")) {
 						final List<String> jarContent = FileUtils.getFileListFromJar(f.getAbsolutePath());
 						for (final String c : jarContent) {
@@ -141,7 +142,7 @@ public class ItemTypeDefinitionUtil {
 
 		// get all resource files in the current project
 		for (final Resource r : (List<Resource>) project.getResources()) {
-			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory());
+			final List<File> projectFiles = FileUtils.getFiles(r.getDirectory(), null);
 
 			for (final File f : projectFiles) {
 				if (isItemTypeDefinitionFile(f.getName())) {
@@ -404,8 +405,9 @@ public class ItemTypeDefinitionUtil {
 			final Marshaller jaxb = context.createMarshaller();
 			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-			jaxb.marshal(itemTypesDefinitions,
-					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME));
+			File file = new File(targetResourcesDirectory, InfrastructureConstants.MERGED_INDEXED_ITEMTYPES_FILENAME);
+			jaxb.marshal(itemTypesDefinitions, file);
+			buildContext.refresh(file);
 		} catch (final JAXBException e) {
 			log.error(e);
 		}
@@ -420,8 +422,9 @@ public class ItemTypeDefinitionUtil {
 			final Marshaller jaxb = context.createMarshaller();
 			jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-			jaxb.marshal(outputTypes,
-					new File(targetResourcesDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
+			File file = new File(targetResourcesDirectory, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
+			jaxb.marshal(outputTypes, file);
+			buildContext.refresh(file);
 		} catch (final JAXBException e) {
 			log.error(e);
 		}

@@ -5,13 +5,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.annotations.Renderable;
 import io.spotnext.cms.exception.PageNotFoundException;
+import io.spotnext.cms.service.impl.CmsMessageResolver;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import io.spotnext.core.infrastructure.http.ModelAndView;
 import io.spotnext.itemtype.cms.CmsPage;
@@ -50,7 +52,11 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@Value("${service.templaterenderer.thymeleaf.cache:false}")
 	private boolean cacheEnabled;
 
-	private TemplateEngine templateEngine;
+	@Resource
+	private SpringTemplateEngine templateEngine;
+
+	@Resource
+	private CmsMessageResolver cmsMessageResolver;
 
 	/**
 	 * Constructs a thymeleaf template engine.
@@ -58,9 +64,10 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@PostConstruct
 	public void setup() {
 		final ITemplateResolver templateResolver = createDefaultTemplateResolver(templateFolder, templateExtension);
-		templateEngine = new TemplateEngine();
+		templateEngine = new SpringTemplateEngine();
 		templateEngine.setTemplateResolver(templateResolver);
-		// templateEngine.setEnableSpringELCompiler(true);
+		templateEngine.setMessageResolver(cmsMessageResolver);
+		templateEngine.setEnableSpringELCompiler(true);
 		templateEngine.addDialect(new Java8TimeDialect());
 	}
 
@@ -69,14 +76,12 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	 * createDefaultTemplateResolver.
 	 * </p>
 	 *
-	 * @param templateFolder
-	 *            a {@link java.lang.String} object.
-	 * @param templateExtension
-	 *            a {@link java.lang.String} object.
-	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver}
-	 *         object.
+	 * @param templateFolder    a {@link java.lang.String} object.
+	 * @param templateExtension a {@link java.lang.String} object.
+	 * @return a {@link org.thymeleaf.templateresolver.ITemplateResolver} object.
 	 */
-	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder, final String templateExtension) {
+	protected ITemplateResolver createDefaultTemplateResolver(final String templateFolder,
+			final String templateExtension) {
 		final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 
@@ -90,17 +95,18 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 		}
 
 		templateResolver.setPrefix(folder);
-		templateResolver.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
+		templateResolver
+				.setSuffix(StringUtils.isNotBlank(templateExtension) ? templateExtension : DEFAULT_TEMPLATE_EXCENTIONS);
 		templateResolver.setCacheTTLMs(2000l);
 		templateResolver.setCacheable(cacheEnabled);
-
 		templateResolver.setCacheTTLMs(DEFAULT_CACHE_TTL_MS);
 
 		return templateResolver;
 	}
 
 	@Override
-	public ModelAndView prepareCmsPage(final CmsPage page, final Map<String, Object> context) throws PageNotFoundException {
+	public ModelAndView prepareCmsPage(final CmsPage page, final Map<String, Object> context)
+			throws PageNotFoundException {
 
 		// create a new context and put both the page item (converted to a map,
 		// and the
@@ -128,11 +134,8 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Process the specified template (usually the template name). Output will
-	 * be written into a String that will be returned from calling this method,
-	 * once template processing has finished.
+	 * {@inheritDoc} Process the specified template (usually the template name). Output will be written into a String that will be returned from calling this
+	 * method, once template processing has finished.
 	 */
 	@Override
 	public String renderTemplate(final String templateName, final Object context) {

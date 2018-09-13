@@ -1,5 +1,7 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
+import java.util.Locale;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,6 +15,7 @@ import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
+import io.spotnext.itemtype.core.internationalization.Country;
 import io.spotnext.itemtype.core.media.Media;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
@@ -36,6 +39,21 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	}
 
 	// INSERT
+
+	@Test
+	public void testLocalizedString() throws ImpexImportException {
+		final ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/localized_string.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+		final LambdaQuery<Country> query = new LambdaQuery<>(Country.class).filter(c -> c.getIso3Code().equals("TES"));
+		final QueryResult<Country> result = queryService.query(query);
+
+		Country country = result.getResultList().get(0);
+
+		Assert.assertEquals("test land", country.getShortName(Locale.ENGLISH));
+		Assert.assertEquals("Testland", country.getShortName(Locale.GERMANY));
+	}
 
 	@Test
 	public void testInsertNestedReference() throws ImpexImportException {

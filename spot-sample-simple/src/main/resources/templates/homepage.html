@@ -26,7 +26,7 @@
 	<div class="container">
 
 		<div class="clearfix">
-			<form action="/login" method="post" th:if="${!isLoggedIn}">
+			<form action="/login" method="post" th:if="${!(isLoggedIn?: false)}">
 				<fieldset class="float-right">
 					<input type="text" name="username" th:placeholder="#{login.username}" placeholder="Username">
 					<input type="password" name="password" th:placeholder="#{login.password}" placeholder="Password">
@@ -34,7 +34,7 @@
 				</fieldset>
 			</form>
 			
-			<form action="/logout" method="post" th:if="${isLoggedIn}">
+			<form action="/logout" method="post" th:if="${isLoggedIn?: false}">
 				<fieldset class="float-right">
 					<input type="submit" value="Logout">
 				</fieldset>

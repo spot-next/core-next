@@ -17,16 +17,16 @@
 
 	<build>
 		<plugins>
-			<!-- RESOURCE GENERTATION -->
-			<plugin>
-				<groupId>io.spot-next</groupId>
-				<artifactId>spot-maven-plugin</artifactId>
-			</plugin>
-
 			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- RESOURCE GENERTATION -->
+			<plugin>
+				<groupId>io.spot-next</groupId>
+				<artifactId>spot-maven-plugin</artifactId>
 			</plugin>
 
 			<!-- CODE ANALYSIS -->
@@ -75,6 +75,11 @@
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.spot-next</groupId>
+			<artifactId>spot-cms-base</artifactId>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 </project>

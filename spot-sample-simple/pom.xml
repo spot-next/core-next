@@ -13,16 +13,21 @@
 
 	<build>
 		<plugins>
-			<!-- RESOURCE GENERTATION -->
 			<plugin>
-				<groupId>io.spot-next</groupId>
-				<artifactId>spot-maven-plugin</artifactId>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
 
 			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- RESOURCE GENERTATION -->
+			<plugin>
+				<groupId>io.spot-next</groupId>
+				<artifactId>spot-maven-plugin</artifactId>
 			</plugin>
 
 			<!-- CODE ANALYSIS -->
@@ -66,6 +71,93 @@
 			</plugin>
 
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<!-- ECLIPSE FIX -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>io.spot-next</groupId>
+										<artifactId>spot-maven-plugin</artifactId>
+										<versionRange>
+											[0.0,)
+										</versionRange>
+										<goals>
+											<goal>generate-types</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>aspectj-maven-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
+										<goals>
+											<goal>compile</goal>
+											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>io.spot-next</groupId>
+										<artifactId>spot-maven-plugin</artifactId>
+										<versionRange>
+											[0.0,)
+										</versionRange>
+										<goals>
+											<goal>transform-types</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>flatten-maven-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>flatten</goal>
+											<goal>clean</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>false</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -74,7 +166,7 @@
 			<artifactId>spot-core</artifactId>
 			<version>${revision}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-cms-base</artifactId>

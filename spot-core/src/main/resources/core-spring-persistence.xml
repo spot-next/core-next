@@ -40,6 +40,7 @@
 				</prop>
 				<prop key="hibernate.dialect.storage_engine">${service.persistence.hibernate.dialect.storage_engine}
 				</prop>
+				<prop key="hibernate.query.in_clause_parameter_padding.dialect">true</prop>
 			</props>
 		</constructor-arg>
 	</bean>

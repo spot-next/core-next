@@ -227,7 +227,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * @param propertyName of the field to get the value from
 	 * @return the field value
 	 */
-	public Object getProperty(String propertyName) {
+	public Object get(String propertyName) {
 		return ClassUtil.getProperty(this, propertyName);
 	}
 
@@ -237,7 +237,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * @param propertyName the name of the property to write to
 	 * @param value        the property value
 	 */
-	public void setProperty(String propertyName, Object value) {
+	public void set(String propertyName, Object value) {
 		ClassUtil.setProperty(this, propertyName, value);
 	}
 

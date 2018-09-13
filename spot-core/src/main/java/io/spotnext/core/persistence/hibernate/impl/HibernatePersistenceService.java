@@ -44,6 +44,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
@@ -56,9 +57,9 @@ import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
@@ -69,12 +70,15 @@ import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.core.types.Item;
 
 /**
- * <p>HibernatePersistenceService class.</p>
+ * <p>
+ * HibernatePersistenceService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
+@DependsOn("typeService")
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
@@ -89,25 +93,26 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	@Resource
 	protected ValidationService validationService;
 
-	@Autowired
 	/**
-	 * <p>Constructor for HibernatePersistenceService.</p>
+	 * <p>
+	 * Constructor for HibernatePersistenceService.
+	 * </p>
 	 *
 	 * @param entityManagerFactory a {@link javax.persistence.EntityManagerFactory} object.
-	 * @param transactionService a {@link io.spotnext.core.persistence.service.TransactionService} object.
+	 * @param transactionService   a {@link io.spotnext.core.persistence.service.TransactionService} object.
 	 * @param configurationService a {@link io.spotnext.core.infrastructure.service.ConfigurationService} object.
-	 * @param loggingService a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 * @param loggingService       a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
 	 */
+	@Autowired
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
-			ConfigurationService configurationService, LoggingService loggingService) {
+			ConfigurationService configurationService) {
 
 		this.entityManagerFactory = entityManagerFactory;
 		this.transactionService = transactionService;
 		this.configurationService = configurationService;
-		this.loggingService = loggingService;
 
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-			loggingService.info("Initializing type system schema ...");
+			Log.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
 			schemaExport.setHaltOnError(true);
@@ -120,14 +125,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 			} catch (final Exception e) {
-				loggingService.warn("Could not drop type system schema.");
+				Log.warn("Could not drop type system schema.");
 			}
 
 			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
-			loggingService.info("Updating type system schema ...");
+			Log.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();
 			schemaExport.setHaltOnError(true);
@@ -146,17 +151,22 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			validator.doValidation(metadataIntegrator.getMetadata(), SchemaManagementToolCoordinator
 					.buildExecutionOptions(entityManagerFactory.getProperties(), ExceptionHandlerLoggedImpl.INSTANCE));
 
-			loggingService.debug("Type system schema seems to be OK");
+			Log.debug("Type system schema seems to be OK");
 
 		} catch (final SchemaManagementException e) {
-			loggingService.warn("Type system schema needs to be initialized/updated");
+			// currently hibernate throws a validation exception for float values that are being created as doubles ...
+			// see https://hibernate.atlassian.net/browse/HHH-8690
+			// so we hide that message in case we just did an initialization, otherwise it would look confusing in the logs
+			if (!configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
+				Log.warn("Type system schema needs to be initialized/updated");
+			}
 		}
 
 		if (configurationService.getBoolean("cleantypesystem", false)) {
-			loggingService.info("Cleaning type system ... (not yet implemented)");
+			Log.info("Cleaning type system ... (not yet implemented)");
 		}
 
-		loggingService.info(String.format("Persistence service initialized"));
+		Log.info(String.format("Persistence service initialized"));
 	}
 
 	/** {@inheritDoc} */
@@ -283,7 +293,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			final Session session, final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
 		if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
-			loggingService.warn("Fetch sub graphs can only be used for item queries.");
+			Log.warn("Fetch sub graphs can only be used for item queries.");
 			return;
 		}
 
@@ -307,7 +317,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			final EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
 
 			for (final String subgraph : fetchSubGraphs) {
-				final Subgraph itemGraph = graph.addSubgraph(subgraph);
+				final Subgraph<?> itemGraph = graph.addSubgraph(subgraph);
 			}
 
 			query.setHint("javax.persistence.loadgraph", graph);
@@ -665,7 +675,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	/**
-	 * <p>Getter for the field <code>entityManagerFactory</code>.</p>
+	 * <p>
+	 * Getter for the field <code>entityManagerFactory</code>.
+	 * </p>
 	 *
 	 * @return a {@link javax.persistence.EntityManagerFactory} object.
 	 */
@@ -674,7 +686,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	/**
-	 * <p>getSessionFactory.</p>
+	 * <p>
+	 * getSessionFactory.
+	 * </p>
 	 *
 	 * @return a {@link org.hibernate.SessionFactory} object.
 	 */

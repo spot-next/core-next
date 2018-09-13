@@ -117,17 +117,17 @@
 
 	<modules>
 		<module>build-tools</module>
-		<module>spot-maven-plugin</module>
 		<module>spot-core-support</module>
-		<module>spot-core-base-models</module>
-		<module>spot-core-model-infrastructure</module>
 		<module>spot-instrumentation</module>
+		<module>spot-core-model-infrastructure</module>
+		<module>spot-maven-plugin</module>
+		<module>spot-core-base-models</module>
 		<module>spot-core</module>
 		<module>spot-core-shell</module>
 		<module>spot-spring-web-support</module>
-		<module>spot-commerce-spring-base</module>
-		<module>spot-commerce-base</module>
 		<module>spot-cms-base</module>
+		<module>spot-commerce-base</module>
+		<module>spot-commerce-spring-base</module>
 		<!-- <module>spot-mail</module> -->
 		<module>spot-sample-simple</module>
 		<module>archetype-empty</module>
@@ -201,44 +201,49 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
-				<version>1.0.0</version>
-				<configuration>
-					<updatePomFile>true</updatePomFile>
-					<pomElements>
-						<profiles />
-						<pluginManagement />
-						<properties />
-						<dependencyManagement />
-						<reporting />
-						<modules />
-					</pomElements>
-					<flattenMode>oss</flattenMode>
-				</configuration>
-				<executions>
-					<execution>
-						<id>flatten</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>flatten</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>flatten.clean</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>flatten-maven-plugin</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<updatePomFile>true</updatePomFile>
+						<pomElements>
+							<profiles />
+							<pluginManagement />
+							<properties />
+							<dependencyManagement />
+							<reporting />
+							<modules />
+						</pomElements>
+						<flattenMode>oss</flattenMode>
+					</configuration>
+					<executions>
+						<execution>
+							<id>flatten</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>flatten</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>flatten.clean</id>
+							<phase>clean</phase>
+							<goals>
+								<goal>clean</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
@@ -280,54 +285,8 @@
 							</goals>
 							<configuration>
 								<sources>
-									<source>src/gen/java</source>
+									<source>${project.basedir}/src/gen/java</source>
 								</sources>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-
-				<!-- RESOURCE GENERATION -->
-				<plugin>
-					<groupId>io.spot-next</groupId>
-					<artifactId>spot-maven-plugin</artifactId>
-					<version>${revision}</version>
-					<executions>
-						<execution>
-							<id>Item type generation</id>
-							<phase>generate-sources</phase>
-							<goals>
-								<goal>generate-types</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>Item type post-processing</id>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>transform-types</goal>
-							</goals>
-							<configuration>
-								<includeJars>false</includeJars>
-								<classFileTransformers>
-									<classFileTransformer>
-										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
-									</classFileTransformer>
-								</classFileTransformers>
-							</configuration>
-						</execution>
-						<execution>
-							<id>Item type post-processing (test)</id>
-							<phase>process-test-classes</phase>
-							<goals>
-								<goal>transform-types</goal>
-							</goals>
-							<configuration>
-								<includeJars>false</includeJars>
-								<classFileTransformers>
-									<classFileTransformer>
-										io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
-									</classFileTransformer>
-								</classFileTransformers>
 							</configuration>
 						</execution>
 					</executions>
@@ -346,8 +305,26 @@
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
-						<useIncrementalCompilation>false</useIncrementalCompilation>
+						<useIncrementalCompilation>true</useIncrementalCompilation>
+						<skip>true</skip>
+						<skipMain>true</skipMain>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-compile</id>
+							<phase>none</phase>
+							<goals>
+								<goal>compile</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>default-test-compile</id>
+							<phase>none</phase>
+							<goals>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 
 				<plugin>
@@ -376,6 +353,7 @@
 								<artifactId>spring-aspects</artifactId>
 							</aspectLibrary>
 						</aspectLibraries>
+
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>false</showWeaveInfo>
 						<source>${java.version}</source>
@@ -388,7 +366,6 @@
 						<forceAjcCompile>false</forceAjcCompile>
 						<preserveAllLocals>true</preserveAllLocals>
 						<proceedOnError>true</proceedOnError>
-						<!-- <Xreweavable>true</Xreweavable> -->
 
 					</configuration>
 					<executions>
@@ -397,6 +374,45 @@
 								<!-- IMPORTANT -->
 								<goal>compile</goal>
 								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<!-- RESOURCE GENERATION -->
+				<plugin>
+					<groupId>io.spot-next</groupId>
+					<artifactId>spot-maven-plugin</artifactId>
+					<version>${revision}</version>
+					<configuration>
+						<classFileTransformers>
+							<classFileTransformer>
+								io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
+							</classFileTransformer>
+						</classFileTransformers>
+						<includeJars>false</includeJars>
+						<debug>true</debug>
+					</configuration>
+					<executions>
+						<execution>
+							<id>Item type generation</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>generate-types</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>Item type post-processing</id>
+							<phase>compile</phase>
+							<goals>
+								<goal>transform-types</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>Item type post-processing (test)</id>
+							<phase>test-compile</phase>
+							<goals>
+								<goal>transform-types</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -685,24 +701,6 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>io.spot-next</groupId>
-										<artifactId>spot-maven-plugin</artifactId>
-										<versionRange>
-											[0.0,)
-										</versionRange>
-										<goals>
-											<goal>transform-types</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>
 										<artifactId>aspectj-maven-plugin</artifactId>
 										<versionRange>[1.8,)</versionRange>
@@ -716,9 +714,28 @@
 											<runOnIncremental>true</runOnIncremental>
 											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
+										<!-- <ignore /> -->
 									</action>
 								</pluginExecution>
-
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>io.spot-next</groupId>
+										<artifactId>spot-maven-plugin</artifactId>
+										<versionRange>
+											[0.0,)
+										</versionRange>
+										<goals>
+											<goal>transform-types</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.codehaus.mojo</groupId>

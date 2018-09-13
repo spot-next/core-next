@@ -14,6 +14,7 @@ import io.spotnext.core.infrastructure.annotation.Accessor;
 import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.valueprovider.ItemPropertyValueProvider;
 import io.spotnext.core.support.util.ClassUtil;
@@ -40,7 +41,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 */
 	@PostConstruct
 	public void init() {
-		loggingService.debug("Initialized item property access aspect.");
+		Log.debug("Initialized item property access aspect.");
 	}
 
 	// @Autowired
@@ -121,7 +122,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		final Relation rel = getAnnotation(joinPoint, Relation.class);
 
 		if (rel != null) {
-			loggingService.warn("Handling relations not implemented here.");
+			Log.warn("Handling relations not implemented here.");
 			// handleRelationProperty(joinPoint, rel);
 		}
 

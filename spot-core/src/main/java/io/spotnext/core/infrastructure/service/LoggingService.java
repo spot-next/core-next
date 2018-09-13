@@ -11,6 +11,7 @@ import io.spotnext.core.infrastructure.support.LogLevel;
  * @version 1.0
  * @since 1.0
  */
+@Deprecated
 public interface LoggingService {
 	/**
 	 * <p>debug.</p>

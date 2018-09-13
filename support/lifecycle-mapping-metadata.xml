@@ -3,15 +3,35 @@
 	<pluginExecutions>
 		<pluginExecution>
 			<pluginExecutionFilter>
-				<groupId>io.spotnext</groupId>
-				<artifactId>spot-core-maven-plugins</artifactId>
-				<versionRange>1.0-SNAPSHOT</versionRange>
+				<groupId>io.spot-next</groupId>
+				<artifactId>spot-maven-plugin</artifactId>
+				<versionRange>
+					[0.0,)
+				</versionRange>
 				<goals>
-					<goal>itemTypeGeneration</goal>
+					<goal>generate-types</goal>
 				</goals>
 			</pluginExecutionFilter>
 			<action>
-				<execute />
+				<ignore />
+			</action>
+		</pluginExecution>
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<groupId>io.spot-next</groupId>
+				<artifactId>spot-maven-plugin</artifactId>
+				<versionRange>
+					[0.0,)
+				</versionRange>
+				<goals>
+					<goal>transform-types</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute>
+					<runOnIncremental>true</runOnIncremental>
+					<runOnConfiguration>true</runOnConfiguration>
+				</execute>
 			</action>
 		</pluginExecution>
 		<pluginExecution>
@@ -25,7 +45,28 @@
 				</goals>
 			</pluginExecutionFilter>
 			<action>
-				<execute />
+				<execute>
+					<runOnIncremental>true</runOnIncremental>
+					<runOnConfiguration>true</runOnConfiguration>
+				</execute>
+			</action>
+		</pluginExecution>
+
+		<pluginExecution>
+			<pluginExecutionFilter>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>flatten-maven-plugin</artifactId>
+				<versionRange>[1.0.0,)</versionRange>
+				<goals>
+					<goal>flatten</goal>
+					<goal>clean</goal>
+				</goals>
+			</pluginExecutionFilter>
+			<action>
+				<execute>
+					<runOnIncremental>false</runOnIncremental>
+					<runOnConfiguration>true</runOnConfiguration>
+				</execute>
 			</action>
 		</pluginExecution>
 	</pluginExecutions>
