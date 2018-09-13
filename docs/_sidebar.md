@@ -11,7 +11,7 @@
 ****
 - [![](https://icongram.jgog.in/simple/github.svg?color=808080&size=22)   Github](https://github.com/mojo2012/spot-framework)
 - [![](https://icongram.jgog.in/simple/jira.svg?color=808080&size=22)     JIRA](https://JIRA.spot-next.io)
-- [![](https://icongram.jgog.in/simple/travisci.svg?color=808080&size=22) CI](https://travis-ci.org/mojo2012/spot-framework)
+- [![](https://icongram.jgog.in/simple/travisci.svg?color=808080&size=22) CI](https://travis-ci.org/spot-next/spot-framework)
 - [![](https://icongram.jgog.in/simple/nodejs.svg?color=808080&size=22)   Nexus](https://nexus.spot-next.io)
 ****
 - [![](https://icongram.jgog.in/simple/xing.svg?color=808080&size=22)XING](https://www.xing.com/profile/Matthias_Fuchs15?sc_o=mxb_p)
