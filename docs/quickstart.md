@@ -46,7 +46,7 @@ java -jar target/test-project-1.0-SNAPSHOT-jar-with-dependencies.jar \
 So what is the meaning of the command line arguments?
 * **core.setup.typesystem.initialize** creates the necessary database schema based on the domain model
 * **core.setup.import.initialdata** imports some basic data, like the admin user, country and language data
-* **core.setup.import.sampledata=true** imports some test users and media files
+* **core.setup.import.sampledata** imports some test users and media files
 
 > The **first two** arguments are **necessary** if you boot up spOt the first time.
 
