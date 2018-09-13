@@ -6,7 +6,7 @@ import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
 
 /**
  * A Service handling de-/serialization of objects. The qctual conversion is
- * taking place in the {@link io.spotnext.core.infrastructure.strategy.SerializationStrategy} implementations.
+ * taking place in the {@link io.spotnext.infrastructure.strategy.SerializationStrategy} implementations.
  *
  * @author mojo2012
  * @version 1.0
@@ -17,7 +17,7 @@ public interface SerializationService {
 	 * Serializes the given object to JSON format.
 	 *
 	 * @param object a T object.
-	 * @throws io.spotnext.core.infrastructure.exception.SerializationException
+	 * @throws io.spotnext.infrastructure.exception.SerializationException
 	 * @param <T> a T object.
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -27,7 +27,7 @@ public interface SerializationService {
 	 * Serializes the given object to XML format.
 	 *
 	 * @param object a T object.
-	 * @throws io.spotnext.core.infrastructure.exception.SerializationException
+	 * @throws io.spotnext.infrastructure.exception.SerializationException
 	 * @param <T> a T object.
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -38,7 +38,7 @@ public interface SerializationService {
 	 *
 	 * @param value a {@link java.lang.String} object.
 	 * @param type a {@link java.lang.Class} object.
-	 * @throws io.spotnext.core.infrastructure.exception.DeserializationException
+	 * @throws io.spotnext.infrastructure.exception.DeserializationException
 	 * @param <T> a T object.
 	 * @return a T object.
 	 */
@@ -48,7 +48,7 @@ public interface SerializationService {
 	 * Deserializes JSON into an existing object.
 	 *
 	 * @param value a {@link java.lang.String} object.
-	 * @throws io.spotnext.core.infrastructure.exception.DeserializationException
+	 * @throws io.spotnext.infrastructure.exception.DeserializationException
 	 * @param instanceToUpdate a T object.
 	 * @param <T> a T object.
 	 * @return a T object.
@@ -60,7 +60,7 @@ public interface SerializationService {
 	 *
 	 * @param value a {@link java.lang.String} object.
 	 * @param type a {@link java.lang.Class} object.
-	 * @throws io.spotnext.core.infrastructure.exception.DeserializationException
+	 * @throws io.spotnext.infrastructure.exception.DeserializationException
 	 * @param <T> a T object.
 	 * @return a T object.
 	 */
@@ -70,7 +70,7 @@ public interface SerializationService {
 	 * Deserializes XML into an existing object.
 	 *
 	 * @param value a {@link java.lang.String} object.
-	 * @throws io.spotnext.core.infrastructure.exception.DeserializationException
+	 * @throws io.spotnext.infrastructure.exception.DeserializationException
 	 * @param instanceToUpdate a T object.
 	 * @param <T> a T object.
 	 * @return a T object.

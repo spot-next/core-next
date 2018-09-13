@@ -1,11 +1,11 @@
 package io.spotnext.core.infrastructure.service;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 import io.spotnext.itemtype.core.user.User;
 
 /**
  * This service uses the {@link io.spotnext.itemtype.core.user.User} registered assigned to the current session
- * and evaluates access permissions for {@link io.spotnext.core.types.Item} types and instances.
+ * and evaluates access permissions for {@link io.spotnext.infrastructure.type.Item} types and instances.
  *
  * @author mojo2012
  * @version 1.0
@@ -15,7 +15,7 @@ public interface AccessControlService {
 
 	/**
 	 * Returns true if the current session user is allowed to access the given
-	 * {@link io.spotnext.core.types.Item} type.
+	 * {@link io.spotnext.infrastructure.type.Item} type.
 	 *
 	 * @param type a {@link java.lang.Class} object.
 	 * @param <T> a T object.
@@ -25,7 +25,7 @@ public interface AccessControlService {
 
 	/**
 	 * Returns true if the current session user is allowed to access the given
-	 * property of the given {@link io.spotnext.core.types.Item} type.
+	 * property of the given {@link io.spotnext.infrastructure.type.Item} type.
 	 *
 	 * @param type a {@link java.lang.Class} object.
 	 * @param property a {@link java.lang.String} object.
@@ -36,7 +36,7 @@ public interface AccessControlService {
 
 	/**
 	 * Returns true if the current session user is allowed to access the given
-	 * {@link io.spotnext.core.types.Item} instance.
+	 * {@link io.spotnext.infrastructure.type.Item} instance.
 	 *
 	 * @param type a T object.
 	 * @param <T> a T object.
@@ -46,7 +46,7 @@ public interface AccessControlService {
 
 	/**
 	 * Returns true if the current session user is allowed to access the given
-	 * property of the given {@link io.spotnext.core.types.Item} instance.
+	 * property of the given {@link io.spotnext.infrastructure.type.Item} instance.
 	 *
 	 * @param type a T object.
 	 * @param property a {@link java.lang.String} object.

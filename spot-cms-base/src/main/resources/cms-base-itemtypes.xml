@@ -28,7 +28,7 @@
 	</enum>
 
 	<!-- image media -->
-	<type name="ImageMedia" extends="FileMedia" package="io.spotnext.core.media">
+	<type name="ImageMedia" extends="FileMedia" package="io.spotnext.itemtype.cms.media">
 		<properties>
 		</properties>
 	</type>

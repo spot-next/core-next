@@ -4,7 +4,7 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>SpotJunitRunListener class.</p>

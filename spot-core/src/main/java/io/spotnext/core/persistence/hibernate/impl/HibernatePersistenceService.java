@@ -52,13 +52,11 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.annotation.Property;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ValidationService;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
@@ -66,8 +64,10 @@ import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.annotation.Property;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>
@@ -100,8 +100,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 *
 	 * @param entityManagerFactory a {@link javax.persistence.EntityManagerFactory} object.
 	 * @param transactionService   a {@link io.spotnext.core.persistence.service.TransactionService} object.
-	 * @param configurationService a {@link io.spotnext.core.infrastructure.service.ConfigurationService} object.
-	 * @param loggingService       a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 * @param configurationService a {@link io.spotnext.infrastructure.service.ConfigurationService} object.
+	 * @param loggingService       a {@link io.spotnext.infrastructure.service.LoggingService} object.
 	 */
 	@Autowired
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,

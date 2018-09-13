@@ -5,7 +5,7 @@ import org.junit.runners.model.InitializationError;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>SpotJunitRunner class.</p>

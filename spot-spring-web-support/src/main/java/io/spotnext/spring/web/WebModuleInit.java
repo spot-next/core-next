@@ -10,7 +10,9 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
@@ -18,17 +20,14 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import io.spotnext.core.infrastructure.support.init.Bootstrap;
-import io.spotnext.core.infrastructure.support.init.BootstrapOptions;
+import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.spring.web.session.WebSessionFilter;
 import io.spotnext.spring.web.session.WebSessionListener;
 
 /**
- * This interface extends the
- * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} with some
- * more functionality with web container support.
+ * This interface extends the {@link io.spotnext.infrastructure.support.init.ModuleInit} with some more functionality with web container support.
  *
  * @author mojo2012
  * @version 1.0
@@ -47,21 +46,17 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/*
-	 * *************************************************************************
-	 * Embedded jetty initialization
+	 * ************************************************************************* Embedded jetty initialization
 	 * *************************************************************************
 	 */
 
 	/*
-	 * *************************************************************************
-	 * Tomcat initialization
+	 * ************************************************************************* Tomcat initialization
 	 * *************************************************************************
 	 */
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * This is the entry point when using an embedded jetty.
+	 * {@inheritDoc} This is the entry point when using an embedded jetty.
 	 */
 	@Override
 	default void onStartup(final Set<Class<?>> params, final ServletContext servletContext) throws ServletException {
@@ -69,9 +64,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * This is the spring entry point when using an servlet container like tomcat.
+	 * {@inheritDoc} This is the spring entry point when using an servlet container like tomcat.
 	 */
 	@Override
 	default void onStartup(final ServletContext servletContext) throws ServletException {
@@ -79,8 +72,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * The spot core initialization process starts here. After if is finished, the
-	 * web module is initialized.
+	 * The spot core initialization process starts here. After if is finished, the web module is initialized.
 	 *
 	 * @param servletContext a {@link javax.servlet.ServletContext} object.
 	 */
@@ -90,34 +82,18 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * Startup the spot core bootstrap mechanism. Registers
-	 * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} as the spot
-	 * module init class. Also allows to inject app properties and spring
-	 * configuration.
+	 * Startup the spot core bootstrap mechanism. Registers {@link io.spotnext.infrastructure.support.init.ModuleInit} as the spot module init class. Also
+	 * allows to inject app properties and spring configuration.
 	 *
 	 * @param initClass        a {@link java.lang.Class} object.
 	 * @param appConfigFile    a {@link java.lang.String} object.
 	 * @param springConfigFile a {@link java.lang.String} object.
 	 * @param                  <T> a T object.
 	 */
-	default <T extends ModuleInit> void bootSpotCore(final Class<T> initClass, final String appConfigFile,
-			final String springConfigFile) {
-
-		final BootstrapOptions conf = new BootstrapOptions();
-
-		if (initClass != null) {
-			conf.setInitClass(initClass);
-		}
-
-		if (StringUtils.isNotEmpty(appConfigFile)) {
-			conf.setAppConfigFile(appConfigFile);
-		}
-
-		if (StringUtils.isNotEmpty(springConfigFile)) {
-			conf.setSpringConfigFile(springConfigFile);
-		}
-
-		Bootstrap.bootstrap(conf).run();
+	default <T extends ModuleInit> void bootSpotCore(final Class<T> initClass, String... args) {
+		new SpringApplicationBuilder(CoreInit.class) //
+				.child(initClass).web(WebApplicationType.SERVLET).bannerMode(Mode.OFF) //
+				.build(args).run(args);
 	}
 
 	/**
@@ -137,9 +113,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * Setup the servlets - most likely just spring's DispatcherServlet
 	 *
 	 * @param servletContext a {@link javax.servlet.ServletContext} object.
-	 * @param context        a
-	 *                       {@link org.springframework.web.context.WebApplicationContext}
-	 *                       object.
+	 * @param context        a {@link org.springframework.web.context.WebApplicationContext} object.
 	 */
 	default void setupServlets(final ServletContext servletContext, final WebApplicationContext context) {
 		final ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcherServlet",
@@ -152,9 +126,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * Set spring security filter mapping.
 	 *
 	 * @param servletContext a {@link javax.servlet.ServletContext} object.
-	 * @param context        a
-	 *                       {@link org.springframework.context.ApplicationContext}
-	 *                       object.
+	 * @param context        a {@link org.springframework.context.ApplicationContext} object.
 	 */
 	default void setupFilters(final ServletContext servletContext, final ApplicationContext context) {
 		final FilterRegistration.Dynamic filter = servletContext.addFilter("springSecurityFilterChain",
@@ -167,15 +139,11 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * Registers {@link javax.servlet.ServletContextListener}s. By default the
-	 * {@link WebModuleInit} class is registered as listener too. Although the
-	 * {@link #contextInitialized(ServletContextEvent)} and
-	 * {@link #contextDestroyed(ServletContextEvent)} by default don't do anything.
+	 * Registers {@link javax.servlet.ServletContextListener}s. By default the {@link WebModuleInit} class is registered as listener too. Although the
+	 * {@link #contextInitialized(ServletContextEvent)} and {@link #contextDestroyed(ServletContextEvent)} by default don't do anything.
 	 *
 	 * @param servletContext a {@link javax.servlet.ServletContext} object.
-	 * @param context        a
-	 *                       {@link org.springframework.web.context.WebApplicationContext}
-	 *                       object.
+	 * @param context        a {@link org.springframework.web.context.WebApplicationContext} object.
 	 */
 	default void setupListeners(final ServletContext servletContext, final WebApplicationContext context) {
 		servletContext.addListener(this);
@@ -187,8 +155,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * Returns the spot base spring context, registered in
-	 * {@link io.spotnext.core.infrastructure.support.spring.Registry#getApplicationContext()}.
+	 * Returns the spot base spring context, registered in {@link io.spotnext.infrastructure.support.spring.Registry#getApplicationContext()}.
 	 *
 	 * @return a {@link org.springframework.context.ApplicationContext} object.
 	 */
@@ -197,9 +164,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	}
 
 	/**
-	 * Returns the the
-	 * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} class for
-	 * this application.
+	 * Returns the the {@link io.spotnext.infrastructure.support.init.ModuleInit} class for this application.
 	 * 
 	 * @param <T> the subtype of {@link ModuleInit}
 	 * @return a {@link java.lang.Class} object.
@@ -210,8 +175,7 @@ public interface WebModuleInit extends ServletContextListener, WebApplicationIni
 	 * Returns the web spring context.
 	 *
 	 * @param servletContext a {@link javax.servlet.ServletContext} object.
-	 * @return a {@link org.springframework.web.context.WebApplicationContext}
-	 *         object.
+	 * @return a {@link org.springframework.web.context.WebApplicationContext} object.
 	 */
 	WebApplicationContext getApplicationContext(final ServletContext servletContext);
 

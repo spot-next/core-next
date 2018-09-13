@@ -40,7 +40,7 @@ public class LogAspect extends AbstractBaseAspect {
 	}
 
 	/**
-	 * Define the pointcut for all methods that are annotated with {@link io.spotnext.core.infrastructure.annotation.logging.Log}.
+	 * Define the pointcut for all methods that are annotated with {@link io.spotnext.infrastructure.annotation.logging.Log}.
 	 */
 	@Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.logging.Log) && execution(* *.*(..))")
 	final protected void logAnnotation() {

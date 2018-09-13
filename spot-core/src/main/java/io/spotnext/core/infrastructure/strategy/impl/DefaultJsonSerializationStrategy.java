@@ -29,7 +29,7 @@ import io.spotnext.core.infrastructure.serialization.jackson.ItemTypeResolverBui
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.

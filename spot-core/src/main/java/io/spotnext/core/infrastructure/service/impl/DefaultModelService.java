@@ -14,8 +14,8 @@ import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.query.ModelQuery;
-import io.spotnext.core.support.util.ValidationUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * <p>DefaultModelService class.</p>

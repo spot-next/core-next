@@ -12,7 +12,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
 
 /**
  * Registers all item types as JPA entities.

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
-import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 import io.spotnext.itemtype.core.enumeration.ImportFormat;
+import io.spotnext.support.util.ValidationUtil;
 import ch.qos.logback.core.util.CloseUtil;
 
 /**

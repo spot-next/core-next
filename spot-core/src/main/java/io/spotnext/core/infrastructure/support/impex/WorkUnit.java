@@ -3,7 +3,7 @@ package io.spotnext.core.infrastructure.support.impex;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>WorkUnit class.</p>
@@ -42,7 +42,7 @@ public class WorkUnit {
 	/**
 	 * <p>Getter for the field <code>command</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.support.impex.ImpexCommand} object.
+	 * @return a {@link io.spotnext.infrastructure.support.impex.ImpexCommand} object.
 	 */
 	public ImpexCommand getCommand() {
 		return command;
@@ -51,7 +51,7 @@ public class WorkUnit {
 	/**
 	 * <p>Setter for the field <code>command</code>.</p>
 	 *
-	 * @param command a {@link io.spotnext.core.infrastructure.support.impex.ImpexCommand} object.
+	 * @param command a {@link io.spotnext.infrastructure.support.impex.ImpexCommand} object.
 	 */
 	public void setCommand(ImpexCommand command) {
 		this.command = command;
@@ -69,7 +69,7 @@ public class WorkUnit {
 	/**
 	 * <p>addHeaderColumn.</p>
 	 *
-	 * @param column a {@link io.spotnext.core.infrastructure.support.impex.ColumnDefinition} object.
+	 * @param column a {@link io.spotnext.infrastructure.support.impex.ColumnDefinition} object.
 	 */
 	public void addHeaderColumn(ColumnDefinition column) {
 		this.headerColumns.add(column);

@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.interceptor;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemPrepareInterceptor interface.</p>
@@ -17,7 +17,7 @@ public interface ItemPrepareInterceptor<T extends Item> extends ItemInterceptor<
 	 *
 	 * @param item
 	 *            The validated item
-	 * @throws io.spotnext.core.infrastructure.exception.ItemInterceptorException
+	 * @throws io.spotnext.infrastructure.exception.ItemInterceptorException
 	 *             If thrown the item will not be persisted.
 	 */
 	void onPrepare(T item) throws ItemInterceptorException;

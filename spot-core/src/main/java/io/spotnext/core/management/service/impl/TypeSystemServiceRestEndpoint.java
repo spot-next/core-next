@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -15,6 +14,7 @@ import io.spotnext.core.management.converter.Converter;
 import io.spotnext.core.management.support.BasicAuthenticationFilter;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
 import spark.Request;
 import spark.Response;
 
@@ -37,7 +37,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return a {@link java.util.List} object.
-	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	@Handler(pathMapping = "/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public List<GenericItemDefinitionData> getTypes(final Request request, final Response response)
@@ -61,7 +61,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return a {@link io.spotnext.core.management.support.data.GenericItemDefinitionData} object.
-	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	@Handler(pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public GenericItemDefinitionData getType(final Request request, final Response response)

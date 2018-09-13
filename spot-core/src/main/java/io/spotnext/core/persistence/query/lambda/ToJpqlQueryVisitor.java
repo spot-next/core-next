@@ -31,10 +31,10 @@ import com.trigersoft.jaque.expression.MemberExpression;
 import com.trigersoft.jaque.expression.ParameterExpression;
 import com.trigersoft.jaque.expression.UnaryExpression;
 
-import io.spotnext.core.infrastructure.annotation.Accessor;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.persistence.service.impl.DefaultLambdaQueryTranslationService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.annotation.Accessor;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * Visitor which translates Predicate lambda into
@@ -56,7 +56,7 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 	 * <p>Constructor for ToJpqlQueryVisitor.</p>
 	 *
 	 * @param paramGenerator a {@link io.spotnext.core.persistence.query.lambda.ParametersNameGenerator} object.
-	 * @param modelService a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @param modelService a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public ToJpqlQueryVisitor(final ParametersNameGenerator paramGenerator, final ModelService modelService) {
 		this.paramGenerator = paramGenerator;

@@ -550,7 +550,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#INFORMATIONAL}. This is a shortcut for checking the value
+	 * {@link io.spotnext.infrastructure.http.HttpStatus.Series#INFORMATIONAL}. This is a shortcut for checking the value
 	 * of {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -561,7 +561,7 @@ public enum HttpStatus {
 	}
 
 	/**
-	 * Whether this status code is in the HTTP series {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SUCCESSFUL}.
+	 * Whether this status code is in the HTTP series {@link io.spotnext.infrastructure.http.HttpStatus.Series#SUCCESSFUL}.
 	 * This is a shortcut for checking the value of {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -573,7 +573,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#REDIRECTION}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.infrastructure.http.HttpStatus.Series#REDIRECTION}. This is a shortcut for checking the value of
 	 * {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -585,7 +585,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#CLIENT_ERROR}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.infrastructure.http.HttpStatus.Series#CLIENT_ERROR}. This is a shortcut for checking the value of
 	 * {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -597,7 +597,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a shortcut for checking the value of
+	 * {@link io.spotnext.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a shortcut for checking the value of
 	 * {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -609,7 +609,7 @@ public enum HttpStatus {
 
 	/**
 	 * Whether this status code is in the HTTP series
-	 * {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#CLIENT_ERROR} or {@link io.spotnext.core.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a
+	 * {@link io.spotnext.infrastructure.http.HttpStatus.Series#CLIENT_ERROR} or {@link io.spotnext.infrastructure.http.HttpStatus.Series#SERVER_ERROR}. This is a
 	 * shortcut for checking the value of {@link #series()}.
 	 *
 	 * @return a boolean.
@@ -623,7 +623,7 @@ public enum HttpStatus {
 	 * Returns the HTTP status series of this status code.
 	 *
 	 * @see HttpStatus.Series
-	 * @return a {@link io.spotnext.core.infrastructure.http.HttpStatus.Series} object.
+	 * @return a {@link io.spotnext.infrastructure.http.HttpStatus.Series} object.
 	 * @since 1.0
 	 */
 	public Series series() {

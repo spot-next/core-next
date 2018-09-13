@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ValueResolutionDescriptorParser class.</p>

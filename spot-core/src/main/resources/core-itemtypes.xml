@@ -357,7 +357,7 @@
 	<type name="LocalizedString" package="io.spotnext.itemtype.core.internationalization">
 		<description>This type can be used to store localized strings.</description>
 		<interfaces>
-			<interface javaClass="io.spotnext.core.types.Localizable">
+			<interface javaClass="io.spotnext.infrastructure.type.Localizable">
 				<genericType value="String" />
 			</interface>
 		</interfaces>

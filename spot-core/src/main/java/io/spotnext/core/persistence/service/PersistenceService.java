@@ -18,7 +18,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>PersistenceService interface.</p>
@@ -40,7 +40,7 @@ public interface PersistenceService {
 	 * Saves the given models and all of its dependent models.
 	 *
 	 * @param models a {@link java.util.List} object.
-	 * @throws io.spotnext.core.infrastructure.exception.ModelSaveException if any.
+	 * @throws io.spotnext.infrastructure.exception.ModelSaveException if any.
 	 * @throws io.spotnext.core.persistence.exception.ModelNotUniqueException if any.
 	 */
 	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
@@ -48,7 +48,7 @@ public interface PersistenceService {
 	/**
 	 * Refreshes the given model's properties.
 	 *
-	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException
+	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException
 	 * @param item a {@link java.util.List} object.
 	 * @param <T> a T object.
 	 */
@@ -69,7 +69,7 @@ public interface PersistenceService {
 	 * @param type a {@link java.lang.Class} object.
 	 * @param pk a long.
 	 * @return a T object.
-	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException if any.
+	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException if any.
 	 */
 	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
 
@@ -147,7 +147,7 @@ public interface PersistenceService {
 	 * @param item a T object.
 	 * @return true if the item was successfully attached to the persistence
 	 *         context.
-	 * @throws io.spotnext.core.infrastructure.exception.ModelNotFoundException
+	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException
 	 * @param <T> a T object.
 	 */
 	<T extends Item> boolean attach(T item) throws ModelNotFoundException;

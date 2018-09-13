@@ -11,7 +11,7 @@ import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.PersistenceService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>
@@ -70,7 +70,7 @@ public interface ModelService {
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Returns an {@link io.spotnext.core.types.Item} based on its PK.
+	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its PK.
 	 *
 	 * @param      <T> the item type
 	 * @param type a {@link java.lang.Class} object.
@@ -81,7 +81,7 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns the first {@link io.spotnext.core.types.Item} based on the given
+	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given
 	 * search parameters (key = property name, value = property value).
 	 *
 	 * @param                  <T> the item type
@@ -94,7 +94,7 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, Map<String, Object> searchParameters) throws ModelNotUniqueException;
 
 	/**
-	 * Returns the first {@link io.spotnext.core.types.Item} based on the given
+	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given
 	 * model query parameters. the
 	 * {@link io.spotnext.core.persistence.query.ModelQuery} allows you to set the
 	 * fetching strategy, pagination and to limit the result.
@@ -131,7 +131,7 @@ public interface ModelService {
 	<T extends Item> List<T> getAll(ModelQuery<T> query);
 
 	/**
-	 * Returns the first {@link io.spotnext.core.types.Item} based on the given
+	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given
 	 * example item.
 	 *
 	 * @param         <T> the item type
@@ -143,7 +143,7 @@ public interface ModelService {
 	<T extends Item> T getByExample(T example);
 
 	/**
-	 * Returns all {@link io.spotnext.core.types.Item}s that match the given example
+	 * Returns all {@link io.spotnext.infrastructure.type.Item}s that match the given example
 	 * item.
 	 *
 	 * @param         <T> the item type
@@ -229,7 +229,7 @@ public interface ModelService {
 	<T extends Item, V> V getLocalizedPropertyValue(T item, String propertyName, Class<V> valueType, Locale locale);
 
 	/**
-	 * Sets the {@link io.spotnext.core.types.Item}'s property to the given value.
+	 * Sets the {@link io.spotnext.infrastructure.type.Item}'s property to the given value.
 	 *
 	 * @param               <T> the item type
 	 * @param item          a T object.
@@ -240,7 +240,7 @@ public interface ModelService {
 	<T extends Item> void setPropertyValue(T item, String propertyName, Object propertyValue);
 
 	/**
-	 * Sets the {@link io.spotnext.core.types.Item}'s property to the given value.
+	 * Sets the {@link io.spotnext.infrastructure.type.Item}'s property to the given value.
 	 *
 	 * @param               <T> the item type
 	 * @param item          a T object.

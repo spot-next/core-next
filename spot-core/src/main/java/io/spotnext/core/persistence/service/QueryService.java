@@ -3,7 +3,7 @@ package io.spotnext.core.persistence.service;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.LambdaQuery;
 import io.spotnext.core.persistence.query.QueryResult;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>QueryService interface.</p>

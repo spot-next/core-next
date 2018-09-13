@@ -26,11 +26,11 @@ import io.spotnext.core.persistence.service.TransactionService;
 /**
  * This is the base class for all integration tasks. Database access will be
  * reverted after the each test using a transaction rollback. Any initialized
- * {@link io.spotnext.core.infrastructure.support.init.ModuleInit}s must be set
+ * {@link io.spotnext.infrastructure.support.init.ModuleInit}s must be set
  * using the
  * {@link org.springframework.boot.test.context.SpringBootTest#classes()}
  * annotation. By default {@link io.spotnext.core.CoreInit} is defined. The main
- * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} has to be
+ * {@link io.spotnext.infrastructure.support.init.ModuleInit} has to be
  * defined to using
  * {@link io.spotnext.core.testing.IntegrationTest#initClass()}, if the test
  * depends on it.

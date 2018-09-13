@@ -9,7 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
-import io.spotnext.core.support.util.ValidationUtil;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * <p>

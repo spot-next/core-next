@@ -36,7 +36,7 @@ public interface AuthenticationService {
 	 *
 	 * @param user a {@link io.spotnext.itemtype.core.user.User} object.
 	 * @param plainPassword a {@link java.lang.String} object.
-	 * @throws io.spotnext.core.infrastructure.exception.ModelSaveException
+	 * @throws io.spotnext.infrastructure.exception.ModelSaveException
 	 */
 	void setPassword(final User user, final String plainPassword) throws ModelSaveException;
 

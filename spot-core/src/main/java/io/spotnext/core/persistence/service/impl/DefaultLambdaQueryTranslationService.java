@@ -17,7 +17,7 @@ import io.spotnext.core.persistence.query.lambda.PredicateTranslationResult;
 import io.spotnext.core.persistence.query.lambda.SerializablePredicate;
 import io.spotnext.core.persistence.query.lambda.ToJpqlQueryVisitor;
 import io.spotnext.core.persistence.service.LambdaQueryTranslationService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>DefaultLambdaQueryTranslationService class.</p>

@@ -33,9 +33,9 @@ import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.management.support.AuthenticationFilter;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.security.service.AuthenticationService;
-import io.spotnext.core.support.util.ClassUtil;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.support.util.ClassUtil;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
@@ -90,7 +90,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	/**
 	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}
+	 * context for endpoints. If the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
 	 * then the HTTP interfaces will be started up (cannot register new endpoints
 	 * then).
 	 *
@@ -141,10 +141,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * Check if the given context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}.
+	 * Check if the given context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}.
 	 *
 	 * @param context the spring context that has been started/refreshed
-	 * @return true if the context contains the startup {@link io.spotnext.core.infrastructure.support.init.ModuleInit}
+	 * @return true if the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
 	 */
 	public boolean isBootComplete(final ApplicationContext context) {
 		try {

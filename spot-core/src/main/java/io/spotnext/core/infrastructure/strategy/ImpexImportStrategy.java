@@ -18,7 +18,7 @@ public interface ImpexImportStrategy {
 	 *
 	 * @param config a {@link io.spotnext.itemtype.core.beans.ImportConfiguration} object.
 	 * @param inputStream a {@link java.io.InputStream} object.
-	 * @throws io.spotnext.core.infrastructure.exception.ImpexImportException if any.
+	 * @throws io.spotnext.infrastructure.exception.ImpexImportException if any.
 	 */
 	void importImpex(ImportConfiguration config, InputStream inputStream) throws ImpexImportException;
 }

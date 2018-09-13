@@ -22,7 +22,7 @@ public interface UserService<U extends User, G extends UserGroup> {
 	 *
 	 * @param userId a {@link java.lang.String} object.
 	 * @return the newly created {@link io.spotnext.itemtype.core.user.User}.
-	 * @throws io.spotnext.core.infrastructure.exception.CannotCreateUserException
+	 * @throws io.spotnext.infrastructure.exception.CannotCreateUserException
 	 * @param type a {@link java.lang.Class} object.
 	 */
 	U createUser(Class<U> type, String userId) throws CannotCreateUserException;
@@ -33,7 +33,7 @@ public interface UserService<U extends User, G extends UserGroup> {
 	 *
 	 * @param userId a {@link java.lang.String} object.
 	 * @return the newly created {@link io.spotnext.itemtype.core.user.User}.
-	 * @throws io.spotnext.core.infrastructure.exception.CannotCreateUserException
+	 * @throws io.spotnext.infrastructure.exception.CannotCreateUserException
 	 * @param type a {@link java.lang.Class} object.
 	 * @param password a {@link java.lang.String} object.
 	 */

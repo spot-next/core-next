@@ -20,7 +20,7 @@ import io.spotnext.spring.web.constants.SpringWebSupportConstants;
 
 /**
  * Implements a session listener that connects the application containers
- * session to the {@link io.spotnext.core.infrastructure.service.SessionService}. It also listens to authentications and
+ * session to the {@link io.spotnext.infrastructure.service.SessionService}. It also listens to authentications and
  * sets the authenticated used to the backend session.
  *
  * @author mojo2012

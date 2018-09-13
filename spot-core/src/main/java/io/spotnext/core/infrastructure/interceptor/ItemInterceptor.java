@@ -1,6 +1,6 @@
 package io.spotnext.core.infrastructure.interceptor;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemInterceptor interface.</p>

@@ -3,7 +3,7 @@ package io.spotnext.core.persistence.valueprovider;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.NotWritablePropertyException;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemPropertyValueProvider interface.</p>

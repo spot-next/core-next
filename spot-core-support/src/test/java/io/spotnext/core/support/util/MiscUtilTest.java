@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.spotnext.support.util.MiscUtil;
+
 public class MiscUtilTest {
 
 	@Test

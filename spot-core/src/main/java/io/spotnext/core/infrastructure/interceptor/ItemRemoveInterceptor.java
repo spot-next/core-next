@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.interceptor;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemRemoveInterceptor interface.</p>
@@ -16,7 +16,7 @@ public interface ItemRemoveInterceptor<T extends Item> extends ItemInterceptor<T
 	 *
 	 * @param item
 	 *            The item to be removed item
-	 * @throws io.spotnext.core.infrastructure.exception.ItemInterceptorException
+	 * @throws io.spotnext.infrastructure.exception.ItemInterceptorException
 	 *             If thrown the item will not be removed
 	 */
 	void onRemove(T item) throws ItemInterceptorException;

@@ -4,9 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
-import io.spotnext.core.infrastructure.support.init.Bootstrap;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
-import io.spotnext.sample.SampleInit;
 
 @SpringBootApplication(scanBasePackages = { "$package" })
 public class Init extends ModuleInit {

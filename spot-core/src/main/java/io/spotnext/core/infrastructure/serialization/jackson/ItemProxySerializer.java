@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemProxySerializer class.</p>
@@ -52,7 +52,7 @@ public class ItemProxySerializer extends JsonSerializer<Item> {
 	/**
 	 * <p>Getter for the field <code>typeService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
 	public TypeService getTypeService() {
 		if (typeService == null) {
@@ -65,7 +65,7 @@ public class ItemProxySerializer extends JsonSerializer<Item> {
 	/**
 	 * <p>Getter for the field <code>modelService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public ModelService getModelService() {
 		if (modelService == null) {

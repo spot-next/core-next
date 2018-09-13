@@ -18,7 +18,6 @@ import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
-import io.spotnext.core.model.ItemTypeConstants;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.itemtype.core.user.Principal;
@@ -27,7 +26,9 @@ import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
 /**
- * <p>DefaultUserService class.</p>
+ * <p>
+ * DefaultUserService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -121,12 +122,12 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	}
 
 	protected Class<U> getUserType() {
-		final Class<U> userType = (Class<U>) getApplicationContext().getBean(ItemTypeConstants.USER).getClass();
+		final Class<U> userType = (Class<U>) getApplicationContext().getBean(User.TYPECODE).getClass();
 		return userType;
 	}
 
 	protected Class<G> getUserGroupType() {
-		final Class<G> userGroupType = (Class<G>) getApplicationContext().getBean(ItemTypeConstants.USER_GROUP)
+		final Class<G> userGroupType = (Class<G>) getApplicationContext().getBean(UserGroup.TYPECODE)
 				.getClass();
 
 		return userGroupType;

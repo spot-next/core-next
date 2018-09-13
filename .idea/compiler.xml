@@ -14,7 +14,6 @@
         <module name="build-tools" />
         <module name="spot-cms-base" />
         <module name="spot-commerce-base" />
-        <module name="spot-commerce-spring-base" />
         <module name="spot-core" />
         <module name="spot-core-base-models" />
         <module name="spot-core-model-infrastructure" />

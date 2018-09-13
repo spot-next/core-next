@@ -25,23 +25,23 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import io.spotnext.core.infrastructure.constants.InfrastructureConstants;
-import io.spotnext.core.infrastructure.maven.TypeDefinitions;
-import io.spotnext.core.infrastructure.maven.xml.AtomicType;
-import io.spotnext.core.infrastructure.maven.xml.BaseType;
-import io.spotnext.core.infrastructure.maven.xml.BeanType;
-import io.spotnext.core.infrastructure.maven.xml.CollectionType;
-import io.spotnext.core.infrastructure.maven.xml.EnumType;
-import io.spotnext.core.infrastructure.maven.xml.EnumValue;
-import io.spotnext.core.infrastructure.maven.xml.ItemType;
-import io.spotnext.core.infrastructure.maven.xml.JavaType.Properties;
-import io.spotnext.core.infrastructure.maven.xml.MapType;
-import io.spotnext.core.infrastructure.maven.xml.Property;
-import io.spotnext.core.infrastructure.maven.xml.RelationType;
-import io.spotnext.core.infrastructure.maven.xml.Types;
-import io.spotnext.core.support.util.FileUtils;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.constants.InfrastructureConstants;
+import io.spotnext.infrastructure.maven.TypeDefinitions;
+import io.spotnext.infrastructure.maven.xml.AtomicType;
+import io.spotnext.infrastructure.maven.xml.BaseType;
+import io.spotnext.infrastructure.maven.xml.BeanType;
+import io.spotnext.infrastructure.maven.xml.CollectionType;
+import io.spotnext.infrastructure.maven.xml.EnumType;
+import io.spotnext.infrastructure.maven.xml.EnumValue;
+import io.spotnext.infrastructure.maven.xml.ItemType;
+import io.spotnext.infrastructure.maven.xml.MapType;
+import io.spotnext.infrastructure.maven.xml.Property;
+import io.spotnext.infrastructure.maven.xml.RelationType;
+import io.spotnext.infrastructure.maven.xml.Types;
+import io.spotnext.infrastructure.maven.xml.JavaType.Properties;
+import io.spotnext.infrastructure.type.Item;
 import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
+import io.spotnext.support.util.FileUtils;
 
 /**
  * <p>
@@ -77,7 +77,7 @@ public class ItemTypeDefinitionUtil {
 	 * Fetches all itemtype definition files available in the maven dependency
 	 * hierarchy.
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 * @return a {@link io.spotnext.infrastructure.maven.TypeDefinitions}
 	 *         object.
 	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException if
 	 *         there is a problem with resolving the types
@@ -198,7 +198,7 @@ public class ItemTypeDefinitionUtil {
 	 * Aggregate all item type definitions of all definition files.
 	 *
 	 * @param definitions a {@link java.util.List} object.
-	 * @return a {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 * @return a {@link io.spotnext.infrastructure.maven.TypeDefinitions}
 	 *         object.
 	 * @throws io.spotnext.maven.exception.IllegalItemTypeDefinitionException if
 	 *         there is a problem merging type definitions.
@@ -346,10 +346,10 @@ public class ItemTypeDefinitionUtil {
 
 	/**
 	 * Parses a given XML item type definition file and unmarshals it to a
-	 * {@link io.spotnext.core.infrastructure.maven.xml.Types} object.
+	 * {@link io.spotnext.infrastructure.maven.xml.Types} object.
 	 *
 	 * @param file a {@link java.io.InputStream} object.
-	 * @return a {@link io.spotnext.core.infrastructure.maven.xml.Types} object.
+	 * @return a {@link io.spotnext.infrastructure.maven.xml.Types} object.
 	 */
 	protected Types loadTypeDefinition(final InputStream file) {
 		Types typeDef = null;
@@ -390,7 +390,7 @@ public class ItemTypeDefinitionUtil {
 	 * Store merged item type definitions in the build folder.
 	 *
 	 * @param itemTypesDefinitions     a
-	 *                                 {@link io.spotnext.core.infrastructure.maven.TypeDefinitions}
+	 *                                 {@link io.spotnext.infrastructure.maven.TypeDefinitions}
 	 *                                 object.
 	 * @param targetResourcesDirectory a {@link java.io.File} object.
 	 */

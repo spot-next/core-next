@@ -10,15 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-import io.spotnext.core.infrastructure.annotation.Accessor;
-import io.spotnext.core.infrastructure.annotation.Property;
-import io.spotnext.core.infrastructure.annotation.Relation;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.valueprovider.ItemPropertyValueProvider;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.annotation.Accessor;
+import io.spotnext.infrastructure.annotation.Property;
+import io.spotnext.infrastructure.annotation.Relation;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.support.util.ClassUtil;
 
 //@Aspect
 /**
@@ -52,7 +52,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 */
 
 	// @Pointcut("!within(io.spotnext.core.persistence..*) &&
-	// !within(io.spotnext.core.infrastructure.aspect..*)")
+	// !within(io.spotnext.infrastructure.aspect..*)")
 
 	protected void notFromPersistencePackage() {
 	};
@@ -61,10 +61,10 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * Define the pointcut for all fields that are accessed (get) on an object of
 	 * type @Item that are annotated with @Property.
 	 */
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// get(* *.*)")
 
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// get(* *.*)")
 	final protected void getField() {
 	};
@@ -73,8 +73,8 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * Define the pointcut for all getter that are accessing a field in an object of
 	 * type @Item that are annotated with @Property.
 	 */
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.GetProperty)
-	// && within(@io.spotnext.core.infrastructure.annotation.ItemType *)")
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.GetProperty)
+	// && within(@io.spotnext.infrastructure.annotation.ItemType *)")
 	//
 	// final protected void getMethod() {
 	// };
@@ -83,10 +83,10 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 * Define the pointcut for all fields that are accessed (set) on an object of
 	 * type @Item that are annotated with @Property.
 	 */
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// set(* *.*)")
 
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.Property) &&
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// set(* *.*)")
 	final protected void setField() {
 	};
@@ -97,9 +97,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 *
 	 * @param joinPoint a {@link org.aspectj.lang.JoinPoint} object.
 	 */
-	// @Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.SetProperty)
+	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.SetProperty)
 	// && "
-	// + "within(@io.spotnext.core.infrastructure.annotation.ItemType *) &&
+	// + "within(@io.spotnext.infrastructure.annotation.ItemType *) &&
 	// execution(* set*(..))")
 	//
 	// final protected void setMethod() {
@@ -175,7 +175,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	/**
 	 * <p>Getter for the field <code>modelService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public ModelService getModelService() {
 		return modelService;
@@ -184,7 +184,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	/**
 	 * <p>Setter for the field <code>modelService</code>.</p>
 	 *
-	 * @param modelService a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @param modelService a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public void setModelService(final ModelService modelService) {
 		this.modelService = modelService;

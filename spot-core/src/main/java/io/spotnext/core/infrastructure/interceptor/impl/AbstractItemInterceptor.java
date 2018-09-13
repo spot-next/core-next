@@ -12,12 +12,12 @@ import io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
- * This is the base class for all {@link io.spotnext.core.infrastructure.interceptor.ItemInterceptor} implementations. It
+ * This is the base class for all {@link io.spotnext.infrastructure.interceptor.ItemInterceptor} implementations. It
  * handles the registration of the interceptor with the appropriate
- * {@link io.spotnext.core.infrastructure.support.ItemInterceptorRegistry}.
+ * {@link io.spotnext.infrastructure.support.ItemInterceptorRegistry}.
  *
  * @author mojo2012
  * @version 1.0

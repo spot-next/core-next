@@ -30,23 +30,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.annotation.ItemType;
-import io.spotnext.core.infrastructure.annotation.Property;
-import io.spotnext.core.infrastructure.annotation.Relation;
-import io.spotnext.core.infrastructure.constants.InfrastructureConstants;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.maven.xml.Types;
 import io.spotnext.core.infrastructure.service.TypeService;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyRelationDefinition;
 import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.support.util.FileUtils;
-import io.spotnext.core.support.util.MiscUtil;
-import io.spotnext.core.support.util.ValidationUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.annotation.ItemType;
+import io.spotnext.infrastructure.annotation.Property;
+import io.spotnext.infrastructure.annotation.Relation;
+import io.spotnext.infrastructure.constants.InfrastructureConstants;
+import io.spotnext.infrastructure.maven.xml.Types;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
+import io.spotnext.infrastructure.type.ItemTypePropertyRelationDefinition;
+import io.spotnext.support.util.ClassUtil;
+import io.spotnext.support.util.FileUtils;
+import io.spotnext.support.util.MiscUtil;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * Provides functionality to manage the type system.
@@ -59,7 +59,7 @@ import io.spotnext.core.types.Item;
 public class DefaultTypeService extends AbstractService implements TypeService {
 
 	@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
-	final protected Map<String, io.spotnext.core.infrastructure.maven.xml.ItemType> xmlItemTypeDefinitions = new HashMap<>();
+	final protected Map<String, io.spotnext.infrastructure.maven.xml.ItemType> xmlItemTypeDefinitions = new HashMap<>();
 
 	final protected Map<String, Class<? extends Item>> itemTypeClasses = new HashMap<>();
 	final protected Map<String, ItemTypeDefinition> itemTypeDefinitions = new HashMap<>();
@@ -126,7 +126,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Log.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
 				typeDef.getType().size()));
 
-		for (final io.spotnext.core.infrastructure.maven.xml.ItemType t : typeDef.getType()) {
+		for (final io.spotnext.infrastructure.maven.xml.ItemType t : typeDef.getType()) {
 			xmlItemTypeDefinitions.put(t.getTypeCode(), t);
 
 			try {

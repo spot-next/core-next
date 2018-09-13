@@ -27,7 +27,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>ok.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse ok() {
 		return new DataResponse(HttpStatus.OK);
@@ -36,7 +36,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>created.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse created() {
 		return new DataResponse(HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>accepted.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse accepted() {
 		return new DataResponse(HttpStatus.ACCEPTED);
@@ -54,7 +54,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>notFound.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse notFound() {
 		return new DataResponse(HttpStatus.NOT_FOUND);
@@ -63,7 +63,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>conflict.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse conflict() {
 		return new DataResponse(HttpStatus.CONFLICT);
@@ -72,7 +72,7 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>internalServerError.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse internalServerError() {
 		return new DataResponse(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -81,8 +81,8 @@ public class DataResponse extends AbstractResponse {
 	/**
 	 * <p>withStatus.</p>
 	 *
-	 * @param httpStatus a {@link io.spotnext.core.infrastructure.http.HttpStatus} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @param httpStatus a {@link io.spotnext.infrastructure.http.HttpStatus} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public static DataResponse withStatus(HttpStatus httpStatus) {
 		return new DataResponse(httpStatus);
@@ -93,7 +93,7 @@ public class DataResponse extends AbstractResponse {
 	 *
 	 * @param code a {@link java.lang.String} object.
 	 * @param message a {@link java.lang.String} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public DataResponse withWarning(String code, String message) {
 		warnings.add(new Status(code, message));
@@ -105,7 +105,7 @@ public class DataResponse extends AbstractResponse {
 	 *
 	 * @param code a {@link java.lang.String} object.
 	 * @param message a {@link java.lang.String} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.DataResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.DataResponse} object.
 	 */
 	public DataResponse withError(String code, String message) {
 		errors.add(new Status(code, message));

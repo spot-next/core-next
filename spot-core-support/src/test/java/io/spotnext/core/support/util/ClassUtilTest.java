@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.spotnext.core.support.util.data.TestClass;
+import io.spotnext.support.util.ClassUtil;
 
 public class ClassUtilTest {
 

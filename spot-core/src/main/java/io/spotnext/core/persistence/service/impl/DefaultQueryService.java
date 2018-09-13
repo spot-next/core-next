@@ -14,7 +14,7 @@ import io.spotnext.core.persistence.query.LambdaQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.LambdaQueryTranslationService;
 import io.spotnext.core.persistence.service.QueryService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>DefaultQueryService class.</p>

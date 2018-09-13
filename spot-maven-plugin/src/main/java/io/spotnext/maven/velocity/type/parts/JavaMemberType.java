@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.spotnext.maven.util.MiscUtil;
+import io.spotnext.maven.util.ClassHelperUtil;
 import io.spotnext.maven.velocity.type.AbstractObject;
 
 /**
@@ -37,8 +37,8 @@ public class JavaMemberType extends AbstractObject {
 	 */
 	public JavaMemberType(final String name) {
 		if (name.contains(".")) {
-			this.name = MiscUtil.getClassName(name);
-			this.packagePath = MiscUtil.getClassPackage(name);
+			this.name = ClassHelperUtil.getClassName(name);
+			this.packagePath = ClassHelperUtil.getClassPackage(name);
 			getImports().add(name);
 		} else {
 			this.name = name;

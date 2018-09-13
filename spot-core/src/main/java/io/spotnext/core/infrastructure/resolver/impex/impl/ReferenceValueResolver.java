@@ -20,8 +20,8 @@ import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>ReferenceValueResolver class.</p>

@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.management.populator.Populator;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
 /**
- * Sets all properties of the source {@link io.spotnext.core.types.Item} as property of the ItemData
+ * Sets all properties of the source {@link io.spotnext.infrastructure.type.Item} as property of the ItemData
  * target object.
  *
  * @author mojo2012
