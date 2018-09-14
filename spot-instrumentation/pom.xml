@@ -33,6 +33,9 @@
 						<configuration>
 							<outputDirectory>${project.build.directory}/generated-sources/apt</outputDirectory>
 							<failOnError>false</failOnError>
+							<excludes>
+								<exclude>module-info.java</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>

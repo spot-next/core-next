@@ -122,7 +122,7 @@
 		<module>spot-core-infrastructure</module>
 		<module>spot-maven-plugin</module>
 		<module>spot-core</module>
-<!-- 		<module>spot-core-shell</module> -->
+		<!-- <module>spot-core-shell</module> -->
 		<module>spot-spring-web-support</module>
 		<module>spot-cms-base</module>
 		<module>spot-commerce-base</module>
@@ -137,10 +137,10 @@
 		<!-- compiling -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.9</maven.compiler.source>
+		<maven.compiler.target>1.9</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
+		<java.version>9</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.version>1.9.1</aspectj.version>
 
@@ -326,9 +326,9 @@
 				</plugin>
 
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
+					<groupId>com.github.m50d</groupId>
 					<artifactId>aspectj-maven-plugin</artifactId>
-					<version>1.11</version>
+					<version>1.11.1</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.aspectj</groupId>
@@ -342,15 +342,16 @@
 						</dependency>
 					</dependencies>
 					<configuration>
-						<complianceLevel>1.8</complianceLevel>
-						<source>1.8</source>
-						<target>1.8</target>
+						<complianceLevel>1.9</complianceLevel>
+						<source>1.9</source>
+						<target>1.9</target>
 						<aspectLibraries>
 							<aspectLibrary>
 								<groupId>org.springframework</groupId>
 								<artifactId>spring-aspects</artifactId>
 							</aspectLibrary>
 						</aspectLibraries>
+						<argumentFileName>../ajc-arguments.log</argumentFileName>
 
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>false</showWeaveInfo>

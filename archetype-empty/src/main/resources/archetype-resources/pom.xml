@@ -93,7 +93,7 @@
 
 			<!-- COMPILING -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>com.github.m50d</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 			</plugin>
 
