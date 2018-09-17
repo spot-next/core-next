@@ -169,4 +169,14 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		this.maxMillisToWaitForModuleInitialization = maxMillisToWaitForModuleInitialization;
 	}
 
+	/**
+	 * Calls {@link Thread#wait(long)} but catches and ignores all errors.
+	 */
+	protected void sleep(int seconds) {
+		try {
+			Thread.sleep(seconds * 1000);
+		} catch (InterruptedException e) {
+			// ignore
+		}
+	}
 }

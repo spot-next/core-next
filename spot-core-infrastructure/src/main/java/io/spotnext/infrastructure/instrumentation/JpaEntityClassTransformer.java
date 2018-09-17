@@ -310,7 +310,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
-						"io.spotnext.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
+						"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
@@ -326,7 +326,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
-						"io.spotnext.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
+						"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 				// jpaAnnotations.add(createCollectionTypeAnnotation(entityClass,
 				// field));
 
@@ -339,7 +339,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 				// necessary for serialization
 				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
-						"io.spotnext.infrastructure.serialization.jackson.ItemProxySerializer"));
+						"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 			} else {
 				// one to one in case the field type is a subtype of Item
 				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, null));
@@ -352,13 +352,13 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// necessary for serialization
 			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
-					"io.spotnext.infrastructure.serialization.jackson.ItemProxySerializer"));
+					"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.addAll(createElementCollectionAnnotation(entityClass, field));
 
 			// necessary for serialization
 			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
-					"io.spotnext.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
+					"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 		}
 
 		return jpaAnnotations;

@@ -20,6 +20,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
+import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.SerializationService;
@@ -251,9 +252,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try { // create routes for HTTP methods
 
 				service.exception(Exception.class, (exception, request, response) -> {
-					loggingService.exception(exception.getMessage(), exception);
 					cleanupOnException(exception);
 //					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					response.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
 
 				service.before((request, response) -> {
@@ -351,7 +352,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	/**
 	 * Helper class that implements a Spark {@link Route} to serve HTTP calls.
-	 *
 	 */
 	protected class HttpRoute implements Route {
 		private final Object serviceImpl;
@@ -431,7 +431,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	/**
 	 * <p>registerHandler.</p>
 	 *
-	 * @param port a int.
+	 * @param port     a int.
 	 * @param endpoint a {@link java.lang.Object} object.
 	 */
 	public void registerHandler(final int port, final Object endpoint) {
