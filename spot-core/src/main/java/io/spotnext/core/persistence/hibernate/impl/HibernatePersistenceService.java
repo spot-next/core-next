@@ -338,7 +338,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	protected void setPageSize(final Query<?> query, final int pageSize) {
 		if (pageSize >= 0) {
-			query.setFetchSize(pageSize);
+			query.setMaxResults(pageSize);
 		}
 	}
 
@@ -442,7 +442,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						if (attach(item)) {
 							getSession().refresh(item, LockMode.NONE);
 						}
-					} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
+					} catch (DataIntegrityViolationException | HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
 						throw new ModelNotFoundException(
 								String.format("Could not refresh item with pk=%s.", item.getPk()), e);

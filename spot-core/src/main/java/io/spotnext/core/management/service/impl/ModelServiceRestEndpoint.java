@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
+import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.http.DataResponse;
@@ -143,11 +146,15 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		}
 
 		final String[] queryParamValues = request.queryParamsValues("q");
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
 			final JpqlQuery<T> query = new JpqlQuery<>(
 					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
 			query.setEagerFetchRelations(true);
+			query.setPage(page);
+			query.setPageSize(pageSize);
 
 			try {
 				final QueryResult<T> result = queryService.query(query);
@@ -212,7 +219,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.oncreate", e.getMessage());
-		} catch (final ModelNotUniqueException e) {
+		} catch (final ModelNotUniqueException | ModelSaveException e) {
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.notunique",
 					"Another item with the same uniqueness criteria (but a different PK) was found.");
 		} catch (final ModelValidationException e) {
@@ -264,26 +271,33 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Updates an existing or creates the item with the given values. The PK must be
-	 * provided. If the new item is not unique, an error is returned.<br/>
-	 * Attention: fields that are omitted will be treated as @null. If you just want
-	 * to update a few fields, use the PATCH Method.
+	 * Updates an existing or creates the item with the given values. The PK must be provided. If the new item is not unique, an error is returned.<br/>
+	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
-	@Handler(method = HttpMethod.put, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.put, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
+		try {
+			JSONObject jsonBody = new JSONObject(request.body());
 
-		return partiallyUpdateModel(request, response);
+			if (jsonBody.has("pk")) {
+				return partiallyUpdateModel(request, jsonBody.getLong("pk"));
+			} else {
+				return createModel(request, response);
+			}
+
+		} catch (JSONException e) {
+			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
+					"Could not deserialize body json content.");
+		}
 	}
 
 	/**
-	 * <p>
-	 * partiallyUpdateModel.
-	 * </p>
+	 * Update an existing model with the given values. If the item with the given PK doesn't not exist, an exception is thrown.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.
@@ -293,6 +307,16 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response) {
 
+		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+
+		if (pk > 0) {
+			return partiallyUpdateModel(request, pk);
+		} else {
+			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onpatch", "No valid PK provided.");
+		}
+	}
+
+	protected <T extends Item> DataResponse partiallyUpdateModel(Request request, long pk) {
 		// get type
 		final String typeCode = request.params(":typecode");
 		final Class<T> type;
@@ -302,38 +326,32 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return RESPONSE_UNKNOWN_TYPE;
 		}
 
-		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+		try {
 
-		if (pk > 0) {
-			try {
+			// search old item
+			T oldItem = modelService.get(type, pk);
 
-				// search old item
-				T oldItem = modelService.get(type, pk);
-
-				if (oldItem == null) {
-					throw new ModelNotFoundException(String.format("Item with PK=%s not  found", pk));
-				}
-
-				// get body as json object
-				oldItem = deserializeToItem(request, oldItem);
-				oldItem.markAsDirty();
-
-				modelService.save(oldItem);
-
-				return DataResponse.accepted();
-			} catch (UnknownTypeException e) {
-				return RESPONSE_UNKNOWN_TYPE;
-			} catch (final ModelNotUniqueException | ModelValidationException e) {
-				return DataResponse.conflict().withError("error.onpartialupdate", e.getMessage());
-			} catch (final ModelNotFoundException e) {
-				return DataResponse.notFound().withError("error.onpartialupdate",
-						"No item with the given PK found to update.");
-			} catch (final DeserializationException e) {
-				return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
-						"Could not deserialize body json content.");
+			if (oldItem == null) {
+				throw new ModelNotFoundException(String.format("Item with PK=%s not found", pk));
 			}
-		} else {
-			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onpatch", "No valid PK provided.");
+
+			// get body as json object
+			oldItem = deserializeToItem(request, oldItem);
+			oldItem.markAsDirty();
+
+			modelService.save(oldItem);
+
+			return DataResponse.accepted();
+		} catch (UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		} catch (final ModelNotUniqueException | ModelValidationException e) {
+			return DataResponse.conflict().withError("error.onpartialupdate", e.getMessage());
+		} catch (final ModelNotFoundException e) {
+			return DataResponse.notFound().withError("error.onpartialupdate",
+					"No item with the given PK found to update.");
+		} catch (final DeserializationException e) {
+			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
+					"Could not deserialize body json content.");
 		}
 	}
 

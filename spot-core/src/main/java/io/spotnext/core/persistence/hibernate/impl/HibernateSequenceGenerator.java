@@ -20,7 +20,7 @@ import io.spotnext.core.persistence.service.SequenceGenerator;
 public class HibernateSequenceGenerator implements SequenceGenerator {
 
 	@Resource
-	HibernatePersistenceService persistenceService;
+	private HibernatePersistenceService persistenceService;
 
 	/** {@inheritDoc} */
 	@Override

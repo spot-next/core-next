@@ -25,7 +25,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Rule
 	public ExpectedException expectedExeption = ExpectedException.none();
-	
+
 	@Override
 	protected void prepareTest() {
 	}
@@ -49,6 +49,27 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		version.setId("Online");
 
 		modelService.save(version);
+	}
+
+	private User createUser(String id, String shortName) {
+		User user = modelService.create(User.class);
+		user.setId(id);
+		user.setShortName(shortName);
+		modelService.save(user);
+		
+		return user;
+	}
+	
+	@Test
+	public void testUniqueIdGenerator() {
+		User user1 = createUser(null, "user-0");
+		User user2 = createUser(null, "user-1");
+
+		assertEquals(user1.getId(), "user-0");
+		assertEquals(user1.getShortName(), "user-0");
+		
+		assertEquals(user2.getId(), "user-1");
+		assertEquals(user2.getShortName(), "user-1");
 	}
 
 	@Test
@@ -208,7 +229,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Test
 	public void testValidateModelRecursively() {
 		expectedExeption.expect(ModelSaveException.class);
-		
+
 		// TODO: how to handle localized messages?
 //		expectedExeption.expectMessage("User.id must not be null");
 

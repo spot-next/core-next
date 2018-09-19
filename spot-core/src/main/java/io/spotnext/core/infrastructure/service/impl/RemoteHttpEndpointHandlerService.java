@@ -252,8 +252,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try { // create routes for HTTP methods
 
 				service.exception(Exception.class, (exception, request, response) -> {
-					cleanupOnException(exception);
-//					Spark.halt(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					loggingService.exception(exception.getMessage(), exception);
+					cleanup();
 					response.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
 
@@ -274,8 +274,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 //					});
 
 				service.after((request, response) -> {
-					HttpRequestHolder.clear();
-
+					cleanup();
 					setupEncoding(request, response);
 				});
 
@@ -287,8 +286,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
-	protected void cleanupOnException(Exception exception) {
-		loggingService.exception(exception.getMessage(), exception);
+	protected void cleanup() {
+		HttpRequestHolder.clear();
 		persistenceService.unbindSession();
 	}
 
@@ -401,7 +400,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
 					}
 
-					cleanupOnException(ie);
+					cleanup();
 				}
 			}
 
