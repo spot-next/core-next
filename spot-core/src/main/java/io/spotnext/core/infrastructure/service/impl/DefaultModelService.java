@@ -84,7 +84,7 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
 		final List<T> items = getAllInternal(query);
 
-		if (items.size() > 1) {
+		if (items != null && items.size() > 1) {
 			throw new ModelNotUniqueException("Found more than 1 result for the given search parameters");
 		}
 
