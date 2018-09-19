@@ -1,18 +1,22 @@
 package io.spotnext.core.persistence.service.impl;
 
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.TransactionUsageException;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -20,7 +24,9 @@ import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.service.TransactionService;
 
 /**
- * <p>DefaultTransactionService class.</p>
+ * <p>
+ * DefaultTransactionService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -30,44 +36,48 @@ import io.spotnext.core.persistence.service.TransactionService;
 @Service
 public class DefaultTransactionService extends AbstractService implements TransactionService {
 
+	@Value("${service.persistene.transaction.timeout}")
+	protected int transactionTimeout = 60;
+
 	@Resource
 	protected PlatformTransactionManager transactionManager;
 
-	protected TransactionTemplate transactionTemplate;
-	protected ThreadLocal<TransactionStatus> currentTransaction = new ThreadLocal<>();
+	/**
+	 * @return creates a new {@link TransactionTemplate}.
+	 */
+	protected TransactionTemplate createTransactionTemplate() {
+		TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		transactionTemplate.setTimeout(transactionTimeout);
+		transactionTemplate.setName(createTransactionName());
+		return transactionTemplate;
+	}
 
 	/**
-	 * <p>setup.</p>
+	 * Starts a transaction in the given thread context. After the work has been done, either {@link #rollback()} or {@link #commit()} have to be invoked.
+	 * Otherwise data might not be persisted.
+	 *
+	 * @throws org.springframework.transaction.TransactionException if any.
 	 */
-	@PostConstruct
-	public void setup() {
-		transactionTemplate = new TransactionTemplate(transactionManager);
-		transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+	@Override
+	public TransactionStatus start() throws TransactionException {
+//		return transactionManager.getTransaction(createTransactionTemplate());
+		return null;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public <R> R execute(Callable<R> body) throws TransactionException {
-		boolean transactionWasAlreadyActive = isTransactionActive();
-
-		if (!transactionWasAlreadyActive) {
-			start();
-		}
-
-		boolean commit = true;
-
-		try {
-			return body.call();
-		} catch (Exception e) {
-			rollback();
-			commit = false;
-
-			throw new TransactionUsageException("Error during transactional execution.", e);
-		} finally {
-			if (!transactionWasAlreadyActive && commit) {
-				commit();
+		return createTransactionTemplate().execute(new TransactionCallback<R>() {
+			@Override
+			public R doInTransaction(TransactionStatus status) {
+				try {
+					return body.call();
+				} catch (Exception e) {
+					throw new IllegalTransactionStateException(e.getMessage(), e);
+				}
 			}
-		}
+		});
 	}
 
 	/** {@inheritDoc} */
@@ -79,32 +89,26 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		});
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public void start() throws TransactionException {
-		if (currentTransaction.get() == null) {
-			TransactionDefinition def = new DefaultTransactionDefinition();
-			TransactionStatus status = transactionManager.getTransaction(def);
+	/**
+	 * @return the name for the transaction, composed out of <classname of the calling class>.<method name>.
+	 */
+	protected String createTransactionName() {
+		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 
-			loggingService.debug(String.format("Creating new transaction for thread %s (id = %s)",
-					Thread.currentThread().getName(), Thread.currentThread().getId()));
-
-			currentTransaction.set(status);
-		} else {
-			throw new CannotCreateTransactionException("There is already an active transaction.");
-			// loggingService.debug("There is already a transaction running");
+		for (StackTraceElement e : ArrayUtils.subarray(stack, 1, stack.length)) {
+			if (!this.getClass().getName().equals(e.getClassName())) {
+				return e.getClassName() + "." + e.getMethodName();
+			}
 		}
+
+		return null;
 	}
 
-	/**
-	 * <p>createSavePoint.</p>
-	 *
-	 * @return a {@link java.lang.Object} object.
-	 * @throws org.springframework.transaction.TransactionException if any.
-	 */
-	public Object createSavePoint() throws TransactionException {
-		if (currentTransaction.get() != null) {
-			return currentTransaction.get().createSavepoint();
+	/** {@inheritDoc} */
+	@Override
+	public Object createSavePoint(TransactionStatus status) throws TransactionException {
+		if (isTransactionActive()) {
+			return status.createSavepoint();
 		} else {
 			throw new CannotCreateTransactionException("Cannot create savepoint as there is no active transaction.");
 		}
@@ -112,11 +116,9 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 	/** {@inheritDoc} */
 	@Override
-	public void commit() throws TransactionException {
-		if (currentTransaction.get() != null) {
-			TransactionStatus status = currentTransaction.get();
+	public void commit(TransactionStatus status) throws TransactionException {
+		if (isTransactionActive()) {
 			transactionManager.commit(status);
-			currentTransaction.remove();
 		} else {
 			loggingService.warn("Cannot commit: no transaction active.");
 		}
@@ -124,29 +126,35 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 	/** {@inheritDoc} */
 	@Override
-	public void rollback() throws TransactionException {
-		if (currentTransaction.get() != null) {
-			TransactionStatus status = currentTransaction.get();
+	public void rollback(TransactionStatus status) throws TransactionException {
+		if (isTransactionActive()) {
 			transactionManager.rollback(status);
-			currentTransaction.remove();
 		} else {
 			loggingService.warn("Cannot roleback: no transaction active.");
 		}
 	}
 
-	// public void rollbackToSavePoint(Object savePoint) throws TransactionException
-	// {
-	// if (currentTransaction.get() != null) {
-	// TransactionStatus status =
-	// currentTransaction.get().rollbackToSavepoint(savepoint);
-	// } else {
-	// throw new UnexpectedRollbackException("There is no active transaction.");
-	// }
-	// }
+	@Override
+	public void rollbackToSavePoint(TransactionStatus status, Object savePoint) throws TransactionException {
+		if (isTransactionActive()) {
+			status.rollbackToSavepoint(savePoint);
+		} else {
+			loggingService.warn("Cannot roleback to savepoint: no transaction active.");
+		}
+	}
 
 	/** {@inheritDoc} */
 	@Override
 	public boolean isTransactionActive() {
-		return currentTransaction.get() != null;
+		return TransactionSynchronizationManager.isActualTransactionActive();
+	}
+
+	@Override
+	public Optional<TransactionStatus> getCurrentTransaction() {
+		if (isTransactionActive()) {
+			return Optional.ofNullable(TransactionAspectSupport.currentTransactionStatus());
+		}
+
+		return Optional.empty();
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.TransactionStatus;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.CoreInit;
@@ -84,6 +85,8 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	public static void shutdown() {
 	}
 
+	private ThreadLocal<TransactionStatus> transactionStatus = new ThreadLocal<>();
+
 	/**
 	 * Called before each test is executed.
 	 *
@@ -113,12 +116,15 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		}
 
 		if (isCurrentTestmethodTransactional()) {
-			try {
-				transactionService.start();
-				prepareTest();
-			} catch (final Exception e) {
-				loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
-			}
+			transactionStatus.set(transactionService.start());
+		} else {
+			transactionStatus.set(null);
+		}
+
+		try {
+			prepareTest();
+		} catch (final Exception e) {
+			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
 		}
 	}
 
@@ -135,9 +141,12 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	public void afterTest() {
 		try {
 			teardownTest();
-			transactionService.rollback();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
+		}
+
+		if (transactionStatus.get() != null) {
+			transactionService.rollback(transactionStatus.get());
 		}
 	}
 
