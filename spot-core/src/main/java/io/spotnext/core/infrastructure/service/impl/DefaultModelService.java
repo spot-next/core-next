@@ -88,7 +88,7 @@ public class DefaultModelService extends AbstractModelService {
 			throw new ModelNotUniqueException("Found more than 1 result for the given search parameters");
 		}
 
-		if (items.size() > 0) {
+		if (CollectionUtils.isNotEmpty(items)) {
 			applyLoadInterceptors(Collections.singletonList(items.get(0)));
 			publishEvents(items, ModificationType.LOAD);
 

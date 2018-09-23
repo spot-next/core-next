@@ -191,10 +191,10 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	/**
 	 * Calls {@link Thread#wait(long)} but catches and ignores all errors.
 	 */
-	protected void sleep(int seconds) {
+	protected void sleep(final int seconds) {
 		try {
-			Thread.sleep(seconds * 1000);
-		} catch (InterruptedException e) {
+			Thread.sleep(seconds * 1000l);
+		} catch (final InterruptedException e) {
 			// ignore
 		}
 	}

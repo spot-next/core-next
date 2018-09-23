@@ -2,9 +2,12 @@ package io.spotnext.core.persistence.hibernate.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.persistence.exception.SequenceAccessException;
@@ -28,25 +31,27 @@ public class HibernateSequenceGenerator implements SequenceGenerator {
 
 	private final Map<String, ItemSequence> sequences = new HashMap<>();
 
+	@Value("${service.persistence.sequencegenerator.poolsize}")
 	private final int poolSize = 50;
-	private int currentId = 0;
+	private final Map<String, AtomicLong> cachedIds = new ConcurrentHashMap<>();
 
 	/** {@inheritDoc} */
 	@Override
 	public synchronized long getNextSequenceValue(final String sequenceName) throws SequenceAccessException {
-		final ItemSequence sequence = getSequence(sequenceName);
+		final AtomicLong id = getOrCreateSequenceValue(sequenceName);
 
-		currentId++;
+		final long val = id.getAndIncrement();
 
-		if (currentId % poolSize == 0) {
-			sequence.setValue(currentId);
+		if (val % poolSize == 0) {
+			final ItemSequence sequence = getOrCreateSequence(sequenceName);
+			sequence.setValue(val);
 			persistenceService.getSession().saveOrUpdate(sequence);
 		}
 
-		return currentId;
+		return val;
 	}
 
-	private ItemSequence getSequence(final String sequenceName) {
+	private ItemSequence getOrCreateSequence(final String sequenceName) {
 		ItemSequence sequence = sequences.get(sequenceName);
 
 		if (sequence == null) {
@@ -63,8 +68,20 @@ public class HibernateSequenceGenerator implements SequenceGenerator {
 		return sequence;
 	}
 
+	private synchronized AtomicLong getOrCreateSequenceValue(final String sequenceName) {
+		AtomicLong id = cachedIds.get(sequenceName);
+
+		if (id == null) {
+			id = new AtomicLong(0l);
+			cachedIds.put(sequenceName, id);
+		}
+
+		return id;
+	}
+
 	@Override
 	public long getCurrentSequenceValue(final String sequenceName) {
-		return currentId;
+		return getOrCreateSequenceValue(sequenceName).get();
 	}
+
 }
