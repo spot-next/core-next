@@ -62,8 +62,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -79,7 +79,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			query.setPage(page);
 			query.setPageSize(pageSize);
 			query.setEagerFetchRelations(true);
-			final List<T> models = (List<T>) modelService.getAll(query);
+			final List<T> models = modelService.getAll(query);
 
 			final PageablePayload<T> pageableData = new PageablePayload<>(models, page, pageSize);
 
@@ -92,8 +92,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the PK.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -117,7 +117,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onget",
 						"No valid PK provided.");
 			}
-		} catch (ModelNotFoundException e) {
+		} catch (final ModelNotFoundException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Item not found.");
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
@@ -125,12 +125,11 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JPQL WHERE
-	 * clause.<br />
+	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -141,7 +140,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		final Class<T> type;
 		try {
 			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		}
 
@@ -175,8 +174,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -189,20 +188,19 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final List<T> items = modelService.getAllByExample(example);
 
 			return DataResponse.ok().withPayload(items);
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
-		} catch (DeserializationException e) {
+		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("query.unknowntype",
 					"Could not deserialize request body into valid example item.");
 		}
 	}
 
 	/**
-	 * Creates a new item. If the item is not unique (based on its unique
-	 * properties), an error is returned.
+	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -215,13 +213,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			modelService.save(item);
 
 			return DataResponse.created().withPayload(Collections.singletonMap("pk", item.getPk()));
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.oncreate", e.getMessage());
 		} catch (final ModelNotUniqueException | ModelSaveException e) {
-			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.notunique",
-					"Another item with the same uniqueness criteria (but a different PK) was found.");
+			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.notunique", String.format(
+					"Another item with the same uniqueness criteria (but a different PK) was found: %s", e.getMessage()));
 		} catch (final ModelValidationException e) {
 			final List<String> messages = new ArrayList<>();
 			messages.add(e.getMessage());
@@ -239,8 +237,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The PK or a search criteria has to be set.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -254,7 +252,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final Class<T> type;
 			try {
 				type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-			} catch (UnknownTypeException e) {
+			} catch (final UnknownTypeException e) {
 				return RESPONSE_UNKNOWN_TYPE;
 			}
 			try {
@@ -274,15 +272,15 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The PK must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
 	@Handler(method = HttpMethod.put, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
 		try {
-			JSONObject jsonBody = new JSONObject(request.body());
+			final JSONObject jsonBody = new JSONObject(request.body());
 
 			if (jsonBody.has("pk")) {
 				return partiallyUpdateModel(request, jsonBody.getLong("pk"));
@@ -290,7 +288,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return createModel(request, response);
 			}
 
-		} catch (JSONException e) {
+		} catch (final JSONException e) {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
 					"Could not deserialize body json content.");
 		}
@@ -299,8 +297,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given PK doesn't not exist, an exception is thrown.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -316,13 +314,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		}
 	}
 
-	protected <T extends Item> DataResponse partiallyUpdateModel(Request request, long pk) {
+	protected <T extends Item> DataResponse partiallyUpdateModel(final Request request, final long pk) {
 		// get type
 		final String typeCode = request.params(":typecode");
 		final Class<T> type;
 		try {
 			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		}
 
@@ -342,7 +340,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			modelService.save(oldItem);
 
 			return DataResponse.accepted();
-		} catch (UnknownTypeException e) {
+		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final ModelNotUniqueException | ModelValidationException e) {
 			return DataResponse.conflict().withError("error.onpartialupdate", e.getMessage());
