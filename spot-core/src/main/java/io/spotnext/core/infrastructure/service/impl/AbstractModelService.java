@@ -34,11 +34,11 @@ import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.types.Item;
-import io.spotnext.core.types.Localizable;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.Localizable;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>Abstract AbstractModelService class.</p>
@@ -206,8 +206,8 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	}
 
 	/**
-	 * Sets the {@link io.spotnext.core.types.Item#setCreatedBy(String)} and
-	 * {@link io.spotnext.core.types.Item#setLastModifiedBy(String)}.
+	 * Sets the {@link io.spotnext.infrastructure.type.Item#setCreatedBy(String)} and
+	 * {@link io.spotnext.infrastructure.type.Item#setLastModifiedBy(String)}.
 	 *
 	 * @param models a {@link java.util.List} object.
 	 */

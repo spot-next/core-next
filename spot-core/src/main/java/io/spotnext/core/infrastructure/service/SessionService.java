@@ -15,38 +15,38 @@ import io.spotnext.core.infrastructure.http.Session;
 public interface SessionService {
 
 	/**
-	 * Creates a new {@link io.spotnext.core.infrastructure.http.Session} object and sets it for the current thread.
+	 * Creates a new {@link io.spotnext.infrastructure.http.Session} object and sets it for the current thread.
 	 *
 	 * @param registerAsCurrentSession a boolean.
-	 * @return a {@link io.spotnext.core.infrastructure.http.Session} object.
+	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
 	Session createSession(boolean registerAsCurrentSession);
 
 	/**
-	 * Returns the {@link io.spotnext.core.infrastructure.http.Session} associates with the current thread. If there is
+	 * Returns the {@link io.spotnext.infrastructure.http.Session} associates with the current thread. If there is
 	 * no session registered yet, a new one is created and automatically registered.
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.http.Session} object.
+	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
 	Session getCurrentSession();
 
 	/**
 	 * Sets the given session for the current thread.
 	 *
-	 * @param session a {@link io.spotnext.core.infrastructure.http.Session} object.
+	 * @param session a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
 	void setCurrentSession(Session session);
 
 	/**
-	 * Returns the {@link io.spotnext.core.infrastructure.http.Session} with the given id.
+	 * Returns the {@link io.spotnext.infrastructure.http.Session} with the given id.
 	 *
 	 * @param sessionId a {@link java.lang.String} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.Session} object.
+	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
 	Session getSession(String sessionId);
 
 	/**
-	 * Closes/invalidate the {@link io.spotnext.core.infrastructure.http.Session} with the given id.
+	 * Closes/invalidate the {@link io.spotnext.infrastructure.http.Session} with the given id.
 	 *
 	 * @param sessionID a {@link java.lang.String} object.
 	 */

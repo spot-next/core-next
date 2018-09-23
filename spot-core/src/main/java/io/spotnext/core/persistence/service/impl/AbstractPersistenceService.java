@@ -12,9 +12,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.persistence.service.PersistenceService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
 /**
  * <p>Abstract AbstractPersistenceService class.</p>

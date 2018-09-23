@@ -46,36 +46,35 @@ import org.springframework.util.DigestUtils;
 
 import de.hunsicker.jalopy.Jalopy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.annotation.Accessor;
-import io.spotnext.core.infrastructure.annotation.Relation;
-import io.spotnext.core.infrastructure.maven.TypeDefinitions;
-import io.spotnext.core.infrastructure.maven.xml.Annotation;
-import io.spotnext.core.infrastructure.maven.xml.AnnotationArgument;
-import io.spotnext.core.infrastructure.maven.xml.Annotations;
-import io.spotnext.core.infrastructure.maven.xml.Argument;
-import io.spotnext.core.infrastructure.maven.xml.AtomicType;
-import io.spotnext.core.infrastructure.maven.xml.BaseComplexType.Interfaces;
-import io.spotnext.core.infrastructure.maven.xml.BaseType;
-import io.spotnext.core.infrastructure.maven.xml.BeanType;
-import io.spotnext.core.infrastructure.maven.xml.CollectionType;
-import io.spotnext.core.infrastructure.maven.xml.CollectionsType;
-import io.spotnext.core.infrastructure.maven.xml.EnumType;
-import io.spotnext.core.infrastructure.maven.xml.EnumValue;
-import io.spotnext.core.infrastructure.maven.xml.Interface;
-import io.spotnext.core.infrastructure.maven.xml.ItemType;
-import io.spotnext.core.infrastructure.maven.xml.MapType;
-import io.spotnext.core.infrastructure.maven.xml.Property;
-import io.spotnext.core.infrastructure.maven.xml.RelationNode;
-import io.spotnext.core.infrastructure.maven.xml.RelationType;
-import io.spotnext.core.infrastructure.maven.xml.RelationshipCardinality;
-import io.spotnext.core.infrastructure.type.AccessorType;
-import io.spotnext.core.infrastructure.type.RelationCollectionType;
-import io.spotnext.core.infrastructure.type.RelationNodeType;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.support.util.MiscUtil;
-import io.spotnext.core.types.Bean;
-import io.spotnext.core.types.Item;
-import io.spotnext.core.types.Localizable;
+import io.spotnext.infrastructure.annotation.Accessor;
+import io.spotnext.infrastructure.annotation.Relation;
+import io.spotnext.infrastructure.maven.TypeDefinitions;
+import io.spotnext.infrastructure.maven.xml.Annotation;
+import io.spotnext.infrastructure.maven.xml.AnnotationArgument;
+import io.spotnext.infrastructure.maven.xml.Annotations;
+import io.spotnext.infrastructure.maven.xml.Argument;
+import io.spotnext.infrastructure.maven.xml.AtomicType;
+import io.spotnext.infrastructure.maven.xml.BaseComplexType.Interfaces;
+import io.spotnext.infrastructure.maven.xml.BaseType;
+import io.spotnext.infrastructure.maven.xml.BeanType;
+import io.spotnext.infrastructure.maven.xml.CollectionType;
+import io.spotnext.infrastructure.maven.xml.CollectionsType;
+import io.spotnext.infrastructure.maven.xml.EnumType;
+import io.spotnext.infrastructure.maven.xml.EnumValue;
+import io.spotnext.infrastructure.maven.xml.Interface;
+import io.spotnext.infrastructure.maven.xml.ItemType;
+import io.spotnext.infrastructure.maven.xml.MapType;
+import io.spotnext.infrastructure.maven.xml.Property;
+import io.spotnext.infrastructure.maven.xml.RelationNode;
+import io.spotnext.infrastructure.maven.xml.RelationType;
+import io.spotnext.infrastructure.maven.xml.RelationshipCardinality;
+import io.spotnext.infrastructure.type.AccessorType;
+import io.spotnext.infrastructure.type.Bean;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemCollectionFactory;
+import io.spotnext.infrastructure.type.Localizable;
+import io.spotnext.infrastructure.type.RelationCollectionType;
+import io.spotnext.infrastructure.type.RelationNodeType;
 import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
 import io.spotnext.maven.util.ItemTypeDefinitionUtil;
 import io.spotnext.maven.velocity.JavaMemberModifier;
@@ -95,6 +94,8 @@ import io.spotnext.maven.velocity.type.parts.JavaGenericTypeArgument;
 import io.spotnext.maven.velocity.type.parts.JavaMemberType;
 import io.spotnext.maven.velocity.type.parts.JavaMethod;
 import io.spotnext.maven.velocity.util.VelocityUtil;
+import io.spotnext.support.util.ClassUtil;
+import io.spotnext.support.util.MiscUtil;
 
 /**
  * @description Generates the java source code for the defined item types.
@@ -274,7 +275,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populateInterfaces.
 	 * </p>
 	 *
-	 * @param interfaces a {@link io.spotnext.core.infrastructure.maven.xml.BaseComplexType.Interfaces} object.
+	 * @param interfaces a {@link io.spotnext.infrastructure.maven.xml.BaseComplexType.Interfaces} object.
 	 * @param javaType   a {@link io.spotnext.maven.velocity.type.AbstractComplexJavaType} object.
 	 */
 	protected void populateInterfaces(final Interfaces interfaces, final AbstractComplexJavaType javaType) {
@@ -385,7 +386,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populateProperties.
 	 * </p>
 	 *
-	 * @param type      a {@link io.spotnext.core.infrastructure.maven.xml.ItemType} object.
+	 * @param type      a {@link io.spotnext.infrastructure.maven.xml.ItemType} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
@@ -510,10 +511,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 	}
 
 	/**
-	 * This generates 2 getters, one with a {@link java.util.Locale} as single parameter. Furthermore it calls {@link io.spotnext.core.types.Localizable#get()}
-	 * on the field, which implies that the field type is implementing {@link io.spotnext.core.types.Localizable}!
+	 * This generates 2 getters, one with a {@link java.util.Locale} as single parameter. Furthermore it calls
+	 * {@link io.spotnext.infrastructure.type.Localizable#get()} on the field, which implies that the field type is implementing
+	 * {@link io.spotnext.infrastructure.type.Localizable}!
 	 *
-	 * @param prop      a {@link io.spotnext.core.infrastructure.maven.xml.Property} object.
+	 * @param prop      a {@link io.spotnext.infrastructure.maven.xml.Property} object.
 	 * @param field     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException in there is no localized type found
@@ -594,10 +596,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 	}
 
 	/**
-	 * This generates 2 getters, one with a {@link java.util.Locale} as single parameter. Furthermore it calls {@link io.spotnext.core.types.Localizable#get()}
-	 * on the field, which implies that the field type is implementing {@link io.spotnext.core.types.Localizable}!
+	 * This generates 2 getters, one with a {@link java.util.Locale} as single parameter. Furthermore it calls
+	 * {@link io.spotnext.infrastructure.type.Localizable#get()} on the field, which implies that the field type is implementing
+	 * {@link io.spotnext.infrastructure.type.Localizable}!
 	 *
-	 * @param prop a {@link io.spotnext.core.infrastructure.maven.xml.Property} object.
+	 * @param prop a {@link io.spotnext.infrastructure.maven.xml.Property} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException
 	 * @param field     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
@@ -669,7 +672,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * createItemTypeClass.
 	 * </p>
 	 *
-	 * @param type a {@link io.spotnext.core.infrastructure.maven.xml.ItemType} object.
+	 * @param type a {@link io.spotnext.infrastructure.maven.xml.ItemType} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
@@ -680,7 +683,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 		// add itemtype annotation, ignore base item type
 		final JavaAnnotation typeAnnotation = new JavaAnnotation(
-				io.spotnext.core.infrastructure.annotation.ItemType.class);
+				io.spotnext.infrastructure.annotation.ItemType.class);
 
 		if (StringUtils.isBlank(type.getTypeCode())) {
 			throw new MojoExecutionException(String.format("No typecode set for type %s", type.getName()));
@@ -703,12 +706,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 *
 	 * @param javaClass         the class to populate with a super types
 	 * @param defaultSuperclass is used when there is no superType given, can be null too
-	 * @param type              a {@link io.spotnext.core.infrastructure.maven.xml.JavaType} object.
-	 * @param superType         a {@link io.spotnext.core.infrastructure.maven.xml.JavaType} object.
+	 * @param type              a {@link io.spotnext.infrastructure.maven.xml.JavaType} object.
+	 * @param superType         a {@link io.spotnext.infrastructure.maven.xml.JavaType} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
-	protected void populateSuperType(final io.spotnext.core.infrastructure.maven.xml.JavaType type,
-			final io.spotnext.core.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
+	protected void populateSuperType(final io.spotnext.infrastructure.maven.xml.JavaType type,
+			final io.spotnext.infrastructure.maven.xml.JavaType superType, final JavaClass javaClass,
 			final Class<?> defaultSuperclass) throws MojoExecutionException {
 
 		final JavaInterface superClass = new JavaInterface();
@@ -827,7 +830,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * createCollectionMemberType.
 	 * </p>
 	 *
-	 * @param collectionType a {@link io.spotnext.core.infrastructure.maven.xml.CollectionsType} object.
+	 * @param collectionType a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
 	 * @param elementType    a {@link java.lang.String} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
@@ -1003,23 +1006,23 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populatePropertyAnnotation.
 	 * </p>
 	 *
-	 * @param propertyDefinition a {@link io.spotnext.core.infrastructure.maven.xml.Property} object.
+	 * @param propertyDefinition a {@link io.spotnext.infrastructure.maven.xml.Property} object.
 	 * @param field              a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 */
 	protected void populatePropertyAnnotation(final Property propertyDefinition, final JavaField field) {
-		final JavaAnnotation propAnn = new JavaAnnotation(io.spotnext.core.infrastructure.annotation.Property.class);
+		final JavaAnnotation propAnn = new JavaAnnotation(io.spotnext.infrastructure.annotation.Property.class);
 		field.addAnnotation(propAnn);
 
-		boolean addGetter = io.spotnext.core.infrastructure.annotation.Property.DEFAULT_READABLE;
-		boolean addSetter = io.spotnext.core.infrastructure.annotation.Property.DEFAULT_WRITABLE;
+		boolean addGetter = io.spotnext.infrastructure.annotation.Property.DEFAULT_READABLE;
+		boolean addSetter = io.spotnext.infrastructure.annotation.Property.DEFAULT_WRITABLE;
 
 		if (propertyDefinition.getModifiers() != null) {
-			if (io.spotnext.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
+			if (io.spotnext.infrastructure.annotation.Property.DEFAULT_UNIQUE != propertyDefinition.getModifiers()
 					.isUnique()) {
 				propAnn.addParameter("unique", propertyDefinition.getModifiers().isUnique(), JavaValueType.LITERAL);
 			}
 
-			if (io.spotnext.core.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
+			if (io.spotnext.infrastructure.annotation.Property.DEFAULT_INITIAL != propertyDefinition.getModifiers()
 					.isInitial()) {
 				propAnn.addParameter("initial", propertyDefinition.getModifiers().isInitial(), JavaValueType.LITERAL);
 			}
@@ -1055,7 +1058,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populateRelationProperties.
 	 * </p>
 	 *
-	 * @param type      a {@link io.spotnext.core.infrastructure.maven.xml.ItemType} object.
+	 * @param type      a {@link io.spotnext.infrastructure.maven.xml.ItemType} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */
@@ -1098,9 +1101,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * populateRelationProperty.
 	 * </p>
 	 *
-	 * @param from         a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @param to           a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @param nodeType     a {@link io.spotnext.core.infrastructure.type.RelationNodeType} object.
+	 * @param from         a {@link io.spotnext.infrastructure.maven.xml.RelationNode} object.
+	 * @param to           a {@link io.spotnext.infrastructure.maven.xml.RelationNode} object.
+	 * @param nodeType     a {@link io.spotnext.infrastructure.type.RelationNodeType} object.
 	 * @param javaClass    a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @param relationType
 	 * @param property     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
@@ -1124,7 +1127,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		if (StringUtils.isNotBlank(mappedTo)) {
 			property.setName(mappedTo);
 
-			final io.spotnext.core.infrastructure.type.RelationType relationType = getRelationType(from, to);
+			final io.spotnext.infrastructure.type.RelationType relationType = getRelationType(from, to);
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 
 			if (StringUtils.isNotBlank(from.getMappedBy())) {
@@ -1138,9 +1141,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 				relationAnn.addParameter("collectionType", collectionType, JavaValueType.ENUM_VALUE);
 			}
 
-			// always use Sets for now, because hibernate can't handle multiple
-			// Collections
-			// when using FETCH JOINS.
+			// always use Sets for now, because hibernate can't handle multiple Collections when using FETCH JOINS.
 			final JavaMemberType propType = createRelationPropertyMemberType(to.getCardinality(), to.getItemType(),
 					collectionType);
 			property.setType(propType);
@@ -1150,16 +1151,16 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			// add modifiers
 			final JavaAnnotation propAnn = new JavaAnnotation(
-					io.spotnext.core.infrastructure.annotation.Property.class);
+					io.spotnext.infrastructure.annotation.Property.class);
 			property.addAnnotation(propAnn);
 
 			populatePropertyAnnotations(to.getAnnotations(), property);
 
-			boolean addGetter = io.spotnext.core.infrastructure.annotation.Property.DEFAULT_READABLE;
-			boolean addSetter = io.spotnext.core.infrastructure.annotation.Property.DEFAULT_WRITABLE;
+			boolean addGetter = io.spotnext.infrastructure.annotation.Property.DEFAULT_READABLE;
+			boolean addSetter = io.spotnext.infrastructure.annotation.Property.DEFAULT_WRITABLE;
 
 			if (to.getModifiers() != null) {
-				if (io.spotnext.core.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers()
+				if (io.spotnext.infrastructure.annotation.Property.DEFAULT_UNIQUE != to.getModifiers()
 						.isUnique()) {
 					propAnn.addParameter("unique", to.getModifiers().isUnique(), JavaValueType.LITERAL);
 				}
@@ -1175,15 +1176,13 @@ public class GenerateTypesMojo extends AbstractMojo {
 			if (addGetter) {
 				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 
-				if (io.spotnext.core.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
-					// wrap the collection into proxy collection that allows us
-					// to intercept
-					// mutating calls (like add, remove) -> needed to update
-					// relation infos
-					javaClass.getImports().add("io.spotnext.core.infrastructure.support.ItemCollectionFactory");
+				if (io.spotnext.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
+					// wrap the collection into proxy collection that allows us to intercept mutating calls
+					// (like add, remove) -> needed to update relation infos
+					javaClass.getImports().add(ItemCollectionFactory.class.getName());
 					addGetter(property, javaClass,
-							String.format("return ItemCollectionFactory.wrap(this, \"%s\", this.%s);",
-									property.getName(), property.getName()));
+							String.format("return %s.wrap(this, \"%s\", this.%s);", ItemCollectionFactory.class.getSimpleName(), property.getName(),
+									property.getName()));
 
 				} else {
 					addGetter(property, javaClass);
@@ -1206,7 +1205,6 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			javaClass.addField(constant);
 		}
-
 	}
 
 	/**
@@ -1214,25 +1212,25 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * getRelationType.
 	 * </p>
 	 *
-	 * @param thisNode  a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @param otherNode a {@link io.spotnext.core.infrastructure.maven.xml.RelationNode} object.
-	 * @return a {@link io.spotnext.core.infrastructure.type.RelationType} object.
+	 * @param thisNode  a {@link io.spotnext.infrastructure.maven.xml.RelationNode} object.
+	 * @param otherNode a {@link io.spotnext.infrastructure.maven.xml.RelationNode} object.
+	 * @return a {@link io.spotnext.infrastructure.type.RelationType} object.
 	 */
-	protected io.spotnext.core.infrastructure.type.RelationType getRelationType(final RelationNode thisNode,
+	protected io.spotnext.infrastructure.type.RelationType getRelationType(final RelationNode thisNode,
 			final RelationNode otherNode) {
 
 		if (RelationshipCardinality.ONE.equals(thisNode.getCardinality())
 				&& RelationshipCardinality.ONE.equals(otherNode.getCardinality())) {
-			return io.spotnext.core.infrastructure.type.RelationType.OneToOne;
+			return io.spotnext.infrastructure.type.RelationType.OneToOne;
 		} else if (RelationshipCardinality.MANY.equals(thisNode.getCardinality())
 				&& RelationshipCardinality.ONE.equals(otherNode.getCardinality())) {
-			return io.spotnext.core.infrastructure.type.RelationType.ManyToOne;
+			return io.spotnext.infrastructure.type.RelationType.ManyToOne;
 		} else if (RelationshipCardinality.ONE.equals(thisNode.getCardinality())
 				&& RelationshipCardinality.MANY.equals(otherNode.getCardinality())) {
-			return io.spotnext.core.infrastructure.type.RelationType.OneToMany;
+			return io.spotnext.infrastructure.type.RelationType.OneToMany;
 		} else if (RelationshipCardinality.MANY.equals(thisNode.getCardinality())
 				&& RelationshipCardinality.MANY.equals(otherNode.getCardinality())) {
-			return io.spotnext.core.infrastructure.type.RelationType.ManyToMany;
+			return io.spotnext.infrastructure.type.RelationType.ManyToMany;
 		}
 
 		return null;
@@ -1243,8 +1241,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * getCollectionType.
 	 * </p>
 	 *
-	 * @param collectionType a {@link io.spotnext.core.infrastructure.maven.xml.CollectionsType} object.
-	 * @return a {@link io.spotnext.core.infrastructure.type.RelationCollectionType} object.
+	 * @param collectionType a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
+	 * @return a {@link io.spotnext.infrastructure.type.RelationCollectionType} object.
 	 */
 	protected RelationCollectionType getCollectionType(final CollectionsType collectionType) {
 		if (CollectionsType.SET.equals(collectionType)) {
@@ -1261,9 +1259,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * createRelationPropertyMemberType.
 	 * </p>
 	 *
-	 * @param cardinality    a {@link io.spotnext.core.infrastructure.maven.xml.RelationshipCardinality} object.
+	 * @param cardinality    a {@link io.spotnext.infrastructure.maven.xml.RelationshipCardinality} object.
 	 * @param elementType    a {@link java.lang.String} object.
-	 * @param collectionType a {@link io.spotnext.core.infrastructure.type.RelationCollectionType} object.
+	 * @param collectionType a {@link io.spotnext.infrastructure.type.RelationCollectionType} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
 	 * @throws org.apache.maven.plugin.MojoExecutionException if any.
 	 */

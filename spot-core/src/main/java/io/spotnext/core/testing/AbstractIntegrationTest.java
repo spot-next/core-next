@@ -1,11 +1,16 @@
 package io.spotnext.core.testing;
 
+import java.lang.reflect.Method;
+import java.util.Optional;
+
 import javax.annotation.Resource;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.BeansException;
@@ -13,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.TransactionStatus;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.CoreInit;
@@ -22,18 +28,13 @@ import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.persistence.service.TransactionService;
+import io.spotnext.support.util.ClassUtil;
 
 /**
- * This is the base class for all integration tasks. Database access will be
- * reverted after the each test using a transaction rollback. Any initialized
- * {@link io.spotnext.core.infrastructure.support.init.ModuleInit}s must be set
- * using the
- * {@link org.springframework.boot.test.context.SpringBootTest#classes()}
- * annotation. By default {@link io.spotnext.core.CoreInit} is defined. The main
- * {@link io.spotnext.core.infrastructure.support.init.ModuleInit} has to be
- * defined to using
- * {@link io.spotnext.core.testing.IntegrationTest#initClass()}, if the test
- * depends on it.
+ * This is the base class for all integration tasks. Database access will be reverted after the each test using a transaction rollback. Any initialized
+ * {@link io.spotnext.infrastructure.support.init.ModuleInit}s must be set using the {@link org.springframework.boot.test.context.SpringBootTest#classes()}
+ * annotation. By default {@link io.spotnext.core.CoreInit} is defined. The main {@link io.spotnext.infrastructure.support.init.ModuleInit} has to be defined to
+ * using {@link io.spotnext.core.testing.IntegrationTest#initClass()}, if the test depends on it.
  *
  * @author mojo2012
  * @version 1.0
@@ -63,6 +64,9 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	@Resource
 	protected ModelService modelService;
 
+	@Rule
+	public TestName testNameRule = new TestName();
+
 	protected String getTestPackagePath() {
 		return this.getClass().getPackage().getName();
 	}
@@ -81,12 +85,13 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	public static void shutdown() {
 	}
 
+	private ThreadLocal<TransactionStatus> transactionStatus = new ThreadLocal<>();
+
 	/**
 	 * Called before each test is executed.
 	 *
 	 * @throws InterruptedException if the thead wait was interrupted
-	 * @throw IllegalStateException if module initialization didn't finish within
-	 *        the max allowed time.
+	 * @throw IllegalStateException if module initialization didn't finish within the max allowed time.
 	 */
 	@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
 	@Before
@@ -110,12 +115,23 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 			}
 		}
 
+		if (isCurrentTestmethodTransactional()) {
+			transactionStatus.set(transactionService.start());
+		} else {
+			transactionStatus.set(null);
+		}
+
 		try {
-			transactionService.start();
 			prepareTest();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
 		}
+	}
+
+	protected boolean isCurrentTestmethodTransactional() {
+		final Optional<Method> testMethod = ClassUtil.getMethodDefinition(this.getClass(), testNameRule.getMethodName());
+
+		return testMethod.isPresent() && !ClassUtil.hasAnnotation(testMethod.get(), Transactionless.class);
 	}
 
 	/**
@@ -125,9 +141,12 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	public void afterTest() {
 		try {
 			teardownTest();
-			transactionService.rollback();
 		} catch (final Exception e) {
 			loggingService.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
+		}
+
+		if (transactionStatus.get() != null) {
+			transactionService.rollback(transactionStatus.get());
 		}
 	}
 
@@ -169,4 +188,14 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		this.maxMillisToWaitForModuleInitialization = maxMillisToWaitForModuleInitialization;
 	}
 
+	/**
+	 * Calls {@link Thread#wait(long)} but catches and ignores all errors.
+	 */
+	protected void sleep(final int seconds) {
+		try {
+			Thread.sleep(seconds * 1000l);
+		} catch (final InterruptedException e) {
+			// ignore
+		}
+	}
 }

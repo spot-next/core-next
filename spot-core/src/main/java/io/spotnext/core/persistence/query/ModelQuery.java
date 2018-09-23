@@ -3,7 +3,7 @@ package io.spotnext.core.persistence.query;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ModelQuery class.</p>

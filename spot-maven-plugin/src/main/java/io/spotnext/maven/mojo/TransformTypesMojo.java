@@ -52,10 +52,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 import ch.qos.logback.core.util.CloseUtil;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.support.util.FileUtils;
 import io.spotnext.instrumentation.transformer.AbstractBaseClassTransformer;
 import io.spotnext.maven.Constants;
 import io.spotnext.maven.util.JarTransformer;
+import io.spotnext.support.util.FileUtils;
 
 /**
  * <p>

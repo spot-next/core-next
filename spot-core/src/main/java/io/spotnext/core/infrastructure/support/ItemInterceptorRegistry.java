@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import io.spotnext.core.infrastructure.interceptor.ItemInterceptor;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.persistence.service.PersistenceService;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemInterceptorRegistry class.</p>
@@ -63,7 +63,7 @@ public class ItemInterceptorRegistry<I extends ItemInterceptor<Item>> implements
 	/**
 	 * <p>Setter for the field <code>typeService</code>.</p>
 	 *
-	 * @param typeService a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 * @param typeService a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
 	@Required
 	public void setTypeService(TypeService typeService) {

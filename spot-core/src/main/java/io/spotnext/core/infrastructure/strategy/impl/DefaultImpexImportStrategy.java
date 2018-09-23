@@ -1,6 +1,6 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
-import static io.spotnext.core.support.util.MiscUtil.$;
+import static io.spotnext.support.util.MiscUtil.$;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,6 @@ import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
@@ -54,10 +53,11 @@ import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.service.TransactionService;
-import io.spotnext.core.support.util.MiscUtil;
-import io.spotnext.core.support.util.ValidationUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
+import io.spotnext.support.util.MiscUtil;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * <p>

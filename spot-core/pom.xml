@@ -77,12 +77,7 @@
 		<!-- spot modules -->
 		<dependency>
 			<groupId>io.spot-next</groupId>
-			<artifactId>spot-core-model-infrastructure</artifactId>
-			<version>${revision}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.spot-next</groupId>
-			<artifactId>spot-core-base-models</artifactId>
+			<artifactId>spot-core-infrastructure</artifactId>
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
@@ -176,8 +171,14 @@
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.4.0</version>
+			<version>2.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+		</dependency>
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -212,6 +213,14 @@
 			<groupId>com.sparkjava</groupId>
 			<artifactId>spark-core</artifactId>
 			<version>2.7.2</version>
+		</dependency>
+
+		<!-- REST TESTING -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.1.1</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

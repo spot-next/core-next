@@ -22,7 +22,7 @@ public interface ImportService {
 	 *                    usage!
 	 * @param format a {@link io.spotnext.itemtype.core.enumeration.ImportFormat} object.
 	 * @param config a {@link io.spotnext.itemtype.core.beans.ImportConfiguration} object.
-	 * @throws io.spotnext.core.infrastructure.exception.ImportException if any.
+	 * @throws io.spotnext.infrastructure.exception.ImportException if any.
 	 */
 	void importItems(ImportFormat format, ImportConfiguration config, InputStream inputStream) throws ImportException;
 

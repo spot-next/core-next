@@ -20,7 +20,7 @@ public interface L10nService extends MessageSource, MessageInterpolator, Initial
 	/**
 	 * Returns the message corresponding to the given key and replaces the
 	 * passed message parameters. The default locale is used (from
-	 * {@link io.spotnext.core.infrastructure.service.I18nService}.
+	 * {@link io.spotnext.infrastructure.service.I18nService}.
 	 *
 	 * @param key a {@link java.lang.String} object.
 	 * @param messageParams a {@link java.lang.Object} object.

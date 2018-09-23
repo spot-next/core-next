@@ -2,6 +2,7 @@ package io.spotnext.core.management.transformer;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ public class JsonResponseTransformer implements ResponseTransformer {
 			InvocationTargetException ie = (InvocationTargetException) exception;
 			message = ie.getTargetException() != null ? ie.getTargetException().getMessage() : exception.getMessage();
 		} else {
-			message = exception.getMessage();
+			message = ExceptionUtils.getRootCauseMessage(exception);
 		}
 
 		// let the render method handle rendering

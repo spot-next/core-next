@@ -6,7 +6,7 @@ import javax.el.PropertyNotFoundException;
 
 import org.springframework.expression.spel.SpelEvaluationException;
 
-import io.spotnext.core.support.util.ELParser;
+import io.spotnext.support.util.ELParser;
 
 /**
  * Extends the default {@link javax.el.BeanELResolver} implementation with

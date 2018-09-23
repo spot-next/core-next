@@ -1,0 +1,1536 @@
+---- AspectJ Properties ---
+AspectJ Compiler 1.9.1 built on Friday Apr 20, 2018 at 16:47:33 GMT
+---- Dump Properties ---
+Dump file: ajcore.20180913.213602.854.txt
+Dump reason: java.lang.UnsupportedOperationException
+Dump on exception: true
+Dump at exit condition: abort
+---- Exception Information ---
+java.lang.UnsupportedOperationException: no glb for [<T extends Item>, [MISSING:Item]]
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.resolve(InferenceContext18.java:1140)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.solve(InferenceContext18.java:995)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.solve(InferenceContext18.java:1014)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.inferInvocationType(InferenceContext18.java:467)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding.computeCompatibleMethod18(ParameterizedGenericMethodBinding.java:268)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding.computeCompatibleMethod(ParameterizedGenericMethodBinding.java:90)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.computeCompatibleMethod(Scope.java:814)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.computeCompatibleMethod(Scope.java:771)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.findMethod0(Scope.java:1764)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.findMethod(Scope.java:1665)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.getImplicitMethod(Scope.java:2672)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend.resolveType(MessageSend.java:779)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement.resolve(ReturnStatement.java:346)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration.resolveStatements(AbstractMethodDeclaration.java:644)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration.resolveStatements(MethodDeclaration.java:313)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration.resolve(AbstractMethodDeclaration.java:554)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.resolve(TypeDeclaration.java:1256)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.resolve(TypeDeclaration.java:1370)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration.resolve(CompilationUnitDeclaration.java:643)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.process(Compiler.java:904)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.processCompiledUnits(Compiler.java:573)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:473)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:424)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1107)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:276)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:189)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:114)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.codehaus.mojo.aspectj.AbstractAjcCompiler.execute(AbstractAjcCompiler.java:544)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:137)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:208)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:154)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:146)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:81)
+	at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build(SingleThreadedBuilder.java:56)
+	at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:128)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:305)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:192)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:105)
+	at org.apache.maven.cli.MavenCli.execute(MavenCli.java:954)
+	at org.apache.maven.cli.MavenCli.doMain(MavenCli.java:288)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:192)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced(Launcher.java:289)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:229)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:415)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:356)
+---- System Properties ---
+java.runtime.name=Java(TM) SE Runtime Environment
+sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib
+java.vm.version=25.144-b01
+maven.wagon.http.ssl.insecure=true
+gopherProxySet=false
+maven.multiModuleProjectDirectory=/Users/matthias/Projekte/spOt/spot-framework
+java.vm.vendor=Oracle Corporation
+java.vendor.url=http://java.oracle.com/
+guice.disable.misplaced.annotation.check=true
+path.separator=:
+java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+file.encoding.pkg=sun.io
+user.country=AT
+sun.java.launcher=SUN_STANDARD
+sun.os.patch.level=unknown
+java.vm.specification.name=Java Virtual Machine Specification
+user.dir=/Users/matthias/Projekte/spOt/spot-framework
+java.runtime.version=1.8.0_144-b01
+java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+java.endorsed.dirs=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/endorsed
+os.arch=x86_64
+java.io.tmpdir=/var/folders/1y/yzycscs55y5blgm7xkz9ngv80000gn/T/
+line.separator=
+
+java.vm.specification.vendor=Oracle Corporation
+os.name=Mac OS X
+classworlds.conf=/usr/local/Cellar/maven/3.5.4/libexec/bin/m2.conf
+sun.jnu.encoding=UTF-8
+java.library.path=/Users/matthias/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+maven.conf=/usr/local/Cellar/maven/3.5.4/libexec/conf
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+maven.wagon.http.ssl.allowall=true
+os.version=10.12.6
+library.jansi.path=/usr/local/Cellar/maven/3.5.4/libexec/lib/jansi-native
+http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+user.home=/Users/matthias
+user.timezone=Europe/Vienna
+java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+file.encoding=UTF-8
+java.specification.version=1.8
+java.class.path=/usr/local/Cellar/maven/3.5.4/libexec/boot/plexus-classworlds-2.5.2.jar
+user.name=matthias
+java.vm.specification.version=1.8
+sun.java.command=org.codehaus.plexus.classworlds.launcher.Launcher clean install
+java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre
+sun.arch.data.model=64
+user.language=de
+java.specification.vendor=Oracle Corporation
+awt.toolkit=sun.lwawt.macosx.LWCToolkit
+java.vm.info=mixed mode
+java.version=1.8.0_144
+java.ext.dirs=/Users/matthias/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+sun.boot.class.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/classes
+java.vendor=Oracle Corporation
+maven.home=/usr/local/Cellar/maven/3.5.4/libexec
+file.separator=/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+sun.font.fontmanager=sun.font.CFontManager
+sun.io.unicode.encoding=UnicodeBig
+sun.cpu.endian=little
+socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+sun.cpu.isalist=
+---- Command Line ---
+-Xajruntimetarget:1.5
+-Xlint:ignore
+-1.8
+-encoding
+UTF-8
+-preserveAllLocals
+-proceedOnError
+-source
+1.8
+-target
+1.8
+-classpath
+/Users/matthias/.m2/repository/io/spot-next/spot-core-model-infrastructure/1.0-SNAPSHOT/spot-core-model-infrastructure-1.0-SNAPSHOT.jar:/Users/matthias/.m2/repository/io/spot-next/spot-core-base-models/1.0-SNAPSHOT/spot-core-base-models-1.0-SNAPSHOT.jar:/Users/matthias/Projekte/spOt/spot-framework/spot-core-support/target/spot-core-support-1.0-SNAPSHOT.jar:/Users/matthias/.m2/repository/com/opencsv/opencsv/4.2/opencsv-4.2.jar:/Users/matthias/.m2/repository/commons-cli/commons-cli/1.4/commons-cli-1.4.jar:/Users/matthias/.m2/repository/org/apache/commons/commons-jexl3/3.1/commons-jexl3-3.1.jar:/Users/matthias/.m2/repository/org/reflections/reflections/0.9.11/reflections-0.9.11.jar:/Users/matthias/.m2/repository/commons-beanutils/commons-beanutils/1.9.3/commons-beanutils-1.9.3.jar:/Users/matthias/.m2/repository/commons-validator/commons-validator/1.6/commons-validator-1.6.jar:/Users/matthias/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar:/Users/matthias/.m2/repository/io/gsonfire/gson-fire/1.8.3/gson-fire-1.8.3.jar:/Users/matthias/.m2/repository/net/bytebuddy/byte-buddy/1.8.13/byte-buddy-1.8.13.jar:/Users/matthias/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.9.6/jackson-datatype-jsr310-2.9.6.jar:/Users/matthias/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.9.6/jackson-datatype-jdk8-2.9.6.jar:/Users/matthias/.m2/repository/org/springmodules/spring-modules-validation/0.8/spring-modules-validation-0.8.jar:/Users/matthias/.m2/repository/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/hsqldb/hsqldb/2.4.0/hsqldb-2.4.0.jar:/Users/matthias/.m2/repository/mysql/mysql-connector-java/8.0.8-dmr/mysql-connector-java-8.0.8-dmr.jar:/Users/matthias/.m2/repository/com/zaxxer/HikariCP/2.7.7/HikariCP-2.7.7.jar:/Users/matthias/.m2/repository/org/torpedoquery/org.torpedoquery/2.5.1/org.torpedoquery-2.5.1.jar:/Users/matthias/.m2/repository/com/trigersoft/jaque/2.1.2/jaque-2.1.2.jar:/Users/matthias/.m2/repository/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar:/Users/matthias/.m2/repository/com/sparkjava/spark-core/2.7.2/spark-core-2.7.2.jar:/Users/matthias/.m2/repository/org/springframework/spring-aspects/5.0.8.RELEASE/spring-aspects-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/aspectj/aspectjrt/1.9.1/aspectjrt-1.9.1.jar:/Users/matthias/.m2/repository/com/google/code/findbugs/annotations/3.0.1/annotations-3.0.1.jar:/Users/matthias/.m2/repository/org/apache/commons/commons-lang3/3.6/commons-lang3-3.6.jar:/Users/matthias/.m2/repository/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar:/Users/matthias/Projekte/spOt/spot-framework/spot-instrumentation/target/spot-instrumentation-1.0-SNAPSHOT.jar:/Users/matthias/.m2/repository/io/github/lukehutch/fast-classpath-scanner/2.8.2/fast-classpath-scanner-2.8.2.jar:/Users/matthias/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar:/Users/matthias/.m2/repository/org/assertj/assertj-core/3.8.0/assertj-core-3.8.0.jar:/Users/matthias/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/matthias/.m2/repository/org/springframework/spring-context/5.0.8.RELEASE/spring-context-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/slf4j/jcl-over-slf4j/1.8.0-beta0/jcl-over-slf4j-1.8.0-beta0.jar:/Users/matthias/.m2/repository/org/springframework/spring-instrument/5.0.8.RELEASE/spring-instrument-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/zeroturnaround/zt-exec/1.10/zt-exec-1.10.jar:/Users/matthias/.m2/repository/org/javassist/javassist/3.23.1-GA/javassist-3.23.1-GA.jar:/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar:/Users/matthias/.m2/repository/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar:/Users/matthias/.m2/repository/org/hibernate/validator/hibernate-validator/6.0.9.Final/hibernate-validator-6.0.9.Final.jar:/Users/matthias/.m2/repository/javax/validation/validation-api/2.0.1.Final/validation-api-2.0.1.Final.jar:/Users/matthias/.m2/repository/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar:/Users/matthias/.m2/repository/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar:/Users/matthias/.m2/repository/javax/el/javax.el-api/3.0.0/javax.el-api-3.0.0.jar:/Users/matthias/.m2/repository/org/glassfish/javax.el/3.0.0/javax.el-3.0.0.jar:/Users/matthias/.m2/repository/org/apache/commons/commons-configuration2/2.3/commons-configuration2-2.3.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-data-jpa/2.0.4.RELEASE/spring-boot-starter-data-jpa-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter/2.0.4.RELEASE/spring-boot-starter-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot/2.0.4.RELEASE/spring-boot-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/2.0.4.RELEASE/spring-boot-autoconfigure-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-logging/2.0.4.RELEASE/spring-boot-starter-logging-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/Users/matthias/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/Users/matthias/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.10.0/log4j-to-slf4j-2.10.0.jar:/Users/matthias/.m2/repository/org/apache/logging/log4j/log4j-api/2.10.0/log4j-api-2.10.0.jar:/Users/matthias/.m2/repository/org/slf4j/jul-to-slf4j/1.7.25/jul-to-slf4j-1.7.25.jar:/Users/matthias/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-jdbc/2.0.4.RELEASE/spring-boot-starter-jdbc-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final.jar:/Users/matthias/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.1-api/1.0.0.Final/hibernate-jpa-2.1-api-1.0.0.Final.jar:/Users/matthias/.m2/repository/org/jboss/jandex/2.0.3.Final/jandex-2.0.3.Final.jar:/Users/matthias/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/matthias/.m2/repository/org/hibernate/common/hibernate-commons-annotations/5.0.1.Final/hibernate-commons-annotations-5.0.1.Final.jar:/Users/matthias/.m2/repository/javax/transaction/javax.transaction-api/1.2/javax.transaction-api-1.2.jar:/Users/matthias/.m2/repository/org/springframework/data/spring-data-jpa/2.0.9.RELEASE/spring-data-jpa-2.0.9.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/data/spring-data-commons/2.0.9.RELEASE/spring-data-commons-2.0.9.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-aop/2.0.4.RELEASE/spring-boot-starter-aop-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-test/2.0.4.RELEASE/spring-boot-starter-test-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-test/2.0.4.RELEASE/spring-boot-test-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/2.0.4.RELEASE/spring-boot-test-autoconfigure-2.0.4.RELEASE.jar:/Users/matthias/.m2/repository/com/jayway/jsonpath/json-path/2.4.0/json-path-2.4.0.jar:/Users/matthias/.m2/repository/net/minidev/json-smart/2.3/json-smart-2.3.jar:/Users/matthias/.m2/repository/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar:/Users/matthias/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/matthias/.m2/repository/org/mockito/mockito-core/2.15.0/mockito-core-2.15.0.jar:/Users/matthias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.7.9/byte-buddy-agent-1.7.9.jar:/Users/matthias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/matthias/.m2/repository/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.jar:/Users/matthias/.m2/repository/org/skyscreamer/jsonassert/1.5.0/jsonassert-1.5.0.jar:/Users/matthias/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar:/Users/matthias/.m2/repository/org/springframework/spring-test/5.0.8.RELEASE/spring-test-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/xmlunit/xmlunit-core/2.5.1/xmlunit-core-2.5.1.jar:/Users/matthias/.m2/repository/org/apache/commons/commons-text/1.3/commons-text-1.3.jar:/Users/matthias/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/Users/matthias/.m2/repository/com/google/guava/guava/20.0/guava-20.0.jar:/Users/matthias/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/Users/matthias/.m2/repository/commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar:/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar:/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.9.6/jackson-core-2.9.6.jar:/Users/matthias/.m2/repository/commons-lang/commons-lang/2.2/commons-lang-2.2.jar:/Users/matthias/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar:/Users/matthias/.m2/repository/rhino/js/1.6R2/js-1.6R2.jar:/Users/matthias/.m2/repository/org/springframework/spring-beans/5.0.8.RELEASE/spring-beans-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-core/5.0.8.RELEASE/spring-core-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-jcl/5.0.8.RELEASE/spring-jcl-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE.jar:/Users/matthias/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/matthias/.m2/repository/org/objenesis/objenesis/1.3/objenesis-1.3.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-server/9.4.8.v20171121/jetty-server-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-http/9.4.8.v20171121/jetty-http-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-util/9.4.8.v20171121/jetty-util-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-io/9.4.8.v20171121/jetty-io-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-webapp/9.4.8.v20171121/jetty-webapp-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-xml/9.4.8.v20171121/jetty-xml-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.8.v20171121/jetty-servlet-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-security/9.4.8.v20171121/jetty-security-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-server/9.4.8.v20171121/websocket-server-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-common/9.4.8.v20171121/websocket-common-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-client/9.4.8.v20171121/websocket-client-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-client/9.4.8.v20171121/jetty-client-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-servlet/9.4.8.v20171121/websocket-servlet-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-api/9.4.8.v20171121/websocket-api-9.4.8.v20171121.jar:/Users/matthias/.m2/repository/org/aspectj/aspectjweaver/1.8.13/aspectjweaver-1.8.13.jar:/Users/matthias/Projekte/spOt/spot-framework/spot-core/target/classes
+-aspectpath
+/Users/matthias/.m2/repository/org/springframework/spring-aspects/5.0.8.RELEASE/spring-aspects-5.0.8.RELEASE.jar
+-d
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/target/classes
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/constant/CoreConstants.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/CoreInit.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/logging/Log.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateBetween.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTime.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTimeValidator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/AbstractBaseAspect.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/LogAspect.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/ItemModificationEvent.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/SystemBootCompleteEvent.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AbstractModelException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AuthenticationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/BootstrapException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/CannotCreateUserException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/DeserializationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImpexImportException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImportException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ItemInterceptorException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelCreationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelNotFoundException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelSaveException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelValidationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModuleInitializationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/PropertyNotAccessibleException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/SerializationException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/UnknownTypeException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ValueResolverException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/AbstractResponse.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/DataResponse.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ExceptionResponse.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpResponse.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpStatus.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndView.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndViewResponse.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Session.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Status.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemCreateInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemLoadInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemPrepareInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemRemoveInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemValidateInterceptor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/ImpexValueResolver.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/FileValueResolver.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/PrimitiveValueResolver.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/ClassSerializer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/GsonExclusionStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemSerializationMixIn.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolverBuilder.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConfigurationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConversionService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/EventService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ExportService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/I18nService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/BeanAware.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultConfigurationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultEventService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultI18nService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultImportService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultL10nService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultLoggingService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultSerializationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultSessionService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultTypeService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultUserService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultValidationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DummyAccessControlService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ImportService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/L10nService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/LoggingService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ModelService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/SerializationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/SessionService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/TypeService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/UserService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ValidationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/strategy/ImpexImportStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/strategy/impl/DefaultImpexImportStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/strategy/impl/DefaultJsonSerializationStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/strategy/impl/DefaultXmlSerializationStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/strategy/SerializationStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/HttpRequestHolder.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/impex/ColumnDefinition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/impex/ImpexCommand.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/impex/ImpexMergeMode.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/impex/ValueResolutionDescriptorParser.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/impex/WorkUnit.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/BootEventListener.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/Bootstrap.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/BootstrapOptions.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/ModuleConfig.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/ModuleDefinition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/init/ModuleInit.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ItemCollectionFactory.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ItemInterceptorRegistry.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ItemTypeDefinition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ItemTypePropertyDefinition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ItemTypePropertyRelationDefinition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/Log.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/LogLevel.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/MappingRegistry.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/MimeType.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/ProxyCollection.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/spring/BooleanConverter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/spring/BuildInfo.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/spring/HierarchyAwareEventListenerMethodProcessor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/support/spring/Registry.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/annotation/Handler.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/annotation/RemoteEndpoint.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/converter/Converter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/converter/impl/AbstractPopulatingConverter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/exception/RemoteServiceInitException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/populator/impl/ItemTypePopulator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/populator/Populator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/service/impl/AbstractRestEndpoint.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/service/impl/ModelServiceRestEndpoint.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/service/impl/TypeSystemServiceRestEndpoint.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/service/ManagableService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/service/RemoteInterfaceServiceEndpoint.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/AuthenticationFilter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/BasicAuthenticationFilter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/data/GenericItemDefinitionData.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/data/PageablePayload.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/HttpAuthorizationType.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/support/NoAuthenticationFilter.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/transformer/JsonResponseTransformer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/transformer/PlainTextResponseTransformer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/management/transformer/ResponseTransformer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/cache/CacheRegion.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/CannotCreateModelProxyException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/ModelNotUniqueException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/PersistenceStorageException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/QueryException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/SequenceAccessException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/exception/SerialNumberGeneratorException.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernatePersistenceProviderImpl.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernatePersistenceService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernateSequenceGenerator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernateSessionFactoryBean.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/MetadataExtractorIntegrator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/TypeServicePersistenceUnitPostProcessor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/support/ItemSequence.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/Condition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/JpqlQuery.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/ArgumentsFixVisitor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/CountingVisitor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/ParametersNameGenerator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/PredicateTranslationResult.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/SerializablePredicate.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/ToConstantExpressionVisitor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/lambda/ToJpqlQueryVisitor.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/LambdaQuery.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/ModelQuery.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/Query.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/QueryCondition.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/query/QueryResult.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/CacheService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/AbstractPersistenceService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultLambdaQueryTranslationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultQueryService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/LambdaQueryTranslationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/PersistenceService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/QueryService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/SequenceGenerator.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/service/TransactionService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/persistence/valueprovider/ItemPropertyValueProvider.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/security/service/AuthenticationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/security/service/impl/DefaultAuthenticationService.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/security/strategy/impl/MD5PasswordEncryptionStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/security/strategy/PasswordEncryptionStrategy.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/testing/AbstractIntegrationTest.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/testing/IntegrationTest.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/testing/SpotJunitRunListener.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/testing/SpotJunitRunner.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/beans/AuthenticationDetails.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/beans/ImportConfiguration.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/catalog/Catalog.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/catalog/CatalogVersion.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/CatalogItem.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/configuration/ConfigEntry.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/configuration/Configuration.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/enumeration/ApprovalStatus.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/enumeration/ImportFormat.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/enumeration/UserRole.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/internationalization/Country.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/internationalization/Currency.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/internationalization/Language.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/internationalization/LocalizationValue.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/internationalization/LocalizedString.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/media/AbstractMedia.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/media/FileMedia.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/media/Media.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/media/MediaContainer.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/UniqueIdItem.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/Address.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/AddressType.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/ContactDetailsType.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/Principal.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/PrincipalGroup.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/User.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/UserAddress.java
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/gen/java/io/spotnext/itemtype/core/user/UserGroup.java
+---- Full Classpath ---
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/resources.jar(3505340 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/rt.jar(66815280 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/sunrsasign.jar(152 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jsse.jar(648816 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jce.jar(116446 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/charsets.jar(3135391 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/jfr.jar(560581 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/classes(0 entries)
+/Users/matthias/.m2/repository/org/springframework/spring-aspects/5.0.8.RELEASE/spring-aspects-5.0.8.RELEASE.jar(46751 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/cldrdata.jar(3860502 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/dnsns.jar(8286 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/jaccess.jar(44516 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/jfxrt.jar(18606587 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/localedata.jar(1179093 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/nashorn.jar(2022734 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/sunec.jar(42185 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar(280161 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar(251327 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/ext/zipfs.jar(68924 bytes)
+/Library/Java/Extensions/sapjco3.jar(1512125 bytes)
+/System/Library/Java/Extensions/MRJToolkit.jar(12849 bytes)
+/Users/matthias/.m2/repository/io/spot-next/spot-core-model-infrastructure/1.0-SNAPSHOT/spot-core-model-infrastructure-1.0-SNAPSHOT.jar(69769 bytes)
+/Users/matthias/.m2/repository/io/spot-next/spot-core-base-models/1.0-SNAPSHOT/spot-core-base-models-1.0-SNAPSHOT.jar(9044 bytes)
+/Users/matthias/Projekte/spOt/spot-framework/spot-core-support/target/spot-core-support-1.0-SNAPSHOT.jar(31488 bytes)
+/Users/matthias/.m2/repository/com/opencsv/opencsv/4.2/opencsv-4.2.jar(155840 bytes)
+/Users/matthias/.m2/repository/commons-cli/commons-cli/1.4/commons-cli-1.4.jar(53820 bytes)
+/Users/matthias/.m2/repository/org/apache/commons/commons-jexl3/3.1/commons-jexl3-3.1.jar(397422 bytes)
+/Users/matthias/.m2/repository/org/reflections/reflections/0.9.11/reflections-0.9.11.jar(130999 bytes)
+/Users/matthias/.m2/repository/commons-beanutils/commons-beanutils/1.9.3/commons-beanutils-1.9.3.jar(246174 bytes)
+/Users/matthias/.m2/repository/commons-validator/commons-validator/1.6/commons-validator-1.6.jar(186077 bytes)
+/Users/matthias/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar(2497 bytes)
+/Users/matthias/.m2/repository/io/gsonfire/gson-fire/1.8.3/gson-fire-1.8.3.jar(72717 bytes)
+/Users/matthias/.m2/repository/net/bytebuddy/byte-buddy/1.8.13/byte-buddy-1.8.13.jar(2978629 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.9.6/jackson-datatype-jsr310-2.9.6.jar(99987 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.9.6/jackson-datatype-jdk8-2.9.6.jar(33395 bytes)
+/Users/matthias/.m2/repository/org/springmodules/spring-modules-validation/0.8/spring-modules-validation-0.8.jar(459893 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE.jar(191767 bytes)
+/Users/matthias/.m2/repository/org/hsqldb/hsqldb/2.4.0/hsqldb-2.4.0.jar(1543134 bytes)
+/Users/matthias/.m2/repository/mysql/mysql-connector-java/8.0.8-dmr/mysql-connector-java-8.0.8-dmr.jar(2010498 bytes)
+/Users/matthias/.m2/repository/com/zaxxer/HikariCP/2.7.7/HikariCP-2.7.7.jar(141096 bytes)
+/Users/matthias/.m2/repository/org/torpedoquery/org.torpedoquery/2.5.1/org.torpedoquery-2.5.1.jar(125486 bytes)
+/Users/matthias/.m2/repository/com/trigersoft/jaque/2.1.2/jaque-2.1.2.jar(84079 bytes)
+/Users/matthias/.m2/repository/org/ow2/asm/asm/5.0.3/asm-5.0.3.jar(53231 bytes)
+/Users/matthias/.m2/repository/com/sparkjava/spark-core/2.7.2/spark-core-2.7.2.jar(158314 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-aspects/5.0.8.RELEASE/spring-aspects-5.0.8.RELEASE.jar(46751 bytes)
+/Users/matthias/.m2/repository/org/aspectj/aspectjrt/1.9.1/aspectjrt-1.9.1.jar(119892 bytes)
+/Users/matthias/.m2/repository/com/google/code/findbugs/annotations/3.0.1/annotations-3.0.1.jar(38806 bytes)
+/Users/matthias/.m2/repository/org/apache/commons/commons-lang3/3.6/commons-lang3-3.6.jar(494856 bytes)
+/Users/matthias/.m2/repository/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar(751238 bytes)
+/Users/matthias/Projekte/spOt/spot-framework/spot-instrumentation/target/spot-instrumentation-1.0-SNAPSHOT.jar(40187 bytes)
+/Users/matthias/.m2/repository/io/github/lukehutch/fast-classpath-scanner/2.8.2/fast-classpath-scanner-2.8.2.jar(229081 bytes)
+/Users/matthias/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar(214788 bytes)
+/Users/matthias/.m2/repository/org/assertj/assertj-core/3.8.0/assertj-core-3.8.0.jar(1226101 bytes)
+/Users/matthias/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar(19936 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-context/5.0.8.RELEASE/spring-context-5.0.8.RELEASE.jar(1090788 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar(279915 bytes)
+/Users/matthias/.m2/repository/org/slf4j/jcl-over-slf4j/1.8.0-beta0/jcl-over-slf4j-1.8.0-beta0.jar(17136 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-instrument/5.0.8.RELEASE/spring-instrument-5.0.8.RELEASE.jar(7265 bytes)
+/Users/matthias/.m2/repository/org/zeroturnaround/zt-exec/1.10/zt-exec-1.10.jar(57588 bytes)
+/Users/matthias/.m2/repository/org/javassist/javassist/3.23.1-GA/javassist-3.23.1-GA.jar(770452 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar(1342410 bytes)
+/Users/matthias/.m2/repository/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar(231952 bytes)
+/Users/matthias/.m2/repository/org/hibernate/validator/hibernate-validator/6.0.9.Final/hibernate-validator-6.0.9.Final.jar(1130724 bytes)
+/Users/matthias/.m2/repository/javax/validation/validation-api/2.0.1.Final/validation-api-2.0.1.Final.jar(93107 bytes)
+/Users/matthias/.m2/repository/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar(66469 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar(65100 bytes)
+/Users/matthias/.m2/repository/javax/el/javax.el-api/3.0.0/javax.el-api-3.0.0.jar(73063 bytes)
+/Users/matthias/.m2/repository/org/glassfish/javax.el/3.0.0/javax.el-3.0.0.jar(224014 bytes)
+/Users/matthias/.m2/repository/org/apache/commons/commons-configuration2/2.3/commons-configuration2-2.3.jar(628920 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-data-jpa/2.0.4.RELEASE/spring-boot-starter-data-jpa-2.0.4.RELEASE.jar(628 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter/2.0.4.RELEASE/spring-boot-starter-2.0.4.RELEASE.jar(592 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot/2.0.4.RELEASE/spring-boot-2.0.4.RELEASE.jar(935906 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/2.0.4.RELEASE/spring-boot-autoconfigure-2.0.4.RELEASE.jar(1167837 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-logging/2.0.4.RELEASE/spring-boot-starter-logging-2.0.4.RELEASE.jar(613 bytes)
+/Users/matthias/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar(290339 bytes)
+/Users/matthias/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar(471901 bytes)
+/Users/matthias/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.10.0/log4j-to-slf4j-2.10.0.jar(17519 bytes)
+/Users/matthias/.m2/repository/org/apache/logging/log4j/log4j-api/2.10.0/log4j-api-2.10.0.jar(255485 bytes)
+/Users/matthias/.m2/repository/org/slf4j/jul-to-slf4j/1.7.25/jul-to-slf4j-1.7.25.jar(4596 bytes)
+/Users/matthias/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar(26586 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-jdbc/2.0.4.RELEASE/spring-boot-starter-jdbc-2.0.4.RELEASE.jar(598 bytes)
+/Users/matthias/.m2/repository/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final.jar(6739203 bytes)
+/Users/matthias/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.1-api/1.0.0.Final/hibernate-jpa-2.1-api-1.0.0.Final.jar(113371 bytes)
+/Users/matthias/.m2/repository/org/jboss/jandex/2.0.3.Final/jandex-2.0.3.Final.jar(186741 bytes)
+/Users/matthias/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar(313898 bytes)
+/Users/matthias/.m2/repository/org/hibernate/common/hibernate-commons-annotations/5.0.1.Final/hibernate-commons-annotations-5.0.1.Final.jar(75288 bytes)
+/Users/matthias/.m2/repository/javax/transaction/javax.transaction-api/1.2/javax.transaction-api-1.2.jar(30724 bytes)
+/Users/matthias/.m2/repository/org/springframework/data/spring-data-jpa/2.0.9.RELEASE/spring-data-jpa-2.0.9.RELEASE.jar(338393 bytes)
+/Users/matthias/.m2/repository/org/springframework/data/spring-data-commons/2.0.9.RELEASE/spring-data-commons-2.0.9.RELEASE.jar(1080498 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-aop/2.0.4.RELEASE/spring-boot-starter-aop-2.0.4.RELEASE.jar(600 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar(366445 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-starter-test/2.0.4.RELEASE/spring-boot-starter-test-2.0.4.RELEASE.jar(637 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-test/2.0.4.RELEASE/spring-boot-test-2.0.4.RELEASE.jar(195637 bytes)
+/Users/matthias/.m2/repository/org/springframework/boot/spring-boot-test-autoconfigure/2.0.4.RELEASE/spring-boot-test-autoconfigure-2.0.4.RELEASE.jar(156072 bytes)
+/Users/matthias/.m2/repository/com/jayway/jsonpath/json-path/2.4.0/json-path-2.4.0.jar(223186 bytes)
+/Users/matthias/.m2/repository/net/minidev/json-smart/2.3/json-smart-2.3.jar(120316 bytes)
+/Users/matthias/.m2/repository/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar(30035 bytes)
+/Users/matthias/.m2/repository/junit/junit/4.12/junit-4.12.jar(314932 bytes)
+/Users/matthias/.m2/repository/org/mockito/mockito-core/2.15.0/mockito-core-2.15.0.jar(542394 bytes)
+/Users/matthias/.m2/repository/net/bytebuddy/byte-buddy-agent/1.7.9/byte-buddy-agent-1.7.9.jar(42938 bytes)
+/Users/matthias/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar(45024 bytes)
+/Users/matthias/.m2/repository/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.jar(53070 bytes)
+/Users/matthias/.m2/repository/org/skyscreamer/jsonassert/1.5.0/jsonassert-1.5.0.jar(30299 bytes)
+/Users/matthias/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar(18279 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-test/5.0.8.RELEASE/spring-test-5.0.8.RELEASE.jar(605936 bytes)
+/Users/matthias/.m2/repository/org/xmlunit/xmlunit-core/2.5.1/xmlunit-core-2.5.1.jar(156871 bytes)
+/Users/matthias/.m2/repository/org/apache/commons/commons-text/1.3/commons-text-1.3.jar(182954 bytes)
+/Users/matthias/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar(61829 bytes)
+/Users/matthias/.m2/repository/com/google/guava/guava/20.0/guava-20.0.jar(2442625 bytes)
+/Users/matthias/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar(588337 bytes)
+/Users/matthias/.m2/repository/commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar(146108 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar(66519 bytes)
+/Users/matthias/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.9.6/jackson-core-2.9.6.jar(323848 bytes)
+/Users/matthias/.m2/repository/commons-lang/commons-lang/2.2/commons-lang-2.2.jar(243016 bytes)
+/Users/matthias/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar(443432 bytes)
+/Users/matthias/.m2/repository/rhino/js/1.6R2/js-1.6R2.jar(701049 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-beans/5.0.8.RELEASE/spring-beans-5.0.8.RELEASE.jar(660417 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-core/5.0.8.RELEASE/spring-core-5.0.8.RELEASE.jar(1227025 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-jcl/5.0.8.RELEASE/spring-jcl-5.0.8.RELEASE.jar(21703 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar(401381 bytes)
+/Users/matthias/.m2/repository/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE.jar(255205 bytes)
+/Users/matthias/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar(41203 bytes)
+/Users/matthias/.m2/repository/org/objenesis/objenesis/1.3/objenesis-1.3.jar(40568 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-server/9.4.8.v20171121/jetty-server-9.4.8.v20171121.jar(585344 bytes)
+/Users/matthias/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar(95806 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-http/9.4.8.v20171121/jetty-http-9.4.8.v20171121.jar(164892 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-util/9.4.8.v20171121/jetty-util-9.4.8.v20171121.jar(481910 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-io/9.4.8.v20171121/jetty-io-9.4.8.v20171121.jar(128560 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-webapp/9.4.8.v20171121/jetty-webapp-9.4.8.v20171121.jar(128578 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-xml/9.4.8.v20171121/jetty-xml-9.4.8.v20171121.jar(52107 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.8.v20171121/jetty-servlet-9.4.8.v20171121.jar(110246 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-security/9.4.8.v20171121/jetty-security-9.4.8.v20171121.jar(93173 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-server/9.4.8.v20171121/websocket-server-9.4.8.v20171121.jar(34922 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-common/9.4.8.v20171121/websocket-common-9.4.8.v20171121.jar(196078 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-client/9.4.8.v20171121/websocket-client-9.4.8.v20171121.jar(35264 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/jetty-client/9.4.8.v20171121/jetty-client-9.4.8.v20171121.jar(274529 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-servlet/9.4.8.v20171121/websocket-servlet-9.4.8.v20171121.jar(21483 bytes)
+/Users/matthias/.m2/repository/org/eclipse/jetty/websocket/websocket-api/9.4.8.v20171121/websocket-api-9.4.8.v20171121.jar(42076 bytes)
+/Users/matthias/.m2/repository/org/aspectj/aspectjweaver/1.8.13/aspectjweaver-1.8.13.jar(1930381 bytes)
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/target/classes(16 entries)
+---- Compiler Messages ---
+info deactivating aspect 'org.springframework.cache.aspectj.JCacheCacheAspect' as it requires type 'org.springframework.cache.jcache.interceptor.JCacheAspectSupport' which cannot be found on the classpath
+info deactivating aspect 'org.springframework.cache.aspectj.JCacheCacheAspect' as it requires type 'javax.cache.annotation.CacheResult' which cannot be found on the classpath
+info Pipelining compilation
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/LogAspect.java
+error at @Pointcut("@annotation(io.spotnext.infrastructure.annotation.logging.Log) && execution(* *.*(..))")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/LogAspect.java:45:0::0 Type referred to is not an annotation type: @missing@
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/constant/CoreConstants.java
+info weaver operating in reweavable mode.  Need to verify any required types exist.
+info woven class io.spotnext.core.constant.CoreConstants (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/constant/CoreConstants.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/CoreInit.java
+info woven class io.spotnext.core.CoreInit (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/CoreInit.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/logging/Log.java
+info woven class io.spotnext.core.infrastructure.annotation.logging.Log (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/logging/Log.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateBetween.java
+info woven class io.spotnext.core.infrastructure.annotation.validation.DateBetween (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateBetween.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTime.java
+info woven class io.spotnext.core.infrastructure.annotation.validation.DateHasTime (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTime.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTimeValidator.java
+info woven class io.spotnext.core.infrastructure.annotation.validation.DateHasTimeValidator (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/annotation/validation/DateHasTimeValidator.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/AbstractBaseAspect.java
+info woven class io.spotnext.core.infrastructure.aspect.AbstractBaseAspect (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/AbstractBaseAspect.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java
+error at import io.spotnext.infrastructure.annotation.Accessor;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:18:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at import io.spotnext.infrastructure.annotation.Property;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:19:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at import io.spotnext.infrastructure.annotation.Relation;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:20:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:21:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+      ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:114:0::0 Property cannot be resolved to a type
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+                     ^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:114:0::0 The method getAnnotation(JoinPoint, Class<A>) in the type AbstractBaseAspect is not applicable for the arguments (JoinPoint, Class<Property>)
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+                                              ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:114:0::0 Property cannot be resolved to a type
+error at final Accessor setAnn = getAnnotation(joinPoint, Accessor.class);
+      ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:115:0::0 Accessor cannot be resolved to a type
+error at final Accessor setAnn = getAnnotation(joinPoint, Accessor.class);
+                        ^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:115:0::0 The method getAnnotation(JoinPoint, Class<A>) in the type AbstractBaseAspect is not applicable for the arguments (JoinPoint, Class<Accessor>)
+error at final Accessor setAnn = getAnnotation(joinPoint, Accessor.class);
+                                                 ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:115:0::0 Accessor cannot be resolved to a type
+error at final Relation rel = getAnnotation(joinPoint, Relation.class);
+      ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:122:0::0 Relation cannot be resolved to a type
+error at final Relation rel = getAnnotation(joinPoint, Relation.class);
+                     ^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:122:0::0 The method getAnnotation(JoinPoint, Class<A>) in the type AbstractBaseAspect is not applicable for the arguments (JoinPoint, Class<Relation>)
+error at final Relation rel = getAnnotation(joinPoint, Relation.class);
+                                              ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:122:0::0 Relation cannot be resolved to a type
+error at if (joinPoint.getTarget() instanceof Item) {
+                                     ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:130:0::0 Item cannot be resolved to a type
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+      ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:144:0::0 Property cannot be resolved to a type
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+                     ^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:144:0::0 The method getAnnotation(JoinPoint, Class<A>) in the type AbstractBaseAspect is not applicable for the arguments (ProceedingJoinPoint, Class<Property>)
+error at final Property ann = getAnnotation(joinPoint, Property.class);
+                                              ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:144:0::0 Property cannot be resolved to a type
+error at final Accessor getAnn = getAnnotation(joinPoint, Accessor.class);
+      ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:145:0::0 Accessor cannot be resolved to a type
+error at final Accessor getAnn = getAnnotation(joinPoint, Accessor.class);
+                        ^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:145:0::0 The method getAnnotation(JoinPoint, Class<A>) in the type AbstractBaseAspect is not applicable for the arguments (ProceedingJoinPoint, Class<Accessor>)
+error at final Accessor getAnn = getAnnotation(joinPoint, Accessor.class);
+                                                 ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:145:0::0 Accessor cannot be resolved to a type
+error at if (joinPoint.getTarget() instanceof Item) {
+                                     ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:153:0::0 Item cannot be resolved to a type
+error at final Item i = (Item) joinPoint.getTarget();
+      
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:154:0::0 Item cannot be resolved to a type
+error at final Item i = (Item) joinPoint.getTarget();
+                
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:154:0::0 Item cannot be resolved to a type
+error at return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
+          ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:164:0::0 The method readValue(Item, String) from the type ItemPropertyValueProvider refers to the missing type Item
+error at return pv.readValue((Item) joinPoint.getTarget(), joinPoint.getSignature().getName());
+                     
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/ItemPropertyAccessAspect.java:164:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/ItemModificationEvent.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/ItemModificationEvent.java:7:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public class ItemModificationEvent<T extends Item> extends ApplicationEvent implements ResolvableTypeProvider {
+                                             ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/ItemModificationEvent.java:16:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/SystemBootCompleteEvent.java
+info woven class io.spotnext.core.infrastructure.event.SystemBootCompleteEvent (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/event/SystemBootCompleteEvent.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AbstractModelException.java
+info woven class io.spotnext.core.infrastructure.exception.AbstractModelException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AbstractModelException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AuthenticationException.java
+info woven class io.spotnext.core.infrastructure.exception.AuthenticationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/AuthenticationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/BootstrapException.java
+info woven class io.spotnext.core.infrastructure.exception.BootstrapException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/BootstrapException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/CannotCreateUserException.java
+info woven class io.spotnext.core.infrastructure.exception.CannotCreateUserException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/CannotCreateUserException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/DeserializationException.java
+info woven class io.spotnext.core.infrastructure.exception.DeserializationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/DeserializationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImpexImportException.java
+info woven class io.spotnext.core.infrastructure.exception.ImpexImportException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImpexImportException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImportException.java
+info woven class io.spotnext.core.infrastructure.exception.ImportException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ImportException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ItemInterceptorException.java
+info woven class io.spotnext.core.infrastructure.exception.ItemInterceptorException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ItemInterceptorException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelCreationException.java
+info woven class io.spotnext.core.infrastructure.exception.ModelCreationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelCreationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelNotFoundException.java
+info woven class io.spotnext.core.infrastructure.exception.ModelNotFoundException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelNotFoundException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelSaveException.java
+info woven class io.spotnext.core.infrastructure.exception.ModelSaveException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelSaveException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelValidationException.java
+info woven class io.spotnext.core.infrastructure.exception.ModelValidationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModelValidationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModuleInitializationException.java
+info woven class io.spotnext.core.infrastructure.exception.ModuleInitializationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ModuleInitializationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/PropertyNotAccessibleException.java
+info woven class io.spotnext.core.infrastructure.exception.PropertyNotAccessibleException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/PropertyNotAccessibleException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/SerializationException.java
+info woven class io.spotnext.core.infrastructure.exception.SerializationException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/SerializationException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/UnknownTypeException.java
+info woven class io.spotnext.core.infrastructure.exception.UnknownTypeException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/UnknownTypeException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ValueResolverException.java
+info woven class io.spotnext.core.infrastructure.exception.ValueResolverException (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/exception/ValueResolverException.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/AbstractResponse.java
+info woven class io.spotnext.core.infrastructure.http.AbstractResponse (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/AbstractResponse.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/DataResponse.java
+info woven class io.spotnext.core.infrastructure.http.DataResponse (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/DataResponse.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ExceptionResponse.java
+info woven class io.spotnext.core.infrastructure.http.ExceptionResponse (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ExceptionResponse.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpResponse.java
+info woven class io.spotnext.core.infrastructure.http.HttpResponse (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpResponse.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpStatus.java
+info woven class io.spotnext.core.infrastructure.http.HttpStatus (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpStatus.java)
+info woven class io.spotnext.core.infrastructure.http.HttpStatus$Series (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/HttpStatus.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndView.java
+info woven class io.spotnext.core.infrastructure.http.ModelAndView (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndView.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndViewResponse.java
+info woven class io.spotnext.core.infrastructure.http.ModelAndViewResponse (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/ModelAndViewResponse.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Session.java
+info woven class io.spotnext.core.infrastructure.http.Session (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Session.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Status.java
+info woven class io.spotnext.core.infrastructure.http.Status (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/http/Status.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:15:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public abstract class AbstractItemInterceptor<T extends Item> extends AbstractService implements ItemInterceptor<T> {
+                                                        ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:26:0::0 Item cannot be resolved to a type
+error at public abstract class AbstractItemInterceptor<T extends Item> extends AbstractService implements ItemInterceptor<T> {
+                                                                                                                 
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:26:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+error at protected ItemInterceptorRegistry<ItemCreateInterceptor<Item>> itemCreateInterceptorRegistry;
+                                                        ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:32:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
+                                                          ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:35:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
+                                                         ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:38:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
+                                                      ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:41:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
+                                                        ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:44:0::0 Item cannot be resolved to a type
+error at String typeCode = typeService.getTypeCodeForClass(getItemType());
+                              ^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:51:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<T>)
+error at itemCreateInterceptorRegistry.registerMapping(typeCode, (ItemCreateInterceptor<Item>) this);
+^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:54:0::0 Item cannot be resolved to a type
+error at itemCreateInterceptorRegistry.registerMapping(typeCode, (ItemCreateInterceptor<Item>) this);
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:54:0::0 Item cannot be resolved to a type
+error at itemValidateInterceptorRegistry.registerMapping(typeCode, (ItemValidateInterceptor<Item>) this);
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:56:0::0 Item cannot be resolved to a type
+error at itemValidateInterceptorRegistry.registerMapping(typeCode, (ItemValidateInterceptor<Item>) this);
+                                                                                   
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:56:0::0 Item cannot be resolved to a type
+error at itemPrepareInterceptorRegistry.registerMapping(typeCode, (ItemPrepareInterceptor<Item>) this);
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:58:0::0 Item cannot be resolved to a type
+error at itemPrepareInterceptorRegistry.registerMapping(typeCode, (ItemPrepareInterceptor<Item>) this);
+                                                                                 
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:58:0::0 Item cannot be resolved to a type
+error at itemLoadInterceptorRegistry.registerMapping(typeCode, (ItemLoadInterceptor<Item>) this);
+^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:60:0::0 Item cannot be resolved to a type
+error at itemLoadInterceptorRegistry.registerMapping(typeCode, (ItemLoadInterceptor<Item>) this);
+                                                                           
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:60:0::0 Item cannot be resolved to a type
+error at itemRemoveInterceptorRegistry.registerMapping(typeCode, (ItemRemoveInterceptor<Item>) this);
+^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:62:0::0 Item cannot be resolved to a type
+error at itemRemoveInterceptorRegistry.registerMapping(typeCode, (ItemRemoveInterceptor<Item>) this);
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/AbstractItemInterceptor.java:62:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java
+error at public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueIdItem>
+                                                                         ^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java:22:0::0 Bound mismatch: The type UniqueIdItem is not a valid substitute for the bounded parameter <T extends Item> of the type AbstractItemInterceptor<T>
+error at implements ItemPrepareInterceptor<UniqueIdItem> {
+                                  ^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java:23:0::0 Bound mismatch: The type UniqueIdItem is not a valid substitute for the bounded parameter <T extends Item> of the type ItemPrepareInterceptor<T>
+error at final String typeCode = typeService.getTypeCodeForClass(item.getClass());
+                                    ^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java:42:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<capture#1-of ? extends UniqueIdItem>)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemCreateInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemCreateInterceptor.java:4:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                 ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemCreateInterceptor.java:13:0::0 Item cannot be resolved to a type
+error at public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemCreateInterceptor.java:13:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemInterceptor.java:3:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemInterceptor<T extends Item> {
+                                           ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemInterceptor.java:12:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemLoadInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemLoadInterceptor.java:4:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemLoadInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                               ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemLoadInterceptor.java:13:0::0 Item cannot be resolved to a type
+error at public interface ItemLoadInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                                             
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemLoadInterceptor.java:13:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemPrepareInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemPrepareInterceptor.java:4:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemPrepareInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                  ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemPrepareInterceptor.java:13:0::0 Item cannot be resolved to a type
+error at public interface ItemPrepareInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                                                
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemPrepareInterceptor.java:13:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemRemoveInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemRemoveInterceptor.java:4:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemRemoveInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                 ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemRemoveInterceptor.java:13:0::0 Item cannot be resolved to a type
+error at public interface ItemRemoveInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemRemoveInterceptor.java:13:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemValidateInterceptor.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemValidateInterceptor.java:4:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                   ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemValidateInterceptor.java:13:0::0 Item cannot be resolved to a type
+error at public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor<T> {
+                                                                                 
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/ItemValidateInterceptor.java:13:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ItemInterceptor<T>
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/ImpexValueResolver.java
+info woven class io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/ImpexValueResolver.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/FileValueResolver.java
+info woven class io.spotnext.core.infrastructure.resolver.impex.impl.FileValueResolver (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/FileValueResolver.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/PrimitiveValueResolver.java
+error at import io.spotnext.infrastructure.type.Localizable;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/PrimitiveValueResolver.java:21:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at if (Localizable.class.isAssignableFrom(type)) {
+    ^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/PrimitiveValueResolver.java:47:0::0 Localizable cannot be resolved to a type
+error at .filter(i -> Localizable.class.isAssignableFrom((Class<?>) i.getRawType())).findFirst();
+             ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/PrimitiveValueResolver.java:53:0::0 Localizable cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:24:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at final QueryDefinition queryDef = new QueryDefinition((Class<Item>) targetType);
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:62:0::0 The constructor ReferenceValueResolver.QueryDefinition(Class<Item>) refers to the missing type Item
+error at final QueryDefinition queryDef = new QueryDefinition((Class<Item>) targetType);
+                                                            ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:62:0::0 Item cannot be resolved to a type
+error at fillQuery(queryDef, (Class<Item>) targetType, nodes.toArray(new Node[0]));
+^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:63:0::0 The method fillQuery(ReferenceValueResolver.QueryDefinition, Class<Item>, ReferenceValueResolver.Node...) from the type ReferenceValueResolver refers to the missing type Item
+error at fillQuery(queryDef, (Class<Item>) targetType, nodes.toArray(new Node[0]));
+                           ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:63:0::0 Item cannot be resolved to a type
+error at private void fillQuery(final QueryDefinition queryDef, final Class<Item> type, final Node... nodes) {
+                                                                   ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:86:0::0 Item cannot be resolved to a type
+error at fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
+^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:98:0::0 The method fillQuery(ReferenceValueResolver.QueryDefinition, Class<Item>, ReferenceValueResolver.Node...) from the type ReferenceValueResolver refers to the missing type Item
+error at fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
+                           
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:98:0::0 Item cannot be resolved to a type
+error at final Class<Item> rootType;
+            ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:153:0::0 Item cannot be resolved to a type
+error at public QueryDefinition(final Class<Item> rootType) {
+                                   ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:158:0::0 Item cannot be resolved to a type
+error at this.rootType = rootType;
+^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:159:0::0 Item cannot be resolved to a type
+error at public Class<Item> getRootType() {
+             ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:162:0::0 Item cannot be resolved to a type
+error at return rootType;
+       ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:163:0::0 Item cannot be resolved to a type
+error at final String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
+                                 ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:184:0::0 Item cannot be resolved to a type
+error at final String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
+                                                                       ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:184:0::0 Item cannot be resolved to a type
+error at + rootType.getSimpleName() + " " + joinClauses.stream().collect(Collectors.joining(" ")) + " WHERE "
+  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/resolver/impex/impl/ReferenceValueResolver.java:185:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/ClassSerializer.java
+info woven class io.spotnext.core.infrastructure.serialization.ClassSerializer (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/ClassSerializer.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/GsonExclusionStrategy.java
+info woven class io.spotnext.core.infrastructure.serialization.GsonExclusionStrategy (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/GsonExclusionStrategy.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:13:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Item>> {
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:22:0::0 The type ItemCollectionProxySerializer must implement the inherited abstract method JsonSerializer<Collection<Item>>.serialize(Collection<Item>, JsonGenerator, SerializerProvider)
+error at public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Item>> {
+                                                                             ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:22:0::0 Item cannot be resolved to a type
+error at public void serialize(final Collection<Item> source, final JsonGenerator gen, final SerializerProvider serializers)
+			throws IOException {
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:29:0::0 The method serialize(Collection<Item>, JsonGenerator, SerializerProvider) of type ItemCollectionProxySerializer must override or implement a supertype method
+error at public void serialize(final Collection<Item> source, final JsonGenerator gen, final SerializerProvider serializers)
+                                       ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:29:0::0 Item cannot be resolved to a type
+error at for (final Item item : source) {
+           ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemCollectionProxySerializer.java:34:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java:22:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
+                                        ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java:31:0::0 Item cannot be resolved to a type
+error at if (!getModelService().isAttached(deserializedItem)) {
+                       ^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java:100:0::0 The method isAttached(T) in the type ModelService is not applicable for the arguments (I)
+error at getModelService().refresh(deserializedItem);
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java:101:0::0 The method refresh(T) in the type ModelService is not applicable for the arguments (I)
+error at return Item.class;
+       ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemDeserializer.java:114:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:13:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public class ItemProxySerializer extends JsonSerializer<Item> {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:22:0::0 The type ItemProxySerializer must implement the inherited abstract method JsonSerializer<Item>.serialize(Item, JsonGenerator, SerializerProvider)
+error at public class ItemProxySerializer extends JsonSerializer<Item> {
+                                                        ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:22:0::0 Item cannot be resolved to a type
+error at public void serializeWithType(Item value, JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
+                              ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:29:0::0 Item cannot be resolved to a type
+error at public void serialize(final Item source, final JsonGenerator gen, final SerializerProvider serializers)
+                            ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:39:0::0 Item cannot be resolved to a type
+error at public Class<Item> handledType() {
+             ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:48:0::0 Item cannot be resolved to a type
+error at return Item.class;
+       ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemProxySerializer.java:49:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemSerializationMixIn.java
+info woven class io.spotnext.core.infrastructure.serialization.jackson.ItemSerializationMixIn (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemSerializationMixIn.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:15:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at super(TypeFactory.defaultInstance().constructType(Item.class), TypeFactory.defaultInstance());
+                                                  ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:33:0::0 Item cannot be resolved to a type
+error at return Item.TYPECODE;
+       ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:45:0::0 Item cannot be resolved to a variable
+error at if (Item.class.isAssignableFrom(type)) {
+    ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:66:0::0 Item cannot be resolved to a type
+error at return getTypeService().getTypeCodeForClass((Class<Item>) type);
+                        ^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:67:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at return getTypeService().getTypeCodeForClass((Class<Item>) type);
+                                                   
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:67:0::0 Item cannot be resolved to a type
+error at Class<? extends Item> itemType;
+                ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:75:0::0 Item cannot be resolved to a type
+error at itemType = getTypeService().getClassForTypeCode(typeCode);
+                            ^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolver.java:77:0::0 The method getClassForTypeCode(String) from the type TypeService refers to the missing type Item
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolverBuilder.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolverBuilder.java:7:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at if (Item.class.isAssignableFrom(t.getRawClass())) {
+    ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/serialization/jackson/ItemTypeResolverBuilder.java:29:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java:3:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at <T extends Item> boolean accessAllowed(Class<T> type);
+           ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java:24:0::0 Item cannot be resolved to a type
+error at <T extends Item> boolean accessAllowed(Class<T> type, String property);
+           ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java:35:0::0 Item cannot be resolved to a type
+error at <T extends Item> boolean accessAllowed(T type);
+           ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java:45:0::0 Item cannot be resolved to a type
+error at <T extends Item> boolean accessAllowed(T type, String property);
+           ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/AccessControlService.java:56:0::0 Item cannot be resolved to a type
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConfigurationService.java
+info woven class io.spotnext.core.infrastructure.service.ConfigurationService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConfigurationService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConversionService.java
+info woven class io.spotnext.core.infrastructure.service.ConversionService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ConversionService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/EventService.java
+info woven class io.spotnext.core.infrastructure.service.EventService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/EventService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ExportService.java
+info woven class io.spotnext.core.infrastructure.service.ExportService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ExportService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/I18nService.java
+info woven class io.spotnext.core.infrastructure.service.I18nService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/I18nService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:38:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at import io.spotnext.infrastructure.type.Localizable;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:39:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at protected ItemInterceptorRegistry<ItemCreateInterceptor<Item>> itemCreateInterceptorRegistry;
+                                                        ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:70:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
+                                                          ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:73:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
+                                                         ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:76:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
+                                                      ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:79:0::0 Item cannot be resolved to a type
+error at protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
+                                                        ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:82:0::0 Item cannot be resolved to a type
+error at public <T extends Item> T create(final Class<T> type) throws ModelCreationException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:86:0::0 Item cannot be resolved to a type
+error at public <T extends Item> T create(final Class<T> type) throws ModelCreationException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:86:0::0 Name clash: The method create(Class<T>) of type AbstractModelService has the same erasure as create(Class<T>) of type ModelService but does not override it
+error at public <T extends Item> T create(final Class<T> type) throws ModelCreationException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:86:0::0 The method create(Class<T>) of type AbstractModelService must override or implement a supertype method
+error at final String typeCode = typeService.getTypeCodeForClass(type);
+                                    ^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:87:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<T>)
+error at persistenceService.initItem(item);
+                   ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:90:0::0 The method initItem(T extends Item) in the type PersistenceService is not applicable for the arguments (T extends Item)
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                   ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:92:0::0 The method getClass() from the type Object refers to the missing type Item
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                               ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:92:0::0 Item cannot be resolved to a type
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                         ^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:93:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                                                    
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:93:0::0 Item cannot be resolved to a type
+error at final List<ItemCreateInterceptor<Item>> interceptors = itemCreateInterceptorRegistry
+                                 
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:94:0::0 Item cannot be resolved to a type
+error at final List<ItemCreateInterceptor<Item>> interceptors = itemCreateInterceptorRegistry
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:94:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void applyLoadInterceptors(final List<T> items) throws ItemInterceptorException {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:105:0::0 Item cannot be resolved to a type
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                   ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:107:0::0 The method getClass() from the type Object refers to the missing type Item
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:107:0::0 Item cannot be resolved to a type
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                         ^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:108:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                                                    
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:108:0::0 Item cannot be resolved to a type
+error at final List<ItemLoadInterceptor<Item>> interceptors = itemLoadInterceptorRegistry
+                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:109:0::0 Item cannot be resolved to a type
+error at final List<ItemLoadInterceptor<Item>> interceptors = itemLoadInterceptorRegistry
+                                                     ^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:109:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void applyRemoveInterceptors(final List<T> items) throws ItemInterceptorException {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:119:0::0 Item cannot be resolved to a type
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                   ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:121:0::0 The method getClass() from the type Object refers to the missing type Item
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:121:0::0 Item cannot be resolved to a type
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                         ^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:122:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                                                    
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:122:0::0 Item cannot be resolved to a type
+error at final List<ItemRemoveInterceptor<Item>> interceptors = itemRemoveInterceptorRegistry
+                                 
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:123:0::0 Item cannot be resolved to a type
+error at final List<ItemRemoveInterceptor<Item>> interceptors = itemRemoveInterceptorRegistry
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:123:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void applyPrepareInterceptors(final List<T> items)
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:133:0::0 Item cannot be resolved to a type
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                   ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:137:0::0 The method getClass() from the type Object refers to the missing type Item
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:137:0::0 Item cannot be resolved to a type
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                         ^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:138:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                                                    
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:138:0::0 Item cannot be resolved to a type
+error at final List<ItemPrepareInterceptor<Item>> interceptors = itemPrepareInterceptorRegistry
+                                  
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:139:0::0 Item cannot be resolved to a type
+error at final List<ItemPrepareInterceptor<Item>> interceptors = itemPrepareInterceptorRegistry
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:139:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void validateModels(final List<T> items) throws ModelValidationException {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:153:0::0 Item cannot be resolved to a type
+error at validateModel(item);
+^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:155:0::0 The method validateModel(T extends Item) in the type AbstractModelService is not applicable for the arguments (T extends Item)
+error at protected <T extends Item> void validateModel(final T item) throws ModelValidationException {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:159:0::0 Item cannot be resolved to a type
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                   ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:166:0::0 The method getClass() from the type Object refers to the missing type Item
+error at for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
+                                                                               ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:166:0::0 Item cannot be resolved to a type
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                         ^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:167:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<Item>)
+error at final String superTypeCode = typeService.getTypeCodeForClass((Class<Item>) superClass);
+                                                                    
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:167:0::0 Item cannot be resolved to a type
+error at final List<ItemValidateInterceptor<Item>> interceptors = itemValidateInterceptorRegistry
+                                   
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:168:0::0 Item cannot be resolved to a type
+error at final List<ItemValidateInterceptor<Item>> interceptors = itemValidateInterceptorRegistry
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:168:0::0 Item cannot be resolved to a type
+error at ClassUtil.visitFields(item, (field) -> Item.class.isAssignableFrom(field.getType()),
+                                       ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:188:0::0 Item cannot be resolved to a type
+error at (field, subItem) -> validateModel((Item) subItem), true);
+                    ^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:189:0::0 The method validateModel(T) in the type AbstractModelService is not applicable for the arguments (Item)
+error at (field, subItem) -> validateModel((Item) subItem), true);
+                                   
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:189:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void setTypeCode(final T item) {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:192:0::0 Item cannot be resolved to a type
+error at ClassUtil.setField(item, "typeCode", typeService.getTypeCodeForClass(item.getClass()));
+                                                 ^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:193:0::0 The method getTypeCodeForClass(Class<I>) in the type TypeService is not applicable for the arguments (Class<capture#13-of ? extends Item>)
+error at ClassUtil.setField(item, "typeCode", typeService.getTypeCodeForClass(item.getClass()));
+                                                                          ^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:193:0::0 The method getClass() from the type Object refers to the missing type Item
+error at public <T extends Item> void detach(final T... items) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:198:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void detach(final T... items) {
+                             ^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:198:0::0 The method detach(T...) of type AbstractModelService must override or implement a supertype method
+error at persistenceService.detach(Arrays.asList(items));
+                   ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:199:0::0 The method detach(java.util.List<T extends Item>) in the type PersistenceService is not applicable for the arguments (java.util.List<T extends Item>)
+error at public <T extends Item> void detach(final List<T> items) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:204:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void detach(final List<T> items) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:204:0::0 Name clash: The method detach(List<T>) of type AbstractModelService has the same erasure as detach(List<T>) of type ModelService but does not override it
+error at public <T extends Item> void detach(final List<T> items) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:204:0::0 The method detach(List<T>) of type AbstractModelService must override or implement a supertype method
+error at detach(items.toArray(new Item[0]));
+                         ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:205:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void setUserInformation(final List<T> models) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:214:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> void publishEvents(final List<T> items, final ModificationType modificationType) {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:237:0::0 Item cannot be resolved to a type
+error at eventService.multicastEvent(new ItemModificationEvent<>(item, modificationType));
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:241:0::0 Cannot infer type arguments for ItemModificationEvent<>
+error at public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:253:0::0 Item cannot be resolved to a type
+error at public <T extends Item> Object getPropertyValue(final T item, final String propertyName) {
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:253:0::0 The method getPropertyValue(T, String) of type AbstractModelService must override or implement a supertype method
+error at return getPropertyValue(item, propertyName, Item.class);
+       ^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:254:0::0 The method getPropertyValue(T, String) in the type AbstractModelService is not applicable for the arguments (T, String, Class<Item>)
+error at return getPropertyValue(item, propertyName, Item.class);
+                                            ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:254:0::0 Item cannot be resolved to a type
+error at public <T extends Item, V> V getLocalizedPropertyValue(final T item, final String propertyName,
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:259:0::0 Item cannot be resolved to a type
+error at public <T extends Item, V> V getLocalizedPropertyValue(final T item, final String propertyName,
+			final Class<V> valueType, final Locale locale) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:259:0::0 The method getLocalizedPropertyValue(T, String, Class<V>, Locale) of type AbstractModelService must override or implement a supertype method
+error at final Localizable<V> localizable = (Localizable<V>) ClassUtil.getField(item, propertyName, true);
+      ^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:262:0::0 Localizable cannot be resolved to a type
+error at final Localizable<V> localizable = (Localizable<V>) ClassUtil.getField(item, propertyName, true);
+                                    ^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:262:0::0 Localizable cannot be resolved to a type
+error at item.getClass().getSimpleName()));
+     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:268:0::0 The method getClass() from the type Object refers to the missing type Item
+error at public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:276:0::0 Item cannot be resolved to a type
+error at public <T extends Item, V> V getPropertyValue(final T item, final String propertyName, final Class<V> valueType) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:276:0::0 The method getPropertyValue(T, String, Class<V>) of type AbstractModelService must override or implement a supertype method
+error at public <T extends Item> void setLocalizedPropertyValue(final T item, final String propertyName,
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:282:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void setLocalizedPropertyValue(final T item, final String propertyName,
+			final Object propertyValue, final Locale locale) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:282:0::0 The method setLocalizedPropertyValue(T, String, Object, Locale) of type AbstractModelService must override or implement a supertype method
+error at Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:285:0::0 Localizable cannot be resolved to a type
+error at Localizable<Object> localizable = (Localizable<Object>) ClassUtil.getField(item, propertyName, true);
+                                   ^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:285:0::0 Localizable cannot be resolved to a type
+error at Field property = ClassUtil.getFieldDefinition(item.getClass(), propertyName, true);
+                                                   ^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:288:0::0 The method getClass() from the type Object refers to the missing type Item
+error at Optional<Localizable<Object>> newLocalizable = (Optional<Localizable<Object>>) ClassUtil.instantiate(propertyType);
+         ^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:293:0::0 Localizable cannot be resolved to a type
+error at Optional<Localizable<Object>> newLocalizable = (Optional<Localizable<Object>>) ClassUtil.instantiate(propertyType);
+                                                         ^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:293:0::0 Localizable cannot be resolved to a type
+error at item.getClass().getSimpleName()));
+     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:306:0::0 The method getClass() from the type Object refers to the missing type Item
+error at public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:312:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void setPropertyValue(final T item, final String propertyName, final Object propertyValue) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:312:0::0 The method setPropertyValue(T, String, Object) of type AbstractModelService must override or implement a supertype method
+error at public <T extends Item> boolean isAttached(final T item) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:318:0::0 Item cannot be resolved to a type
+error at public <T extends Item> boolean isAttached(final T item) {
+                                ^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:318:0::0 The method isAttached(T) of type AbstractModelService must override or implement a supertype method
+error at return persistenceService.isAttached(item);
+                          ^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:319:0::0 The method isAttached(T extends Item) in the type PersistenceService is not applicable for the arguments (T extends Item)
+error at public <T extends Item> void attach(final T item) throws ModelNotFoundException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:324:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void attach(final T item) throws ModelNotFoundException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:324:0::0 The method attach(T) of type AbstractModelService must override or implement a supertype method
+error at persistenceService.attach(item);
+                   ^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractModelService.java:325:0::0 The method attach(T extends Item) in the type PersistenceService is not applicable for the arguments (T extends Item)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractService.java
+info woven class io.spotnext.core.infrastructure.service.impl.AbstractService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/AbstractService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/BeanAware.java
+info woven class io.spotnext.core.infrastructure.service.impl.BeanAware (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/BeanAware.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultConfigurationService.java
+info woven class io.spotnext.core.infrastructure.service.impl.DefaultConfigurationService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultConfigurationService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultEventService.java
+info woven class io.spotnext.core.infrastructure.service.impl.DefaultEventService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultEventService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultI18nService.java
+info woven class io.spotnext.core.infrastructure.service.impl.DefaultI18nService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultI18nService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultImportService.java
+info woven class io.spotnext.core.infrastructure.service.impl.DefaultImportService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultImportService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultL10nService.java
+error at locResult = modelService.getByExample(locResult);
+                         ^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultL10nService.java:83:0::0 The method getByExample(T) in the type ModelService is not applicable for the arguments (LocalizationValue)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultLoggingService.java
+info woven class io.spotnext.core.infrastructure.service.impl.DefaultLoggingService (from /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultLoggingService.java)
+info compiling /Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java
+error at import io.spotnext.infrastructure.type.Item;
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:18:0::0 The import io.spotnext.infrastructure cannot be resolved
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.create(Class<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getAllByExample(T)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getPropertyValue(T, String, Class<V>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getPropertyValue(T, String)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.saveAll(List<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.saveAll(T...)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getAll(Class<T>, Map<String,Object>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getAll(ModelQuery<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.isAttached(T)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.removeAll(List<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.attach(T)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.detach(List<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.detach(T...)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.setLocalizedPropertyValue(T, String, Object, Locale)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.get(Class<T>, Map<String,Object>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.get(Class<T>, long)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.get(ModelQuery<T>)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.setPropertyValue(T, String, Object)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getLocalizedPropertyValue(T, String, Class<V>, Locale)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.save(T)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.refresh(T)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.remove(Class<T>, long)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.remove(T...)
+error at public class DefaultModelService extends AbstractModelService {
+             ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:29:0::0 The type DefaultModelService must implement the inherited abstract method ModelService.getByExample(T)
+error at public <T extends Item> void save(final T model)
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:33:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void save(final T model)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:33:0::0 The method save(T) of type DefaultModelService must override or implement a supertype method
+error at saveAll(model);
+^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:36:0::0 The method saveAll(T...) in the type DefaultModelService is not applicable for the arguments (T)
+error at public <T extends Item> void saveAll(final T... models)
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:41:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void saveAll(final T... models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:41:0::0 The method saveAll(T...) of type DefaultModelService must override or implement a supertype method
+error at saveAll(Arrays.asList(models));
+^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:44:0::0 The method saveAll(T...) in the type DefaultModelService is not applicable for the arguments (List<T>)
+error at saveAll(Arrays.asList(models));
+        ^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:44:0::0 Type mismatch: cannot convert from List<T> to T
+error at public <T extends Item> void saveAll(final List<T> models)
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:49:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void saveAll(final List<T> models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:49:0::0 Name clash: The method saveAll(List<T>) of type DefaultModelService has the same erasure as saveAll(List<T>) of type ModelService but does not override it
+error at public <T extends Item> void saveAll(final List<T> models)
+			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:49:0::0 The method saveAll(List<T>) of type DefaultModelService must override or implement a supertype method
+error at super.setUserInformation(models);
+      ^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:52:0::0 The method setUserInformation(java.util.List<T extends Item>) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>)
+error at super.applyPrepareInterceptors(models);
+      ^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:53:0::0 The method applyPrepareInterceptors(java.util.List<T extends Item>) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>)
+error at super.validateModels(models);
+      ^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:54:0::0 The method validateModels(java.util.List<T extends Item>) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>)
+error at persistenceService.save(models);
+                   ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:56:0::0 The method save(java.util.List<T extends Item>) in the type PersistenceService is not applicable for the arguments (java.util.List<T extends Item>)
+error at publishEvents(models, ModificationType.SAVE);
+^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:58:0::0 The method publishEvents(java.util.List<T extends Item>, io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>, io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType)
+error at public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:63:0::0 Item cannot be resolved to a type
+error at public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:63:0::0 Name clash: The method get(Class<T>, long) of type DefaultModelService has the same erasure as get(Class<T>, long) of type ModelService but does not override it
+error at public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:63:0::0 The method get(Class<T>, long) of type DefaultModelService must override or implement a supertype method
+error at final T item = persistenceService.load(type, pk);
+                                  ^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:64:0::0 The method load(java.lang.Class<T extends Item>, long) in the type PersistenceService is not applicable for the arguments (java.lang.Class<T extends Item>, long)
+error at applyLoadInterceptors(Collections.singletonList(item));
+^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:67:0::0 The method applyLoadInterceptors(java.util.List<T extends Item>) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>)
+error at publishEvents(Collections.singletonList(item), ModificationType.LOAD);
+^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:68:0::0 The method publishEvents(java.util.List<T extends Item>, io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType) in the type AbstractModelService is not applicable for the arguments (java.util.List<T extends Item>, io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType)
+error at public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters)
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:76:0::0 Item cannot be resolved to a type
+error at public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters)
+			throws ModelNotUniqueException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:76:0::0 Name clash: The method get(Class<T>, Map<String,Object>) of type DefaultModelService has the same erasure as get(Class<T>, Map<String,Object>) of type ModelService but does not override it
+error at public <T extends Item> T get(final Class<T> type, final Map<String, Object> searchParameters)
+			throws ModelNotUniqueException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:76:0::0 The method get(Class<T>, Map<String,Object>) of type DefaultModelService must override or implement a supertype method
+error at return get(new ModelQuery<>(type, searchParameters));
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:79:0::0 Cannot infer type arguments for ModelQuery<>
+error at public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:84:0::0 Item cannot be resolved to a type
+error at public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:84:0::0 Name clash: The method get(ModelQuery<T>) of type DefaultModelService has the same erasure as get(ModelQuery<T>) of type ModelService but does not override it
+error at public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
+                                               
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:84:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ModelQuery<T>
+error at public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:103:0::0 Item cannot be resolved to a type
+error at public <T extends Item> List<T> getAll(final Class<T> type, final Map<String, Object> searchParameters) {
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:103:0::0 Name clash: The method getAll(Class<T>, Map<String,Object>) of type DefaultModelService has the same erasure as getAll(Class<T>, Map<String,Object>) of type ModelService but does not override it
+error at public <T extends Item> List<T> getAll(final ModelQuery<T> query) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:109:0::0 Item cannot be resolved to a type
+error at public <T extends Item> List<T> getAll(final ModelQuery<T> query) {
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:109:0::0 Name clash: The method getAll(ModelQuery<T>) of type DefaultModelService has the same erasure as getAll(ModelQuery<T>) of type ModelService but does not override it
+error at public <T extends Item> List<T> getAll(final ModelQuery<T> query) {
+                                                        
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:109:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ModelQuery<T>
+error at protected <T extends Item> List<T> getAllInternal(final ModelQuery<T> query) {
+                     ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:118:0::0 Item cannot be resolved to a type
+error at protected <T extends Item> List<T> getAllInternal(final ModelQuery<T> query) {
+                                                                   
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:118:0::0 Bound mismatch: The type T is not a valid substitute for the bounded parameter <T extends Item> of the type ModelQuery<T>
+error at public <T extends Item> T getByExample(final T example) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:126:0::0 Item cannot be resolved to a type
+error at public <T extends Item> List<T> getAllByExample(final T example) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:142:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:155:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void remove(final Class<T> type, final long pk) {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:167:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void remove(final Class<T> type, final long pk) {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:167:0::0 Name clash: The method remove(Class<T>, long) of type DefaultModelService has the same erasure as remove(Class<T>, long) of type ModelService but does not override it
+error at public <T extends Item> void removeAll(final List<T> items) throws ModelNotFoundException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:175:0::0 Item cannot be resolved to a type
+error at public <T extends Item> void removeAll(final List<T> items) throws ModelNotFoundException {
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:175:0::0 Name clash: The method removeAll(List<T>) of type DefaultModelService has the same erasure as removeAll(List<T>) of type ModelService but does not override it
+error at public <T extends Item> void remove(final T... items) throws ModelNotFoundException {
+                  ^^
+/Users/matthias/Projekte/spOt/spot-framework/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/DefaultModelService.java:185:0::0 Item cannot be resolved to a type
+abort ABORT -- (UnsupportedOperationException) no glb for [<T extends Item>, [MISSING:Item]]
+no glb for [<T extends Item>, [MISSING:Item]]
+java.lang.UnsupportedOperationException: no glb for [<T extends Item>, [MISSING:Item]]
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.resolve(InferenceContext18.java:1140)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.solve(InferenceContext18.java:995)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.solve(InferenceContext18.java:1014)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.InferenceContext18.inferInvocationType(InferenceContext18.java:467)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding.computeCompatibleMethod18(ParameterizedGenericMethodBinding.java:268)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.ParameterizedGenericMethodBinding.computeCompatibleMethod(ParameterizedGenericMethodBinding.java:90)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.computeCompatibleMethod(Scope.java:814)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.computeCompatibleMethod(Scope.java:771)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.findMethod0(Scope.java:1764)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.findMethod(Scope.java:1665)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.Scope.getImplicitMethod(Scope.java:2672)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.MessageSend.resolveType(MessageSend.java:779)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.ReturnStatement.resolve(ReturnStatement.java:346)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration.resolveStatements(AbstractMethodDeclaration.java:644)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.MethodDeclaration.resolveStatements(MethodDeclaration.java:313)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.AbstractMethodDeclaration.resolve(AbstractMethodDeclaration.java:554)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.resolve(TypeDeclaration.java:1256)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.TypeDeclaration.resolve(TypeDeclaration.java:1370)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.ast.CompilationUnitDeclaration.resolve(CompilationUnitDeclaration.java:643)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.process(Compiler.java:904)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.processCompiledUnits(Compiler.java:573)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:473)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:424)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1107)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:276)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:189)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:114)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.codehaus.mojo.aspectj.AbstractAjcCompiler.execute(AbstractAjcCompiler.java:544)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:137)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:208)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:154)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:146)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:81)
+	at org.apache.maven.lifecycle.internal.builder.singlethreaded.SingleThreadedBuilder.build(SingleThreadedBuilder.java:56)
+	at org.apache.maven.lifecycle.internal.LifecycleStarter.execute(LifecycleStarter.java:128)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:305)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:192)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:105)
+	at org.apache.maven.cli.MavenCli.execute(MavenCli.java:954)
+	at org.apache.maven.cli.MavenCli.doMain(MavenCli.java:288)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:192)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launchEnhanced(Launcher.java:289)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.launch(Launcher.java:229)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.mainWithExitCode(Launcher.java:415)
+	at org.codehaus.plexus.classworlds.launcher.Launcher.main(Launcher.java:356)
+

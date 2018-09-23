@@ -119,15 +119,13 @@
 		<module>build-tools</module>
 		<module>spot-core-support</module>
 		<module>spot-instrumentation</module>
-		<module>spot-core-model-infrastructure</module>
+		<module>spot-core-infrastructure</module>
 		<module>spot-maven-plugin</module>
-		<module>spot-core-base-models</module>
 		<module>spot-core</module>
-		<module>spot-core-shell</module>
+		<!-- <module>spot-core-shell</module> -->
 		<module>spot-spring-web-support</module>
 		<module>spot-cms-base</module>
 		<module>spot-commerce-base</module>
-		<module>spot-commerce-spring-base</module>
 		<!-- <module>spot-mail</module> -->
 		<module>spot-sample-simple</module>
 		<module>archetype-empty</module>
@@ -196,6 +194,17 @@
 	</distributionManagement>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/gen/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -365,7 +374,7 @@
 						<verbose>false</verbose>
 						<forceAjcCompile>false</forceAjcCompile>
 						<preserveAllLocals>true</preserveAllLocals>
-						<proceedOnError>true</proceedOnError>
+						<proceedOnError>false</proceedOnError>
 
 					</configuration>
 					<executions>
@@ -387,7 +396,7 @@
 					<configuration>
 						<classFileTransformers>
 							<classFileTransformer>
-								io.spotnext.core.infrastructure.instrumentation.JpaEntityClassTransformer
+								io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer
 							</classFileTransformer>
 						</classFileTransformers>
 						<includeJars>false</includeJars>
@@ -491,6 +500,20 @@
 							<phase>deploy</phase>
 							<goals>
 								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.2</version>
+					<executions>
+						<execution>
+							<id>prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -696,7 +719,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
 									</action>
 								</pluginExecution>
 								<pluginExecution>

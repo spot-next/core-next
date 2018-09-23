@@ -159,9 +159,9 @@ First we add the new `Party` type:
 		<property name="title" type="String">
 			<description>The unique title of the party</description>
 			<modifiers unique="true" />
-			<validators>
-				<validator javaClass="javax.validation.constraints.NotNull" />
-			</validators>
+			<annotations>
+				<annotation javaClass="javax.validation.constraints.NotNull" />
+			</annotations>
 		</property>
 		<property name="motto" type="LocalizedString" localized="true">
 			<description>The localized motto of the party</description>
@@ -388,14 +388,10 @@ public class PartyModificationListener {
 
 As we are only interested in **save** events of parties that have the `fixed` property set to `true`, we add a condition to the `@EventListener` annotation:
 ```java
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
-import io.spotnext.core.infrastructure.event.ItemModificationEvent;
-import io.spotnext.test.types.itemtypes.Party;
 
 @EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
 public void handleEvent(final ItemModificationEvent<Party> event) {
-	final Party fixedParty = event.getItem();
+	...
 }
 ```
 
@@ -470,6 +466,7 @@ Now we can extend the `PartyModificationListener` to actually create `mail` obje
 package io.spotnext.test.listeners;
 
 import javax.annotation.Resource;
+
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.springframework.context.event.EventListener;

@@ -1,6 +1,7 @@
 package io.spotnext.test.persistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -25,7 +26,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Rule
 	public ExpectedException expectedExeption = ExpectedException.none();
-	
+
 	@Override
 	protected void prepareTest() {
 	}
@@ -35,20 +36,43 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	/**
-	 * The catalogVersion Default:Online already be available through the initial
-	 * data. Therefore saving a second item will cause a uniqueness constraint
-	 * violation.
+	 * The catalogVersion Default:Online already be available through the
+	 * initial data. Therefore saving a second item will cause a uniqueness
+	 * constraint violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
-		final Catalog catalog = modelService.get(Catalog.class,
-				Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
+		final Catalog catalog = modelService.get(Catalog.class, Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
 
 		final CatalogVersion version = modelService.create(CatalogVersion.class);
 		version.setCatalog(catalog);
 		version.setId("Online");
 
 		modelService.save(version);
+	}
+
+	private User createUser(final String id, final String shortName) {
+		final User user = modelService.create(User.class);
+		user.setId(id);
+		user.setShortName(shortName);
+		modelService.save(user);
+
+		return user;
+	}
+
+	@Test
+	public void testUniqueIdGenerator() {
+		final User user1 = createUser(null, "user-1");
+		final User user2 = createUser(null, "user-2");
+
+		// we don't care what the id values are, important is that those values
+		// were generated!
+
+		assertNotNull(user1.getId());
+		assertEquals("user-1", user1.getShortName());
+
+		assertNotNull(user2.getId());
+		assertEquals("user-2", user2.getShortName());
 	}
 
 	@Test
@@ -99,20 +123,17 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.getAddresses().add(address);
 
 		loggingService.debug("Addresses before save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
 		loggingService.debug("Addresses after save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
 		loggingService.debug("Addresses after load: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
 		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
@@ -208,14 +229,14 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Test
 	public void testValidateModelRecursively() {
 		expectedExeption.expect(ModelSaveException.class);
-		
-		// TODO: how to handle localized messages?
-//		expectedExeption.expectMessage("User.id must not be null");
 
-		UserGroup group = modelService.create(UserGroup.class);
+		// TODO: how to handle localized messages?
+		// expectedExeption.expectMessage("User.id must not be null");
+
+		final UserGroup group = modelService.create(UserGroup.class);
 		group.setId("test");
 
-		User user = modelService.create(User.class);
+		final User user = modelService.create(User.class);
 		group.getMembers().add(user);
 
 		modelService.save(group);

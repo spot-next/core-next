@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spotnext.core.infrastructure.exception.ValueResolverException;
 import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
-import io.spotnext.core.types.Localizable;
+import io.spotnext.infrastructure.type.Localizable;
 
 /**
  * <p>

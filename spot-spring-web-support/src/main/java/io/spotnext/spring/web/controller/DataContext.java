@@ -2,7 +2,7 @@ package io.spotnext.spring.web.controller;
 
 import org.springframework.ui.ModelMap;
 
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>DataContext class.</p>

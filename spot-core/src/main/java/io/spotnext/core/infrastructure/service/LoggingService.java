@@ -113,7 +113,7 @@ public interface LoggingService {
 	 * <p>log.</p>
 	 *
 	 * @see #log(LogLevel, String, Throwable, Object, Class)
-	 * @param level a {@link io.spotnext.core.infrastructure.support.LogLevel} object.
+	 * @param level a {@link io.spotnext.infrastructure.support.LogLevel} object.
 	 * @param message a {@link java.lang.String} object.
 	 * @param exception a {@link java.lang.Throwable} object.
 	 * @param object a {@link java.lang.Object} object.

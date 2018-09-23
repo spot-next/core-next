@@ -4,8 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
 /**
  * This is a generic item type DTO implementation.
@@ -30,7 +30,7 @@ public class GenericItemDefinitionData {
 	/**
 	 * <p>addProperty.</p>
 	 *
-	 * @param prop a {@link io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition} object.
+	 * @param prop a {@link io.spotnext.infrastructure.type.support.ItemTypePropertyDefinition} object.
 	 */
 	public void addProperty(ItemTypePropertyDefinition prop) {
 		properties.add(prop);

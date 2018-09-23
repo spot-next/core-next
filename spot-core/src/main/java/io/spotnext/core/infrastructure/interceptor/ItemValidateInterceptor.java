@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.interceptor;
 
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemValidateInterceptor interface.</p>
@@ -17,7 +17,7 @@ public interface ItemValidateInterceptor<T extends Item> extends ItemInterceptor
 	 *
 	 * @param item
 	 *            The item to be saved
-	 * @throws io.spotnext.core.infrastructure.exception.ModelValidationException
+	 * @throws io.spotnext.infrastructure.exception.ModelValidationException
 	 *             Can be thrown if the item is not valid
 	 */
 	void onValidate(T item) throws ModelValidationException;

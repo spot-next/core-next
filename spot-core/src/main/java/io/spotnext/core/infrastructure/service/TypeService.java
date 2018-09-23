@@ -2,11 +2,11 @@ package io.spotnext.core.infrastructure.service;
 
 import java.util.Map;
 
-import io.spotnext.core.infrastructure.annotation.ItemType;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
-import io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.annotation.ItemType;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
 /**
  * <p>TypeService interface.</p>
@@ -29,8 +29,8 @@ public interface TypeService {
 	 * Returns the item definition for the given type.
 	 *
 	 * @param typeCode a {@link java.lang.String} object.
-	 * @return a {@link io.spotnext.core.infrastructure.support.ItemTypeDefinition} object.
-	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 * @return a {@link io.spotnext.infrastructure.type.support.ItemTypeDefinition} object.
+	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	ItemTypeDefinition getItemTypeDefinition(String typeCode) throws UnknownTypeException;
 
@@ -39,12 +39,12 @@ public interface TypeService {
 	 *
 	 * @param typeCode a {@link java.lang.String} object.
 	 * @return a {@link java.lang.Class} object.
-	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	Class<? extends Item> getClassForTypeCode(String typeCode) throws UnknownTypeException;
 
 	/**
-	 * Returns the typeCode (from {@link io.spotnext.core.infrastructure.annotation.ItemType#typeCode()} of the given
+	 * Returns the typeCode (from {@link io.spotnext.infrastructure.annotation.ItemType#typeCode()} of the given
 	 * class. If this property is not set, the {@link java.lang.Class#getSimpleName()} is
 	 * returned instead.
 	 *
@@ -60,9 +60,9 @@ public interface TypeService {
 	 * @param typeCode
 	 *            of the item of which the item type properties should be
 	 *            fetched.
-	 * @return Map of {@link io.spotnext.core.infrastructure.support.ItemTypePropertyDefinition}, typeCode is used as
+	 * @return Map of {@link io.spotnext.infrastructure.type.support.ItemTypePropertyDefinition}, typeCode is used as
 	 *         key
-	 * @throws io.spotnext.core.infrastructure.exception.UnknownTypeException if any.
+	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	Map<String, ItemTypePropertyDefinition> getItemTypeProperties(String typeCode) throws UnknownTypeException;
 

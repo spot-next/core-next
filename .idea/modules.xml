@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/build-tools/build-tools.iml" filepath="$PROJECT_DIR$/build-tools/build-tools.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" filepath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" filepath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spot-commerce-spring-base/spot-commerce-spring-base.iml" filepath="$PROJECT_DIR$/spot-commerce-spring-base/spot-commerce-spring-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core/spot-core.iml" filepath="$PROJECT_DIR$/spot-core/spot-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-base-models/spot-core-base-models.iml" filepath="$PROJECT_DIR$/spot-core-base-models/spot-core-base-models.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-model-infrastructure/spot-core-model-infrastructure.iml" filepath="$PROJECT_DIR$/spot-core-model-infrastructure/spot-core-model-infrastructure.iml" />

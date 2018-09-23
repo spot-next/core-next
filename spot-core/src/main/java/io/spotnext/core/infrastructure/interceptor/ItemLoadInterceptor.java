@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.interceptor;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemLoadInterceptor interface.</p>
@@ -17,7 +17,7 @@ public interface ItemLoadInterceptor<T extends Item> extends ItemInterceptor<T> 
 	 *
 	 * @param item
 	 *            The loaded item
-	 * @throws io.spotnext.core.infrastructure.exception.ItemInterceptorException
+	 * @throws io.spotnext.infrastructure.exception.ItemInterceptorException
 	 *             If thrown the item instantiation will be cancelled.
 	 */
 	void onLoad(T item) throws ItemInterceptorException;

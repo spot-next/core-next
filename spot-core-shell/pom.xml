@@ -67,7 +67,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.spot-next</groupId>
-			<artifactId>spot-core-model-infrastructure</artifactId>
+			<artifactId>spot-core-infrastructure</artifactId>
 			<version>${revision}</version>
 		</dependency>
 

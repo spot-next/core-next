@@ -118,7 +118,7 @@
 
 		<dependency>
 			<groupId>io.spot-next</groupId>
-			<artifactId>spot-core-model-infrastructure</artifactId>
+			<artifactId>spot-core-infrastructure</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 

@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemModificationEvent class.</p>
@@ -22,7 +22,7 @@ public class ItemModificationEvent<T extends Item> extends ApplicationEvent impl
 	 * <p>Constructor for ItemModificationEvent.</p>
 	 *
 	 * @param source a T object.
-	 * @param modificationType a {@link io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType} object.
+	 * @param modificationType a {@link io.spotnext.infrastructure.event.ItemModificationEvent.ModificationType} object.
 	 */
 	public ItemModificationEvent(final T source, final ModificationType modificationType) {
 		super(source);
@@ -32,7 +32,7 @@ public class ItemModificationEvent<T extends Item> extends ApplicationEvent impl
 	/**
 	 * <p>Getter for the field <code>modificationType</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType} object.
+	 * @return a {@link io.spotnext.infrastructure.event.ItemModificationEvent.ModificationType} object.
 	 */
 	public ModificationType getModificationType() {
 		return modificationType;

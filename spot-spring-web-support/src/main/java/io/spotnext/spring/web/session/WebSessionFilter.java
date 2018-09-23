@@ -21,7 +21,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Sets the current session calling
- * {@link io.spotnext.core.infrastructure.service.SessionService#setCurrentSession(Session)}.
+ * {@link io.spotnext.infrastructure.service.SessionService#setCurrentSession(Session)}.
  *
  * @author mojo2012
  * @version 1.0

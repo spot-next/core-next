@@ -19,7 +19,7 @@ import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemDeserializer class.</p>
@@ -98,6 +98,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
 		try {
 			if (!getModelService().isAttached(deserializedItem)) {
+//				getModelService().attach(deserializedItem);
 				getModelService().refresh(deserializedItem);
 			}
 		} catch (final ModelNotFoundException e) {
@@ -117,7 +118,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	/**
 	 * <p>Getter for the field <code>typeService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
 	public TypeService getTypeService() {
 		if (typeService == null) {
@@ -130,7 +131,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	/**
 	 * <p>Getter for the field <code>modelService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public ModelService getModelService() {
 		if (modelService == null) {

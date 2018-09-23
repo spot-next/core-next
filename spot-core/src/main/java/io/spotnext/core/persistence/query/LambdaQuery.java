@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.spotnext.core.persistence.query.lambda.SerializablePredicate;
-
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>LambdaQuery class.</p>

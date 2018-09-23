@@ -11,9 +11,9 @@ import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.core.security.strategy.PasswordEncryptionStrategy;
-import io.spotnext.core.support.util.ValidationUtil;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * <p>DefaultAuthenticationService class.</p>

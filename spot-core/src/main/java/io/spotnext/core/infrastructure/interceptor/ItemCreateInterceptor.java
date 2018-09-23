@@ -1,7 +1,7 @@
 package io.spotnext.core.infrastructure.interceptor;
 
 import io.spotnext.core.infrastructure.exception.ModelCreationException;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>ItemCreateInterceptor interface.</p>
@@ -17,7 +17,7 @@ public interface ItemCreateInterceptor<T extends Item> extends ItemInterceptor<T
 	 *
 	 * @param item
 	 *            the newly instantiated item instance
-	 * @throws io.spotnext.core.infrastructure.exception.ModelCreationException
+	 * @throws io.spotnext.infrastructure.exception.ModelCreationException
 	 *             if thrown the item instantiation will be cancelled
 	 */
 	void onCreate(T item) throws ModelCreationException;

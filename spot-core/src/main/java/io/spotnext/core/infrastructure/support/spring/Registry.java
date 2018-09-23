@@ -119,7 +119,7 @@ public class Registry implements ApplicationContextAware {
 	/**
 	 * <p>Getter for the field <code>typeService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.TypeService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
 	public static TypeService getTypeService() {
 		if (typeService == null)
@@ -131,7 +131,7 @@ public class Registry implements ApplicationContextAware {
 	/**
 	 * <p>Getter for the field <code>modelService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.ModelService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
 	public static ModelService getModelService() {
 		if (modelService == null)
@@ -143,7 +143,7 @@ public class Registry implements ApplicationContextAware {
 	/**
 	 * <p>Getter for the field <code>loggingService</code>.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.service.LoggingService} object.
+	 * @return a {@link io.spotnext.infrastructure.service.LoggingService} object.
 	 */
 	public static LoggingService getLoggingService() {
 		if (loggingService == null)
@@ -175,7 +175,7 @@ public class Registry implements ApplicationContextAware {
 	/**
 	 * <p>getBuildInfos.</p>
 	 *
-	 * @return a {@link io.spotnext.core.infrastructure.support.spring.BuildInfo} object.
+	 * @return a {@link io.spotnext.infrastructure.support.spring.BuildInfo} object.
 	 */
 	public static BuildInfo getBuildInfos() {
 		return (BuildInfo) Registry.getApplicationContext().getBean("buildInfo");

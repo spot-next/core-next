@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Configuration;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>Abstract AbstractBaseAspect class.</p>

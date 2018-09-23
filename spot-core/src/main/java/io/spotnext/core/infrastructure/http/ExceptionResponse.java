@@ -21,7 +21,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>notImplemented.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse notImplemented(Exception exception) {
 		return new ExceptionResponse(HttpStatus.NOT_IMPLEMENTED, exception);
@@ -31,7 +31,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>badGateway.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse badGateway(Exception exception) {
 		return new ExceptionResponse(HttpStatus.BAD_GATEWAY, exception);
@@ -41,7 +41,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>serviceUnavailable.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse serviceUnavailable(Exception exception) {
 		return new ExceptionResponse(HttpStatus.SERVICE_UNAVAILABLE, exception);
@@ -51,7 +51,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>gatewayTimeout.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse gatewayTimeout(Exception exception) {
 		return new ExceptionResponse(HttpStatus.GATEWAY_TIMEOUT, exception);
@@ -61,7 +61,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>internalServerError.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse internalServerError(Exception exception) {
 		return new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception);
@@ -70,9 +70,9 @@ public class ExceptionResponse extends AbstractResponse {
 	/**
 	 * <p>withStatus.</p>
 	 *
-	 * @param httpStatus a {@link io.spotnext.core.infrastructure.http.HttpStatus} object.
+	 * @param httpStatus a {@link io.spotnext.infrastructure.http.HttpStatus} object.
 	 * @param exception a {@link java.lang.Exception} object.
-	 * @return a {@link io.spotnext.core.infrastructure.http.ExceptionResponse} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse withStatus(HttpStatus httpStatus, Exception exception) {
 		return new ExceptionResponse(httpStatus, exception);

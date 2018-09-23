@@ -9,9 +9,9 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.ItemTypeDefinition;
-import io.spotnext.core.support.util.ClassUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>TypeServicePersistenceUnitPostProcessor class.</p>

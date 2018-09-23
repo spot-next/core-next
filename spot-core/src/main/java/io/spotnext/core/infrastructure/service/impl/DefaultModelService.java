@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -14,11 +15,13 @@ import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.query.ModelQuery;
-import io.spotnext.core.support.util.ValidationUtil;
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
- * <p>DefaultModelService class.</p>
+ * <p>
+ * DefaultModelService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -84,11 +87,11 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
 		final List<T> items = getAllInternal(query);
 
-		if (items.size() > 1) {
+		if (items != null && items.size() > 1) {
 			throw new ModelNotUniqueException("Found more than 1 result for the given search parameters");
 		}
 
-		if (items.size() > 0) {
+		if (CollectionUtils.isNotEmpty(items)) {
 			applyLoadInterceptors(Collections.singletonList(items.get(0)));
 			publishEvents(items, ModificationType.LOAD);
 

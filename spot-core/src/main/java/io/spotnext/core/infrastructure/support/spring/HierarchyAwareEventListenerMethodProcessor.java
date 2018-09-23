@@ -18,7 +18,7 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.CollectionUtils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.support.util.ClassUtil;
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * This class alters spring's {@link org.springframework.context.event.EventListenerMethodProcessor} to always

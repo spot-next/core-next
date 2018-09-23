@@ -2,7 +2,7 @@ package io.spotnext.core.persistence.query;
 
 import java.util.function.Predicate;
 
-import io.spotnext.core.types.Item;
+import io.spotnext.infrastructure.type.Item;
 
 /**
  * <p>QueryCondition interface.</p>
