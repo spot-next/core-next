@@ -62,4 +62,9 @@ public class HibernateSequenceGenerator implements SequenceGenerator {
 
 		return sequence;
 	}
+
+	@Override
+	public long getCurrentSequenceValue(final String sequenceName) {
+		return currentId;
+	}
 }

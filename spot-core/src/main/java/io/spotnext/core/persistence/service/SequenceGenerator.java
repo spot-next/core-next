@@ -17,8 +17,16 @@ public interface SequenceGenerator {
 	 * @param sequenceName
 	 *            the sequence used to retrieve the next value
 	 * @return a long.
-	 * @throws io.spotnext.core.persistence.exception.SequenceAccessException if any.
+	 * @throws io.spotnext.core.persistence.exception.SequenceAccessException
+	 *             if any.
 	 */
 	long getNextSequenceValue(String sequenceName) throws SequenceAccessException;
+
+	/**
+	 * @param sequenceName
+	 *            the sequence used to retrieve the next value
+	 * @return the current sequence value
+	 */
+	long getCurrentSequenceValue(String sequenceName);
 
 }

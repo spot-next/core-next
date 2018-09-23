@@ -1,5 +1,6 @@
 package io.spotnext.core.persistence.query;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -25,10 +26,15 @@ public class QueryResult<T> {
 	 *            the page size
 	 */
 	public QueryResult(final List<T> results, final int page, final int pageSize) {
-		this.results = results;
+		if (results != null) {
+			this.results = results;
+		} else {
+			this.results = Collections.emptyList();
+		}
+
+		this.resultCount = this.results.size();
 		this.page = page;
 		this.pageSize = pageSize;
-		this.resultCount = results.size();
 	}
 
 	/**
@@ -69,8 +75,8 @@ public class QueryResult<T> {
 	/**
 	 * @return the amount of result objects.
 	 */
-	public List<T> getResults() {
-		return results;
+	public int getResultCount() {
+		return resultCount;
 	}
 
 }
