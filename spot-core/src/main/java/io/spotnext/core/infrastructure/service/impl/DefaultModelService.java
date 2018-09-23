@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -18,7 +19,9 @@ import io.spotnext.infrastructure.type.Item;
 import io.spotnext.support.util.ValidationUtil;
 
 /**
- * <p>DefaultModelService class.</p>
+ * <p>
+ * DefaultModelService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
