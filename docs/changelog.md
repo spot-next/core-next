@@ -1,5 +1,11 @@
 # Change Log
 
+## **1.0.10-BETA** `2018-09-23`
+- Lots of fixes related to transaction handling
+- Updated/fixed quickstart
+- Improved Eclipse/m2e integration (types are generated and woven/transformed automatically from eclipse on workspace refresh)
+- 
+
 ## **1.0.9-BETA** `2018-09-12`
 - Lots of impex fixes
 - Build system fixes (type generation and transformation)
