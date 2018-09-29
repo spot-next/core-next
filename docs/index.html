@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="spOt framework">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="/resources/spot_icon.ico">
   <link rel="stylesheet" href="node_modules/docsify-themeable/dist/css/theme-simple.css">
   <style>
 	:root {
@@ -28,10 +29,27 @@
 		color: black;
 		font-size: 25px;
 	}
+
+  img.plantuml {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  ul li ul li a {
+    font-size: 15px;
+  }
+
+  /* third sidebar header layer */
+  ul li ul ul li a {
+    font-size: 14px;
+
+  }
   </style>
 </head>
 <body>
   <div id="app"></div>
+  <script src="javascript/plantuml-encoder.min.js"></script>
   <script src="node_modules/mermaid/dist/mermaid.min.js"></script>
   
   <script>
@@ -39,7 +57,39 @@
       startOnLoad: false,
       "theme": null
     });
-    
+
+    var plantUmlConfig = "skinparam { \n\
+      BackgroundColor<<Strong>>  #66ffcc \n\
+      \
+      componentStyle              uml2 \n\
+      defaultTextAlignment        center \n\
+      \n\
+      Shadowing                   false \n\
+      BackgroundColor             transparent \n\
+      ArrowColor                  #888a88 \n\
+      ActorBackgroundColor        #F1FCE7 \n\
+      \n\
+      ComponentBackgroundColor    #F1FCE7 \n\
+      ClassBackgroundColor        #F1FCE7 \n\
+      ParticipantBackgroundColor  #F1FCE7 \n\
+      UsecaseBackgroundColor      #F1FCE7 \n\
+      LifeLineBackgroundColor     #F1FCE7 \n\
+      \n\
+      ActorBorderColor            #555 \n\
+      LifeLineBorderColor         #555 \n\
+      ComponentBorderColor        #555 \n\
+      ParticipantBorderColor      #555 \n\
+      SequenceLifeLineBorderColor #555 \n\
+      \n\
+      UsecaseBorderThickness      1 \n\
+      TitleBorderThickness        1 \n\
+      RectangleBorderThickness    1 \n\
+      ComponentBorderThickness    1 \n\
+      ParticipantBorderThickness  1 \n\
+      ClassBorderThickness        1 \n\
+    }\n\
+    \n";
+
     window.$docsify = {
       name: 'spOt framework',
       repo: 'https://github.com/spot-next/spot-framework',
@@ -55,15 +105,19 @@
       themeable : { 
         // readyTransition : false, 
         // responsiveTables: false 
-      }
-      ,markdown: {
+      },
+      markdown: {
         renderer: {
           code: function(code, lang) {
             if (lang === "mermaid") {
               return (
                 '<div class="mermaid">' + mermaid.render(lang, code) + "</div>"
               );
+            } else if (lang === 'plantuml') {
+              var plantUmlCode = plantUmlConfig + code;
+              return '<img class="plantuml" src="http://www.plantuml.com/plantuml/png/' + plantumlEncoder.encode(plantUmlCode) + '">';
             }
+
             return this.origin.code.apply(this, arguments);
           }
         }
@@ -74,6 +128,7 @@
   <script src="node_modules/docsify-themeable/dist/js/docsify-themeable.min.js"></script>
   <script src="node_modules/docsify/lib/plugins/search.min.js"></script>
   <script src="node_modules/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script src="node_modules/docsify/lib/plugins/external-script.min.js"></script>
   
   <script src="node_modules/prismjs/components/prism-java.min.js"></script>
   <script src="node_modules/prismjs/components/prism-json.min.js"></script>
