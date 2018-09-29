@@ -28,6 +28,10 @@
 				<groupId>io.spot-next</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+			</plugin>
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
@@ -60,11 +64,6 @@
 			</plugin>
 
 			<!-- RELEASE -->
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-			</plugin>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

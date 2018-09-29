@@ -485,7 +485,8 @@
 					<version>3.0.5</version>
 					<configuration>
 						<effort>Max</effort>
-						<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
+						<!-- Enables analysis which takes more memory but finds more bugs. 
+							If you run out of memory, changes the value of the effort element to 'low'. -->
 						<effort>medium</effort>
 						<!-- Reports all bugs (other values are medium and max) -->
 						<threshold>Low</threshold>
@@ -699,7 +700,8 @@
 				</plugin>
 
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -779,6 +781,23 @@
 										</execute>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>pl.project13.maven</groupId>
+										<artifactId>git-commit-id-plugin</artifactId>
+										<versionRange>[2.0.0,)</versionRange>
+										<goals>
+											<goal>revision</goal>
+											<goal>validateRevision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -795,7 +814,8 @@
 				<version>3.0.5</version>
 				<configuration>
 					<skip>true</skip>
-					<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
+					<!-- Enables analysis which takes more memory but finds more bugs. If 
+						you run out of memory, changes the value of the effort element to 'low'. -->
 
 					<effort>Max</effort>
 					<!-- Reports all bugs (other values are medium and max) -->
