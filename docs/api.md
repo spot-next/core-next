@@ -1,6 +1,12 @@
 # API documentation
 
 ## Architecture
+The spot framework is build upon the Spring Boot framework. Every spot application has a main `Init` class that basically is just a Spring application class:
+[SampleInit](//raw.githubusercontent.com/spot-next/spot-framework/develop/spot-sample-simple/src/main/java/io/spotnext/sample/SampleInit.java ':include :type=code')
+
+### Overview
+
+
 ### Infrastructure services
 #### ModelService
 #### ImportService

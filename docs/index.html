@@ -32,10 +32,17 @@
 </head>
 <body>
   <div id="app"></div>
+  <script src="node_modules/mermaid/dist/mermaid.min.js"></script>
+  
   <script>
+    mermaid.initialize({ 
+      startOnLoad: false,
+      "theme": null
+    });
+    
     window.$docsify = {
       name: 'spOt framework',
-      repo: 'https://github.com/mojo2012/spot-framework',
+      repo: 'https://github.com/spot-next/spot-framework',
       coverpage: 'coverpage.md',
       formatUpdated: '{YYYY}-{MM}-{DD} {HH}:{mm}',
       loadSidebar: true,
@@ -49,6 +56,18 @@
         // readyTransition : false, 
         // responsiveTables: false 
       }
+      ,markdown: {
+        renderer: {
+          code: function(code, lang) {
+            if (lang === "mermaid") {
+              return (
+                '<div class="mermaid">' + mermaid.render(lang, code) + "</div>"
+              );
+            }
+            return this.origin.code.apply(this, arguments);
+          }
+        }
+      }
     }
   </script>
   <script src="node_modules/docsify/lib/docsify.min.js"></script>
@@ -56,14 +75,27 @@
   <script src="node_modules/docsify/lib/plugins/search.min.js"></script>
   <script src="node_modules/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
   
-<script src="node_modules/prismjs/components/prism-java.min.js"></script>
-<script src="node_modules/prismjs/components/prism-json.min.js"></script>
-<script src="node_modules/prismjs/components/prism-bash.min.js"></script>
-<script src="node_modules/prismjs/components/prism-http.min.js"></script>
-<script src="node_modules/prismjs/components/prism-properties.min.js"></script>
-<script src="node_modules/prismjs/components/prism-sql.min.js"></script>
-<script src="node_modules/prismjs/components/prism-markup.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-java.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-json.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-bash.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-http.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-properties.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-sql.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-markup.min.js"></script>
 
+  <style>
+    /* mermaid css */
+    #mermaid .node rect { 
+      /*fill: #87db35;*/
+      fill: #F1FCE7;
+      stroke: #888a88;
+      stroke-width: 1.5px;
+    }
 
+    #mermaid .edgePath .path {
+      stroke: #888a88;
+      stroke-width: 1.5px;
+    }
+  </style>
 </body>
 </html>
