@@ -1,4 +1,4 @@
-<a href="/#/quickstart">
+<a href="/#/intro">
 <img class="logo-coverpage" src="/resources/spot_logo.svg" width="400">
 </a>
 <h1>easy to learn • powerful • versatile</h1>
