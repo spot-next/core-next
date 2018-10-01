@@ -1,0 +1,12 @@
+@startuml Item lifecycle
+
+Create ->[ItemCreateInterceptor.onCreate(...)] Manipulate
+Manipulate -down->[ItemPrepareInterceptor.onPrepare(...)] Prepare
+Prepare -down->[ItemValidateInterceptor.onValidate(...)] Validate
+Validate -right-> Save
+Save -right-> (*)
+Save -up-> Manipulate
+Load -left->[ItemLoadInterceptor.onLoad(...)] Manipulate
+Load -down-> Delete
+
+@enduml

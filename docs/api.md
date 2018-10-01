@@ -26,20 +26,7 @@ public class SampleInit extends ModuleInit {
 
 The `SampleInit` initializes a Spring parent context (based on the `CoreInit` application configuration) and sets the `SampleInit` application as its sibling:
 
-```plantuml
-    rectangle "Spring context" {
-        component CoreInit #WhiteSmoke [
-            <b>CoreInit application</b>
-            (parent context)
-        ]
-        component SampleInit [
-            <b>SampleInit</b>
-            (custom child context)
-        ] 
-
-        CoreInit <-- SampleInit
-    }
-```
+[](diagrams/spring_setup.plantuml ':include :type=plantuml')
 
 There are a few **differences to a standard Spring Boot setup** though.
 
@@ -49,12 +36,13 @@ To setup the Spring contexts the `ModuleInit.bootstrap(...)` method is used, ins
 #### Event handling
 Event handling on the other hand, is a bit different. Event handler methods that are annotated with `@EventListener` are registered in the **parent context** instead of the current child context (via ``io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor`). Therefore not only events published in the parent context are delivered to all child context, but also events fired in **any** child context are.
 To publish such a global event in a child context, it is necessary to facilitate the `io.spotnext.core.infrastructure.service.EventService`:
-```java
-    // asynchronous event publishing
-    eventService.multicastEvent(new CustomEvent()));
 
-    //synchronous event publishing
-    eventService.publishEvent(new CustomEvent()));
+```java
+// asynchronous event publishing
+eventService.multicastEvent(new CustomEvent()));
+
+//synchronous event publishing
+eventService.publishEvent(new CustomEvent()));
 ```
 
 > Global event handling is only enabled for **annotation-based** event handlers
@@ -86,28 +74,7 @@ It's possible to defined different kinds of types:
 
 To work with Item types neither Spring repositories nor direct usage of the JPA/Hibernate API is used. Instead `ModelService` and `QueryService` provide functionality to deal with the Item type lifecycle.
 
-```plantuml
-
-    frame "Persistence layer" as PersLayer {
-        component QueryService [
-            QueryService
-        ]
-        component ModelService [
-            ModelService
-        ]
-        component PersistenceService #WhiteSmoke [
-            PersistenceService
-        ]
-        component TypeService #WhiteSmoke [
-            TypeService
-        ]
-
-        QueryService --> PersistenceService
-        ModelService --> PersistenceService
-        ModelService --> TypeService
-        PersistenceService -> TypeService
-    }
-```
+[](diagrams/persistence_layer.plantuml ':include :type=plantuml')
 
 The items definitions can be accessed using the `TypeService` at runtime too.
 
@@ -144,21 +111,12 @@ It is an advantage to have Spring know-how to make the best out of spot. You won
 ### Persistence operations
 One of the fundamental aspects of spot is the "everything is an object" mantra. Therefore one of the most important services is the `ModelService`. It provides basic functinality to handle `Item`s (also called "models", or "entities" in JPA).
 
-### Item lifecycle
+#### Item lifecycle
 The basic item lifecycle looks like this:
 
-```plantuml
-   Create ->[ItemCreateInterceptor.onCreate(...)] Manipulate
-   Manipulate -down->[ItemPrepareInterceptor.onPrepare(...)] Prepare
-   Prepare -down->[temValidateInterceptor.onValidate(...)] Validate
-   Validate -right-> Save
-   Save -right-> (*)
-   Save -up-> Manipulate
-   Load -left->[ItemLoadInterceptor.onLoad(...)] Manipulate
-   Load -down-> Delete
-   Delete -left->[ItemRemoveInterceptor.onRemove(...)] (*)
-```
+[](diagrams/item_lifecycle.plantuml ':include :type=plantuml')
 
+#### Item modification interceptors
 The `ItemInterceptor`s provide a way to inject business logic into the persistence operations. **This API is not implemented using Hibernate or JPA APIs**. Instead a generic approach has been chosen. It is enough to extend the `io.spotnext.core.infrastructure.interceptor.impl.AbstractItemInterceptor` and implement one of:
 * `ItemCreateInterceptor`
 * `ItemPrepareInterceptor`
@@ -166,31 +124,85 @@ The `ItemInterceptor`s provide a way to inject business logic into the persiste
 * `ItemLoadInterceptor`
 * `ItemRemoveInterceptor`
 
-By extending the base class the new interceptor is also registered in the interceptor registry.
+By extending the base class the new interceptor is registered in the interceptor registry and will automatically called. It is perfectly valid to throw the defined exceptions from the interceptors - though this will cancel the ongoing persistence operation.
 
 A good example for a prepare interceptor is the `io.spotnext.core.infrastructure.interceptor.impl.UniqueIdItemSaveInterceptor`. It generates a unique "business key" for each item extending `UniqueIdItem`:
 
 [](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java ':include')
 
-#### Create items
-This is the way to instantiate a new item:
+#### Item modification events
+Interceptors are called synchronously and therefore have a high impact on the performance of persistence operations. So if you plan on doing some heavy work bound to a specific persistence operation, using `ItemModificationEvent`s is a better idea - they are called asynchronously. You can subscribe to such an event by using Spring's annotation-based handling mechanism:
 
+[PartyModificationListener](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-sample-simple/src/main/java/io/spotnext/sample/listeners/PartyModificationListener.java ':include')
+
+The handled item can be accessed using `ItemModificationEvent.getItem()` (used in the condition SPEL expression). Furthermore the kind of modification is expose through `ItemModificationEvent.getModificationType()`.
+
+#### ModelService API
+Handling the various item persistence operations is achived by utilising the `ModelService`.
+
+This is the way to instantiate and save a new item:
 ```java
-    final User user = modelService.create(User.class);
-    user.setId(id);
-    user.setShortName(shortName);
-    
-    modelService.save(user);
-```
-> It is always recommenced to use the `modelService.create(...)` method for instantiation. Otherwise the `io.spotnext.core.infrastructure.interceptor.ItemCreateInterceptor` would not be invoked. See
+final User user = modelService.create(User.class);
+user.setId(id);
+user.setShortName(shortName);
 
+modelService.save(user);
+```
+> It is always recommenced to use the `modelService.create(...)` method for instantiation. Otherwise the `io.spotnext.core.infrastructure.interceptor.ItemCreateInterceptor` would not be invoked.
 
 As long as the current thread is active the model is registered in the Hibernate session. If you reuse threads, for example when using an `ExecutorService`, it is necessary to close the session manually: `persistenceService.unbindSession();`. This not just frees up some memory (by empting the session cache) but also prevents some tricky caching issues and other Hibernate problems.
 
-A Hibernate session can only contain **one** physical instance of an entity. If you load fetch the same entity again, it is loaded from the session cache. If in the mean time the item has been altered, the cached item might not represent the most up-to-date version. This can later lead to `OptimisticLockException` or similar.
+A Hibernate session can only contain **one** physical instance of an entity. If you load the same entity again, it is loaded from the session cache. If in the mean time the item has been altered, the cached item might not represent the most up-to-date version. This can later lead to `OptimisticLockException` or similar.
 
-As long as an item is unsaved, its `version` property is `-1`. This property is used for optmistic locking and will be increased each time the item is saved (using an `UPDATE ... WHERE` clause)
-If updating fails
+> As long as an item is unsaved, its `version` property is `-1`. This property is used for optmistic locking and will be increased each time the item is saved (using an `UPDATE ... WHERE` clause)
+
+Already persisted Item instances can be removed using `ModelService.remove(...)`.
+
+##### Model queries
+Items can be queried in various ways
+
+Query by example:
+```java
+final LocalizationValue example = new LocalizationValue();
+example.setId("test.key");
+example.setLocale(Locale.ENGLISH);
+final LocalizationValue loaded = modelService.getByExample(example);
+```
+
+Query by key-value pairs
+
+
+Query using JPQL:
+```java
+final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
+query.addParam("id", "testUser");
+query.setEagerFetchRelations(true);
+final QueryResult<UserGroup> result = queryService.query(query);
+```
+
+Type-safe queries:
+```java
+final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testUser"));
+final QueryResult<User> result = queryService.query(query);
+```
+> Internally a JPQL query will be generated!
+
+JPQL queries with complex non-Item type results:
+```java
+final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id", UserData.class);
+query.addParam("id", "testUser");
+final QueryResult<UserData> result = queryService.query(query);
+```
+
+JPQL queries with primitive results:
+```java
+final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id = :id", String.class);
+query.addParam("id", "testUser");
+final QueryResult<String> result = queryService.query(query);
+```
+
+##### Other operations
+
 
 #### ImportService
 #### ConversionService

@@ -34,7 +34,6 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 	/** {@inheritDoc} */
 	@Override
 	public void onPrepare(final UniqueIdItem item) throws ItemInterceptorException {
-
 		try {
 			// only get a new sequence id if the id property is empty to save
 			// some ids
@@ -48,5 +47,4 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 			throw new ItemInterceptorException("Could not generate unique id for item.", e);
 		}
 	}
-
 }
