@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,7 +41,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	protected void teardownTest() {
 	}
 
-//	@Ignore
+	@Ignore
 	@Test
 	public void testDuplicateEntityAttachedToPersistenceContext() {
 		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
