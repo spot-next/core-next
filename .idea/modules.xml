@@ -7,8 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" filepath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" filepath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core/spot-core.iml" filepath="$PROJECT_DIR$/spot-core/spot-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spot-core-base-models/spot-core-base-models.iml" filepath="$PROJECT_DIR$/spot-core-base-models/spot-core-base-models.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spot-core-model-infrastructure/spot-core-model-infrastructure.iml" filepath="$PROJECT_DIR$/spot-core-model-infrastructure/spot-core-model-infrastructure.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" filepath="$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" filepath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-support/spot-core-support.iml" filepath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-framework.iml" filepath="$PROJECT_DIR$/spot-framework.iml" />

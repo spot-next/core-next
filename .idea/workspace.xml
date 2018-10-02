@@ -2,20 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="082030a2-925f-4997-8905-1befd7f155d2" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/.gitignore" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/.project" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/pom.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/spot-commerce-spring-base.eml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/spot-commerce-spring-base.iml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/src/gen/resources/.empty" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/src/main/java/io/spotnext/commerce/controller/CmsBaseEndpoint.java" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/src/main/resources/.empty" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/spot-commerce-spring-base/src/test/java/.empty" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build-tools/build-tools.iml" beforeDir="false" afterPath="$PROJECT_DIR$/build-tools/build-tools.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/spot-core.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/spot-core.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-framework.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-framework.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-spring-web-support/spot-spring-web-support.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-spring-web-support/spot-spring-web-support.iml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/spot-core-support/target/" />
     <ignored path="$PROJECT_DIR$/spot-sample-simple/target/" />
@@ -32,12 +34,26 @@
     <ignored path="$PROJECT_DIR$/build-tools/target/" />
     <ignored path="$PROJECT_DIR$/spot-cms-base/target/" />
     <ignored path="$PROJECT_DIR$/spot-spring-web-support/target/" />
+    <ignored path="$PROJECT_DIR$/spot-core-infrastructure/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="ErrorTreeViewConfiguration">
     <option name="autoscrollToSource" value="true" />
@@ -45,14 +61,87 @@
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="true" />
     <option name="HIDE_WARNINGS" value="true" />
   </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="1846424166">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="class" value="1" />
+          <entry key="java" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CLASS" value="1" />
+          <entry key="JAVA" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit" />
+      <usages-collector id="statistics.spring.boot.mvc.usages" />
+      <usages-collector id="statistics.file.extensions.edit" />
+      <usages-collector id="statistics.js.language.service.starts" />
+      <usages-collector id="statistics.vcs.git.usages" />
+      <usages-collector id="statistics.spring.boot.run.usages" />
+    </session>
+  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="103" column="18" lean-forward="true" selection-start-line="103" selection-start-column="18" selection-end-line="103" selection-end-column="18" />
-              <folding />
+            <state relative-caret-position="299">
+              <caret line="148" selection-start-line="148" selection-end-line="148" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionFactoryImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="123">
+              <caret line="1230" column="49" selection-start-line="1230" selection-start-column="49" selection-end-line="1230" selection-end-column="49" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE-sources.jar!/org/springframework/orm/jpa/JpaTransactionManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="467" selection-start-line="467" selection-end-line="467" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE-sources.jar!/org/springframework/transaction/support/AbstractPlatformTransactionManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="311">
+              <caret line="377" selection-start-line="377" selection-end-line="377" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="255" selection-start-line="255" selection-end-line="255" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="311">
+              <caret line="98" selection-start-line="98" selection-end-line="98" />
             </state>
           </provider>
         </entry>
@@ -62,10 +151,11 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GradleLocalSettings">
-    <option name="externalProjectsViewState">
-      <projects_view />
-    </option>
+  <component name="GotoFileConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="ActionScript" />
+      <filtered-out-file-type name="CFML" />
+    </file-type-list>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -74,6 +164,12 @@
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -94,9 +190,225 @@
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
           <item name="Profiles" type="6783ec58:MavenProjectsStructure$ProfilesNode" />
         </path>
+        <path>
+          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
+          <item name="io.spot-next:spot-framework" type="9519ce18:MavenProjectsStructure$ProjectNode" />
+        </path>
       </expand>
       <select />
     </treeState>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/docs/node_modules" />
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/docs/node_modules/abab/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/acorn-globals/node_modules/acorn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/acorn-globals/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/acorn-walk/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/acorn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ajv/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ansi-escapes/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ansi-regex/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ansi-styles/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/array-equal/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/asn1/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/assert-plus/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/async-limiter/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/asynckit/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/aws-sign2/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/aws4/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/babel-polyfill/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/babel-runtime/node_modules/regenerator-runtime/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/babel-runtime/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/bcrypt-pbkdf/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/browser-process-hrtime/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/caseless/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/chalk/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/chardet/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/cli-cursor/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/cli-width/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/clipboard/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/co/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/color-convert/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/color-name/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/color-string/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/color/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/combined-stream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/commander/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/core-js/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/core-util-is/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/cssom/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/cssstyle/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-array/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-axis/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-brush/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-chord/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-collection/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-color/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-dispatch/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-drag/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-dsv/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-ease/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-force/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-format/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-geo/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-hierarchy/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-interpolate/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-path/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-polygon/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-quadtree/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-queue/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-random/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-request/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-scale/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-selection/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-shape/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-time-format/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-time/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-timer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-transition/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-voronoi/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3-zoom/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/d3/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/dagre-d3-renderer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/dagre-layout/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/dashdash/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/data-urls/node_modules/whatwg-url/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/data-urls/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/deep-is/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/delayed-stream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/delegate/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/docsify-copy-code/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/docsify-themeable/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/docsify/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/domexception/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ecc-jsbn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/encoding/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/escape-string-regexp/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/escodegen/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/esprima/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/estraverse/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/esutils/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/extend/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/external-editor/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/extsprintf/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/fast-deep-equal/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/fast-json-stable-stringify/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/fast-levenshtein/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/figures/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/forever-agent/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/form-data/node_modules/combined-stream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/form-data/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/getpass/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/good-listener/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/graphlibrary/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/har-schema/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/har-validator/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/has-ansi/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/he/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/html-encoding-sniffer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/http-signature/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/iconv-lite/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/inquirer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/is-arrayish/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/is-fullwidth-code-point/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/is-promise/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/is-stream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/is-typedarray/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/isstream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/jsbn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/jsdom/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/json-schema-traverse/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/json-schema/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/json-stringify-safe/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/jsprim/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/left-pad/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/levn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/lodash.sortby/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/lodash/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/marked/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/medium-zoom/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/mermaid/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/mime-db/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/mime-types/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/mimic-fn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/minimist/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/moment/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/mute-stream/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/node-fetch/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/nwsapi/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/oauth-sign/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/object-assign/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/onetime/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/package/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/package_with_postinstall/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/parentpackage/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/opn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/optionator/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/os-tmpdir/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/parse5/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/performance-now/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/pinkie-promise/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/pinkie/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/pn/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/prelude-ls/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/prismjs/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/psl/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/punycode/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/qs/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/regenerator-runtime/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/request-promise-core/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/request-promise-native/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/request/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/restore-cursor/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/run-async/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/rw/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/rx/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/safe-buffer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/safer-buffer/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/sax/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/scope-css/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/select/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/signal-exit/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/simple-swizzle/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/source-map/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/sshpk/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/stealthy-require/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/string-width/node_modules/ansi-regex/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/string-width/node_modules/strip-ansi/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/string-width/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/strip-ansi/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/supports-color/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/symbol-tree/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/through/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tiny-emitter/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tinydate/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tmp/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tough-cookie/node_modules/punycode/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tough-cookie/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tr46/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tunnel-agent/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tweetnacl/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/tweezer.js/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/type-check/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/uuid/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/verror/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/w3c-hr-time/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/webidl-conversions/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-encoding/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-mimetype/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-url/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/wordwrap/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/ws/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/xml-name-validator/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/xmlhttprequest/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/yuml2svg/node_modules/viz.js/package.json" />
+      <path value="$PROJECT_DIR$/docs/node_modules/yuml2svg/package.json" />
+      <path value="$PROJECT_DIR$/docs/package.json" />
+    </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="268" />
@@ -108,20 +420,11 @@
     <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <flattenPackages />
-      <showMembers />
-      <showModules />
-      <showLibraryContents />
-      <hideEmptyPackages />
-      <abbreviatePackageNames />
-      <autoscrollToSource />
-      <autoscrollFromSource />
-      <sortByType />
-      <manualOrder />
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -129,56 +432,21 @@
               <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
               <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="spot-core-base-models" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="spot-core-base-models" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="spot-core-base-models" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="spot-core-base-models" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
-              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
-              <item name="spot-core-base-models" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
-    <property name="project.structure.last.edited" value="Problems" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -193,81 +461,61 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <module />
-    </configuration>
-    <configuration default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="io.spotnext.core.infrastructure.support.init.Bootstrap" />
-      <option name="VM_PARAMETERS" value="-Xverify:none -server -Xmx4G -XX:+UseSerialGC -XXaltjvm=dcevm" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="spot-core" />
-      <envs />
-    </configuration>
-    <configuration name="spot-core" type="Application" factoryName="Application" singleton="true">
-      <option name="MAIN_CLASS_NAME" value="io.spotnext.core.CoreInit" />
-      <option name="VM_PARAMETERS" value="-Xverify:none -server -Xmx4G -XX:+UseSerialGC -XXaltjvm=dcevm" />
-      <option name="PROGRAM_PARAMETERS" value="--core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="spot-core" />
-      <envs />
-      <method>
-        <option name="Make" enabled="false" />
-        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="-DskipTests=true install -pl !spot-sample-simple,!archetype-empty" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <module name="" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-    </configuration>
-    <configuration default="true" type="Remote" factoryName="Remote">
-      <option name="USE_SOCKET_TRANSPORT" value="true" />
-      <option name="SERVER_MODE" value="false" />
-      <option name="SHMEM_ADDRESS" value="javadebug" />
-      <option name="HOST" value="localhost" />
-      <option name="PORT" value="5005" />
-    </configuration>
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
     </configuration>
-    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="io.spotnext.core.infrastructure.support.init.Bootstrap" />
+      <module name="spot-core" />
+      <option name="VM_PARAMETERS" value="-Xverify:none -server -Xmx4G -XX:+UseSerialGC -XXaltjvm=dcevm" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="spot-core" type="Application" factoryName="Application" singleton="true">
+      <option name="MAIN_CLASS_NAME" value="io.spotnext.core.CoreInit" />
+      <module name="spot-core" />
+      <option name="PROGRAM_PARAMETERS" value="--core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true" />
+      <option name="VM_PARAMETERS" value="-Xverify:none -server -Xmx4G -XX:+UseSerialGC -XXaltjvm=dcevm" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="-DskipTests=true install -pl !spot-sample-simple,!archetype-empty" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file id="idea.log" enabled="true" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <created>1538498256894</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1538498256894</updated>
+    </task>
+    <servers />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -282,74 +530,67 @@
     <frame x="268" y="164" width="1846" height="1695" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26027396" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1772784" sideWeight="0.50630134" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.176875" sideWeight="0.49369863" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986301" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1772784" sideWeight="0.50630134" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
-      <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17790262" sideWeight="0.50410956" order="10" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Web" side_tool="true" />
+      <window_info id="Designer" order="0" />
+      <window_info id="Favorites" order="1" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="2" weight="0.25277162" />
+      <window_info id="Maven Projects" order="3" visible="true" weight="0.25972602" />
+      <window_info id="Structure" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Java Enterprise" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Spring" />
+      <window_info anchor="bottom" id="Hybris Console [Experimental]" />
+      <window_info anchor="bottom" id="Terminal" order="0" sideWeight="0.49315068" weight="0.17654398" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49972603" weight="0.39987522" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.50027394" side_tool="true" visible="true" weight="0.17654398" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Problems" order="10" sideWeight="0.50410956" side_tool="true" weight="0.17790262" />
+      <window_info anchor="bottom" id="Run" order="11" sideWeight="0.50630134" side_tool="true" weight="0.1772784" />
+      <window_info anchor="right" id="Database" show_stripe_button="false" />
+      <window_info anchor="right" id="Palette&#9;" order="0" />
+      <window_info anchor="right" id="Commander" order="1" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="2" show_stripe_button="false" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
     </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
-    <watches-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java</url>
+          <line>148</line>
+          <properties class="org.hibernate.engine.internal.StatefulPersistenceContext" method="&lt;init&gt;">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="648">
-          <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spot-maven-plugin/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1656">
-          <caret line="92" column="21" lean-forward="true" selection-start-line="92" selection-start-column="21" selection-end-line="92" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ModelService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spot-framework.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/ModelService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
-          <caret line="31" column="43" lean-forward="false" selection-start-line="31" selection-start-column="43" selection-end-line="31" selection-end-column="43" />
+          <caret line="31" column="43" selection-start-line="31" selection-start-column="43" selection-end-line="31" selection-end-column="43" />
         </state>
       </provider>
     </entry>
@@ -364,30 +605,72 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="493">
           <caret line="92" column="21" lean-forward="true" selection-start-line="92" selection-start-column="21" selection-end-line="92" selection-end-column="21" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.travis.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="638">
-          <caret line="36" column="0" lean-forward="true" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot-commerce-spring-base/src/main/java/io/spotnext/commerce/controller/CmsBaseEndpoint.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-commerce-spring-base/src/main/java/io/spotnext/commerce/controller/CmsBaseEndpoint.java" />
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="103" column="18" lean-forward="true" selection-start-line="103" selection-start-column="18" selection-end-line="103" selection-end-column="18" />
-          <folding />
+          <caret line="103" column="18" selection-start-line="103" selection-start-column="18" selection-end-line="103" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#65487#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="98" selection-start-line="98" selection-end-line="98" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="148" selection-start-line="148" selection-end-line="148" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="255" selection-start-line="255" selection-end-line="255" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE-sources.jar!/org/springframework/transaction/support/AbstractPlatformTransactionManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="377" selection-start-line="377" selection-end-line="377" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE-sources.jar!/org/springframework/orm/jpa/JpaTransactionManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="467" selection-start-line="467" selection-end-line="467" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionFactoryImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="1230" column="49" selection-start-line="1230" selection-start-column="49" selection-end-line="1230" selection-end-column="49" />
         </state>
       </provider>
     </entry>
@@ -408,7 +691,7 @@
       </state>
       <state key="FacetStructureConfigurable.UI">
         <settings>
-          <last-edited>No facets are configured</last-edited>
+          <last-edited>AspectJ</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -431,7 +714,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>JavaSE-1.8</last-edited>
+          <last-edited>1.8</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -443,7 +726,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>spot-framework</last-edited>
+          <last-edited>archetype-empty</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
