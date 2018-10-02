@@ -179,6 +179,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				// this type is not an persistable entity
 				addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, MappedSuperclass.class)));
 			}
+			
+			// enables dynamic update for this entity, only writes changed fields 
+//			addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, DynamicUpdate.class)));
 		}
 	}
 

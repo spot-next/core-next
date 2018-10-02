@@ -471,13 +471,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				return true;
 			}
 
-			final T attached = (T) getSession().load(item.getClass(), item.getPk());
-			if (attached != null) {
-				getSession().evict(attached);
-				getSession().lock(item, LockMode.NONE);
-
-				return true;
-			}
+			getSession().load(item, item.getPk());
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(
@@ -524,30 +518,6 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			} else {
 				query = session.createQuery(cq.select(r));
 			}
-
-			// String jpql = String.format("SELECT i FROM %s i ",
-			// sourceQuery.getResultClass().getSimpleName());
-			//
-			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
-			// jpql += " WHERE ";
-			//
-			// List<String> whereClauses = new LinkedList<>();
-			// for (Map.Entry<String, Object> entry :
-			// sourceQuery.getSearchParameters().entrySet()) {
-			// whereClauses.add(entry.getKey() + " = :" + entry.getKey());
-			// }
-			//
-			// jpql += StringUtils.join(whereClauses, " AND ");
-			// }
-			//
-			// query = session.createQuery(jpql);
-			//
-			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
-			// for (Map.Entry<String, Object> entry :
-			// sourceQuery.getSearchParameters().entrySet()) {
-			// query.setParameter(entry.getKey(), entry.getValue());
-			// }
-			// }
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
 

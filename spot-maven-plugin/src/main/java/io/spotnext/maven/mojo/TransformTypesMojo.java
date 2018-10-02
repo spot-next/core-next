@@ -141,10 +141,12 @@ public class TransformTypesMojo extends AbstractMojo {
 							// returns null if nothing has been transformed
 							byteCode = t.transform(classLoader, className, null, null, byteCode);
 						} catch (final Exception e) {
-							trackExecution("Exception during transformation of class: " + f.getAbsolutePath() + "\n" + e.getMessage());
+							String exception = "Exception during transformation of class: " + f.getAbsolutePath() + "\n" + e.getMessage();
+							trackExecution(exception);
 							String message = String.format("Can't transform class %s, transformer %s: %s", className,
 									t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
 							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+							throw new MojoExecutionException(exception, e);
 						}
 					}
 

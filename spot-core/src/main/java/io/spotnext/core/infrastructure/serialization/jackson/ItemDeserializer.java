@@ -97,10 +97,11 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 		}
 
 		try {
-			if (!getModelService().isAttached(deserializedItem)) {
-//				getModelService().attach(deserializedItem);
-				getModelService().refresh(deserializedItem);
-			}
+			getModelService().attach(deserializedItem);
+
+//			if (!getModelService().isAttached(deserializedItem)) {
+//				getModelService().refresh(deserializedItem);
+//			}
 		} catch (final ModelNotFoundException e) {
 			// ignore exception, as this just means that the item is most likely
 			// new

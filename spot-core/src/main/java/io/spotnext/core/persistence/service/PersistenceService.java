@@ -64,7 +64,7 @@ public interface PersistenceService {
 	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
-	 * Returns an object based on its PK.
+	 * Returns an entity with the given.
 	 *
 	 * @param type a {@link java.lang.Class} object.
 	 * @param pk a long.

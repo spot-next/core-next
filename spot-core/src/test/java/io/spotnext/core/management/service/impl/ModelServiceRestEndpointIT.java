@@ -121,6 +121,9 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		modelService.refresh(user);
 
 		assertEquals(user.getShortName(), "integrationtester");
+		assertEquals(1, user.getGroups().size());
+		assertEquals("MD5:16d7a4fca7442dda3ad93c9a726597e4", user.getPassword());
+		
 	}
 
 	@Test
