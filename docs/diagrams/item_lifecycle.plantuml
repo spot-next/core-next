@@ -1,12 +1,31 @@
 @startuml Item lifecycle
 
-Create ->[ItemCreateInterceptor.onCreate(...)] Manipulate
-Manipulate -down->[ItemPrepareInterceptor.onPrepare(...)] Prepare
-Prepare -down->[ItemValidateInterceptor.onValidate(...)] Validate
-Validate -right-> Save
-Save -right-> (*)
-Save -up-> Manipulate
-Load -left->[ItemLoadInterceptor.onLoad(...)] Manipulate
-Load -down-> Delete
+' GET - SAVE
+(*) -right> "ModelService.create()"
+"ModelService.create()"                      -down> "ItemCreateInterceptor.onCreate()"
+"ItemCreateInterceptor.onCreate()"           -down>     Manipulate
+Manipulate                                   -right> "ModelService.save()"
+"ModelService.save()"                        -right> "ItemPrepareInterceptor.onPrepare()"
+"ItemPrepareInterceptor.onPrepare()"         -down> "ItemValidateInterceptor.onValidate()"
+"ItemValidateInterceptor.onValidate()"       -down> "PersistenceService.save()"
+"ItemValidateInterceptor.onValidate()"       ->[validation exception] (*)
+"PersistenceService.save()"                  -down> "Publish ItemModificationEvent (save)"
+"Publish ItemModificationEvent (save)"       -down> (*)
+"PersistenceService.save()"                  -> Manipulate
+
+
+' GET
+(*)                                          -left> "ModelService.get()"
+"ModelService.get()"                         -down> "Publish ItemModificationEvent (load)"
+
+if "" then
+    ' GET - REMOVE
+    -left->[remove] "ModelService.remove()"
+    "ModelService.remove()"                  -down> "Publish ItemModificationEvent (remove)"
+    "Publish ItemModificationEvent (remove)" ->     (*)
+else 
+    ' GET - SAVE
+    ->[manipulate]    Manipulate
+endif
 
 @enduml

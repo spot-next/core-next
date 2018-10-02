@@ -364,7 +364,7 @@
 						</aspectLibraries>
 
 						<!-- setting this to true can cause build errors im M2E -->
-						<showWeaveInfo>false</showWeaveInfo>
+						<showWeaveInfo>true</showWeaveInfo>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<Xlint>ignore</Xlint>

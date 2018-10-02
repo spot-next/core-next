@@ -9,7 +9,7 @@
     "docsify-themeable": "^0.3.0",
     "mermaid": "^8.0.0-rc.8",
     "prismjs": "^1.15.0",
-    "yuml-diagram": "^1.0.8"
+    "yuml2svg": "^4.0.1"
   },
   "devDependencies": {},
   "scripts": {

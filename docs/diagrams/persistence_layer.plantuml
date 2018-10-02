@@ -1,6 +1,6 @@
 @startuml Persistence layer
 
-frame "Persistence layer" as PersLayer {
+rectangle "Persistence layer" as PersLayer {
 	component QueryService [
 		QueryService
 	]

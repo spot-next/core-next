@@ -21,6 +21,14 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
+				<configuration>
+					<weaveDependencies>
+						<weaveDependency>
+							<groupId>org.hibernate</groupId>
+							<artifactId>hibernate-core</artifactId>
+						</weaveDependency>
+					</weaveDependencies>
+				</configuration>
 			</plugin>
 
 			<!-- RESOURCE GENERTATION -->

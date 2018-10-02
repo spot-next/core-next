@@ -2,10 +2,13 @@ package io.spotnext.test.persistence;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -13,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
@@ -21,6 +25,7 @@ import io.spotnext.itemtype.core.internationalization.LocalizationValue;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserAddress;
 import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
 
@@ -35,10 +40,29 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	protected void teardownTest() {
 	}
 
+//	@Ignore
+	@Test
+	public void testDuplicateEntityAttachedToPersistenceContext() {
+		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		loaded.setShortName("loaded");
+
+		User duplicate = new User();
+		ClassUtil.setField(duplicate, "pk", loaded.getPk());
+		modelService.refresh(duplicate);
+		duplicate.setShortName("loaded");
+
+		modelService.save(duplicate);
+
+		try {
+			modelService.save(loaded);
+		} catch (ModelSaveException e) {
+			assertTrue(e.getCause() instanceof OptimisticLockException);
+		}
+	}
+
 	/**
-	 * The catalogVersion Default:Online already be available through the
-	 * initial data. Therefore saving a second item will cause a uniqueness
-	 * constraint violation.
+	 * The catalogVersion Default:Online already be available through the initial data. Therefore saving a second item will cause a uniqueness constraint
+	 * violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
@@ -122,17 +146,17 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		address.setStreetName("Test");
 		user.getAddresses().add(address);
 
-		loggingService.debug("Addresses before save: "
+		Log.debug("Addresses before save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
-		loggingService.debug("Addresses after save: "
+		Log.debug("Addresses after save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
-		loggingService.debug("Addresses after load: "
+		Log.debug("Addresses after load: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());

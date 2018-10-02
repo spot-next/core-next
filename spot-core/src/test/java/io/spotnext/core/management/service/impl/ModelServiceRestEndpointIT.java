@@ -19,7 +19,7 @@ import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.Transactionless;
 import io.spotnext.itemtype.core.user.User;
 
-public class ModelServiceRestEndpointTest extends AbstractIntegrationTest {
+public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {
