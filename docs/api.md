@@ -193,6 +193,7 @@ final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as
 query.addParam("id", "testUser");
 final QueryResult<UserData> result = queryService.query(query);
 ```
+> The properties `UserData.id` and `UserData.shortName` are automatically populated - either by using a suitable constructor or by directly accessing the setters.
 
 JPQL queries with primitive results:
 ```java
@@ -200,6 +201,7 @@ final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id 
 query.addParam("id", "testUser");
 final QueryResult<String> result = queryService.query(query);
 ```
+
 
 ##### Other operations
 

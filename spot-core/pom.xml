@@ -22,12 +22,13 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
 				<configuration>
-					<weaveDependencies>
+					<!-- include hibernate to enable persistencecontext fix -->
+					<!-- <weaveDependencies>
 						<weaveDependency>
 							<groupId>org.hibernate</groupId>
 							<artifactId>hibernate-core</artifactId>
 						</weaveDependency>
-					</weaveDependencies>
+					</weaveDependencies> -->
 				</configuration>
 			</plugin>
 
@@ -45,6 +46,9 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<excludeFilterFile>${project.build.directory}/classes/findbugs-exclude.xml</excludeFilterFile>
+				</configuration>
 			</plugin>
 
 			<plugin>
