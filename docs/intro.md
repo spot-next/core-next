@@ -53,6 +53,6 @@ Probably every newcomer to Hibernate is struck by awe when seeing the "FETCH JOI
 org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch multiple bags
 ```
 
-Don't worry, although Hibernate is used for persistence, such thin nevery can happen to you. I could go on for hours and whine about the hundreds of hours that I lost debugging the insane behaviour and pitfalls ... but I won't bore you with the details ;-)
+Don't worry, although Hibernate is used for persistence, such thing never can happen to you. I could go on for hours and whine about the hundreds of hours that I lost debugging the insane behaviour and pitfalls ... but I won't bore you with the details ;-)
 
 You are still here? Well, then let's better get started!
