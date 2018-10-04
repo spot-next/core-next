@@ -26,10 +26,12 @@ import io.spotnext.core.infrastructure.serialization.jackson.ItemDeserializer;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemSerializationMixIn;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemTypeResolver;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemTypeResolverBuilder;
+import io.spotnext.core.infrastructure.serialization.jackson.ModelAndViewMixIn;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
 import io.spotnext.infrastructure.type.Item;
+import spark.ModelAndView;
 
 /**
  * Implements a serialization strategy from and to json format using Gson.
@@ -56,6 +58,8 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	public void init() throws ClassNotFoundException {
 		jacksonMapper = new ObjectMapper();
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
+		jacksonMapper.addMixIn(ModelAndView.class, ModelAndViewMixIn.class);
+		
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

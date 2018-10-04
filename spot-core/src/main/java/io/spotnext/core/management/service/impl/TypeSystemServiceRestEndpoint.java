@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -19,7 +20,9 @@ import spark.Request;
 import spark.Response;
 
 /**
- * <p>TypeSystemServiceRestEndpoint class.</p>
+ * <p>
+ * TypeSystemServiceRestEndpoint class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -32,15 +35,17 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 	protected Converter<ItemTypeDefinition, GenericItemDefinitionData> itemTypeConverter;
 
 	/**
-	 * <p>getTypes.</p>
+	 * <p>
+	 * getTypes.
+	 * </p>
 	 *
-	 * @param request a {@link spark.Request} object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return a {@link java.util.List} object.
 	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	@Handler(pathMapping = "/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public List<GenericItemDefinitionData> getTypes(final Request request, final Response response)
+	public DataResponse getTypes(final Request request, final Response response)
 			throws UnknownTypeException {
 
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
@@ -52,21 +57,22 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 			types.add(d);
 		}
 
-		return types;
+		return DataResponse.ok().withPayload(types);
 	}
 
 	/**
-	 * <p>getType.</p>
+	 * <p>
+	 * getType.
+	 * </p>
 	 *
-	 * @param request a {@link spark.Request} object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return a {@link io.spotnext.core.management.support.data.GenericItemDefinitionData} object.
 	 * @throws io.spotnext.infrastructure.exception.UnknownTypeException if any.
 	 */
 	@Handler(pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public GenericItemDefinitionData getType(final Request request, final Response response)
+	public DataResponse getType(final Request request, final Response response)
 			throws UnknownTypeException {
-		GenericItemDefinitionData ret = null;
 
 		final String typeCode = request.params(":typecode");
 
@@ -74,13 +80,14 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 			final ItemTypeDefinition def = typeService.getItemTypeDefinitions().get(StringUtils.lowerCase(typeCode));
 
 			if (def != null) {
-				ret = itemTypeConverter.convert(def);
+				final GenericItemDefinitionData data = itemTypeConverter.convert(def);
+				return DataResponse.ok().withPayload(data);
 			} else {
-				throw new UnknownTypeException(String.format("Type %s unknown.", typeCode));
+				return DataResponse.notFound().withError("error.typecode.unknown", "No type definition found for give typecode");
 			}
 		}
 
-		return ret;
+		return DataResponse.conflict();
 	}
 
 }

@@ -1,10 +1,7 @@
 package io.spotnext.core.infrastructure.serialization.jackson;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -16,21 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" ,"uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
 public abstract class ItemSerializationMixIn {
-	/**
-	 * <p>getUniqueProperties.</p>
-	 *
-	 * @return a {@link java.util.Map} object.
-	 */
-	@JsonIgnore
-	public abstract Map<String, Object> getUniqueProperties();
-
-	/**
-	 * <p>isPersisted.</p>
-	 *
-	 * @return a boolean.
-	 */
-	@JsonIgnore
-	public abstract boolean isPersisted();
+	
 }
