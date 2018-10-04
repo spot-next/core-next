@@ -32,6 +32,9 @@
 	<bean id="jpaProperties" class="java.util.Properties">
 		<constructor-arg>
 			<props>
+<!-- 				<prop key="hibernate.jdbc.batch_size">100</prop> -->
+<!-- 				<prop key="hibernate.order_inserts">true</prop> -->
+<!-- 				<prop key="hibernate.order_updates">true</prop> -->
 				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop>
@@ -45,10 +48,10 @@
 		</constructor-arg>
 	</bean>
 
-<!-- 	<bean id="sessionFactory" class="io.spotnext.core.persistence.hibernate.impl.HibernateSessionFactoryBean"> -->
-<!-- 		<property name="dataSource" ref="dataSource" /> -->
-<!-- 		<property name="hibernateProperties" ref="jpaProperties" /> -->
-<!-- 	</bean> -->
+	<!-- <bean id="sessionFactory" class="io.spotnext.core.persistence.hibernate.impl.HibernateSessionFactoryBean"> -->
+	<!-- <property name="dataSource" ref="dataSource" /> -->
+	<!-- <property name="hibernateProperties" ref="jpaProperties" /> -->
+	<!-- </bean> -->
 
 	<bean id="hibernatePersistenceProvider" class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceProviderImpl" />
 
@@ -68,14 +71,14 @@
 		</property>
 		<property name="jpaProperties" ref="jpaProperties" />
 	</bean>
-	
+
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
 
-<!-- 	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"> -->
-<!-- 		<property name="sessionFactory" ref="sessionFactory" /> -->
-<!-- 	</bean> -->
+	<!-- <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"> -->
+	<!-- <property name="sessionFactory" ref="sessionFactory" /> -->
+	<!-- </bean> -->
 
 	<bean id="persistenceExceptionTranslationPostProcessor"
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
