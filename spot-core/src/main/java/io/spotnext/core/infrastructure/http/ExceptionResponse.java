@@ -1,5 +1,10 @@
 package io.spotnext.core.infrastructure.http;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -10,11 +15,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @since 1.0
  */
 @JsonIgnoreProperties(value = { "model, viewName" })
-public class ExceptionResponse extends AbstractResponse {
+public class ExceptionResponse extends DataResponse {
 
 	private ExceptionResponse(HttpStatus httpStatus, Exception exception) {
 		super(httpStatus);
-		withPayload(exception);
+
+		final String message;
+
+		if (exception instanceof InvocationTargetException) {
+			InvocationTargetException ie = (InvocationTargetException) exception;
+			message = ie.getTargetException() != null ? ie.getTargetException().getMessage() : exception.getMessage();
+		} else {
+			message = ExceptionUtils.getRootCauseMessage(exception);
+		}
+
+		withError("error." + exception.getClass().getSimpleName().toLowerCase(Locale.getDefault()), message);
 	}
 
 	/**
@@ -71,7 +86,7 @@ public class ExceptionResponse extends AbstractResponse {
 	 * <p>withStatus.</p>
 	 *
 	 * @param httpStatus a {@link io.spotnext.infrastructure.http.HttpStatus} object.
-	 * @param exception a {@link java.lang.Exception} object.
+	 * @param exception  a {@link java.lang.Exception} object.
 	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
 	 */
 	public static ExceptionResponse withStatus(HttpStatus httpStatus, Exception exception) {

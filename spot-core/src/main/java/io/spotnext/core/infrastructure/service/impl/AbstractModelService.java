@@ -32,6 +32,7 @@ import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.infrastructure.type.Item;
@@ -215,7 +216,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		final User currentUser = userService.getCurrentUser();
 
 		if (currentUser == null) {
-			loggingService.debug(() -> "Could not determine current session user");
+			Log.debug(() -> "Could not determine current session user");
 		}
 
 		final String username = currentUser != null ? currentUser.getId() : "<system>";
@@ -240,10 +241,10 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 				try {
 					eventService.multicastEvent(new ItemModificationEvent<>(item, modificationType));
 				} catch (final Exception e) {
-					loggingService.exception("Could not publish item modification event.", e);
+					Log.exception("Could not publish item modification event.", e);
 				}
 			} else {
-				loggingService.warn("Cannot publish item modification event for <null>");
+				Log.warn("Cannot publish item modification event for <null>");
 			}
 		}
 	}
@@ -264,7 +265,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		if (localizable != null) {
 			return localizable.get(locale);
 		} else {
-			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+			Log.debug(String.format("Localized property %s on type %s not found", propertyName,
 					item.getClass().getSimpleName()));
 		}
 
@@ -302,7 +303,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			localizable.set(locale, propertyValue);
 			setPropertyValue(item, propertyName, localizable);
 		} else {
-			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+			Log.debug(String.format("Localized property %s on type %s not found", propertyName,
 					item.getClass().getSimpleName()));
 		}
 	}

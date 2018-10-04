@@ -62,8 +62,64 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
+	 */
+	@Handler(method = HttpMethod.head, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse getModelsInfo(final Request request, final Response response) {
+
+		try {
+			final String typeCode = request.params(":typecode");
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+
+			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT count(i) FROM %s AS i", type.getSimpleName()), Long.class);
+			final QueryResult<Long> modelCount = queryService.query(query);
+
+			response.header("Item-Count", modelCount.getResultList().get(0) + "");
+
+			return DataResponse.ok();
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+	}
+
+	/**
+	 * Gets all items of the given item type. The page index starts at 1.
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
+	 */
+	@Handler(method = HttpMethod.head, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse getModelInfo(final Request request, final Response response) {
+
+		try {
+			final String typeCode = request.params(":typecode");
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+			final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+
+			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT i.pk FROM %s AS i WHERE i.pk = :pk", type.getSimpleName()), Long.class);
+			query.addParam("pk", pk);
+			final QueryResult<Long> modelCount = queryService.query(query);
+
+			if (modelCount.getResultCount() > 0) {
+				return DataResponse.ok();
+			} else {
+				return DataResponse.notFound();
+			}
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+	}
+
+	/**
+	 * Gets all items of the given item type. The page index starts at 1.
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -78,6 +134,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final ModelQuery<T> query = new ModelQuery<>(type, null);
 			query.setPage(page);
 			query.setPageSize(pageSize);
+
+			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);
 			final List<T> models = modelService.getAll(query);
 
@@ -92,8 +150,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the PK.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -128,8 +186,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -174,8 +232,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -199,8 +257,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -237,8 +295,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The PK or a search criteria has to be set.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -272,8 +330,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The PK must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -297,8 +355,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given PK doesn't not exist, an exception is thrown.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */

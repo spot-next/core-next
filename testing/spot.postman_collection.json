@@ -1,0 +1,323 @@
+{
+	"info": {
+		"_postman_id": "d469f65e-b948-a9aa-97c9-6f10d6676b95",
+		"name": "spot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get all",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/country",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"country"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get one",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					},
+					{
+						"key": "Accept-Encoding",
+						"value": ""
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/party",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"party"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/user/query/?q=id like '%test%'",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"user",
+						"query",
+						""
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "id like '%test%'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query by example",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"emailAddress\": \"test@test.at\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/user/query/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"user",
+						"query",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "count all",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check exists",
+			"request": {
+				"method": "HEAD",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/user/31213610832905717",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"user",
+						"31213610832905717"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\":\"testerabc\",\n\t\"shortName\":\"integrationtester\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create or update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"isoCode\": \"CH\",\n    \"longName\": {\n    \t\"typeCode\": \"localizedstring\",\n    \t\"en\": \"Confederation Helvetica\"\n    },\n    \"shortName\": {\n    \t\"typeCode\": \"localizedstring\",\n    \t\"en\": \"Switzerland\"\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/country/<PK>",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"country",
+						"<PK>"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/javascript"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"date\": \"2018-05-04T11:28:56.816\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/party/4041887776488312518",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"party",
+						"4041887776488312518"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:19000/v1/models/country/7336966666652241285",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "19000",
+					"path": [
+						"v1",
+						"models",
+						"country",
+						"7336966666652241285"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

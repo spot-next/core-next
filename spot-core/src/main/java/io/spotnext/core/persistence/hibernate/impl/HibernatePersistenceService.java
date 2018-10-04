@@ -292,11 +292,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setFetchSubGraphsHint(
 			final Session session, final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
-		if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
-			Log.warn("Fetch sub graphs can only be used for item queries.");
-			return;
-		}
-
+		// TODO what about fetchgraph?
+		
 		final List<String> fetchSubGraphs = new ArrayList<>();
 
 		if (sourceQuery.isEagerFetchRelations()) {
@@ -314,6 +311,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 
 		if (fetchSubGraphs.size() > 0) {
+			if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
+				Log.debug("Fetch sub graphs can only be used for item queries - ignoring");
+				return;
+			}
+			
 			final EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
 
 			for (final String subgraph : fetchSubGraphs) {
@@ -364,6 +366,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						if (i > JDBC_BATCH_SIZE && i % JDBC_BATCH_SIZE == 0) {
 							// flush a batch of inserts and release memory:
 							session.flush();
+//							session.clear();
 						}
 						i++;
 					}
@@ -373,7 +376,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					// session.clear();
 
 					try {
-						refresh(items);
+//						refresh(items);
 					} catch (final ModelNotFoundException e) {
 						throw new ModelSaveException("Could not save given items", e);
 					}

@@ -90,11 +90,7 @@
 		</property>
 	</bean>
 
-	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="5" />
-		<property name="maxPoolSize" value="10" />
-		<property name="queueCapacity" value="25" />
-	</bean>
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" />
 
 	<!-- event handling -->
 	<bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
