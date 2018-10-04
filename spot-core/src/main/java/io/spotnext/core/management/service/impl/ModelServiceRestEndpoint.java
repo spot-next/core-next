@@ -215,7 +215,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			try {
 				final QueryResult<T> result = queryService.query(query);
-				return DataResponse.ok().withPayload(result);
+				
+				if (result.getResultCount() > 0) {
+					return DataResponse.ok().withPayload(result);
+				} else {
+					return DataResponse.notFound().withPayload(result);
+				}
 			} catch (final QueryException e) {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
 						"Cannot execute given query: " + e.getMessage());
@@ -245,7 +250,11 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final T example = deserializeToItem(request);
 			final List<T> items = modelService.getAllByExample(example);
 
-			return DataResponse.ok().withPayload(items);
+			if (items.size() > 0) {
+				return DataResponse.ok().withPayload(items);
+			} else {
+				return DataResponse.notFound().withPayload(items);
+			}
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {

@@ -170,6 +170,10 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		final T itemToRemove = get(type, pk);
 
+		if (itemToRemove == null) {
+			throw new ModelNotFoundException(String.format("The item of type %s with PK=%s is no found.", type.getSimpleName(), pk));
+		}
+		
 		removeAll(Arrays.asList(itemToRemove));
 	}
 
