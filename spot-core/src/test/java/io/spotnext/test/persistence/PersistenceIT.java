@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
@@ -29,6 +31,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
+
+	@Resource
+	protected SequenceGenerator sequenceGenerator;
 
 	@Rule
 	public ExpectedException expectedExeption = ExpectedException.none();
@@ -265,5 +270,27 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		group.getMembers().add(user);
 
 		modelService.save(group);
+	}
+
+	/**
+	 * Fetch the current sequence id and compare it against the newly created user.
+	 */
+	@Test
+	public void testUserPrepareInterceptor() {
+		final User user = modelService.create(User.class);
+		user.setShortName("test user");
+
+		modelService.save(user);
+		modelService.refresh(user);
+
+		// this is the id that will be used next, so we have to add -1 to get the last used one
+		long lastUsedId = sequenceGenerator.getCurrentSequenceValue(user.getTypeCode() + "_" + "id");
+
+		// if it is 0, it was never incremented and we don't have to subtract 1 
+		if (lastUsedId > 0) {
+			lastUsedId--;
+		}
+
+		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getId());
 	}
 }
