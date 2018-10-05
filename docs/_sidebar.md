@@ -1,6 +1,7 @@
 - [Introduction](/intro)
 - [Quick Start](quickstart)
 - [API documentation](/api)
+- [REST API](https://documenter.getpostman.com/view/610591/RWgnWfXW)
 - [Javadoc](https://javadoc.io/doc/io.spot-next/spot-core/)
 ****
 - [Changelog](changelog.md)
