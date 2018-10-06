@@ -12,6 +12,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import spark.Request;
 import spark.Response;
 
+/**
+ * Checks if the current user is in the "admin" usergroup.
+ */
 @Service
 public class IsAdminFilter implements AuthenticationFilter {
 
@@ -22,7 +25,7 @@ public class IsAdminFilter implements AuthenticationFilter {
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final User currentUser = userService.getCurrentUser();
 
-		if (currentUser == null || !"admin".equals(currentUser.getId())) {
+		if (currentUser != null && userService.isUserInGroup(currentUser.getId(), "admin")) {
 			request.attribute("isLoggedIn", false);
 			response.redirect("/");
 		}

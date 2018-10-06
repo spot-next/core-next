@@ -1,5 +1,8 @@
 # Change Log
 
+## **1.0.11-BETA** `2018-10-10`
+- Bugfix, REST interface authentcation was not checked properly
+
 ## **1.0.10-BETA** `2018-09-23`
 - Lots of fixes related to transaction handling
 - Updated/fixed quickstart

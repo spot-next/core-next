@@ -1,5 +1,6 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +93,20 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	/** {@inheritDoc} */
 	@Override
 	public boolean isUserInGroup(final String userUid, final String groupUid) {
+		final List<PrincipalGroup> groupsToCheck = new ArrayList<>(getUser(userUid).getGroups());
+		
+		for (int x = 0; x < groupsToCheck.size(); x++) {
+			final PrincipalGroup currentGroup = groupsToCheck.get(x);
+			
+			// check if groups match
+			if (StringUtils.equals(groupUid, currentGroup.getId())) {
+				return true;
+			}
+			
+			// if not, add all subgroups to the list of groups to check
+			groupsToCheck.addAll(groupsToCheck.size(), currentGroup.getGroups());
+		}
+		
 		return false;
 	}
 

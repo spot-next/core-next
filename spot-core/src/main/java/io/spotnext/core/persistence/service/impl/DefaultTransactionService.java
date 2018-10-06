@@ -59,8 +59,12 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	public <R> R execute(final Callable<R> body) throws TransactionException {
 		final boolean transactionWasAlreadyActive = isTransactionActive();
 
+		final TransactionStatus transaction;
+		
 		if (!transactionWasAlreadyActive) {
-			start();
+			transaction = start();
+		} else {
+			transaction = getCurrentTransaction().get();
 		}
 
 		boolean commit = true;
@@ -68,15 +72,15 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		try {
 			return body.call();
 		} catch (final Exception e) {
-			rollback(getCurrentTransaction().get());
+			rollback(transaction);
 
 			commit = false;
 
 			throw new TransactionUsageException("Error during transactional execution.", e);
 		} finally {
 			if (!transactionWasAlreadyActive && commit) {
-				if (getCurrentTransaction().isPresent() && !getCurrentTransaction().get().isCompleted()) {
-					commit(getCurrentTransaction().get());
+				if (!transaction.isCompleted()) {
+					commit(transaction);
 				}
 			}
 		}

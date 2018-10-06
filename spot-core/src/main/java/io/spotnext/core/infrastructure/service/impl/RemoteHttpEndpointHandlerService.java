@@ -27,6 +27,7 @@ import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.HttpRequestHolder;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -197,7 +198,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						ResponseTransformer transformer = null;
 						final String mimeType = handler.mimeType().toString();
 
-						if (handler.authenticationFilter() != null) {
+						// only override the class authentication filter, if it's not the default one
+						if (!RemoteEndpoint.DEFAULT_AUTHENTICATION_HANDLER.equals(handler.authenticationFilter())) {
 							autenticationFilterType = handler.authenticationFilter();
 						}
 
@@ -252,7 +254,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try { // create routes for HTTP methods
 
 				service.exception(Exception.class, (exception, request, response) -> {
-					loggingService.exception(exception.getMessage(), exception);
+					Log.exception(exception.getMessage(), exception);
 					cleanup();
 					response.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
@@ -376,32 +378,34 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
-			if (authenticationFilter != null) {
-				authenticationFilter.handle(request, response);
-			}
-
 			response.type(contentType);
 
 			Object ret = null;
 
 			try {
+				if (authenticationFilter != null) {
+					authenticationFilter.handle(request, response);
+				}
+
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
 			} catch (final Exception e) {
-				// wrap the exception and forward it to the response transformer
-				// there it will be handled appropriately
+				Log.exception(e.getMessage(), e);
+				Throwable realException = e;
 
 				if (e instanceof InvocationTargetException) {
 					final InvocationTargetException ie = (InvocationTargetException) e;
-					final Throwable inner = ie.getTargetException() != null ? ie.getTargetException() : ie;
-
-					if (inner instanceof Exception) {
-						ret = ExceptionResponse.internalServerError((Exception) inner);
-					} else {
-						throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
-					}
-
-					cleanup();
+					realException = ie.getTargetException() != null ? ie.getTargetException() : ie;
 				}
+
+				// wrap the exception and forward it to the response transformer
+				// there it will be handled appropriately
+				if (realException instanceof Exception) {
+					ret = ExceptionResponse.internalServerError((Exception) realException);
+				} else {
+					throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
+				}
+
+				cleanup();
 			}
 
 			return processResponse(response, ret);
