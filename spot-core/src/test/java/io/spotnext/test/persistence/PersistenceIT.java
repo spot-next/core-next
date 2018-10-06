@@ -253,7 +253,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
 
-		assertEquals(null, loadedAdmin.getShortName());
+		assertEquals("Administrator", loadedAdmin.getShortName());
 	}
 
 	@Test

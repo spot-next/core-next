@@ -1,6 +1,5 @@
 package io.spotnext.core.management.service.impl;
 
-import static io.restassured.RestAssured.basic;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
@@ -26,7 +25,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		RestAssured.baseURI = "http://localhost";
 		RestAssured.port = 19000;
 		RestAssured.basePath = "/v1/models";
-		RestAssured.authentication = basic("admin", "MD5:ee10c315eba2c75b403ea99136f5b48d");
+		RestAssured.authentication = RestAssured.preemptive().basic("admin", "MD5:ee10c315eba2c75b403ea99136f5b48d");
 	}
 
 	@Override

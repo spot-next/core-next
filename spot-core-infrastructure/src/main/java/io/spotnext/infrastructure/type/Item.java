@@ -3,13 +3,16 @@ package io.spotnext.infrastructure.type;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
@@ -20,6 +23,8 @@ import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
@@ -34,7 +39,10 @@ import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.support.util.ClassUtil;
 
+// Hibernate
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 // JPA
+@Cacheable
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
@@ -56,14 +64,14 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@CreationTimestamp
 	@CreatedDate
-	protected LocalDateTime createdAt;
+	protected Date createdAt;
 
 	@CreatedBy
 	protected String createdBy;
 
 	@UpdateTimestamp
 	@LastModifiedDate
-	protected LocalDateTime lastModifiedAt;
+	protected Date lastModifiedAt;
 
 	@LastModifiedBy
 	protected String lastModifiedBy;
@@ -102,7 +110,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@PrePersist
 	public void prePersist() {
-		this.createdAt = LocalDateTime.now();
+		this.createdAt = new Date();
 		updateUniquenessHash();
 	}
 
@@ -128,6 +136,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 				return prop;
 			}).collect(Collectors.toList());
+			
+			uniquePropertyValues.add(getTypeCode());
 
 			// create a hashcode
 			this.uniquenessHash = Objects.hash(uniquePropertyValues.toArray());
@@ -144,7 +154,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	protected void setLastModifiedAt() {
-		this.lastModifiedAt = LocalDateTime.now();
+		this.lastModifiedAt = new Date();
 	}
 
 	public int uniquenessHash() {
@@ -160,11 +170,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	public LocalDateTime getLastModifiedAt() {
-		return lastModifiedAt;
+		return LocalDateTime.ofInstant(lastModifiedAt.toInstant(), ZoneId.systemDefault());
 	}
 
 	public LocalDateTime getCreatedAt() {
-		return createdAt;
+		return LocalDateTime.ofInstant(createdAt.toInstant(), ZoneId.systemDefault());
 	}
 
 	/**
