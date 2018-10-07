@@ -8,15 +8,16 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Collections;
 
 import org.hamcrest.Matchers;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.Transactionless;
 import io.spotnext.itemtype.core.user.User;
+import io.spotnext.itemtype.core.user.UserGroup;
 
 public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
@@ -105,24 +106,49 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		assertNotNull(user);
 	}
 
-	@Ignore
 	@Test
-	public void createOrUpdateModel() throws JSONException {
+	public void createOrUpdateModel_WithPK() throws JSONException {
 		// updates existing user
 		User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester51"));
+		UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_ID, "employee-group"));
 
-		JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
+
+		JSONObject group = new JSONObject();
+		group.put("pk", usergroup.getPk());
+		group.put("typeCode", usergroup.getTypeCode());
+
+		JSONArray groups = new JSONArray();
+		groups.put(group);
+
+		JSONObject shortNameUpdate = new JSONObject() //
+				.put("shortName", "integrationtester")//
+				.put("pk", user.getPk())
+				.put("groups", groups);
 
 		given().body(shortNameUpdate.toString())
-				.put("/user/" + user.getPk()).then() //
+				.put("/user").then() //
 				.statusCode(202);
 
 		modelService.refresh(user);
 
-		assertEquals(user.getShortName(), "integrationtester");
-		assertEquals(1, user.getGroups().size());
+		assertEquals("integrationtester", user.getShortName());
+		assertEquals(usergroup.getPk(), user.getGroups().iterator().next().getPk());
 		assertEquals("MD5:16d7a4fca7442dda3ad93c9a726597e4", user.getPassword());
-		
+	}
+
+	@Test
+	public void createOrUpdateModel_WithoutPK() throws JSONException {
+		JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
+
+		Long pk = given().body(shortNameUpdate.toString())
+				.put("/user").then() //
+				.statusCode(201)
+				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk");
+
+		User user = modelService.get(User.class, pk);
+
+		assertEquals("integrationtester", user.getShortName());
+		assertEquals(0, user.getGroups().size());
 	}
 
 	@Test

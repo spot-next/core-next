@@ -38,6 +38,7 @@
 	<logger name="org.apache.catalina.core" level="WARN" />
 	<logger name="com.zaxxer.hikari" level="WARN" />
 	<logger name="org.eclipse.jetty" level="INFO" />
+	<logger name="org.hibernate.cache" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

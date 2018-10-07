@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.constant.CoreConstants;
@@ -90,27 +91,32 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		return modelService.get(getUserGroupType(), params);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc} As iterating over all groups recursively is a cost-intensive task, the results are cached.
+	 */
+	@Cacheable("misc")
 	@Override
 	public boolean isUserInGroup(final String userUid, final String groupUid) {
 		final List<PrincipalGroup> groupsToCheck = new ArrayList<>(getUser(userUid).getGroups());
-		
+
 		for (int x = 0; x < groupsToCheck.size(); x++) {
 			final PrincipalGroup currentGroup = groupsToCheck.get(x);
-			
+
 			// check if groups match
 			if (StringUtils.equals(groupUid, currentGroup.getId())) {
 				return true;
 			}
-			
+
 			// if not, add all subgroups to the list of groups to check
 			groupsToCheck.addAll(groupsToCheck.size(), currentGroup.getGroups());
 		}
-		
+
 		return false;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Set<G> getAllGroupsOfUser(final String uid) {
 		final Set<G> groups = new HashSet<>();

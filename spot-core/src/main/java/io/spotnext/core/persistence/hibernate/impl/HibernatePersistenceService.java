@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
@@ -60,7 +61,6 @@ import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
-import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
@@ -284,16 +284,17 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	private <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
-			final JpqlQuery<T> sourceQuery, final Query<T> query) {
+			final Q sourceQuery, final TypedQuery<T> query) {
 
-		query.setHint("org.hibernate.cacheable", !sourceQuery.isIgnoreCache());
+		query.setHint("org.hibernate.cacheable", sourceQuery.isCachable());
+		query.setHint("javax.persistence.cache.retrieveMode", sourceQuery.isIgnoreCache() ? CacheRetrieveMode.BYPASS : CacheRetrieveMode.USE);
 	}
 
 	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setFetchSubGraphsHint(
 			final Session session, final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
 		// TODO what about fetchgraph?
-		
+
 		final List<String> fetchSubGraphs = new ArrayList<>();
 
 		if (sourceQuery.isEagerFetchRelations()) {
@@ -315,7 +316,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				Log.debug("Fetch sub graphs can only be used for item queries - ignoring");
 				return;
 			}
-			
+
 			final EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
 
 			for (final String subgraph : fetchSubGraphs) {
@@ -497,6 +498,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			final CriteriaBuilder cb = session.getCriteriaBuilder();
 
 			final CriteriaQuery<T> cq = cb.createQuery(sourceQuery.getResultClass());
+			
 			final Root<T> r = cq.from(sourceQuery.getResultClass());
 
 			if (sourceQuery.getSearchParameters() != null) {
@@ -523,6 +525,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			}
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
+			setCacheSettings(session, sourceQuery, query);
 
 			final List<T> results = ((Query<T>) query).getResultList();
 

@@ -20,6 +20,7 @@ public abstract class Query<T> {
 	protected boolean eagerFetchRelations = false;
 	protected boolean ignoreCache = false;
 	protected boolean clearCaches = false;
+	protected boolean cachable = true;
 
 	/**
 	 * <p>Constructor for Query.</p>
@@ -181,6 +182,22 @@ public abstract class Query<T> {
 	 */
 	public void setLimit(final int limit) {
 		this.limit = limit;
+	}
+
+	/**
+	 * @return if true the query results are cached
+	 */
+	public boolean isCachable() {
+		return cachable;
+	}
+
+	/**
+	 * Specifies if the query results are cached based on the combination of the query parameters.
+	 * 
+	 * @param cachable
+	 */
+	public void setCachable(boolean cachable) {
+		this.cachable = cachable;
 	}
 
 }

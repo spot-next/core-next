@@ -22,7 +22,9 @@ import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.type.Item;
 
 /**
- * <p>ItemDeserializer class.</p>
+ * <p>
+ * ItemDeserializer class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -30,13 +32,17 @@ import io.spotnext.infrastructure.type.Item;
  */
 public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
+	private static final ThreadLocal<Integer> nestingLevel = new ThreadLocal<>();
+
 	private TypeService typeService;
 	private ModelService modelService;
 
 	private final Class<I> itemType;
 
 	/**
-	 * <p>Constructor for ItemDeserializer.</p>
+	 * <p>
+	 * Constructor for ItemDeserializer.
+	 * </p>
 	 *
 	 * @param itemType a {@link java.lang.Class} object.
 	 */
@@ -68,6 +74,9 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	private I loadItem(final JsonParser parser, final DeserializationContext context,
 			final TypeDeserializerBase typeDeserializer, final I intoValue) throws IOException {
 
+		// track the nested call of this deserializer, so we know if we are deserializing the root element, or sub items
+		int nestingLevel = incrementAndGetNestingLevel();
+
 		final ObjectCodec oc = parser.getCodec();
 		final JsonNode node = oc.readTree(parser);
 		I deserializedItem = null;
@@ -96,18 +105,48 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 			deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context);
 		}
 
-		try {
-			getModelService().attach(deserializedItem);
-
-//			if (!getModelService().isAttached(deserializedItem)) {
-//				getModelService().refresh(deserializedItem);
-//			}
-		} catch (final ModelNotFoundException e) {
-			// ignore exception, as this just means that the item is most likely
-			// new
+		// only try to attach nested items, as the might be references, and not new items
+		if (nestingLevel > 0) {
+			try {
+				getModelService().attach(deserializedItem);
+			} catch (final ModelNotFoundException e) {
+				// ignore exception, as this just means that the item is most likely
+				// new
+			}
 		}
 
+		// decrement the level, so that it starts freshly on a resused thread
+		// when the root object has been deserialized, this should be 0 again afterwards
+		decrementNestingLevel();
+
 		return deserializedItem;
+	}
+
+	/**
+	 * Initialized and increment the nesting level.
+	 */
+	private int incrementAndGetNestingLevel() {
+		Integer level = nestingLevel.get();
+
+		if (level == null) {
+			level = Integer.valueOf(0);
+		} else {
+			level++;
+		}
+
+		nestingLevel.set(level);
+
+		return level;
+	}
+
+	private void decrementNestingLevel() {
+		Integer level = nestingLevel.get();
+
+		if (level != null) {
+			level--;
+		}
+
+		nestingLevel.set(level);
 	}
 
 	/** {@inheritDoc} */
@@ -117,7 +156,9 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
@@ -130,7 +171,9 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	}
 
 	/**
-	 * <p>Getter for the field <code>modelService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>modelService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */

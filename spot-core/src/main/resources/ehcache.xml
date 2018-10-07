@@ -1,14 +1,27 @@
-<ehcache>
-	<defaultCache
-            name="defaut"
-            maxElementsInMemory="1000"
-            eternal="false"
-            timeToIdleSeconds="20"
-            timeToLiveSeconds="20"
-            overflowToDisk="false"
-            diskPersistent="false"
-            memoryStoreEvictionPolicy="LRU"
-            />  
-                    
-    <cache name="io.spotnext.infrastructure.type.Item" maxElementsInMemory="1000" />
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect"
+	dynamicConfig="true">
+
+	<defaultCache name="defaut" maxElementsInMemory="10000" maxEntriesLocalHeap="10000" maxEntriesLocalDisk="10000" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" memoryStoreEvictionPolicy="LRU">
+
+		<persistence strategy="localTempSwap" />
+	</defaultCache>
+
+	<!-- SPRING -->
+	<cache name="misc" maxEntriesLocalHeap="1000" memoryStoreEvictionPolicy="LFU" transactionalMode="off" timeToIdleSeconds="60" timeToLiveSeconds="60">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+	<!-- HIBERNATE -->
+	<cache name="io.spotnext.infrastructure.type.Item" maxEntriesLocalHeap="10000" eternal="false" timeToLiveSeconds="120">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+	<cache name="org.hibernate.cache.UpdateTimestampsCache" maxEntriesLocalHeap="5000" eternal="true">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+	<cache name="org.hibernate.cache.StandardQueryCache" maxEntriesLocalHeap="50" eternal="false" timeToLiveSeconds="120">
+		<persistence strategy="localTempSwap" />
+	</cache>
 </ehcache>
