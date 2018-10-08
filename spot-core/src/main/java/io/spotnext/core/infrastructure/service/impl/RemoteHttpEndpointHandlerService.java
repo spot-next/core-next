@@ -178,6 +178,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service = Service.ignite();
 				service.staticFileLocation("/public");
 				service.port(endpointEntry.getKey());
+				service.
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
 			} catch (final IllegalStateException e) {
@@ -224,6 +225,18 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 						final String pathMapping = StringUtils.join(remoteEndpoint.pathMapping(), handler.pathMapping()).replace("//", "/");
 
+						if (handler.method() == HttpMethod.trace) {
+							service.trace(pathMapping, mimeType, route, transformer);
+						}
+						
+						if (handler.method() == HttpMethod.connect) {
+							service.connect(pathMapping, mimeType, route, transformer);
+						}
+						
+						if (handler.method() == HttpMethod.options) {
+							service.options(pathMapping, mimeType, route, transformer);
+						}
+						
 						if (handler.method() == HttpMethod.get) {
 							service.get(pathMapping, mimeType, route, transformer);
 						}

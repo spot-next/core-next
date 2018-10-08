@@ -14,14 +14,15 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.constant.CoreConstants;
 import io.spotnext.core.infrastructure.exception.CannotCreateUserException;
-import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
+import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.security.service.AuthenticationService;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.Principal;
 import io.spotnext.itemtype.core.user.PrincipalGroup;
 import io.spotnext.itemtype.core.user.User;
@@ -40,12 +41,17 @@ import io.spotnext.itemtype.core.user.UserGroup;
 public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
 		implements UserService<U, G> {
 
+	public static final UserData DEFAULT_USER = new UserData();
+	static {
+		DEFAULT_USER.setId("<notset>");
+	}
+	
 	@Autowired
 	protected SessionService sessionService;
 
 	@Autowired
 	protected AuthenticationService authenticationService;
-
+	
 	/** {@inheritDoc} */
 	@Override
 	public U createUser(final Class<U> type, final String userId) throws CannotCreateUserException {
@@ -158,8 +164,11 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public void setCurrentUser(final U user) {
 		final Session session = sessionService.getCurrentSession();
-
-		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, user);
+		
+		final UserData userData = new UserData();
+		user.setId(user.getId());
+		
+		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, userData);
 	}
 
 	/** {@inheritDoc} */
@@ -170,27 +179,19 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	/** {@inheritDoc} */
 	@Override
-	public U getCurrentUser() {
+	public UserData getCurrentUser() {
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			U user = (U) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
-
+			final UserData user = (UserData) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+			
 			if (user != null) {
-				try {
-					// load from database, because entities/models might not be threadsafe
-					user = (U) modelService.get(user.getClass(), user.getPk());
-				} catch (final ModelNotFoundException e) {
-					loggingService.warn("Current session user was invalid - removed it.");
-					sessionService.closeSession(session.getId());
-				}
+				return user;
 			}
-
-			return (U) user;
 		} else {
-			loggingService.warn("No session is set up.");
+			Log.warn("No session is set up.");
 		}
 
-		return null;
+		return DEFAULT_USER;
 	}
 }

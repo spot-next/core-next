@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.spotnext.core.infrastructure.exception.CannotCreateUserException;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
@@ -89,9 +90,9 @@ public interface UserService<U extends User, G extends UserGroup> {
 	/**
 	 * Returns the current user in the session.
 	 *
-	 * @return a U object.
+	 * @return a {@link UserData} object.
 	 */
-	U getCurrentUser();
+	UserData getCurrentUser();
 
 	/**
 	 * Sets the given user as the current session user.

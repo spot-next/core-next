@@ -1,5 +1,7 @@
 package io.spotnext.core.persistence.service.impl;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -36,6 +38,8 @@ import io.spotnext.core.persistence.service.TransactionService;
 @Service
 public class DefaultTransactionService extends AbstractService implements TransactionService {
 
+	private final static NumberFormat NF = new DecimalFormat("0.0###");
+
 	@Value("${service.persistene.transaction.timeout}")
 	protected int transactionTimeoutInSec = 60;
 
@@ -43,6 +47,9 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	protected PlatformTransactionManager transactionManager;
 
 	protected ThreadLocal<TransactionStatus> currentTransaction = new ThreadLocal<>();
+
+//	@PersistenceUnit
+//	protected EntityManagerFactory entityManagerFactory;
 
 	/**
 	 * @return creates a new {@link TransactionTemplate}.
@@ -60,7 +67,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		final boolean transactionWasAlreadyActive = isTransactionActive();
 
 		final TransactionStatus transaction;
-		
+
 		if (!transactionWasAlreadyActive) {
 			transaction = start();
 		} else {
@@ -68,6 +75,12 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		}
 
 		boolean commit = true;
+
+//		StatisticsLog stat = null;
+//
+//		if (Log.isLogLevelEnabled(LogLevel.DEBUG)) {
+//			stat = new StatisticsLog();
+//		}
 
 		try {
 			return body.call();
@@ -83,6 +96,10 @@ public class DefaultTransactionService extends AbstractService implements Transa
 					commit(transaction);
 				}
 			}
+
+//			if (stat != null) {
+//				stat.log();
+//			}
 		}
 	}
 
@@ -166,8 +183,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	}
 
 	/**
-	 * @return the name for the transaction, composed out of <classname of the
-	 *         calling class>.<method name>.
+	 * @return the name for the transaction, composed out of <classname of the calling class>.<method name>.
 	 */
 	protected String createTransactionName() {
 		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -179,4 +195,54 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 		return null;
 	}
+
+//	private class StatisticsLog {
+//		Statistics statistics;
+//		private long cacheInitialHitCount;
+//		private long queryInitialHitCount;
+//		private long entityFetchInitialHitCount;
+//		private long entityLoadInitialHitCount;
+//		private long collectionFetchInitialHitCount;
+//		private long collectionLoadInitialHitCount;
+//		private long cacheMissInitialCount;
+//		private long queryMissInitialCount;
+//
+//		public StatisticsLog() {
+//			statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+//			statistics.setStatisticsEnabled(true);
+//
+//			cacheInitialHitCount = statistics.getSecondLevelCacheHitCount();
+//			queryInitialHitCount = statistics.getQueryCacheHitCount();
+//			entityFetchInitialHitCount = statistics.getEntityFetchCount();
+//			entityLoadInitialHitCount = statistics.getEntityLoadCount();
+//			collectionFetchInitialHitCount = statistics.getCollectionFetchCount();
+//			collectionLoadInitialHitCount = statistics.getCollectionLoadCount();
+//
+//			cacheInitialHitCount = statistics.getSecondLevelCacheMissCount();
+//			queryMissInitialCount = statistics.getQueryCacheMissCount();
+//		}
+//
+//		public void log() {
+//			long cacheMissCount = statistics.getSecondLevelCacheMissCount();
+//
+//			log("Cache", cacheInitialHitCount, statistics.getSecondLevelCacheHitCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Query cache", queryInitialHitCount, statistics.getQueryCacheHitCount(), queryMissInitialCount, statistics.getQueryCacheMissCount());
+//			log("Entity fetch cache", entityFetchInitialHitCount, statistics.getEntityFetchCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Entity load cache", entityLoadInitialHitCount, statistics.getEntityLoadCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Collection fetch cache", collectionFetchInitialHitCount, statistics.getCollectionFetchCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Collection load cache", collectionLoadInitialHitCount, statistics.getCollectionLoadCount(), cacheMissInitialCount, cacheMissCount);
+//		}
+//
+//		private void log(String name, long initialCount, long hitCount, long initialMissCount, long missCount) {
+//			double ratio = (double) hitCount / (hitCount + missCount);
+//
+//			if (hitCount > initialCount) {
+//				Log.debug(String.format("%s - Cache HIT, Ratio=%s", name, NF.format(ratio)));
+//			} else if (missCount > initialMissCount) {
+//				Log.debug(String.format("%s - Cache MISS, Ratio=%s", name, NF.format(ratio)));
+//			} else {
+//				Log.debug(name + " - Cache not used");
+//			}
+//		}
+//	}
 }

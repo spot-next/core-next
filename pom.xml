@@ -148,8 +148,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j.version>2.11.1</log4j.version>
 		<junit.version>4.12</junit.version>
-		<spring.boot.version>2.0.4.RELEASE</spring.boot.version>
-		<spring.version>5.0.8.RELEASE</spring.version>
+		<spring.boot.version>2.0.5.RELEASE</spring.boot.version>
+		<spring.version>5.0.9.RELEASE</spring.version>
 
 		<!-- GPG -->
 		<gpg.keyname>${env.GPG_KEY}</gpg.keyname>
@@ -368,7 +368,7 @@
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<Xlint>ignore</Xlint>
-						<XnoInline>false</XnoInline>
+						<XnoInline>true</XnoInline>
 						<complianceLevel>${java.version}</complianceLevel>
 						<encoding>UTF-8</encoding>
 						<verbose>false</verbose>
@@ -861,6 +861,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aspects</artifactId>
 			<version>${spring.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>

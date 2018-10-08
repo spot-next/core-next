@@ -3,15 +3,13 @@
 
 <configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
-			by default -->
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
 
-	<appender name="FILE"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
@@ -30,6 +28,12 @@
 
 	<!-- framework logs -->
 	<logger name="org.hibernate" level="WARN" />
+	<logger name="org.hibernate.SQL" level="INFO" />
+	<logger name="org.hibernate.cache" level="INFO" />
+	<logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="ERROR" />
+	
+	<logger name="org.ehcache" level="INFO" />
+
 	<logger name="org.springframework" level="WARN" />
 	<logger name="org.springframework.context.support" level="WARN" />
 	<logger name="org.springframework.beans.factory" level="WARN" />
@@ -38,7 +42,11 @@
 	<logger name="org.apache.catalina.core" level="WARN" />
 	<logger name="com.zaxxer.hikari" level="WARN" />
 	<logger name="org.eclipse.jetty" level="INFO" />
-	<logger name="org.hibernate.cache" level="INFO" />
+
+	<logger name="io.spotnext.core.persistence" level="INFO" />
+	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="INFO" />
+	
+	<logger name="io.spotnext.core.persistence.service.impl.DefaultTransactionService" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

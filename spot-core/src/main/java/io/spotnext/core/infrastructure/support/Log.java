@@ -134,6 +134,23 @@ public class Log {
 		}
 	}
 
+	public static boolean isLogLevelEnabled(LogLevel logLevel) {
+		switch (logLevel) {
+		case DEBUG:
+			return getLoggerForClass(getCallingClass()).isDebugEnabled();
+		case INFO:
+			return getLoggerForClass(getCallingClass()).isInfoEnabled();
+		case ERROR:
+			return getLoggerForClass(getCallingClass()).isErrorEnabled();
+		case TRACE:
+			return getLoggerForClass(getCallingClass()).isTraceEnabled();
+		case WARN:
+			return getLoggerForClass(getCallingClass()).isWarnEnabled();
+		default:
+			return true;
+		}
+	}
+
 	/*
 	 * Helper functions
 	 */

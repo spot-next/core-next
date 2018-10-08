@@ -64,7 +64,13 @@ public class DefaultModelService extends AbstractModelService {
 	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
-		final T item = persistenceService.load(type, pk);
+		return get(type, pk, false);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public <T extends Item> T get(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
+		final T item = persistenceService.load(type, pk, returnProxy);
 
 		if (item != null) {
 			applyLoadInterceptors(Collections.singletonList(item));

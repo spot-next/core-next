@@ -164,7 +164,9 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		try {
 			if (pk > 0) {
 				final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-				final T model = modelService.get(type, pk);
+				ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("pk", pk));
+				query.setEagerFetchRelations(true);
+				final T model = modelService.get(query);
 
 				if (model == null) {
 					return DataResponse.notFound();
@@ -215,7 +217,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			try {
 				final QueryResult<T> result = queryService.query(query);
-				
+
 				if (result.getResultCount() > 0) {
 					return DataResponse.ok().withPayload(result);
 				} else {

@@ -31,11 +31,13 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.stat.Statistics;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
@@ -45,6 +47,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -59,6 +62,7 @@ import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.ModelQuery;
@@ -82,7 +86,8 @@ import io.spotnext.support.util.ClassUtil;
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
-	static final int JDBC_BATCH_SIZE = 20;
+	@Value("${hibernate.jdbc.batch_size}")
+	private Integer jdbcBatchSize;
 
 	protected MetadataExtractorIntegrator metadataIntegrator = MetadataExtractorIntegrator.INSTANCE;
 
@@ -283,10 +288,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	private <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
+	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
 			final Q sourceQuery, final TypedQuery<T> query) {
 
-		query.setHint("org.hibernate.cacheable", sourceQuery.isCachable());
+		CacheMode cacheMode = CacheMode.NORMAL;
+
+		if (!sourceQuery.isCachable() && !sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.GET;
+		} else if (!sourceQuery.isCachable() && sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.IGNORE;
+		} else if (sourceQuery.isCachable() && sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.PUT;
+		}
+
+		session.setCacheMode(cacheMode);
+//		query.setHint("org.hibernate.cacheable", sourceQuery.isCachable());
 		query.setHint("javax.persistence.cache.retrieveMode", sourceQuery.isIgnoreCache() ? CacheRetrieveMode.BYPASS : CacheRetrieveMode.USE);
 	}
 
@@ -364,7 +380,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						}
 
 						// use same as the JDBC batch size
-						if (i > JDBC_BATCH_SIZE && i % JDBC_BATCH_SIZE == 0) {
+						if (jdbcBatchSize != null && i > jdbcBatchSize && i % jdbcBatchSize == 0) {
 							// flush a batch of inserts and release memory:
 							session.flush();
 //							session.clear();
@@ -418,12 +434,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
+	public <T extends Item> T load(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			return transactionService.execute(() -> {
-				return getSession().find(type, pk);
+				T item = returnProxy ? getSession().load(type, pk) : getSession().get(type, pk);
+				return item;
 			});
 		} catch (final TransactionException e) {
 			if (e.getCause() instanceof ModelNotFoundException) {
@@ -494,11 +511,12 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return transactionService.execute(() -> {
 
 			TypedQuery<T> query = null;
+
 			final Session session = getSession();
 			final CriteriaBuilder cb = session.getCriteriaBuilder();
 
 			final CriteriaQuery<T> cq = cb.createQuery(sourceQuery.getResultClass());
-			
+
 			final Root<T> r = cq.from(sourceQuery.getResultClass());
 
 			if (sourceQuery.getSearchParameters() != null) {
@@ -622,11 +640,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return getSession().contains(item);
 	}
 
-	protected Session getSession() {
+	public Session getSession() {
 		final EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
 				.getResource(entityManagerFactory));
 
 		if (holder != null) {
+			if (Log.isLogLevelEnabled(LogLevel.DEBUG)) {
+				getSessionFactory().getStatistics().setStatisticsEnabled(true);
+			}
+
 			return holder.getEntityManager().unwrap(Session.class);
 		}
 
@@ -670,6 +692,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 */
 	public SessionFactory getSessionFactory() {
 		return entityManagerFactory.unwrap(SessionFactory.class);
+	}
+
+	public Statistics getStatistics() {
+		return getSessionFactory().getStatistics();
 	}
 
 }

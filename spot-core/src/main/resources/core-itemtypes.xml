@@ -73,15 +73,11 @@
 		</properties>
 	</bean>
 	
-	<bean name="AuthenticationDetails" package="io.spotnext.itemtype.core.beans">
-		<description>Holds authentication details used by remote endpoints.</description>
+	<bean name="UserData" package="io.spotnext.itemtype.core.beans">
+		<description>Holds user information.</description>
 		<properties>
-			<property name="roles" type="UserRoleList">
-				<description>The roles of the authenticated user.</description>
-			</property>
-			<property name="user" type="Boolean">
-				<description>If true import errors are ignored are ignored and processing is continued</description>
-				<defaultValue>false</defaultValue>
+			<property name="id" type="String">
+				<description>The users id.</description>
 			</property>
 		</properties>
 	</bean>

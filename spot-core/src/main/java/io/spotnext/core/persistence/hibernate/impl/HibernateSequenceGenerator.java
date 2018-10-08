@@ -55,6 +55,7 @@ public class HibernateSequenceGenerator implements SequenceGenerator {
 		ItemSequence sequence = sequences.get(sequenceName);
 
 		if (sequence == null) {
+			persistenceService.bindSession();
 			sequence = persistenceService.getSession().get(ItemSequence.class, sequenceName);
 		}
 

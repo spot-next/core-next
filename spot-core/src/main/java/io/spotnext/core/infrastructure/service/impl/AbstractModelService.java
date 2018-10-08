@@ -37,6 +37,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.Localizable;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
@@ -213,17 +214,11 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	 * @param models a {@link java.util.List} object.
 	 */
 	public <T extends Item> void setUserInformation(final List<T> models) {
-		final User currentUser = userService.getCurrentUser();
-
-		if (currentUser == null) {
-			Log.debug(() -> "Could not determine current session user");
-		}
-
-		final String username = currentUser != null ? currentUser.getId() : "<system>";
+		final UserData currentUser = userService.getCurrentUser();
 
 		for (final T model : models) {
-			ClassUtil.setField(model, "createdBy", username);
-			ClassUtil.setField(model, "lastModifiedBy", username);
+			ClassUtil.setField(model, "createdBy", currentUser.getId());
+			ClassUtil.setField(model, "lastModifiedBy", currentUser.getId());
 		}
 	}
 

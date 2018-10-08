@@ -40,7 +40,7 @@ import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.support.util.ClassUtil;
 
 // Hibernate
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "items")
 // JPA
 @Cacheable
 @MappedSuperclass
@@ -136,7 +136,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 				return prop;
 			}).collect(Collectors.toList());
-			
+
 			uniquePropertyValues.add(getTypeCode());
 
 			// create a hashcode
