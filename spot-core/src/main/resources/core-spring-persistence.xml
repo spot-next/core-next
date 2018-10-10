@@ -32,16 +32,14 @@
 	<bean id="jpaProperties" class="java.util.Properties">
 		<constructor-arg>
 			<props>
-				<!-- <prop key="hibernate.jdbc.batch_size">100</prop> -->
-				<!-- <prop key="hibernate.order_inserts">true</prop> -->
-				<!-- <prop key="hibernate.order_updates">true</prop> -->
-
 				<prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
 				<prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
 				<prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
 
+				<prop key="hibernate.order_inserts">true</prop>
+				<prop key="hibernate.order_updates">true</prop>
 				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
-				
+
 				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop>

@@ -2,6 +2,7 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,13 +11,16 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.conscrypt.OpenSSLProvider;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.exception.AuthenticationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
@@ -80,6 +84,12 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	@Resource
 	protected ResponseTransformer jsonResponseTransformer;
+
+	@Value("${service.typesystem.rest.keystore.file:}")
+	private String keystoreFilePath;
+
+	@Value("${service.typesystem.rest.keystore.password:}")
+	private String keystorePassword;
 
 	protected Map<Integer, Service> services = new HashMap<>();
 
@@ -171,6 +181,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 */
 	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	public void init() throws RemoteServiceInitException {
+//		Security.addProvider(new OpenSSLProvider());
+//		sslContextFactory.setProvider("Conscrypt");
+
 		for (final Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
 
 			Service service;
@@ -178,7 +191,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service = Service.ignite();
 				service.staticFileLocation("/public");
 				service.port(endpointEntry.getKey());
-				service.
+
+				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
+					String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
+					String absoluteKeystoreFilePath = getClass().getResource(keystore).getFile();
+					service.secure(absoluteKeystoreFilePath, keystorePassword, null, null);
+				}
+
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
 			} catch (final IllegalStateException e) {
@@ -228,15 +247,15 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						if (handler.method() == HttpMethod.trace) {
 							service.trace(pathMapping, mimeType, route, transformer);
 						}
-						
+
 						if (handler.method() == HttpMethod.connect) {
 							service.connect(pathMapping, mimeType, route, transformer);
 						}
-						
+
 						if (handler.method() == HttpMethod.options) {
 							service.options(pathMapping, mimeType, route, transformer);
 						}
-						
+
 						if (handler.method() == HttpMethod.get) {
 							service.get(pathMapping, mimeType, route, transformer);
 						}
@@ -294,7 +313,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				});
 
 				service.init();
-
 			} catch (final Exception e) {
 				throw new RemoteServiceInitException("Could not start remote endpoints", e);
 			}
@@ -403,7 +421,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
 			} catch (final Exception e) {
-				Log.exception(e.getMessage(), e);
+				if (!(e instanceof AuthenticationException)) {
+					Log.exception(e.getMessage(), e);
+				}
+				
 				Throwable realException = e;
 
 				if (e instanceof InvocationTargetException) {

@@ -23,7 +23,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Override
 	protected void prepareTest() {
-		RestAssured.baseURI = "http://localhost";
+		RestAssured.baseURI = "https://localhost";
 		RestAssured.port = 19000;
 		RestAssured.basePath = "/v1/models";
 		RestAssured.authentication = RestAssured.preemptive().basic("admin", "MD5:ee10c315eba2c75b403ea99136f5b48d");

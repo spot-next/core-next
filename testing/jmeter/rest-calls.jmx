@@ -59,7 +59,7 @@
             </elementProp>
             <stringProp name="HTTPSampler.domain">localhost</stringProp>
             <stringProp name="HTTPSampler.port">19000</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/v1/models/user</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -87,7 +87,7 @@
             </elementProp>
             <stringProp name="HTTPSampler.domain">localhost</stringProp>
             <stringProp name="HTTPSampler.port">19000</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/v1/models/user</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
@@ -122,7 +122,7 @@
             </elementProp>
             <stringProp name="HTTPSampler.domain">localhost</stringProp>
             <stringProp name="HTTPSampler.port">19000</stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/v1/models/user/${createdPK}</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
