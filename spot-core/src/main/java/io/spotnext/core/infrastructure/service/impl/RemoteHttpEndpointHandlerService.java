@@ -192,7 +192,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
 					final String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
-					final String absoluteKeystoreFilePath = RemoteHttpEndpointHandlerService.class.getResource(keystore).getFile();
+					final String absoluteKeystoreFilePath = getClass().getResource(keystore).toExternalForm();
 					service.secure(absoluteKeystoreFilePath, keystorePassword, null, null);
 				}
 
