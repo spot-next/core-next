@@ -52,7 +52,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 		loaded.setShortName("loaded");
 
-		User duplicate = new User();
+		final User duplicate = new User();
 		ClassUtil.setField(duplicate, "pk", loaded.getPk());
 		modelService.refresh(duplicate);
 		duplicate.setShortName("loaded");
@@ -61,7 +61,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		try {
 			modelService.save(loaded);
-		} catch (ModelSaveException e) {
+		} catch (final ModelSaveException e) {
 			assertTrue(e.getCause() instanceof OptimisticLockException);
 		}
 	}
@@ -286,7 +286,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// this is the id that will be used next, so we have to add -1 to get the last used one
 		long lastUsedId = sequenceGenerator.getCurrentSequenceValue(user.getTypeCode() + "_" + "id");
 
-		// if it is 0, it was never incremented and we don't have to subtract 1 
+		// if it is 0, it was never incremented and we don't have to subtract 1
 		if (lastUsedId > 0) {
 			lastUsedId--;
 		}

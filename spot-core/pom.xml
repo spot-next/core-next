@@ -77,14 +77,6 @@
 			</plugin>
 
 		</plugins>
-
-		<extensions>
-			<extension>
-				<groupId>kr.motd.maven</groupId>
-				<artifactId>os-maven-plugin</artifactId>
-				<version>1.6.0</version>
-			</extension>
-		</extensions>
 	</build>
 
 	<dependencies>
@@ -235,9 +227,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.conscrypt</groupId>
-			<artifactId>conscrypt-openjdk</artifactId>
+			<artifactId>conscrypt-openjdk-uber</artifactId>
 			<version>1.4.0</version>
-			<classifier>${os.detected.classifier}</classifier>
 		</dependency>
 
 		<!-- REST TESTING -->

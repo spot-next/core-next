@@ -27,6 +27,7 @@ import io.spotnext.core.infrastructure.serialization.jackson.ItemSerializationMi
 import io.spotnext.core.infrastructure.serialization.jackson.ItemTypeResolver;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemTypeResolverBuilder;
 import io.spotnext.core.infrastructure.serialization.jackson.ModelAndViewMixIn;
+import io.spotnext.core.infrastructure.serialization.jackson.QueryResultMixIn;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
@@ -50,7 +51,9 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	private ObjectWriter jacksonWriter;
 
 	/**
-	 * <p>init.</p>
+	 * <p>
+	 * init.
+	 * </p>
 	 *
 	 * @throws java.lang.ClassNotFoundException if any.
 	 */
@@ -59,7 +62,8 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 		jacksonMapper = new ObjectMapper();
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.addMixIn(ModelAndView.class, ModelAndViewMixIn.class);
-		
+		jacksonMapper.addMixIn(ModelAndView.class, QueryResultMixIn.class);
+
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

@@ -2,7 +2,6 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.conscrypt.OpenSSLProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -51,8 +49,7 @@ import spark.Service;
 import spark.route.HttpMethod;
 
 /**
- * This HTTP service base class scans the implementing class for annotated
- * method and register it as Spark request endpoints.
+ * This HTTP service base class scans the implementing class for annotated method and register it as Spark request endpoints.
  *
  * @author mojo2012
  * @version 1.0
@@ -101,10 +98,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	final Map<Class<AuthenticationFilter>, AuthenticationFilter> authenticationFilters = new HashMap<>();
 
 	/**
-	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
-	 * then the HTTP interfaces will be started up (cannot register new endpoints
-	 * then).
+	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding context for endpoints. If the context
+	 * contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit} then the HTTP interfaces will be started up (cannot register new
+	 * endpoints then).
 	 *
 	 * @param event that signals that the context has been started
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException
@@ -175,7 +171,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * <p>init.</p>
+	 * <p>
+	 * init.
+	 * </p>
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
@@ -193,8 +191,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service.port(endpointEntry.getKey());
 
 				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
-					String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
-					String absoluteKeystoreFilePath = getClass().getResource(keystore).getFile();
+					final String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
+					final String absoluteKeystoreFilePath = RemoteHttpEndpointHandlerService.class.getResource(keystore).getFile();
 					service.secure(absoluteKeystoreFilePath, keystorePassword, null, null);
 				}
 
@@ -284,7 +282,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 
 			try { // create routes for HTTP methods
-
 				service.exception(Exception.class, (exception, request, response) -> {
 					Log.exception(exception.getMessage(), exception);
 					cleanup();
@@ -362,20 +359,19 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	/**
 	 * Set the default locale in every new request thread that is being created
 	 */
-	protected void setupLocale(Request request) {
+	protected void setupLocale(final Request request) {
 		LocaleContextHolder.setLocale(request.raw().getLocale());
 	}
 
 	/**
-	 * Checks if the client accepts compressed responses and sets the http response
-	 * headers accordingly. This will make Spark/Jetty compress the output
+	 * Checks if the client accepts compressed responses and sets the http response headers accordingly. This will make Spark/Jetty compress the output
 	 * automatically.
 	 * 
 	 * @param request
 	 * @param response
 	 */
-	protected void setupEncoding(Request request, Response response) {
-		String acceptEncoding = request.headers("Accept-Encoding");
+	protected void setupEncoding(final Request request, final Response response) {
+		final String acceptEncoding = request.headers("Accept-Encoding");
 
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
 			response.header("Content-Encoding", "gzip");
@@ -424,7 +420,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				if (!(e instanceof AuthenticationException)) {
 					Log.exception(e.getMessage(), e);
 				}
-				
+
 				Throwable realException = e;
 
 				if (e instanceof InvocationTargetException) {
@@ -434,7 +430,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				// wrap the exception and forward it to the response transformer
 				// there it will be handled appropriately
-				if (realException instanceof Exception) {
+				if (realException instanceof AuthenticationException) {
+					ret = ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException);
+				} else if (realException instanceof Exception) {
 					ret = ExceptionResponse.internalServerError((Exception) realException);
 				} else {
 					throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
@@ -447,10 +445,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 
 		/**
-		 * If the givn response body object is of type {@link DataResponse} the http
-		 * status code is set according to {@link DataResponse#getStatusCode()}. Also
-		 * the actual payload is returned, not the wrapper object itself. In any other
-		 * case the given response body object is returned.
+		 * If the givn response body object is of type {@link DataResponse} the http status code is set according to {@link DataResponse#getStatusCode()}. Also
+		 * the actual payload is returned, not the wrapper object itself. In any other case the given response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody
@@ -467,9 +463,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * <p>registerHandler.</p>
+	 * <p>
+	 * registerHandler.
+	 * </p>
 	 *
-	 * @param port     a int.
+	 * @param port a int.
 	 * @param endpoint a {@link java.lang.Object} object.
 	 */
 	public void registerHandler(final int port, final Object endpoint) {
