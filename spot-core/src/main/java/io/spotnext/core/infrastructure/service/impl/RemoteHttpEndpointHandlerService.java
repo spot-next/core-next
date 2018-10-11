@@ -177,7 +177,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+	@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
 //		Security.addProvider(new OpenSSLProvider());
 //		sslContextFactory.setProvider("Conscrypt");
@@ -192,6 +192,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
 					final String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
+					// use this "unsafe" access to allow to override the same keystore file used from other JAR files
 					final String absoluteKeystoreFilePath = getClass().getResource(keystore).toExternalForm();
 					service.secure(absoluteKeystoreFilePath, keystorePassword, null, null);
 				}
