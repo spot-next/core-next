@@ -286,8 +286,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.ofNullable(ann);
 	}
 
+	@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
 	protected Optional<Annotation> createIndexAnnotation(final CtField field, final Annotation propertyAnnotation) {
-
 		Annotation ann = null;
 
 //		if (isIndexable(field, propertyAnnotation) && !getAnnotation(field, Index.class).isPresent()) {
