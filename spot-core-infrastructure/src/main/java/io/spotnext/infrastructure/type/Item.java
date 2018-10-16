@@ -16,9 +16,11 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
@@ -42,6 +44,8 @@ import io.spotnext.support.util.ClassUtil;
 // Hibernate
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "items")
 // JPA
+//TODO: indexes don't seem to be picked up properly
+@Table(indexes = { @Index(name = "createdAt", columnList = "createdAt"), @Index(name = "lastModifiedBy", columnList = "lastModifiedBy") })
 @Cacheable
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -62,6 +66,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@Column(name = "pk")
 	final protected Long pk = IdGenerator.createLongId();
 
+//	@Index(name = "idx_createdAt")
 	@CreationTimestamp
 	@CreatedDate
 	protected Date createdAt;
@@ -69,6 +74,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	@CreatedBy
 	protected String createdBy;
 
+//	@Index(name = "idx_lastModifiedAt")
 	@UpdateTimestamp
 	@LastModifiedDate
 	protected Date lastModifiedAt;
@@ -77,20 +83,17 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected String lastModifiedBy;
 
 	@Version
-	protected long version = -1;
+	protected int version = -1;
 
 	/**
-	 * Indicates that the given item is deleted. This property can be used to
-	 * implemented "soft-deletion"
+	 * Indicates that the given item is deleted. This property can be used to implemented "soft-deletion"
 	 */
 	@Column
 	protected boolean deleted = false;
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as unique
-	 * (with the {@link Property} annotation). This is necessary to implement
-	 * extendible combined unique constraints, regardless of which JPA inheritance
-	 * strategy is used
+	 * Returns a hash code calculated of all properties that are defined as unique (with the {@link Property} annotation). This is necessary to implement
+	 * extendible combined unique constraints, regardless of which JPA inheritance strategy is used
 	 */
 	@Column(name = "uniquenessHash", unique = true, nullable = false)
 	private Integer uniquenessHash = null;
@@ -100,7 +103,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * 
 	 * @return the internal version of the Item, used for optimistic locking
 	 */
-	public long getVersion() {
+	public int getVersion() {
 		return version;
 	}
 
@@ -115,9 +118,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * Update uniqueness hash. This is the only column that has JPA unique-key
-	 * constraint! This is necessary to make the {@link Column#unique()} annotation
-	 * work with all JPA inheritance strategies.
+	 * Update uniqueness hash. This is the only column that has JPA unique-key constraint! This is necessary to make the {@link Column#unique()} annotation work
+	 * with all JPA inheritance strategies.
 	 */
 	protected void updateUniquenessHash() {
 		final Map<String, Object> uniqueProperties = getUniqueHashProperties();
@@ -178,9 +180,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * @return true if the item has a PK. It is assumed that it has been saved
-	 *         before. If you set a PK manually and save the item, an existing item
-	 *         with the same PK will be overwritten.
+	 * @return true if the item has a PK. It is assumed that it has been saved before. If you set a PK manually and save the item, an existing item with the
+	 *         same PK will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return pk != null;
@@ -197,8 +198,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	/**
 	 * Returns the names and the values of all properties annotated with @Unique.
 	 * 
-	 * @return a map containing all the unique properties for this Item (key =
-	 *         property name)
+	 * @return a map containing all the unique properties for this Item (key = property name)
 	 */
 	public Map<String, Object> getUniqueHashProperties() {
 		return getProperties(this::isUniqueField);
@@ -207,8 +207,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	/**
 	 * Returns all fields annotated with the {@link Property} annotation.
 	 * 
-	 * @param filter can be null or a predicate that further filters the returned
-	 *               item properties.
+	 * @param filter can be null or a predicate that further filters the returned item properties.
 	 * @return all filtered item properties
 	 */
 	public Map<String, Object> getProperties(BiPredicate<Field, Object> filter) {
@@ -258,8 +257,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current object,
-	 * both are equal.
+	 * If the type and the pk of the given object is the same as the current object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

@@ -21,8 +21,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.TransactionService;
 
 /**
@@ -62,6 +64,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		return transactionTemplate;
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Override
 	public <R> R execute(final Callable<R> body) throws TransactionException {
 		final boolean transactionWasAlreadyActive = isTransactionActive();
@@ -78,7 +81,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 //		StatisticsLog stat = null;
 //
-//		if (Log.isLogLevelEnabled(LogLevel.DEBUG)) {
+//		if (Logger.isLogLevelEnabled(LogLevel.DEBUG)) {
 //			stat = new StatisticsLog();
 //		}
 
@@ -113,7 +116,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 	@Override
 	public TransactionStatus start() throws TransactionException {
-		Log.debug(String.format("Creating new transaction for thread %s (id = %s)", Thread.currentThread().getName(), Thread.currentThread().getId()));
+		Logger.debug(String.format("Creating new transaction for thread %s (id = %s)", Thread.currentThread().getName(), Thread.currentThread().getId()));
 
 		if (!getCurrentTransaction().isPresent()) {
 			final TransactionDefinition def = createTransactionTemplate();
@@ -148,7 +151,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.commit(status);
 			currentTransaction.remove();
 		} else {
-			Log.warn("Cannot commit: no transaction active.");
+			Logger.warn("Cannot commit: no transaction active.");
 		}
 	}
 
@@ -158,7 +161,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.rollback(status);
 			currentTransaction.remove();
 		} else {
-			Log.warn("Cannot roleback: no transaction active.");
+			Logger.warn("Cannot roleback: no transaction active.");
 		}
 	}
 
@@ -237,11 +240,11 @@ public class DefaultTransactionService extends AbstractService implements Transa
 //			double ratio = (double) hitCount / (hitCount + missCount);
 //
 //			if (hitCount > initialCount) {
-//				Log.debug(String.format("%s - Cache HIT, Ratio=%s", name, NF.format(ratio)));
+//				Logger.debug(String.format("%s - Cache HIT, Ratio=%s", name, NF.format(ratio)));
 //			} else if (missCount > initialMissCount) {
-//				Log.debug(String.format("%s - Cache MISS, Ratio=%s", name, NF.format(ratio)));
+//				Logger.debug(String.format("%s - Cache MISS, Ratio=%s", name, NF.format(ratio)));
 //			} else {
-//				Log.debug(name + " - Cache not used");
+//				Logger.debug(name + " - Cache not used");
 //			}
 //		}
 //	}

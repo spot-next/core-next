@@ -1050,6 +1050,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 				&& propertyDefinition.getPersistence().getColumnType() != null) {
 			propAnn.addParameter("columnType", propertyDefinition.getPersistence().getColumnType(),
 					JavaValueType.ENUM_VALUE);
+			propAnn.addParameter("indexed", propertyDefinition.getPersistence().isIndexed(),
+					JavaValueType.LITERAL);
 		}
 	}
 

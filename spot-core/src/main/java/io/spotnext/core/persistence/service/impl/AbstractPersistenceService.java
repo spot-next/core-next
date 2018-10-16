@@ -12,7 +12,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
@@ -42,7 +42,7 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 
 			for (final Map.Entry<String, ItemTypePropertyDefinition> prop : properties.entrySet()) {
 				if (isArrayCollectionOrMap(prop.getValue().getReturnType())) {
-					Log
+					Logger
 							.warn(String.format("Item property '%s' is a list or collection - it will be ignored.",
 									prop.getValue().getName()));
 				} else {
@@ -50,7 +50,7 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 						final Object value = PropertyUtils.getProperty(item, prop.getValue().getName());
 
 						if (value instanceof Item) {
-							Log.debug(String.format(
+							Logger.debug(String.format(
 									"Item property '%s' is an Item type (%s) - this will not work if the object is unsafed.",
 									prop.getValue().getName(), value.getClass().getName()));
 						}
@@ -59,14 +59,14 @@ public abstract class AbstractPersistenceService extends AbstractService impleme
 							retMap.put(prop.getValue().getName(), value);
 						}
 					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-						Log.warn(String.format(
+						Logger.warn(String.format(
 								"Could not convert property '%s' for given item of type '%s' - it will be ignored.",
 								prop.getValue().getName(), item.getClass().getSimpleName()));
 					}
 				}
 			}
 		} catch (final UnknownTypeException e1) {
-			Log.warn(String.format("Could not load properties for item with type code '%s'", typeCode));
+			Logger.warn(String.format("Could not load properties for item with type code '%s'", typeCode));
 		}
 
 		return retMap;

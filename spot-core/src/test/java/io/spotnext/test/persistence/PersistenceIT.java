@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.catalog.Catalog;
@@ -152,17 +152,17 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		address.setStreetName("Test");
 		user.getAddresses().add(address);
 
-		Log.debug("Addresses before save: "
+		Logger.debug("Addresses before save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
-		Log.debug("Addresses after save: "
+		Logger.debug("Addresses after save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
-		Log.debug("Addresses after load: "
+		Logger.debug("Addresses after load: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());

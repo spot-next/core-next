@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType name="Persistence">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="columnType" use="required" type="{}DatabaseColumnType" />
+ *       &lt;attribute name="indexed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="columnType" type="{}DatabaseColumnType" default="DEFAULT" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -33,7 +34,9 @@ public class Persistence {
 
     @XmlValue
     protected String content;
-    @XmlAttribute(name = "columnType", required = true)
+    @XmlAttribute(name = "indexed")
+    protected Boolean indexed;
+    @XmlAttribute(name = "columnType")
     protected DatabaseColumnType columnType;
 
     /**
@@ -61,6 +64,34 @@ public class Persistence {
     }
 
     /**
+     * Gets the value of the indexed property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isIndexed() {
+        if (indexed == null) {
+            return false;
+        } else {
+            return indexed;
+        }
+    }
+
+    /**
+     * Sets the value of the indexed property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setIndexed(Boolean value) {
+        this.indexed = value;
+    }
+
+    /**
      * Gets the value of the columnType property.
      * 
      * @return
@@ -69,7 +100,11 @@ public class Persistence {
      *     
      */
     public DatabaseColumnType getColumnType() {
-        return columnType;
+        if (columnType == null) {
+            return DatabaseColumnType.DEFAULT;
+        } else {
+            return columnType;
+        }
     }
 
     /**

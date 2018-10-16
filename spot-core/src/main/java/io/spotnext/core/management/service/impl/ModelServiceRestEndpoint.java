@@ -1,11 +1,14 @@
 package io.spotnext.core.management.service.impl;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -22,6 +26,8 @@ import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.support.HttpHeader;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -50,6 +56,8 @@ import spark.route.HttpMethod;
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/models", authenticationFilter = BasicAuthenticationFilter.class)
 public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
+	private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("ddd, dd MM yy hh:mm:ss z");
+
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
 
@@ -67,6 +75,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.head, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModelsInfo(final Request request, final Response response) {
 
@@ -93,6 +102,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.head, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModelInfo(final Request request, final Response response) {
 
@@ -101,11 +111,17 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 			final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
-			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT i.pk FROM %s AS i WHERE i.pk = :pk", type.getSimpleName()), Long.class);
+			final JpqlQuery<ModelInfoData> query = new JpqlQuery<>(
+					String.format("SELECT i.pk AS pk, i.version As version, i.lastModifiedAt As lastModifiedAt FROM %s AS i WHERE i.pk = :pk",
+							type.getSimpleName()),
+					ModelInfoData.class);
 			query.addParam("pk", pk);
-			final QueryResult<Long> modelCount = queryService.query(query);
+			final QueryResult<ModelInfoData> model = queryService.query(query);
 
-			if (modelCount.getResultCount() > 0) {
+			if (model.getResultCount() > 0) {
+				final ModelInfoData info = model.getResultList().get(0);
+
+				setCachingHeaderFields(info.getVersion(), info.getLastModifiedAt(), response);
 				return DataResponse.ok();
 			} else {
 				return DataResponse.notFound();
@@ -123,6 +139,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModels(final Request request, final Response response) {
 
@@ -155,6 +172,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse getModel(final Request request, final Response response) {
 
@@ -171,6 +189,9 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				if (model == null) {
 					return DataResponse.notFound();
 				}
+
+				final Date lastModified = Date.from(model.getLastModifiedAt().toInstant(ZoneOffset.UTC));
+				setCachingHeaderFields(model.getVersion(), lastModified, response);
 
 				return DataResponse.ok().withPayload(model);
 			} else {
@@ -193,6 +214,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse queryModel(final Request request, final Response response) {
 
@@ -244,6 +266,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse queryModelByExample(final Request request, final Response response) {
@@ -273,6 +296,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createModel(final Request request, final Response response) {
@@ -311,6 +335,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse deleteModel(final Request request, final Response response) {
 
@@ -346,6 +371,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.put, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
 		try {
@@ -371,6 +397,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response) {
 
@@ -455,6 +482,30 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		return serializationService.fromJson(content, JsonNode.class);
 	}
 
+	private void setCachingHeaderFields(int version, Date lastModifiedDate, Response response) {
+		// uses the entity version as ETag (for caching)
+		response.header(HttpHeader.ETag.toString(), version + "");
+		response.header(HttpHeader.LastModified.toString(), DATE_FORMAT.format(lastModifiedDate));
+	}
+
 	private static DataResponse RESPONSE_UNKNOWN_TYPE = DataResponse.withStatus(HttpStatus.BAD_REQUEST)
 			.withError("error.ongetall", "Unknown item type.");
+
+	private static class ModelInfoData {
+		private long pk;
+		private int version;
+		private Date lastModifiedAt;
+
+		public long getPk() {
+			return pk;
+		}
+
+		public int getVersion() {
+			return version;
+		}
+
+		public Date getLastModifiedAt() {
+			return lastModifiedAt;
+		}
+	}
 }

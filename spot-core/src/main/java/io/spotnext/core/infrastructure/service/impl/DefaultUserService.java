@@ -19,7 +19,7 @@ import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.itemtype.core.beans.UserData;
@@ -189,7 +189,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 				return user;
 			}
 		} else {
-			Log.warn("No session is set up.");
+			Logger.warn("No session is set up.");
 		}
 
 		return DEFAULT_USER;

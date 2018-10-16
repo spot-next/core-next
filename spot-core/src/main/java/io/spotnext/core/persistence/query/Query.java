@@ -13,9 +13,9 @@ import java.util.List;
  */
 public abstract class Query<T> {
 	protected final Class<T> resultClass;
-	protected int limit = 0;
+//	protected int limit = 0;
 	protected int page = 0;
-	protected int pageSize = Integer.MAX_VALUE;
+	protected int pageSize = 0;
 	protected final List<String> eagerFetchRelationProperties = new ArrayList<>();
 	protected boolean eagerFetchRelations = false;
 	protected boolean ignoreCache = false;
@@ -60,7 +60,7 @@ public abstract class Query<T> {
 	}
 
 	/**
-	 * Set the page of the result data.
+	 * Set the page of the result data (similar to the OFFSET SQL keyword).
 	 *
 	 * @param page a int.
 	 */
@@ -78,7 +78,7 @@ public abstract class Query<T> {
 	}
 
 	/**
-	 * Sets the page size for pagination.
+	 * Sets the page size for pagination  (similar to the LIMIT SQL keyword).
 	 *
 	 * @param pageSize a int.
 	 */
@@ -166,23 +166,23 @@ public abstract class Query<T> {
 		return resultClass;
 	}
 
-	/**
-	 * <p>Getter for the field <code>limit</code>.</p>
-	 *
-	 * @return a int.
-	 */
-	public int getLimit() {
-		return limit;
-	}
-
-	/**
-	 * Sets the result limit.
-	 *
-	 * @param limit a int.
-	 */
-	public void setLimit(final int limit) {
-		this.limit = limit;
-	}
+//	/**
+//	 * <p>Getter for the field <code>limit</code>.</p>
+//	 *
+//	 * @return a int.
+//	 */
+//	public int getLimit() {
+//		return limit;
+//	}
+//
+//	/**
+//	 * Sets the result limit.
+//	 *
+//	 * @param limit a int.
+//	 */
+//	public void setLimit(final int limit) {
+//		this.limit = limit;
+//	}
 
 	/**
 	 * @return if true the query results are cached

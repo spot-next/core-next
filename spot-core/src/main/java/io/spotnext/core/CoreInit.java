@@ -37,7 +37,7 @@ public class CoreInit extends ModuleInit {
 		//
 	}
 
-	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
+	@Log(message = "Importing initial data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importInitialData() throws ModuleInitializationException {
 		super.importInitialData();
@@ -54,7 +54,7 @@ public class CoreInit extends ModuleInit {
 	}
 
 	@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
-	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
+	@Log(message = "Importing sample data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {
 		super.importSampleData();

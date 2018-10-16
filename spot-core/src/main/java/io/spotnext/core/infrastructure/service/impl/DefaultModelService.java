@@ -9,10 +9,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.infrastructure.type.Item;
@@ -49,6 +51,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	/** {@inheritDoc} */
 	@Override
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
@@ -66,7 +69,7 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
 		return get(type, pk, false);
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
@@ -179,7 +182,7 @@ public class DefaultModelService extends AbstractModelService {
 		if (itemToRemove == null) {
 			throw new ModelNotFoundException(String.format("The item of type %s with PK=%s is no found.", type.getSimpleName(), pk));
 		}
-		
+
 		removeAll(Arrays.asList(itemToRemove));
 	}
 

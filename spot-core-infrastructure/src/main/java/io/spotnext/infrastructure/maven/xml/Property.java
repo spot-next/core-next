@@ -251,7 +251,7 @@ public class Property {
     }
 
     /**
-     * Ruft den Wert der localized-Eigenschaft ab.
+     * Gets the value of the localized property.
      * 
      * @return
      *     possible object is
@@ -267,7 +267,7 @@ public class Property {
     }
 
     /**
-     * Legt den Wert der localized-Eigenschaft fest.
+     * Sets the value of the localized property.
      * 
      * @param value
      *     allowed object is

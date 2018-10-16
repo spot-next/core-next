@@ -29,7 +29,7 @@ import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.HttpRequestHolder;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -284,7 +284,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			try { // create routes for HTTP methods
 				service.exception(Exception.class, (exception, request, response) -> {
-					Log.exception(exception.getMessage(), exception);
+					Logger.exception(exception.getMessage(), exception);
 					cleanup();
 					response.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
@@ -419,7 +419,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
 			} catch (final Exception e) {
 				if (!(e instanceof AuthenticationException)) {
-					Log.exception(e.getMessage(), e);
+					Logger.exception(e.getMessage(), e);
 				}
 
 				Throwable realException = e;

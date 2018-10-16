@@ -44,9 +44,11 @@
 	<logger name="org.eclipse.jetty" level="INFO" />
 
 	<logger name="io.spotnext.core.persistence" level="INFO" />
-	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="INFO" />
-	
-	<logger name="io.spotnext.core.persistence.service.impl.DefaultTransactionService" level="INFO" />
+	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="DEBUG" />
+	<logger name="io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy" level="INFO" />
+	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="DEBUG" />
+	<logger name="io.spotnext.core.infrastructure.service.impl.AbstractModelService" level="INFO" />
+	<logger name="io.spotnext.core.infrastructure.service.impl.DefaultModelService" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

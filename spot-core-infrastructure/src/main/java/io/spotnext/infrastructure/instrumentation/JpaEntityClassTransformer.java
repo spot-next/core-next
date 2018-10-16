@@ -83,6 +83,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_TYPE_CODE = "typeCode";
 	protected static final String MV_VALUE = "value";
 	protected static final String MV_UNIQUE = "unique";
+	protected static final String MV_INDEXED = "indexed";
 	protected static final String MV_NULLABLE = "nullable";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
@@ -121,18 +122,23 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 					// process item type property annotation
-					if (propertyAnn.isPresent() && isValidClass(field.getType().getName())) {
+					if (propertyAnn.isPresent()) {
 						// create the necessary JPA annotations based on
 						// Relation and Property annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
 								propertyAnn.get());
 
-						{ // mark property as unique
+						{ // mark property as unique and add indexes
 							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(field,
 									propertyAnn.get());
+							final Optional<Annotation> indexAnn = createIndexAnnotation(field, propertyAnn.get());
 
 							if (uniqueAnn.isPresent()) {
 								fieldAnnotations.add(uniqueAnn.get());
+							}
+
+							if (indexAnn.isPresent()) {
+								fieldAnnotations.add(indexAnn.get());
 							}
 						}
 
@@ -269,14 +275,29 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * @param propertyAnnotation the property annotation that holds information about the item type property.
 	 * @return the created annotation
 	 */
-	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtField field,
-			final Annotation propertyAnnotation) {
+	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtField field, final Annotation propertyAnnotation) {
 
 		Annotation ann = null;
 
 		if (isUniqueProperty(field, propertyAnnotation)) {
 			ann = createAnnotation(field.getFieldInfo2().getConstPool(), NotNull.class);
 		}
+
+		return Optional.ofNullable(ann);
+	}
+
+	protected Optional<Annotation> createIndexAnnotation(final CtField field, final Annotation propertyAnnotation) {
+
+		Annotation ann = null;
+
+//		if (isIndexable(field, propertyAnnotation) && !getAnnotation(field, Index.class).isPresent()) {
+//			ann = createAnnotation(field.getFieldInfo2().getConstPool(), Index.class);
+//
+//			StringMemberValue indexName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+//			indexName.setValue("idx_" + field.getName());
+//
+//			ann.addMemberValue("name", indexName);
+//		}
 
 		return Optional.ofNullable(ann);
 	}
@@ -289,8 +310,13 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * @return true if the property has a unique constraint
 	 */
 	protected boolean isUniqueProperty(final CtField field, final Annotation propertyAnnotation) {
-		final BooleanMemberValue unique = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
-		return unique != null ? unique.getValue() : false;
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
+		return val != null ? val.getValue() : false;
+	}
+
+	protected boolean isIndexable(final CtField field, final Annotation propertyAnnotation) {
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_INDEXED);
+		return val != null ? val.getValue() : false;
 	}
 
 	protected List<Annotation> createJpaRelationAnnotations(final CtClass entityClass, final CtField field,
@@ -380,7 +406,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final StringMemberValue region = new StringMemberValue(field.getFieldInfo2().getConstPool());
 		region.setValue("items");
-		
+
 		ann.addMemberValue("usage", usage);
 		ann.addMemberValue("region", region);
 

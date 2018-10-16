@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemDeserializer;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemSerializationMixIn;
@@ -31,6 +32,7 @@ import io.spotnext.core.infrastructure.serialization.jackson.QueryResultMixIn;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.infrastructure.type.Item;
 import spark.ModelAndView;
 
@@ -108,6 +110,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	}
 
 	/** {@inheritDoc} */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Override
 	public <T> String serialize(final T object) throws SerializationException {
 		if (object == null) {
@@ -132,6 +135,7 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 	}
 
 	/** {@inheritDoc} */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Override
 	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
 		try {

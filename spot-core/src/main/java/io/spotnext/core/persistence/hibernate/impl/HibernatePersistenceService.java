@@ -30,6 +30,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
@@ -56,13 +57,14 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ValidationService;
-import io.spotnext.core.infrastructure.support.Log;
 import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.ModelQuery;
@@ -117,7 +119,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		this.configurationService = configurationService;
 
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-			Log.info("Initializing type system schema ...");
+			Logger.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
 			schemaExport.setHaltOnError(true);
@@ -130,14 +132,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 			} catch (final Exception e) {
-				Log.warn("Could not drop type system schema.");
+				Logger.warn("Could not drop type system schema.");
 			}
 
 			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
-			Log.info("Updating type system schema ...");
+			Logger.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();
 			schemaExport.setHaltOnError(true);
@@ -156,22 +158,22 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			validator.doValidation(metadataIntegrator.getMetadata(), SchemaManagementToolCoordinator
 					.buildExecutionOptions(entityManagerFactory.getProperties(), ExceptionHandlerLoggedImpl.INSTANCE));
 
-			Log.debug("Type system schema seems to be OK");
+			Logger.debug("Type system schema seems to be OK");
 
 		} catch (final SchemaManagementException e) {
 			// currently hibernate throws a validation exception for float values that are being created as doubles ...
 			// see https://hibernate.atlassian.net/browse/HHH-8690
 			// so we hide that message in case we just did an initialization, otherwise it would look confusing in the logs
 			if (!configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-				Log.warn("Type system schema needs to be initialized/updated");
+				Logger.warn("Type system schema needs to be initialized/updated");
 			}
 		}
 
 		if (configurationService.getBoolean("cleantypesystem", false)) {
-			Log.info("Cleaning type system ... (not yet implemented)");
+			Logger.info("Cleaning type system ... (not yet implemented)");
 		}
 
-		Log.info(String.format("Persistence service initialized"));
+		Logger.info(String.format("Persistence service initialized"));
 	}
 
 	/** {@inheritDoc} */
@@ -206,8 +208,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					setCacheSettings(session, sourceQuery, query);
 					setFetchSubGraphsHint(session, sourceQuery, query);
 					setParameters(sourceQuery.getParams(), query);
-					setPage(query, sourceQuery.getPage());
-					setPageSize(query, sourceQuery.getPageSize());
+					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 					results = query.getResultList();
 
 				} else {
@@ -230,8 +231,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					// true);
 
 					setParameters(sourceQuery.getParams(), query);
-					setPage(query, sourceQuery.getPage());
-					setPageSize(query, sourceQuery.getPageSize());
+					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 
 					// only try to load results if the result type is not Void
 					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
@@ -329,7 +329,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 		if (fetchSubGraphs.size() > 0) {
 			if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
-				Log.debug("Fetch sub graphs can only be used for item queries - ignoring");
+				Logger.debug("Fetch sub graphs can only be used for item queries - ignoring");
 				return;
 			}
 
@@ -349,19 +349,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	protected void setPage(final Query<?> query, final int page) {
-		if (page >= 0) {
-			query.setFirstResult(page);
-		}
-	}
-
-	protected void setPageSize(final Query<?> query, final int pageSize) {
-		if (pageSize >= 0) {
+	protected void setPagination(final javax.persistence.Query query, final int page, final int pageSize) {
+		if (pageSize > 0) {
+			query.setFirstResult((page > 0 ? page - 1 : 0) * pageSize);
 			query.setMaxResults(pageSize);
 		}
 	}
 
 	/** {@inheritDoc} */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true, executionTimeThreshold = 100)
 	@Override
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		bindSession();
@@ -389,6 +385,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 
 					session.flush();
+					// this is needed! 
 					items.stream().forEach(o -> session.evict(o));
 					// session.clear();
 
@@ -510,17 +507,23 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 		return transactionService.execute(() -> {
 
-			TypedQuery<T> query = null;
-
 			final Session session = getSession();
-			final CriteriaBuilder cb = session.getCriteriaBuilder();
+			final CriteriaBuilder builder = session.getCriteriaBuilder();
 
-			final CriteriaQuery<T> cq = cb.createQuery(sourceQuery.getResultClass());
+			final CriteriaQuery<T> cq = builder.createQuery(sourceQuery.getResultClass());
+			final Root<T> queryResultType = cq.from(sourceQuery.getResultClass());
+			CriteriaQuery<T> itemSelect = cq.select(queryResultType);
 
-			final Root<T> r = cq.from(sourceQuery.getResultClass());
+			// check if we have to perform a separate query for pagination
+			// hibernate can't handle pagination together with FETCH JOINs!
+			boolean isPkQueryForPaginationNeeded = sourceQuery.getPageSize() > 0
+					&& (sourceQuery.getEagerFetchRelationProperties().size() > 0 || sourceQuery.isEagerFetchRelations());
+			boolean isSearchParametersDefined = MapUtils.isNotEmpty(sourceQuery.getSearchParameters());
 
-			if (sourceQuery.getSearchParameters() != null) {
-				Predicate p = cb.conjunction();
+			Predicate whereClause = null;
+
+			if (isSearchParametersDefined) {
+				whereClause = builder.conjunction();
 
 				for (final Map.Entry<String, Object> entry : sourceQuery.getSearchParameters().entrySet()) {
 					if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
@@ -528,18 +531,47 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 								"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
 					}
 
-					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
+					whereClause = builder.and(whereClause, builder.equal(queryResultType.get(entry.getKey()), entry.getValue()));
+				}
+			}
+
+			// always order by last created date and THEN PK, so we have a consistent ordering, even if new items are created
+			// PKs are random, so they don't increment!
+
+			// make additional query to fetch the pks, applied the "maxResults" correctly
+			if (isPkQueryForPaginationNeeded) {
+				CriteriaQuery<Long> pkCriteriaQuery = builder.createQuery(Long.class);
+				final Root<T> pkRoot = pkCriteriaQuery.from(sourceQuery.getResultClass());
+				pkCriteriaQuery = pkCriteriaQuery.select(pkRoot.get(Item.PROPERTY_PK));
+
+				if (whereClause != null) {
+					pkCriteriaQuery = pkCriteriaQuery.where(whereClause);
 				}
 
-				final CriteriaQuery<T> select = cq.select(r).where(p);
-				query = session.createQuery(select);
+				// always apply the same order for all queries
+				pkCriteriaQuery = pkCriteriaQuery.orderBy(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)), builder.asc(pkRoot.get(Item.PROPERTY_PK)));
 
-				if (sourceQuery.getPageSize() > 0) {
-					query.setFirstResult((sourceQuery.getPage() - 1) * sourceQuery.getPageSize());
-					query.setMaxResults(sourceQuery.getPageSize());
-				}
+				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery);
+				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
+
+				final List<Long> pksToSelect = pkQuery.getResultList();
+
+				itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
 			} else {
-				query = session.createQuery(cq.select(r));
+				if (whereClause != null) {
+					itemSelect = itemSelect.where(whereClause);
+				}
+			}
+
+			// always apply the same order for all queries
+//			itemSelect = itemSelect.orderBy(builder.asc(queryResultType.get(Item.PROPERTY_CREATED_AT)), builder.asc(queryResultType.get(Item.PROPERTY_PK)));
+
+			final TypedQuery<T> query = session.createQuery(itemSelect);
+
+			// only set these values if no fetch joins are used!
+			// if we have fetch joins we just select by the pks that are fetched before using firstResult and maxResults
+			if (!isPkQueryForPaginationNeeded) {
+				setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 			}
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
@@ -645,7 +677,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				.getResource(entityManagerFactory));
 
 		if (holder != null) {
-			if (Log.isLogLevelEnabled(LogLevel.DEBUG)) {
+			if (Logger.isLogLevelEnabled(LogLevel.DEBUG)) {
 				getSessionFactory().getStatistics().setStatisticsEnabled(true);
 			}
 

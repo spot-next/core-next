@@ -97,6 +97,7 @@
 					</annotation>
 					<annotation javaClass="javax.validation.constraints.NotNull" />
 				</annotations>
+				<persistence indexed="true" />
 			</property>
 		</properties>
 	</type>

@@ -38,16 +38,16 @@ public class LambdaQuery<T extends Item> extends Query<T> {
 		return this;
 	}
 
-	/**
-	 * <p>limit.</p>
-	 *
-	 * @param limit a int.
-	 * @return a {@link io.spotnext.core.persistence.query.LambdaQuery} object.
-	 */
-	public LambdaQuery<T> limit(final int limit) {
-		this.limit = limit;
-		return this;
-	}
+//	/**
+//	 * <p>limit.</p>
+//	 *
+//	 * @param limit a int.
+//	 * @return a {@link io.spotnext.core.persistence.query.LambdaQuery} object.
+//	 */
+//	public LambdaQuery<T> limit(final int limit) {
+//		this.limit = limit;
+//		return this;
+//	}
 
 	/**
 	 * <p>Getter for the field <code>filters</code>.</p>
