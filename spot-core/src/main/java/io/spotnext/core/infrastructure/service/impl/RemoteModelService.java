@@ -24,23 +24,29 @@ public class RemoteModelService implements ModelService {
 	@Override
 	public <T extends Item> void save(T model) throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void saveAll(T... items) throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void saveAll(List<T> models) throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Item> T get(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -84,25 +90,25 @@ public class RemoteModelService implements ModelService {
 	@Override
 	public <T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void removeAll(List<T> items) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void remove(T... items) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void refresh(T item) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -126,25 +132,25 @@ public class RemoteModelService implements ModelService {
 	@Override
 	public <T extends Item> void setPropertyValue(T item, String propertyName, Object propertyValue) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void setLocalizedPropertyValue(T item, String propertyName, Object propertyValue, Locale locale) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void detach(T... items) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public <T extends Item> void detach(List<T> items) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -156,7 +162,7 @@ public class RemoteModelService implements ModelService {
 	@Override
 	public <T extends Item> void attach(T item) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

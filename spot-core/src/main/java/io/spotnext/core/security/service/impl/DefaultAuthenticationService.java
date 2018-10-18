@@ -2,6 +2,7 @@ package io.spotnext.core.security.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -32,6 +33,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	protected UserService<User, UserGroup> userService;
 
 	/** {@inheritDoc} */
+	@Cacheable("misc")
 	@Override
 	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
 		ValidationUtil.validateNotEmpty("Password cannot be blank", password);

@@ -23,7 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.service.ModelService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.persistence.service.PersistenceService;
@@ -121,7 +121,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		try {
 			prepareTest();
 		} catch (final Exception e) {
-			Log.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
+			Logger.exception(String.format("Could not prepare test %s", this.getClass().getName()), e);
 		}
 	}
 
@@ -139,7 +139,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		try {
 			teardownTest();
 		} catch (final Exception e) {
-			Log.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
+			Logger.exception(String.format("Could not teardown test %s", this.getClass().getName()), e);
 		}
 
 		if (transactionStatus.get() != null) {

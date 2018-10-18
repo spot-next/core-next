@@ -89,7 +89,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * 
 	 * @throws ModuleInitializationException if there is any unexpected error
 	 */
-	@Log(message = "Initializing module $classSimpleName", measureTime = true)
+	@Log(message = "Initializing module $classSimpleName", measureExecutionTime = true)
 	protected abstract void initialize() throws ModuleInitializationException;
 
 	/**
@@ -97,7 +97,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * 
 	 * @throws ModuleInitializationException in case there is any error
 	 */
-//	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
+//	@Logger(message = "Importing initial data for $classSimpleName", measureTime = true)
 	protected void importInitialData() throws ModuleInitializationException {
 		//
 	}
@@ -107,7 +107,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * 
 	 * @throws ModuleInitializationException in case there is any error
 	 */
-//	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
+//	@Logger(message = "Importing sample data for $classSimpleName", measureTime = true)
 	protected void importSampleData() throws ModuleInitializationException {
 		//
 	}

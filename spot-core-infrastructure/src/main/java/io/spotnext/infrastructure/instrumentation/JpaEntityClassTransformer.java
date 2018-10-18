@@ -26,6 +26,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionType;
 import org.hibernate.annotations.Type;
@@ -81,6 +83,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_TYPE_CODE = "typeCode";
 	protected static final String MV_VALUE = "value";
 	protected static final String MV_UNIQUE = "unique";
+	protected static final String MV_INDEXED = "indexed";
 	protected static final String MV_NULLABLE = "nullable";
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
@@ -119,18 +122,23 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 					final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
 					// process item type property annotation
-					if (propertyAnn.isPresent() && isValidClass(field.getType().getName())) {
+					if (propertyAnn.isPresent()) {
 						// create the necessary JPA annotations based on
 						// Relation and Property annotations
 						final List<Annotation> fieldAnnotations = createJpaRelationAnnotations(clazz, field,
 								propertyAnn.get());
 
-						{ // mark property as unique
+						{ // mark property as unique and add indexes
 							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(field,
 									propertyAnn.get());
+							final Optional<Annotation> indexAnn = createIndexAnnotation(field, propertyAnn.get());
 
 							if (uniqueAnn.isPresent()) {
 								fieldAnnotations.add(uniqueAnn.get());
+							}
+
+							if (indexAnn.isPresent()) {
+								fieldAnnotations.add(indexAnn.get());
 							}
 						}
 
@@ -179,6 +187,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				// this type is not an persistable entity
 				addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, MappedSuperclass.class)));
 			}
+
+			// enables dynamic update for this entity, only writes changed fields
+//			addAnnotations(clazz, Arrays.asList(createAnnotation(clazz, DynamicUpdate.class)));
 		}
 	}
 
@@ -257,18 +268,14 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Checks if the field has the {@link Property#unique()} annotation value set.
-	 * If yes, then a {@link NotNull} is added. The real uniqueness constraint is
+	 * Checks if the field has the {@link Property#unique()} annotation value set. If yes, then a {@link NotNull} is added. The real uniqueness constraint is
 	 * checked using {@link Item#uniquenessHash()}.
 	 * 
 	 * @param field              for which the annotation will be created
-	 * @param propertyAnnotation the property annotation that holds information
-	 *                           about the item type property.
-	 * 
+	 * @param propertyAnnotation the property annotation that holds information about the item type property.
 	 * @return the created annotation
 	 */
-	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtField field,
-			final Annotation propertyAnnotation) {
+	protected Optional<Annotation> createUniqueConstraintAnnotation(final CtField field, final Annotation propertyAnnotation) {
 
 		Annotation ann = null;
 
@@ -279,19 +286,37 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.ofNullable(ann);
 	}
 
+	@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
+	protected Optional<Annotation> createIndexAnnotation(final CtField field, final Annotation propertyAnnotation) {
+		Annotation ann = null;
+
+//		if (isIndexable(field, propertyAnnotation) && !getAnnotation(field, Index.class).isPresent()) {
+//			ann = createAnnotation(field.getFieldInfo2().getConstPool(), Index.class);
+//
+//			StringMemberValue indexName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+//			indexName.setValue("idx_" + field.getName());
+//
+//			ann.addMemberValue("name", indexName);
+//		}
+
+		return Optional.ofNullable(ann);
+	}
+
 	/**
 	 * Checks if {@link Property#unique()} = true.
 	 * 
-	 * @param field              the field which should be checked for a uniqueness
-	 *                           constraint
-	 * @param propertyAnnotation annotation containing item type property
-	 *                           information
-	 * 
+	 * @param field              the field which should be checked for a uniqueness constraint
+	 * @param propertyAnnotation annotation containing item type property information
 	 * @return true if the property has a unique constraint
 	 */
 	protected boolean isUniqueProperty(final CtField field, final Annotation propertyAnnotation) {
-		final BooleanMemberValue unique = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
-		return unique != null ? unique.getValue() : false;
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_UNIQUE);
+		return val != null ? val.getValue() : false;
+	}
+
+	protected boolean isIndexable(final CtField field, final Annotation propertyAnnotation) {
+		final BooleanMemberValue val = (BooleanMemberValue) propertyAnnotation.getMemberValue(MV_INDEXED);
+		return val != null ? val.getValue() : false;
 	}
 
 	protected List<Annotation> createJpaRelationAnnotations(final CtClass entityClass, final CtField field,
@@ -300,6 +325,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final List<Annotation> jpaAnnotations = new ArrayList<>();
 
 		final Optional<Annotation> relAnnotation = getAnnotation(field, Relation.class);
+
+		jpaAnnotations.add(createCacheAnnotation(field));
 
 		if (relAnnotation.isPresent()) {
 			final EnumMemberValue relType = (EnumMemberValue) relAnnotation.get().getMemberValue(MV_TYPE);
@@ -365,16 +392,34 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Annotates relation collections with an {@link OrderBy} annotation to make
-	 * FETCH JOINS work correctly.
+	 * Adds a {@link Cache} annotation to every relation property. This is necessary to enable hibernate's second level cache for the relation the value(s).
+	 * 
+	 * @param field the field to apply the annotation on
+	 * @return the created cache annotation
+	 */
+	private Annotation createCacheAnnotation(CtField field) {
+		final Annotation ann = createAnnotation(field.getFieldInfo2().getConstPool(), Cache.class);
+
+		final EnumMemberValue usage = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+		usage.setType(CacheConcurrencyStrategy.class.getName());
+		usage.setValue(CacheConcurrencyStrategy.NONSTRICT_READ_WRITE.name());
+
+		final StringMemberValue region = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		region.setValue("items");
+
+		ann.addMemberValue("usage", usage);
+		ann.addMemberValue("region", region);
+
+		return ann;
+	}
+
+	/**
+	 * Annotates relation collections with an {@link OrderBy} annotation to make FETCH JOINS work correctly.
 	 * 
 	 * @param entityClass for which the annotations are created
 	 * @param field       for which the annotations are created
-	 * 
 	 * @return list of created annotations, never null
-	 * @throws IllegalClassTransformationException in case there is an error
-	 *                                             accessing class or field
-	 *                                             internals
+	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
 	protected List<Annotation> createOrderedListAnnotation(final CtClass entityClass, final CtField field)
 			throws IllegalClassTransformationException {
@@ -401,14 +446,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Necessary to prohibit infinite loops when serializing using Jackson
 	 * 
 	 * @param entityClass         the class of the field
-	 * @param field               the field which will be annotated with a
-	 *                            JsonSerialize annotation.
+	 * @param field               the field which will be annotated with a JsonSerialize annotation.
 	 * @param serializerClassName the name of the serialzed
-	 * 
 	 * @return the created annotation, never null
-	 * @throws IllegalClassTransformationException in case there is an error
-	 *                                             accessing class or field
-	 *                                             internals
+	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
 	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
 			final String serializerClassName) throws IllegalClassTransformationException {
@@ -487,11 +528,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	/**
 	 * @param clazz the class of the given field
 	 * @param field the field for which the annotation is created
-	 * 
 	 * @return the creataed collection type annotation
-	 * @throws IllegalClassTransformationException in case there is an error
-	 *                                             accessing class or field
-	 *                                             internals
+	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
 	@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
 	protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
@@ -525,16 +563,12 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	/**
-	 * Creates a {@link JoinColumn} annotation annotation in case the property has a
-	 * unique=true modifier.
+	 * Creates a {@link JoinColumn} annotation annotation in case the property has a unique=true modifier.
 	 * 
 	 * @param clazz the class containing the field
 	 * @param field for which the annotation will be created
 	 * @return the created annotation
-	 * 
-	 * @throws IllegalClassTransformationException in case there is an error
-	 *                                             accessing class or field
-	 *                                             internals
+	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
 	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {

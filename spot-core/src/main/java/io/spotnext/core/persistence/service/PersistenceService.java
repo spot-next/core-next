@@ -50,7 +50,7 @@ public interface PersistenceService {
 	 *
 	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException
 	 * @param item a {@link java.util.List} object.
-	 * @param <T> a T object.
+	 * @param      <T> a T object.
 	 */
 	<T extends Item> void refresh(List<T> item) throws ModelNotFoundException;
 
@@ -64,14 +64,15 @@ public interface PersistenceService {
 	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
-	 * Returns an object based on its PK.
+	 * Returns an entity with the given.
 	 *
-	 * @param type a {@link java.lang.Class} object.
-	 * @param pk a long.
+	 * @param type        a {@link java.lang.Class} object.
+	 * @param pk          a long.
+	 * @param returnProxy specifies if the returned item should be a proxy (hence no database access is performed) or fetched from the database
 	 * @return a T object.
 	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException if any.
 	 */
-	<T extends Item> T load(Class<T> type, long pk) throws ModelNotFoundException;
+	<T extends Item> T load(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException;
 
 	/**
 	 * Returns an list of items based on the given search query.
@@ -92,7 +93,7 @@ public interface PersistenceService {
 	 * Removes the item of the given type with the given PK.
 	 *
 	 * @param type a {@link java.lang.Class} object.
-	 * @param pk a long.
+	 * @param pk   a long.
 	 */
 	<T extends Item> void remove(Class<T> type, long pk);
 

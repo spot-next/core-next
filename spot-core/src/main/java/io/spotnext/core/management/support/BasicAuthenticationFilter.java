@@ -37,12 +37,16 @@ public class BasicAuthenticationFilter implements AuthenticationFilter {
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final User authenticatedUser = authenticate(request, response);
 
-		if (authenticatedUser != null) {
+		if (checkPermissions(request, authenticatedUser)) {
 			userService.setCurrentUser(authenticatedUser);
 		} else {
 			response.header("WWW-Authenticate", HttpAuthorizationType.BASIC.toString());
 			throw new AuthenticationException("Could not authenticate user!");
 		}
+	}
+	
+	protected boolean checkPermissions(final Request request, User user) {
+		return user != null && userService.isUserInGroup(user.getId(), "rest-access");
 	}
 
 	/**

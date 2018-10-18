@@ -11,7 +11,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import io.spotnext.core.infrastructure.service.ModelService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.valueprovider.ItemPropertyValueProvider;
 import io.spotnext.infrastructure.annotation.Accessor;
@@ -41,7 +41,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	 */
 	@PostConstruct
 	public void init() {
-		Log.debug("Initialized item property access aspect.");
+		Logger.debug("Initialized item property access aspect.");
 	}
 
 	// @Autowired
@@ -122,7 +122,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 		final Relation rel = getAnnotation(joinPoint, Relation.class);
 
 		if (rel != null) {
-			Log.warn("Handling relations not implemented here.");
+			Logger.warn("Handling relations not implemented here.");
 			// handleRelationProperty(joinPoint, rel);
 		}
 

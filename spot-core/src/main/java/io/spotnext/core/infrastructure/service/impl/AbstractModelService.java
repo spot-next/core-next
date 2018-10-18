@@ -14,6 +14,7 @@ import javax.validation.ConstraintViolation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
@@ -32,16 +33,21 @@ import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.service.ValidationService;
 import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.Localizable;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 
 /**
- * <p>Abstract AbstractModelService class.</p>
+ * <p>
+ * Abstract AbstractModelService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -102,6 +108,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		return item;
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, message = "Executing load interceptors", measureExecutionTime = true)
 	protected <T extends Item> void applyLoadInterceptors(final List<T> items) throws ItemInterceptorException {
 		for (final T item : items) {
 			for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
@@ -116,6 +123,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, message = "Executing remove interceptors", measureExecutionTime = true)
 	protected <T extends Item> void applyRemoveInterceptors(final List<T> items) throws ItemInterceptorException {
 		for (final T item : items) {
 			for (final Class<?> superClass : ClassUtil.getAllSuperClasses(item.getClass(), Item.class, false, true)) {
@@ -130,6 +138,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, message = "Executing prepare interceptors", measureExecutionTime = true)
 	protected <T extends Item> void applyPrepareInterceptors(final List<T> items)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
@@ -150,6 +159,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		}
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	protected <T extends Item> void validateModels(final List<T> items) throws ModelValidationException {
 		for (final T item : items) {
 			validateModel(item);
@@ -206,44 +216,37 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 	}
 
 	/**
-	 * Sets the {@link io.spotnext.infrastructure.type.Item#setCreatedBy(String)} and
-	 * {@link io.spotnext.infrastructure.type.Item#setLastModifiedBy(String)}.
+	 * Sets the {@link io.spotnext.infrastructure.type.Item#setCreatedBy(String)} and {@link io.spotnext.infrastructure.type.Item#setLastModifiedBy(String)}.
 	 *
 	 * @param models a {@link java.util.List} object.
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	public <T extends Item> void setUserInformation(final List<T> models) {
-		final User currentUser = userService.getCurrentUser();
-
-		if (currentUser == null) {
-			loggingService.debug(() -> "Could not determine current session user");
-		}
-
-		final String username = currentUser != null ? currentUser.getId() : "<system>";
+		final UserData currentUser = userService.getCurrentUser();
 
 		for (final T model : models) {
-			ClassUtil.setField(model, "createdBy", username);
-			ClassUtil.setField(model, "lastModifiedBy", username);
+			ClassUtil.setField(model, "createdBy", currentUser.getId());
+			ClassUtil.setField(model, "lastModifiedBy", currentUser.getId());
 		}
 	}
 
 	/**
 	 * Asynchronously publishes item modification events.
 	 * 
-	 * @param items
-	 *            the items that have been modified
-	 * @param modificationType
-	 *            the kind of modification that has been applied
+	 * @param items            the items that have been modified
+	 * @param modificationType the kind of modification that has been applied
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	protected <T extends Item> void publishEvents(final List<T> items, final ModificationType modificationType) {
 		for (final T item : items) {
 			if (item != null) {
 				try {
 					eventService.multicastEvent(new ItemModificationEvent<>(item, modificationType));
 				} catch (final Exception e) {
-					loggingService.exception("Could not publish item modification event.", e);
+					Logger.exception("Could not publish item modification event.", e);
 				}
 			} else {
-				loggingService.warn("Cannot publish item modification event for <null>");
+				Logger.warn("Cannot publish item modification event for <null>");
 			}
 		}
 	}
@@ -264,7 +267,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		if (localizable != null) {
 			return localizable.get(locale);
 		} else {
-			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+			Logger.debug(String.format("Localized property %s on type %s not found", propertyName,
 					item.getClass().getSimpleName()));
 		}
 
@@ -302,7 +305,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			localizable.set(locale, propertyValue);
 			setPropertyValue(item, propertyName, localizable);
 		} else {
-			loggingService.debug(String.format("Localized property %s on type %s not found", propertyName,
+			Logger.debug(String.format("Localized property %s on type %s not found", propertyName,
 					item.getClass().getSimpleName()));
 		}
 	}

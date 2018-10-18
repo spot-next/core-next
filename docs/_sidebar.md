@@ -7,7 +7,7 @@
 - [Changelog](changelog.md)
 - [Roadmap](/roadmap)
 - [FAQ](/faq)
-<!--- - [![](//icongr.am/feather/code.svg?size=16&color=808080)API documentation](/api) --->
+<!--- - [![](//icongr.am/feather/code.svg?size=16&color=808080) REST API](/https://documenter.getpostman.com/view/610591/RWgnWfXW) --->
 <!--- - [![](//icongr.am/feather/file-text.svg?size=16&color=808080)Javadoc](/javadoc) --->
 ****
 - [![](https://icongram.jgog.in/simple/github.svg?color=808080&size=22)   Github](https://github.com/mojo2012/spot-framework)

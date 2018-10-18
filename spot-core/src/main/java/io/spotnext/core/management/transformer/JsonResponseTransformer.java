@@ -1,12 +1,10 @@
 package io.spotnext.core.management.transformer;
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.infrastructure.http.DataResponse;
+import io.spotnext.core.infrastructure.http.ExceptionResponse;
+import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 
@@ -40,16 +38,7 @@ public class JsonResponseTransformer implements ResponseTransformer {
 	/** {@inheritDoc} */
 	@Override
 	public String handleException(final Object object, Exception exception) throws Exception {
-		final String message;
-
-		if (exception instanceof InvocationTargetException) {
-			InvocationTargetException ie = (InvocationTargetException) exception;
-			message = ie.getTargetException() != null ? ie.getTargetException().getMessage() : exception.getMessage();
-		} else {
-			message = ExceptionUtils.getRootCauseMessage(exception);
-		}
-
 		// let the render method handle rendering
-		return handleResponse(DataResponse.internalServerError().withError("error.internal", message));
+		return handleResponse(ExceptionResponse.withStatus(HttpStatus.INTERNAL_SERVER_ERROR, exception));
 	}
 }

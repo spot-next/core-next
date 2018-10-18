@@ -2,22 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="082030a2-925f-4997-8905-1befd7f155d2" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/archetype-empty/archetype-empty.iml" beforeDir="false" afterPath="$PROJECT_DIR$/archetype-empty/archetype-empty.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build-tools/build-tools.iml" beforeDir="false" afterPath="$PROJECT_DIR$/build-tools/build-tools.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-cms-base/spot-cms-base.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-core/spot-core.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/spot-core.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/src/main/resources/core-spring-persistence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/src/main/resources/core-spring-persistence.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/src/main/resources/core.properties" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/src/main/resources/core.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-core/src/test/java/io/spotnext/core/management/service/impl/ModelServiceRestEndpointIT.java" beforeDir="false" afterPath="$PROJECT_DIR$/spot-core/src/test/java/io/spotnext/core/management/service/impl/ModelServiceRestEndpointIT.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-framework.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-framework.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spot-spring-web-support/spot-spring-web-support.iml" beforeDir="false" afterPath="$PROJECT_DIR$/spot-spring-web-support/spot-spring-web-support.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spot-spring-web-support/src/main/java/io/spotnext/spring/web/facade/AbstractBaseFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/spot-spring-web-support/src/main/java/io/spotnext/spring/web/facade/AbstractBaseFacade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/jmeter/rest-calls.jmx" beforeDir="false" afterPath="$PROJECT_DIR$/testing/jmeter/rest-calls.jmx" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/spot-core-support/target/" />
     <ignored path="$PROJECT_DIR$/spot-sample-simple/target/" />
@@ -65,83 +70,127 @@
     <session id="1846424166">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="3" />
+          <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.4" value="1" />
-          <entry key="project.opened" value="1" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="1" />
-          <entry key="java" value="6" />
+          <entry key="java" value="21" />
+          <entry key="properties" value="2" />
+          <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="1" />
-          <entry key="JAVA" value="6" />
+          <entry key="JAVA" value="21" />
+          <entry key="Properties" value="2" />
+          <entry key="XML" value="1" />
         </counts>
       </usages-collector>
-      <usages-collector id="statistics.file.types.edit" />
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JAVA" value="36" />
+          <entry key="PLAIN_TEXT" value="3" />
+          <entry key="XML" value="9" />
+        </counts>
+      </usages-collector>
       <usages-collector id="statistics.spring.boot.mvc.usages" />
-      <usages-collector id="statistics.file.extensions.edit" />
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="java" value="36" />
+          <entry key="txt" value="3" />
+          <entry key="xml" value="9" />
+        </counts>
+      </usages-collector>
       <usages-collector id="statistics.js.language.service.starts" />
       <usages-collector id="statistics.vcs.git.usages" />
       <usages-collector id="statistics.spring.boot.run.usages" />
     </session>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java">
+        <entry file="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.4.8.v20171121/jetty-util-9.4.8.v20171121-sources.jar!/org/eclipse/jetty/util/ssl/SslContextFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="148" selection-start-line="148" selection-end-line="148" />
+            <state relative-caret-position="342">
+              <caret line="100" column="32" selection-start-line="100" selection-start-column="32" selection-end-line="100" selection-end-column="32" />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="197" column="79" lean-forward="true" selection-start-line="197" selection-start-column="79" selection-end-line="197" selection-end-column="79" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernatePersistenceService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="664">
+              <caret line="662" column="5" selection-start-line="662" selection-start-column="5" selection-end-line="662" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/com/sparkjava/spark-core/2.8.0/spark-core-2.8.0-sources.jar!/spark/embeddedserver/jetty/EmbeddedJettyServer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="203">
+              <caret line="73" selection-start-line="73" selection-end-line="73" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/resources/core.properties">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$MAVEN_REPOSITORY$/com/sparkjava/spark-core/2.8.0/spark-core-2.8.0-sources.jar!/spark/embeddedserver/jetty/SocketConnectorFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="295">
+              <caret line="73" column="51" selection-start-line="73" selection-start-column="51" selection-end-line="73" selection-end-column="51" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/resources/core-spring-persistence.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="381">
+              <caret line="29" column="11" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/LogAspect.java">
+          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionFactoryImpl.java">
+        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/TimingAspect.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="123">
-              <caret line="1230" column="49" selection-start-line="1230" selection-start-column="49" selection-end-line="1230" selection-end-column="49" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE-sources.jar!/org/springframework/orm/jpa/JpaTransactionManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="467" selection-start-line="467" selection-end-line="467" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE-sources.jar!/org/springframework/transaction/support/AbstractPlatformTransactionManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="377" selection-start-line="377" selection-end-line="377" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionImpl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="255" selection-start-line="255" selection-end-line="255" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="311">
-              <caret line="98" selection-start-line="98" selection-end-line="98" />
+            <state relative-caret-position="180">
+              <caret line="10" selection-start-line="10" selection-end-line="10" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -162,6 +211,12 @@
       <list>
         <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-spring-web-support/src/main/java/io/spotnext/spring/web/facade/AbstractBaseFacade.java" />
+        <option value="$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java" />
+        <option value="$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernatePersistenceService.java" />
+        <option value="$PROJECT_DIR$/spot-core/src/main/resources/core.properties" />
+        <option value="$PROJECT_DIR$/spot-core/src/main/resources/core-spring-persistence.xml" />
+        <option value="$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/TimingAspect.java" />
       </list>
     </option>
   </component>
@@ -190,10 +245,6 @@
           <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
           <item name="Profiles" type="6783ec58:MavenProjectsStructure$ProfilesNode" />
         </path>
-        <path>
-          <item name="" type="16c1761:MavenProjectsStructure$RootNode" />
-          <item name="io.spot-next:spot-framework" type="9519ce18:MavenProjectsStructure$ProjectNode" />
-        </path>
       </expand>
       <select />
     </treeState>
@@ -203,216 +254,12 @@
   </component>
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths>
-      <path value="$PROJECT_DIR$/docs/node_modules/abab/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/acorn-globals/node_modules/acorn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/acorn-globals/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/acorn-walk/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/acorn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ajv/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ansi-escapes/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ansi-regex/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ansi-styles/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/array-equal/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/asn1/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/assert-plus/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/async-limiter/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/asynckit/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/aws-sign2/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/aws4/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/babel-polyfill/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/babel-runtime/node_modules/regenerator-runtime/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/babel-runtime/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/bcrypt-pbkdf/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/browser-process-hrtime/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/caseless/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/chalk/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/chardet/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/cli-cursor/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/cli-width/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/clipboard/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/co/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/color-convert/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/color-name/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/color-string/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/color/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/combined-stream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/commander/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/core-js/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/core-util-is/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/cssom/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/cssstyle/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-array/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-axis/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-brush/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-chord/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-collection/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-color/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-dispatch/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-drag/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-dsv/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-ease/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-force/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-format/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-geo/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-hierarchy/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-interpolate/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-path/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-polygon/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-quadtree/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-queue/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-random/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-request/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-scale/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-selection/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-shape/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-time-format/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-time/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-timer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-transition/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-voronoi/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3-zoom/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/d3/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/dagre-d3-renderer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/dagre-layout/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/dashdash/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/data-urls/node_modules/whatwg-url/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/data-urls/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/deep-is/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/delayed-stream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/delegate/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/docsify-copy-code/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/docsify-themeable/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/docsify/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/domexception/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ecc-jsbn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/encoding/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/escape-string-regexp/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/escodegen/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/esprima/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/estraverse/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/esutils/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/extend/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/external-editor/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/extsprintf/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/fast-deep-equal/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/fast-json-stable-stringify/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/fast-levenshtein/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/figures/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/forever-agent/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/form-data/node_modules/combined-stream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/form-data/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/getpass/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/good-listener/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/graphlibrary/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/har-schema/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/har-validator/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/has-ansi/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/he/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/html-encoding-sniffer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/http-signature/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/iconv-lite/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/inquirer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/is-arrayish/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/is-fullwidth-code-point/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/is-promise/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/is-stream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/is-typedarray/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/isstream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/jsbn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/jsdom/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/json-schema-traverse/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/json-schema/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/json-stringify-safe/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/jsprim/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/left-pad/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/levn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/lodash.sortby/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/lodash/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/marked/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/medium-zoom/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/mermaid/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/mime-db/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/mime-types/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/mimic-fn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/minimist/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/moment/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/mute-stream/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/node-fetch/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/nwsapi/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/oauth-sign/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/object-assign/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/onetime/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/package/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/package_with_postinstall/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/opencollective/test/parentpackage/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/opn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/optionator/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/os-tmpdir/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/parse5/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/performance-now/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/pinkie-promise/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/pinkie/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/pn/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/prelude-ls/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/prismjs/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/psl/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/punycode/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/qs/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/regenerator-runtime/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/request-promise-core/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/request-promise-native/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/request/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/restore-cursor/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/run-async/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/rw/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/rx/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/safe-buffer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/safer-buffer/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/sax/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/scope-css/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/select/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/signal-exit/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/simple-swizzle/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/source-map/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/sshpk/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/stealthy-require/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/string-width/node_modules/ansi-regex/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/string-width/node_modules/strip-ansi/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/string-width/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/strip-ansi/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/supports-color/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/symbol-tree/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/through/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tiny-emitter/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tinydate/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tmp/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tough-cookie/node_modules/punycode/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tough-cookie/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tr46/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tunnel-agent/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tweetnacl/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/tweezer.js/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/type-check/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/uuid/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/verror/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/w3c-hr-time/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/webidl-conversions/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-encoding/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-mimetype/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/whatwg-url/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/wordwrap/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/ws/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/xml-name-validator/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/xmlhttprequest/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/yuml2svg/node_modules/viz.js/package.json" />
-      <path value="$PROJECT_DIR$/docs/node_modules/yuml2svg/package.json" />
       <path value="$PROJECT_DIR$/docs/package.json" />
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="268" />
-    <option name="y" value="164" />
+    <option name="x" value="124" />
+    <option name="y" value="105" />
     <option name="width" value="1846" />
     <option name="height" value="1695" />
   </component>
@@ -424,6 +271,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -432,11 +280,66 @@
               <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
               <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="infrastructure" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="spot-framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="spot-framework" type="462c0819:PsiDirectoryNode" />
+              <item name="spot-core" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="infrastructure" type="462c0819:PsiDirectoryNode" />
+              <item name="aspect" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -446,7 +349,7 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+    <property name="settings.editor.selected.configurable" value="project.propCompiler" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -489,7 +392,7 @@
       <option name="VM_PARAMETERS" value="-Xverify:none -server -Xmx4G -XX:+UseSerialGC -XXaltjvm=dcevm" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <method v="2">
-        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="-DskipTests=true install -pl !spot-sample-simple,!archetype-empty" />
+        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="-q -DskipTests=true install -pl !spot-sample-simple,!archetype-empty" />
       </method>
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
@@ -527,36 +430,35 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="268" y="164" width="1846" height="1695" extended-state="0" />
-    <editor active="true" />
+    <frame x="124" y="105" width="1846" height="1695" extended-state="0" />
     <layout>
-      <window_info id="Web" side_tool="true" />
       <window_info id="Designer" order="0" />
       <window_info id="Favorites" order="1" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="2" weight="0.25277162" />
-      <window_info id="Maven Projects" order="3" visible="true" weight="0.25972602" />
+      <window_info content_ui="combo" id="Project" order="2" visible="true" weight="0.25260273" />
+      <window_info id="Maven Projects" order="3" weight="0.25863013" />
       <window_info id="Structure" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Java Enterprise" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Spring" />
-      <window_info anchor="bottom" id="Hybris Console [Experimental]" />
-      <window_info anchor="bottom" id="Terminal" order="0" sideWeight="0.49315068" weight="0.17654398" />
+      <window_info id="Web" order="5" show_stripe_button="false" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="0" sideWeight="0.4920548" weight="0.17654398" />
       <window_info anchor="bottom" id="Message" order="1" />
       <window_info anchor="bottom" id="Find" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49972603" weight="0.39987522" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7309589" weight="0.39987522" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.50027394" side_tool="true" visible="true" weight="0.17654398" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Problems" order="10" sideWeight="0.50410956" side_tool="true" weight="0.17790262" />
-      <window_info anchor="bottom" id="Run" order="11" sideWeight="0.50630134" side_tool="true" weight="0.1772784" />
-      <window_info anchor="right" id="Database" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Messages" order="7" sideWeight="0.2690411" side_tool="true" visible="true" weight="0.39987522" />
+      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50410956" side_tool="true" weight="0.39987522" />
+      <window_info anchor="bottom" id="Run" order="9" sideWeight="0.50410956" weight="0.39987522" />
+      <window_info anchor="bottom" id="Version Control" order="10" />
+      <window_info anchor="bottom" id="Problems" order="11" sideWeight="0.50410956" side_tool="true" weight="0.17790262" />
+      <window_info anchor="bottom" id="Spring" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Hybris Console [Experimental]" order="14" />
+      <window_info anchor="bottom" id="Java Enterprise" order="15" show_stripe_button="false" />
       <window_info anchor="right" id="Palette&#9;" order="0" />
       <window_info anchor="right" id="Commander" order="1" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="2" show_stripe_button="false" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
+      <window_info anchor="right" id="Database" order="4" show_stripe_button="false" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -568,13 +470,11 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java</url>
-          <line>148</line>
-          <properties class="org.hibernate.engine.internal.StatefulPersistenceContext" method="&lt;init&gt;">
-            <option name="EMULATED" value="true" />
-          </properties>
-          <option name="timeStamp" value="1" />
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.4.8.v20171121/jetty-util-9.4.8.v20171121-sources.jar!/org/eclipse/jetty/util/ssl/SslContextFactory.java</url>
+          <line>94</line>
+          <properties />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -582,6 +482,20 @@
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>sslContextFactory.getProvider()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>sslContextFactory.setProvider(&quot;Conscrypt&quot;)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/spot-framework.iml">
@@ -624,53 +538,144 @@
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#65487#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE-sources.jar!/org/springframework/orm/jpa/JpaTransactionManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
-          <caret line="98" selection-start-line="98" selection-end-line="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="148" selection-start-line="148" selection-end-line="148" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="255" selection-start-line="255" selection-end-line="255" />
+        <state relative-caret-position="7200">
+          <caret line="467" selection-start-line="467" selection-end-line="467" />
         </state>
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-tx/5.0.8.RELEASE/spring-tx-5.0.8.RELEASE-sources.jar!/org/springframework/transaction/support/AbstractPlatformTransactionManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="311">
+        <state relative-caret-position="5958">
           <caret line="377" selection-start-line="377" selection-end-line="377" />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-orm/5.0.8.RELEASE/spring-orm-5.0.8.RELEASE-sources.jar!/org/springframework/orm/jpa/JpaTransactionManager.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="467" selection-start-line="467" selection-end-line="467" />
+        <state relative-caret-position="1296">
+          <caret line="255" selection-start-line="255" selection-end-line="255" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/service/impl/DefaultTransactionService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2142">
+          <caret line="119" selection-start-line="119" selection-end-line="119" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-spring-web-support/src/main/java/io/spotnext/spring/web/facade/AbstractBaseFacade.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/management/service/RemoteInterfaceServiceEndpoint.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/engine/internal/StatefulPersistenceContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="785">
+          <caret line="175" selection-start-line="175" selection-end-line="175" />
         </state>
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.2.17.Final/hibernate-core-5.2.17.Final-sources.jar!/org/hibernate/internal/SessionFactoryImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="123">
-          <caret line="1230" column="49" selection-start-line="1230" selection-start-column="49" selection-end-line="1230" selection-end-column="49" />
+        <state relative-caret-position="452">
+          <caret line="1197" column="17" selection-start-line="1197" selection-start-column="17" selection-end-line="1197" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/sparkjava/spark-core/2.8.0/spark-core-2.8.0-sources.jar!/spark/Service.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="573" column="37" selection-start-line="573" selection-start-column="37" selection-end-line="573" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/conscrypt/conscrypt-openjdk/1.4.0/conscrypt-openjdk-1.4.0-sources.jar!/org/conscrypt/OpenSSLProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="567" column="69" lean-forward="true" selection-start-line="567" selection-start-column="69" selection-end-line="567" selection-end-column="69" />
+          <folding>
+            <element signature="e#1915#1916#0" expanded="true" />
+            <element signature="e#1970#1971#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-util/9.4.8.v20171121/jetty-util-9.4.8.v20171121-sources.jar!/org/eclipse/jetty/util/ssl/SslContextFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="100" column="32" selection-start-line="100" selection-start-column="32" selection-end-line="100" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/service/impl/RemoteHttpEndpointHandlerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="197" column="79" lean-forward="true" selection-start-line="197" selection-start-column="79" selection-end-line="197" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/persistence/hibernate/impl/HibernatePersistenceService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="664">
+          <caret line="662" column="5" selection-start-line="662" selection-start-column="5" selection-end-line="662" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/sparkjava/spark-core/2.8.0/spark-core-2.8.0-sources.jar!/spark/embeddedserver/jetty/EmbeddedJettyServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="73" selection-start-line="73" selection-end-line="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/resources/core.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/sparkjava/spark-core/2.8.0/spark-core-2.8.0-sources.jar!/spark/embeddedserver/jetty/SocketConnectorFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="295">
+          <caret line="73" column="51" selection-start-line="73" selection-start-column="51" selection-end-line="73" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/resources/core-spring-persistence.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="381">
+          <caret line="29" column="11" selection-start-line="29" selection-start-column="11" selection-end-line="29" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/LogAspect.java">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/management/service/impl/ModelServiceRestEndpoint.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="50" column="21" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spot-core/src/main/java/io/spotnext/core/infrastructure/aspect/TimingAspect.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

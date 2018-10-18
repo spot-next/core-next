@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -17,7 +18,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
+import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
@@ -29,6 +31,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
+
+	@Resource
+	protected SequenceGenerator sequenceGenerator;
 
 	@Rule
 	public ExpectedException expectedExeption = ExpectedException.none();
@@ -47,7 +52,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 		loaded.setShortName("loaded");
 
-		User duplicate = new User();
+		final User duplicate = new User();
 		ClassUtil.setField(duplicate, "pk", loaded.getPk());
 		modelService.refresh(duplicate);
 		duplicate.setShortName("loaded");
@@ -56,7 +61,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		try {
 			modelService.save(loaded);
-		} catch (ModelSaveException e) {
+		} catch (final ModelSaveException e) {
 			assertTrue(e.getCause() instanceof OptimisticLockException);
 		}
 	}
@@ -147,17 +152,17 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		address.setStreetName("Test");
 		user.getAddresses().add(address);
 
-		Log.debug("Addresses before save: "
+		Logger.debug("Addresses before save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
-		Log.debug("Addresses after save: "
+		Logger.debug("Addresses after save: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
-		Log.debug("Addresses after load: "
+		Logger.debug("Addresses after load: "
 				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
@@ -248,7 +253,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
 
-		assertEquals(null, loadedAdmin.getShortName());
+		assertEquals("Administrator", loadedAdmin.getShortName());
 	}
 
 	@Test
@@ -265,5 +270,27 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		group.getMembers().add(user);
 
 		modelService.save(group);
+	}
+
+	/**
+	 * Fetch the current sequence id and compare it against the newly created user.
+	 */
+	@Test
+	public void testUserPrepareInterceptor() {
+		final User user = modelService.create(User.class);
+		user.setShortName("test user");
+
+		modelService.save(user);
+		modelService.refresh(user);
+
+		// this is the id that will be used next, so we have to add -1 to get the last used one
+		long lastUsedId = sequenceGenerator.getCurrentSequenceValue(user.getTypeCode() + "_" + "id");
+
+		// if it is 0, it was never incremented and we don't have to subtract 1
+		if (lastUsedId > 0) {
+			lastUsedId--;
+		}
+
+		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getId());
 	}
 }

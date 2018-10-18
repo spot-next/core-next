@@ -81,8 +81,19 @@ public interface ModelService {
 	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
 
 	/**
-	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given
-	 * search parameters (key = property name, value = property value).
+	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its PK.
+	 *
+	 * @param             <T> the item type
+	 * @param type        a {@link java.lang.Class} object.
+	 * @param pk          a long.
+	 * @param returnProxy specifies if the returned item should be a proxy (hence no database access is performed) or fetched from the database
+	 * @return a T object.
+	 * @throws ModelNotFoundException if any.
+	 */
+	<T extends Item> T get(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException;
+
+	/**
+	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given search parameters (key = property name, value = property value).
 	 *
 	 * @param                  <T> the item type
 	 * @param type             a {@link java.lang.Class} object.

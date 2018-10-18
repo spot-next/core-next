@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +20,10 @@ import org.springframework.stereotype.Service;
  * @since 1.0
  */
 @Service
-public class Log {
+public class Logger {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME;
 
-	private static final Map<Class<?>, Logger> loggers = new HashMap<>();
+	private static final Map<Class<?>, org.slf4j.Logger> loggers = new HashMap<>();
 
 	/** {@inheritDoc} */
 	public static void debug(final String message) {
@@ -34,7 +33,7 @@ public class Log {
 	/** {@inheritDoc} */
 	public static void debug(Supplier<String> message) {
 		final Class<?> callingClass = getCallingClass();
-		final Logger logger = getLoggerForClass(getCallingClass());
+		final org.slf4j.Logger logger = getLoggerForClass(getCallingClass());
 
 		if (logger.isDebugEnabled()) {
 			log(LogLevel.DEBUG, message.get(), null, null, callingClass);
@@ -119,7 +118,7 @@ public class Log {
 			System.out.println(String.format("%s %s: %s", getTimeStamp(), level.toString(), msg));
 		}
 
-		final Logger logger = getLoggerForClass(callingClass);
+		final org.slf4j.Logger logger = getLoggerForClass(callingClass);
 
 		if ((level == LogLevel.FATAL || level == LogLevel.ERROR) && logger.isErrorEnabled()) {
 			logger.error(message);
@@ -131,6 +130,23 @@ public class Log {
 			logger.info(message);
 		} else if (level == LogLevel.DEBUG && logger.isDebugEnabled()) {
 			logger.debug(message);
+		}
+	}
+
+	public static boolean isLogLevelEnabled(LogLevel logLevel) {
+		switch (logLevel) {
+		case DEBUG:
+			return getLoggerForClass(getCallingClass()).isDebugEnabled();
+		case INFO:
+			return getLoggerForClass(getCallingClass()).isInfoEnabled();
+		case ERROR:
+			return getLoggerForClass(getCallingClass()).isErrorEnabled();
+		case TRACE:
+			return getLoggerForClass(getCallingClass()).isTraceEnabled();
+		case WARN:
+			return getLoggerForClass(getCallingClass()).isWarnEnabled();
+		default:
+			return true;
 		}
 	}
 
@@ -155,8 +171,8 @@ public class Log {
 	 * 
 	 * @param type
 	 */
-	protected static Logger getLoggerForClass(final Class<?> type) {
-		Logger logger = loggers.get(type);
+	protected static org.slf4j.Logger getLoggerForClass(final Class<?> type) {
+		org.slf4j.Logger logger = loggers.get(type);
 
 		if (logger == null) {
 			logger = LoggerFactory.getLogger(type);
@@ -177,7 +193,7 @@ public class Log {
 		for (int i = 1; i < stack.length; i++) {
 			final StackTraceElement o = stack[i];
 
-			if (!StringUtils.equalsIgnoreCase(o.getClassName(), Log.class.getName())) {
+			if (!StringUtils.equalsIgnoreCase(o.getClassName(), Logger.class.getName())) {
 				try {
 					callingClass = Class.forName(o.getClassName());
 				} catch (final ClassNotFoundException e) {

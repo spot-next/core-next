@@ -26,13 +26,17 @@ import io.spotnext.core.management.support.NoAuthenticationFilter;
 @Inherited
 @Service
 public @interface RemoteEndpoint {
+	// if changed, also change the default value for authenticationFitler here and in the Handler annotation!
+	public static final Class<? extends AuthenticationFilter> DEFAULT_AUTHENTICATION_HANDLER = NoAuthenticationFilter.class;
+	public static final int DEFAULT_PORT = 8080;
+
 	/**
 	 * The port the endpoint will be using. Multiple endpoints can share the same
 	 * port
 	 * 
 	 * @return the port this endpoint is running on.
 	 */
-	int port() default 8080;
+	int port() default DEFAULT_PORT;
 
 	/**
 	 * @return the property key that holds the port. Overrides the {@link #port()}

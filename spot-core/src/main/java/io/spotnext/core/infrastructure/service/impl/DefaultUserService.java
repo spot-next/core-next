@@ -1,5 +1,6 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,18 +9,20 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.constant.CoreConstants;
 import io.spotnext.core.infrastructure.exception.CannotCreateUserException;
-import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.security.service.AuthenticationService;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.Principal;
 import io.spotnext.itemtype.core.user.PrincipalGroup;
 import io.spotnext.itemtype.core.user.User;
@@ -38,12 +41,17 @@ import io.spotnext.itemtype.core.user.UserGroup;
 public class DefaultUserService<U extends User, G extends UserGroup> extends AbstractService
 		implements UserService<U, G> {
 
+	public static final UserData DEFAULT_USER = new UserData();
+	static {
+		DEFAULT_USER.setId("<notset>");
+	}
+	
 	@Autowired
 	protected SessionService sessionService;
 
 	@Autowired
 	protected AuthenticationService authenticationService;
-
+	
 	/** {@inheritDoc} */
 	@Override
 	public U createUser(final Class<U> type, final String userId) throws CannotCreateUserException {
@@ -89,13 +97,32 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		return modelService.get(getUserGroupType(), params);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc} As iterating over all groups recursively is a cost-intensive task, the results are cached.
+	 */
+	@Cacheable("misc")
 	@Override
 	public boolean isUserInGroup(final String userUid, final String groupUid) {
+		final List<PrincipalGroup> groupsToCheck = new ArrayList<>(getUser(userUid).getGroups());
+
+		for (int x = 0; x < groupsToCheck.size(); x++) {
+			final PrincipalGroup currentGroup = groupsToCheck.get(x);
+
+			// check if groups match
+			if (StringUtils.equals(groupUid, currentGroup.getId())) {
+				return true;
+			}
+
+			// if not, add all subgroups to the list of groups to check
+			groupsToCheck.addAll(groupsToCheck.size(), currentGroup.getGroups());
+		}
+
 		return false;
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Set<G> getAllGroupsOfUser(final String uid) {
 		final Set<G> groups = new HashSet<>();
@@ -137,8 +164,11 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public void setCurrentUser(final U user) {
 		final Session session = sessionService.getCurrentSession();
-
-		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, user);
+		
+		final UserData userData = new UserData();
+		user.setId(user.getId());
+		
+		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, userData);
 	}
 
 	/** {@inheritDoc} */
@@ -149,27 +179,19 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	/** {@inheritDoc} */
 	@Override
-	public U getCurrentUser() {
+	public UserData getCurrentUser() {
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			U user = (U) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
-
+			final UserData user = (UserData) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+			
 			if (user != null) {
-				try {
-					// load from database, because entities/models might not be threadsafe
-					user = (U) modelService.get(user.getClass(), user.getPk());
-				} catch (final ModelNotFoundException e) {
-					loggingService.warn("Current session user was invalid - removed it.");
-					sessionService.closeSession(session.getId());
-				}
+				return user;
 			}
-
-			return (U) user;
 		} else {
-			loggingService.warn("No session is set up.");
+			Logger.warn("No session is set up.");
 		}
 
-		return null;
+		return DEFAULT_USER;
 	}
 }

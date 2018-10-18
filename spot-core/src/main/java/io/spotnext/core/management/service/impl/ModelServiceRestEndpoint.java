@@ -1,11 +1,14 @@
 package io.spotnext.core.management.service.impl;
 
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -22,6 +26,8 @@ import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.ModelService;
+import io.spotnext.core.infrastructure.support.HttpHeader;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -50,6 +56,8 @@ import spark.route.HttpMethod;
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/models", authenticationFilter = BasicAuthenticationFilter.class)
 public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
+	private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("ddd, dd MM yy hh:mm:ss z");
+
 	private static final int DEFAULT_PAGE = 1;
 	private static final int DEFAULT_PAGE_SIZE = 100;
 
@@ -62,11 +70,76 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
+	@Handler(method = HttpMethod.head, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse getModelsInfo(final Request request, final Response response) {
+
+		try {
+			final String typeCode = request.params(":typecode");
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+
+			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT count(i) FROM %s AS i", type.getSimpleName()), Long.class);
+			final QueryResult<Long> modelCount = queryService.query(query);
+
+			response.header("Item-Count", modelCount.getResultList().get(0) + "");
+
+			return DataResponse.ok();
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+	}
+
+	/**
+	 * Gets all items of the given item type. The page index starts at 1.
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
+	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
+	@Handler(method = HttpMethod.head, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public <T extends Item> HttpResponse getModelInfo(final Request request, final Response response) {
+
+		try {
+			final String typeCode = request.params(":typecode");
+			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+			final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+
+			final JpqlQuery<ModelInfoData> query = new JpqlQuery<>(
+					String.format("SELECT i.pk AS pk, i.version As version, i.lastModifiedAt As lastModifiedAt FROM %s AS i WHERE i.pk = :pk",
+							type.getSimpleName()),
+					ModelInfoData.class);
+			query.addParam("pk", pk);
+			final QueryResult<ModelInfoData> model = queryService.query(query);
+
+			if (model.getResultCount() > 0) {
+				final ModelInfoData info = model.getResultList().get(0);
+
+				setCachingHeaderFields(info.getVersion(), info.getLastModifiedAt(), response);
+				return DataResponse.ok();
+			} else {
+				return DataResponse.notFound();
+			}
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+	}
+
+	/**
+	 * Gets all items of the given item type. The page index starts at 1.
+	 *
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
+	 * @param response a {@link spark.Response} object.
+	 * @return the response object
+	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModels(final Request request, final Response response) {
 
@@ -78,6 +151,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final ModelQuery<T> query = new ModelQuery<>(type, null);
 			query.setPage(page);
 			query.setPageSize(pageSize);
+
+			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);
 			final List<T> models = modelService.getAll(query);
 
@@ -92,11 +167,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the PK.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse getModel(final Request request, final Response response) {
 
@@ -106,11 +182,16 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		try {
 			if (pk > 0) {
 				final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-				final T model = modelService.get(type, pk);
+				ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("pk", pk));
+				query.setEagerFetchRelations(true);
+				final T model = modelService.get(query);
 
 				if (model == null) {
 					return DataResponse.notFound();
 				}
+
+				final Date lastModified = Date.from(model.getLastModifiedAt().toInstant(ZoneOffset.UTC));
+				setCachingHeaderFields(model.getVersion(), lastModified, response);
 
 				return DataResponse.ok().withPayload(model);
 			} else {
@@ -128,11 +209,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse queryModel(final Request request, final Response response) {
 
@@ -157,7 +239,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			try {
 				final QueryResult<T> result = queryService.query(query);
-				return DataResponse.ok().withPayload(result);
+
+				if (result.getResultCount() > 0) {
+					return DataResponse.ok().withPayload(result);
+				} else {
+					return DataResponse.notFound().withPayload(result);
+				}
 			} catch (final QueryException e) {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
 						"Cannot execute given query: " + e.getMessage());
@@ -174,11 +261,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse queryModelByExample(final Request request, final Response response) {
@@ -187,7 +275,11 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final T example = deserializeToItem(request);
 			final List<T> items = modelService.getAllByExample(example);
 
-			return DataResponse.ok().withPayload(items);
+			if (items.size() > 0) {
+				return DataResponse.ok().withPayload(items);
+			} else {
+				return DataResponse.notFound().withPayload(items);
+			}
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
@@ -199,11 +291,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createModel(final Request request, final Response response) {
@@ -237,11 +330,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The PK or a search criteria has to be set.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse deleteModel(final Request request, final Response response) {
 
@@ -272,11 +366,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The PK must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.put, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
 		try {
@@ -297,11 +392,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given PK doesn't not exist, an exception is thrown.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response) {
 
@@ -386,6 +482,30 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		return serializationService.fromJson(content, JsonNode.class);
 	}
 
+	private void setCachingHeaderFields(int version, Date lastModifiedDate, Response response) {
+		// uses the entity version as ETag (for caching)
+		response.header(HttpHeader.ETag.toString(), version + "");
+		response.header(HttpHeader.LastModified.toString(), DATE_FORMAT.format(lastModifiedDate));
+	}
+
 	private static DataResponse RESPONSE_UNKNOWN_TYPE = DataResponse.withStatus(HttpStatus.BAD_REQUEST)
 			.withError("error.ongetall", "Unknown item type.");
+
+	private static class ModelInfoData {
+		private long pk;
+		private int version;
+		private Date lastModifiedAt;
+
+		public long getPk() {
+			return pk;
+		}
+
+		public int getVersion() {
+			return version;
+		}
+
+		public Date getLastModifiedAt() {
+			return lastModifiedAt;
+		}
+	}
 }

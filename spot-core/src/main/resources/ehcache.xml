@@ -1,0 +1,32 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true" monitoring="autodetect"
+	dynamicConfig="true">
+
+	<defaultCache name="defaut" maxElementsInMemory="10000" maxEntriesLocalHeap="10000" maxEntriesLocalDisk="50000" eternal="false"
+		timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="false" memoryStoreEvictionPolicy="LRU">
+
+		<persistence strategy="localTempSwap" />
+	</defaultCache>
+
+	<diskStore path="java.io.tmpdir" />
+
+	<!-- SPRING -->
+	<cache name="misc" maxEntriesLocalHeap="1000" memoryStoreEvictionPolicy="LFU" transactionalMode="off" timeToIdleSeconds="60" timeToLiveSeconds="60">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+	<!-- HIBERNATE -->
+
+	<cache name="items" maxEntriesLocalHeap="10000" eternal="false" timeToLiveSeconds="86400" />
+
+	<cache name="default-update-timestamps-region" maxEntriesLocalHeap="5000" eternal="true">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	<cache name="default-query-results-region" maxElementsInMemory="10000" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false"
+		memoryStoreEvictionPolicy="LRU" />
+
+	<cache name="org.hibernate.cache.UpdateTimestampsCache" maxEntriesLocalHeap="5000" eternal="true">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	<cache name="org.hibernate.cache.StandardQueryCache" maxElementsInMemory="10000" eternal="false" timeToLiveSeconds="86400" overflowToDisk="false"
+		memoryStoreEvictionPolicy="LRU" />
+</ehcache>

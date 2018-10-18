@@ -1,6 +1,7 @@
 package io.spotnext.core;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
@@ -19,6 +20,7 @@ import io.spotnext.core.infrastructure.support.init.ModuleInit;
  * @version 1.0
  * @since 1.0
  */
+@EnableCaching
 @EnableAspectJAutoProxy
 @ImportResource("classpath:/core-spring.xml")
 @PropertySource(value = "classpath:/core.properties")
@@ -35,7 +37,7 @@ public class CoreInit extends ModuleInit {
 		//
 	}
 
-	@Log(message = "Importing initial data for $classSimpleName", measureTime = true)
+	@Log(message = "Importing initial data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importInitialData() throws ModuleInitializationException {
 		super.importInitialData();
@@ -52,7 +54,7 @@ public class CoreInit extends ModuleInit {
 	}
 
 	@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
-	@Log(message = "Importing sample data for $classSimpleName", measureTime = true)
+	@Log(message = "Importing sample data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {
 		super.importSampleData();

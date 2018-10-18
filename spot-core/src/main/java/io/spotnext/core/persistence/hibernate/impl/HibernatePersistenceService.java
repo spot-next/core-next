@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityNotFoundException;
@@ -29,12 +30,15 @@ import javax.persistence.criteria.Root;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.stat.Statistics;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
@@ -44,6 +48,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
@@ -52,15 +57,16 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ValidationService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
-import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
@@ -82,7 +88,8 @@ import io.spotnext.support.util.ClassUtil;
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
-	static final int JDBC_BATCH_SIZE = 20;
+	@Value("${hibernate.jdbc.batch_size}")
+	private Integer jdbcBatchSize;
 
 	protected MetadataExtractorIntegrator metadataIntegrator = MetadataExtractorIntegrator.INSTANCE;
 
@@ -112,7 +119,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		this.configurationService = configurationService;
 
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-			Log.info("Initializing type system schema ...");
+			Logger.info("Initializing type system schema ...");
 
 			final SchemaExport schemaExport = new SchemaExport();
 			schemaExport.setHaltOnError(true);
@@ -125,14 +132,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				// database" approach?
 				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 			} catch (final Exception e) {
-				Log.warn("Could not drop type system schema.");
+				Logger.warn("Could not drop type system schema.");
 			}
 
 			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
-			Log.info("Updating type system schema ...");
+			Logger.info("Updating type system schema ...");
 
 			final SchemaUpdate schemaExport = new SchemaUpdate();
 			schemaExport.setHaltOnError(true);
@@ -151,22 +158,22 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			validator.doValidation(metadataIntegrator.getMetadata(), SchemaManagementToolCoordinator
 					.buildExecutionOptions(entityManagerFactory.getProperties(), ExceptionHandlerLoggedImpl.INSTANCE));
 
-			Log.debug("Type system schema seems to be OK");
+			Logger.debug("Type system schema seems to be OK");
 
 		} catch (final SchemaManagementException e) {
 			// currently hibernate throws a validation exception for float values that are being created as doubles ...
 			// see https://hibernate.atlassian.net/browse/HHH-8690
 			// so we hide that message in case we just did an initialization, otherwise it would look confusing in the logs
 			if (!configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-				Log.warn("Type system schema needs to be initialized/updated");
+				Logger.warn("Type system schema needs to be initialized/updated");
 			}
 		}
 
 		if (configurationService.getBoolean("cleantypesystem", false)) {
-			Log.info("Cleaning type system ... (not yet implemented)");
+			Logger.info("Cleaning type system ... (not yet implemented)");
 		}
 
-		Log.info(String.format("Persistence service initialized"));
+		Logger.info(String.format("Persistence service initialized"));
 	}
 
 	/** {@inheritDoc} */
@@ -201,8 +208,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					setCacheSettings(session, sourceQuery, query);
 					setFetchSubGraphsHint(session, sourceQuery, query);
 					setParameters(sourceQuery.getParams(), query);
-					setPage(query, sourceQuery.getPage());
-					setPageSize(query, sourceQuery.getPageSize());
+					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 					results = query.getResultList();
 
 				} else {
@@ -225,8 +231,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					// true);
 
 					setParameters(sourceQuery.getParams(), query);
-					setPage(query, sourceQuery.getPage());
-					setPageSize(query, sourceQuery.getPageSize());
+					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 
 					// only try to load results if the result type is not Void
 					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
@@ -283,19 +288,28 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	private <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
-			final JpqlQuery<T> sourceQuery, final Query<T> query) {
+	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
+			final Q sourceQuery, final TypedQuery<T> query) {
 
-		query.setHint("org.hibernate.cacheable", !sourceQuery.isIgnoreCache());
+		CacheMode cacheMode = CacheMode.NORMAL;
+
+		if (!sourceQuery.isCachable() && !sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.GET;
+		} else if (!sourceQuery.isCachable() && sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.IGNORE;
+		} else if (sourceQuery.isCachable() && sourceQuery.isIgnoreCache()) {
+			cacheMode = CacheMode.PUT;
+		}
+
+		session.setCacheMode(cacheMode);
+//		query.setHint("org.hibernate.cacheable", sourceQuery.isCachable());
+		query.setHint("javax.persistence.cache.retrieveMode", sourceQuery.isIgnoreCache() ? CacheRetrieveMode.BYPASS : CacheRetrieveMode.USE);
 	}
 
 	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setFetchSubGraphsHint(
 			final Session session, final Q sourceQuery, final TypedQuery<T> query) throws UnknownTypeException {
 
-		if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
-			Log.warn("Fetch sub graphs can only be used for item queries.");
-			return;
-		}
+		// TODO what about fetchgraph?
 
 		final List<String> fetchSubGraphs = new ArrayList<>();
 
@@ -314,6 +328,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 
 		if (fetchSubGraphs.size() > 0) {
+			if (!Item.class.isAssignableFrom(sourceQuery.getResultClass())) {
+				Logger.debug("Fetch sub graphs can only be used for item queries - ignoring");
+				return;
+			}
+
 			final EntityGraph<T> graph = session.createEntityGraph(sourceQuery.getResultClass());
 
 			for (final String subgraph : fetchSubGraphs) {
@@ -330,19 +349,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		}
 	}
 
-	protected void setPage(final Query<?> query, final int page) {
-		if (page >= 0) {
-			query.setFirstResult(page);
-		}
-	}
-
-	protected void setPageSize(final Query<?> query, final int pageSize) {
-		if (pageSize >= 0) {
+	protected void setPagination(final javax.persistence.Query query, final int page, final int pageSize) {
+		if (pageSize > 0) {
+			query.setFirstResult((page > 0 ? page - 1 : 0) * pageSize);
 			query.setMaxResults(pageSize);
 		}
 	}
 
 	/** {@inheritDoc} */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true, executionTimeThreshold = 100)
 	@Override
 	public <T extends Item> void save(final List<T> items) throws ModelSaveException, ModelNotUniqueException {
 		bindSession();
@@ -361,19 +376,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						}
 
 						// use same as the JDBC batch size
-						if (i > JDBC_BATCH_SIZE && i % JDBC_BATCH_SIZE == 0) {
+						if (jdbcBatchSize != null && i > jdbcBatchSize && i % jdbcBatchSize == 0) {
 							// flush a batch of inserts and release memory:
 							session.flush();
+//							session.clear();
 						}
 						i++;
 					}
 
 					session.flush();
+					// this is needed! 
 					items.stream().forEach(o -> session.evict(o));
 					// session.clear();
 
 					try {
-						refresh(items);
+//						refresh(items);
 					} catch (final ModelNotFoundException e) {
 						throw new ModelSaveException("Could not save given items", e);
 					}
@@ -414,12 +431,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> T load(final Class<T> type, final long pk) throws ModelNotFoundException {
+	public <T extends Item> T load(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			return transactionService.execute(() -> {
-				return getSession().find(type, pk);
+				T item = returnProxy ? getSession().load(type, pk) : getSession().get(type, pk);
+				return item;
 			});
 		} catch (final TransactionException e) {
 			if (e.getCause() instanceof ModelNotFoundException) {
@@ -471,13 +489,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				return true;
 			}
 
-			final T attached = (T) getSession().load(item.getClass(), item.getPk());
-			if (attached != null) {
-				getSession().evict(attached);
-				getSession().lock(item, LockMode.NONE);
-
-				return true;
-			}
+			getSession().load(item, item.getPk());
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(
@@ -495,15 +507,23 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 		return transactionService.execute(() -> {
 
-			TypedQuery<T> query = null;
 			final Session session = getSession();
-			final CriteriaBuilder cb = session.getCriteriaBuilder();
+			final CriteriaBuilder builder = session.getCriteriaBuilder();
 
-			final CriteriaQuery<T> cq = cb.createQuery(sourceQuery.getResultClass());
-			final Root<T> r = cq.from(sourceQuery.getResultClass());
+			final CriteriaQuery<T> cq = builder.createQuery(sourceQuery.getResultClass());
+			final Root<T> queryResultType = cq.from(sourceQuery.getResultClass());
+			CriteriaQuery<T> itemSelect = cq.select(queryResultType);
 
-			if (sourceQuery.getSearchParameters() != null) {
-				Predicate p = cb.conjunction();
+			// check if we have to perform a separate query for pagination
+			// hibernate can't handle pagination together with FETCH JOINs!
+			boolean isPkQueryForPaginationNeeded = sourceQuery.getPageSize() > 0
+					&& (sourceQuery.getEagerFetchRelationProperties().size() > 0 || sourceQuery.isEagerFetchRelations());
+			boolean isSearchParametersDefined = MapUtils.isNotEmpty(sourceQuery.getSearchParameters());
+
+			Predicate whereClause = null;
+
+			if (isSearchParametersDefined) {
+				whereClause = builder.conjunction();
 
 				for (final Map.Entry<String, Object> entry : sourceQuery.getSearchParameters().entrySet()) {
 					if (entry.getValue() instanceof Item && !((Item) entry.getValue()).isPersisted()) {
@@ -511,45 +531,51 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 								"Passing non-persisted item as search param '%s' is not supported.", entry.getKey()));
 					}
 
-					p = cb.and(p, cb.equal(r.get(entry.getKey()), entry.getValue()));
+					whereClause = builder.and(whereClause, builder.equal(queryResultType.get(entry.getKey()), entry.getValue()));
 				}
-
-				final CriteriaQuery<T> select = cq.select(r).where(p);
-				query = session.createQuery(select);
-
-				if (sourceQuery.getPageSize() > 0) {
-					query.setFirstResult((sourceQuery.getPage() - 1) * sourceQuery.getPageSize());
-					query.setMaxResults(sourceQuery.getPageSize());
-				}
-			} else {
-				query = session.createQuery(cq.select(r));
 			}
 
-			// String jpql = String.format("SELECT i FROM %s i ",
-			// sourceQuery.getResultClass().getSimpleName());
-			//
-			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
-			// jpql += " WHERE ";
-			//
-			// List<String> whereClauses = new LinkedList<>();
-			// for (Map.Entry<String, Object> entry :
-			// sourceQuery.getSearchParameters().entrySet()) {
-			// whereClauses.add(entry.getKey() + " = :" + entry.getKey());
-			// }
-			//
-			// jpql += StringUtils.join(whereClauses, " AND ");
-			// }
-			//
-			// query = session.createQuery(jpql);
-			//
-			// if (MapUtils.isNotEmpty(sourceQuery.getSearchParameters())) {
-			// for (Map.Entry<String, Object> entry :
-			// sourceQuery.getSearchParameters().entrySet()) {
-			// query.setParameter(entry.getKey(), entry.getValue());
-			// }
-			// }
+			// always order by last created date and THEN PK, so we have a consistent ordering, even if new items are created
+			// PKs are random, so they don't increment!
+
+			// make additional query to fetch the pks, applied the "maxResults" correctly
+			if (isPkQueryForPaginationNeeded) {
+				CriteriaQuery<Long> pkCriteriaQuery = builder.createQuery(Long.class);
+				final Root<T> pkRoot = pkCriteriaQuery.from(sourceQuery.getResultClass());
+				pkCriteriaQuery = pkCriteriaQuery.select(pkRoot.get(Item.PROPERTY_PK));
+
+				if (whereClause != null) {
+					pkCriteriaQuery = pkCriteriaQuery.where(whereClause);
+				}
+
+				// always apply the same order for all queries
+				pkCriteriaQuery = pkCriteriaQuery.orderBy(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)), builder.asc(pkRoot.get(Item.PROPERTY_PK)));
+
+				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery);
+				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
+
+				final List<Long> pksToSelect = pkQuery.getResultList();
+
+				itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
+			} else {
+				if (whereClause != null) {
+					itemSelect = itemSelect.where(whereClause);
+				}
+			}
+
+			// always apply the same order for all queries
+//			itemSelect = itemSelect.orderBy(builder.asc(queryResultType.get(Item.PROPERTY_CREATED_AT)), builder.asc(queryResultType.get(Item.PROPERTY_PK)));
+
+			final TypedQuery<T> query = session.createQuery(itemSelect);
+
+			// only set these values if no fetch joins are used!
+			// if we have fetch joins we just select by the pks that are fetched before using firstResult and maxResults
+			if (!isPkQueryForPaginationNeeded) {
+				setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
+			}
 
 			setFetchSubGraphsHint(session, sourceQuery, query);
+			setCacheSettings(session, sourceQuery, query);
 
 			final List<T> results = ((Query<T>) query).getResultList();
 
@@ -646,11 +672,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return getSession().contains(item);
 	}
 
-	protected Session getSession() {
+	public Session getSession() {
 		final EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
 				.getResource(entityManagerFactory));
 
 		if (holder != null) {
+			if (Logger.isLogLevelEnabled(LogLevel.DEBUG)) {
+				getSessionFactory().getStatistics().setStatisticsEnabled(true);
+			}
+
 			return holder.getEntityManager().unwrap(Session.class);
 		}
 
@@ -694,6 +724,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 */
 	public SessionFactory getSessionFactory() {
 		return entityManagerFactory.unwrap(SessionFactory.class);
+	}
+
+	public Statistics getStatistics() {
+		return getSessionFactory().getStatistics();
 	}
 
 }

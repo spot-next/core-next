@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.hibernate.NonUniqueObjectException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 
 /**
  * Catches Hibernate's {@link NonUniqueObjectException} in case there are multiple entities with the same PK in the persistence context.
@@ -38,7 +38,7 @@ public class AllowDuplicateEntitiesInPersistenceContextAspect {
 		try {
 			return joinPoint.proceed();
 		} catch (NonUniqueObjectException e) {
-			Log.debug("Found duplicated hibernate in persistence context ... ignoring");
+			Logger.debug("Found duplicated hibernate in persistence context ... ignoring");
 		}
 
 		return null;

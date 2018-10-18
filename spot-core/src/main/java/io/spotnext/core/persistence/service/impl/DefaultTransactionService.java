@@ -1,5 +1,7 @@
 package io.spotnext.core.persistence.service.impl;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -19,8 +21,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.TransactionService;
 
 /**
@@ -36,6 +40,8 @@ import io.spotnext.core.persistence.service.TransactionService;
 @Service
 public class DefaultTransactionService extends AbstractService implements TransactionService {
 
+	private final static NumberFormat NF = new DecimalFormat("0.0###");
+
 	@Value("${service.persistene.transaction.timeout}")
 	protected int transactionTimeoutInSec = 60;
 
@@ -43,6 +49,9 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	protected PlatformTransactionManager transactionManager;
 
 	protected ThreadLocal<TransactionStatus> currentTransaction = new ThreadLocal<>();
+
+//	@PersistenceUnit
+//	protected EntityManagerFactory entityManagerFactory;
 
 	/**
 	 * @return creates a new {@link TransactionTemplate}.
@@ -55,30 +64,45 @@ public class DefaultTransactionService extends AbstractService implements Transa
 		return transactionTemplate;
 	}
 
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Override
 	public <R> R execute(final Callable<R> body) throws TransactionException {
 		final boolean transactionWasAlreadyActive = isTransactionActive();
 
+		final TransactionStatus transaction;
+
 		if (!transactionWasAlreadyActive) {
-			start();
+			transaction = start();
+		} else {
+			transaction = getCurrentTransaction().get();
 		}
 
 		boolean commit = true;
 
+//		StatisticsLog stat = null;
+//
+//		if (Logger.isLogLevelEnabled(LogLevel.DEBUG)) {
+//			stat = new StatisticsLog();
+//		}
+
 		try {
 			return body.call();
 		} catch (final Exception e) {
-			rollback(getCurrentTransaction().get());
+			rollback(transaction);
 
 			commit = false;
 
 			throw new TransactionUsageException("Error during transactional execution.", e);
 		} finally {
 			if (!transactionWasAlreadyActive && commit) {
-				if (getCurrentTransaction().isPresent() && !getCurrentTransaction().get().isCompleted()) {
-					commit(getCurrentTransaction().get());
+				if (!transaction.isCompleted()) {
+					commit(transaction);
 				}
 			}
+
+//			if (stat != null) {
+//				stat.log();
+//			}
 		}
 	}
 
@@ -92,7 +116,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 	@Override
 	public TransactionStatus start() throws TransactionException {
-		Log.debug(String.format("Creating new transaction for thread %s (id = %s)", Thread.currentThread().getName(), Thread.currentThread().getId()));
+		Logger.debug(String.format("Creating new transaction for thread %s (id = %s)", Thread.currentThread().getName(), Thread.currentThread().getId()));
 
 		if (!getCurrentTransaction().isPresent()) {
 			final TransactionDefinition def = createTransactionTemplate();
@@ -127,7 +151,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.commit(status);
 			currentTransaction.remove();
 		} else {
-			Log.warn("Cannot commit: no transaction active.");
+			Logger.warn("Cannot commit: no transaction active.");
 		}
 	}
 
@@ -137,7 +161,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			transactionManager.rollback(status);
 			currentTransaction.remove();
 		} else {
-			Log.warn("Cannot roleback: no transaction active.");
+			Logger.warn("Cannot roleback: no transaction active.");
 		}
 	}
 
@@ -162,8 +186,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	}
 
 	/**
-	 * @return the name for the transaction, composed out of <classname of the
-	 *         calling class>.<method name>.
+	 * @return the name for the transaction, composed out of <classname of the calling class>.<method name>.
 	 */
 	protected String createTransactionName() {
 		final StackTraceElement[] stack = Thread.currentThread().getStackTrace();
@@ -175,4 +198,54 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 		return null;
 	}
+
+//	private class StatisticsLog {
+//		Statistics statistics;
+//		private long cacheInitialHitCount;
+//		private long queryInitialHitCount;
+//		private long entityFetchInitialHitCount;
+//		private long entityLoadInitialHitCount;
+//		private long collectionFetchInitialHitCount;
+//		private long collectionLoadInitialHitCount;
+//		private long cacheMissInitialCount;
+//		private long queryMissInitialCount;
+//
+//		public StatisticsLog() {
+//			statistics = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+//			statistics.setStatisticsEnabled(true);
+//
+//			cacheInitialHitCount = statistics.getSecondLevelCacheHitCount();
+//			queryInitialHitCount = statistics.getQueryCacheHitCount();
+//			entityFetchInitialHitCount = statistics.getEntityFetchCount();
+//			entityLoadInitialHitCount = statistics.getEntityLoadCount();
+//			collectionFetchInitialHitCount = statistics.getCollectionFetchCount();
+//			collectionLoadInitialHitCount = statistics.getCollectionLoadCount();
+//
+//			cacheInitialHitCount = statistics.getSecondLevelCacheMissCount();
+//			queryMissInitialCount = statistics.getQueryCacheMissCount();
+//		}
+//
+//		public void log() {
+//			long cacheMissCount = statistics.getSecondLevelCacheMissCount();
+//
+//			log("Cache", cacheInitialHitCount, statistics.getSecondLevelCacheHitCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Query cache", queryInitialHitCount, statistics.getQueryCacheHitCount(), queryMissInitialCount, statistics.getQueryCacheMissCount());
+//			log("Entity fetch cache", entityFetchInitialHitCount, statistics.getEntityFetchCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Entity load cache", entityLoadInitialHitCount, statistics.getEntityLoadCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Collection fetch cache", collectionFetchInitialHitCount, statistics.getCollectionFetchCount(), cacheMissInitialCount, cacheMissCount);
+//			log("Collection load cache", collectionLoadInitialHitCount, statistics.getCollectionLoadCount(), cacheMissInitialCount, cacheMissCount);
+//		}
+//
+//		private void log(String name, long initialCount, long hitCount, long initialMissCount, long missCount) {
+//			double ratio = (double) hitCount / (hitCount + missCount);
+//
+//			if (hitCount > initialCount) {
+//				Logger.debug(String.format("%s - Cache HIT, Ratio=%s", name, NF.format(ratio)));
+//			} else if (missCount > initialMissCount) {
+//				Logger.debug(String.format("%s - Cache MISS, Ratio=%s", name, NF.format(ratio)));
+//			} else {
+//				Logger.debug(name + " - Cache not used");
+//			}
+//		}
+//	}
 }

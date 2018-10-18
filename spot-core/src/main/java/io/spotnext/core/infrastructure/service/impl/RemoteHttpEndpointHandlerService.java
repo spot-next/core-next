@@ -11,12 +11,14 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.exception.AuthenticationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
@@ -27,6 +29,7 @@ import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.HttpRequestHolder;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
@@ -46,8 +49,7 @@ import spark.Service;
 import spark.route.HttpMethod;
 
 /**
- * This HTTP service base class scans the implementing class for annotated
- * method and register it as Spark request endpoints.
+ * This HTTP service base class scans the implementing class for annotated method and register it as Spark request endpoints.
  *
  * @author mojo2012
  * @version 1.0
@@ -80,6 +82,12 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	@Resource
 	protected ResponseTransformer jsonResponseTransformer;
 
+	@Value("${service.typesystem.rest.keystore.file:}")
+	private String keystoreFilePath;
+
+	@Value("${service.typesystem.rest.keystore.password:}")
+	private String keystorePassword;
+
 	protected Map<Integer, Service> services = new HashMap<>();
 
 	/**
@@ -90,10 +98,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	final Map<Class<AuthenticationFilter>, AuthenticationFilter> authenticationFilters = new HashMap<>();
 
 	/**
-	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding
-	 * context for endpoints. If the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
-	 * then the HTTP interfaces will be started up (cannot register new endpoints
-	 * then).
+	 * Listens for {@link org.springframework.boot.context.event.ApplicationReadyEvent}s and scans the corresponding context for endpoints. If the context
+	 * contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit} then the HTTP interfaces will be started up (cannot register new
+	 * endpoints then).
 	 *
 	 * @param event that signals that the context has been started
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException
@@ -164,12 +171,17 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * <p>init.</p>
+	 * <p>
+	 * init.
+	 * </p>
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+	@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
+//		Security.addProvider(new OpenSSLProvider());
+//		sslContextFactory.setProvider("Conscrypt");
+
 		for (final Map.Entry<Integer, List<Object>> endpointEntry : handlersRegistry.entrySet()) {
 
 			Service service;
@@ -177,6 +189,14 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service = Service.ignite();
 				service.staticFileLocation("/public");
 				service.port(endpointEntry.getKey());
+
+				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
+					final String keystore = (!keystoreFilePath.startsWith("/") ? "/" : "") + keystoreFilePath;
+					// use this "unsafe" access to allow to override the same keystore file used from other JAR files
+					final String absoluteKeystoreFilePath = getClass().getResource(keystore).toExternalForm();
+					service.secure(absoluteKeystoreFilePath, keystorePassword, null, null);
+				}
+
 				// register the service for later use
 				services.put(endpointEntry.getKey(), service);
 			} catch (final IllegalStateException e) {
@@ -197,7 +217,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						ResponseTransformer transformer = null;
 						final String mimeType = handler.mimeType().toString();
 
-						if (handler.authenticationFilter() != null) {
+						// only override the class authentication filter, if it's not the default one
+						if (!RemoteEndpoint.DEFAULT_AUTHENTICATION_HANDLER.equals(handler.authenticationFilter())) {
 							autenticationFilterType = handler.authenticationFilter();
 						}
 
@@ -221,6 +242,18 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						}
 
 						final String pathMapping = StringUtils.join(remoteEndpoint.pathMapping(), handler.pathMapping()).replace("//", "/");
+
+						if (handler.method() == HttpMethod.trace) {
+							service.trace(pathMapping, mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.connect) {
+							service.connect(pathMapping, mimeType, route, transformer);
+						}
+
+						if (handler.method() == HttpMethod.options) {
+							service.options(pathMapping, mimeType, route, transformer);
+						}
 
 						if (handler.method() == HttpMethod.get) {
 							service.get(pathMapping, mimeType, route, transformer);
@@ -250,9 +283,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 
 			try { // create routes for HTTP methods
-
 				service.exception(Exception.class, (exception, request, response) -> {
-					loggingService.exception(exception.getMessage(), exception);
+					Logger.exception(exception.getMessage(), exception);
 					cleanup();
 					response.status(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				});
@@ -279,7 +311,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				});
 
 				service.init();
-
 			} catch (final Exception e) {
 				throw new RemoteServiceInitException("Could not start remote endpoints", e);
 			}
@@ -329,20 +360,19 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	/**
 	 * Set the default locale in every new request thread that is being created
 	 */
-	protected void setupLocale(Request request) {
+	protected void setupLocale(final Request request) {
 		LocaleContextHolder.setLocale(request.raw().getLocale());
 	}
 
 	/**
-	 * Checks if the client accepts compressed responses and sets the http response
-	 * headers accordingly. This will make Spark/Jetty compress the output
+	 * Checks if the client accepts compressed responses and sets the http response headers accordingly. This will make Spark/Jetty compress the output
 	 * automatically.
 	 * 
 	 * @param request
 	 * @param response
 	 */
-	protected void setupEncoding(Request request, Response response) {
-		String acceptEncoding = request.headers("Accept-Encoding");
+	protected void setupEncoding(final Request request, final Response response) {
+		final String acceptEncoding = request.headers("Accept-Encoding");
 
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
 			response.header("Content-Encoding", "gzip");
@@ -374,44 +404,50 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			this.authenticationFilter = authenticationFilter;
 		}
 
+		@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
-			if (authenticationFilter != null) {
-				authenticationFilter.handle(request, response);
-			}
-
 			response.type(contentType);
 
 			Object ret = null;
 
 			try {
+				if (authenticationFilter != null) {
+					authenticationFilter.handle(request, response);
+				}
+
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
 			} catch (final Exception e) {
-				// wrap the exception and forward it to the response transformer
-				// there it will be handled appropriately
+				if (!(e instanceof AuthenticationException)) {
+					Logger.exception(e.getMessage(), e);
+				}
+
+				Throwable realException = e;
 
 				if (e instanceof InvocationTargetException) {
 					final InvocationTargetException ie = (InvocationTargetException) e;
-					final Throwable inner = ie.getTargetException() != null ? ie.getTargetException() : ie;
-
-					if (inner instanceof Exception) {
-						ret = ExceptionResponse.internalServerError((Exception) inner);
-					} else {
-						throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
-					}
-
-					cleanup();
+					realException = ie.getTargetException() != null ? ie.getTargetException() : ie;
 				}
+
+				// wrap the exception and forward it to the response transformer
+				// there it will be handled appropriately
+				if (realException instanceof AuthenticationException) {
+					ret = ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException);
+				} else if (realException instanceof Exception) {
+					ret = ExceptionResponse.internalServerError((Exception) realException);
+				} else {
+					throw new IllegalStateException("Cannot handle exception of type 'Throwable'.");
+				}
+
+				cleanup();
 			}
 
 			return processResponse(response, ret);
 		}
 
 		/**
-		 * If the givn response body object is of type {@link DataResponse} the http
-		 * status code is set according to {@link DataResponse#getStatusCode()}. Also
-		 * the actual payload is returned, not the wrapper object itself. In any other
-		 * case the given response body object is returned.
+		 * If the givn response body object is of type {@link DataResponse} the http status code is set according to {@link DataResponse#getStatusCode()}. Also
+		 * the actual payload is returned, not the wrapper object itself. In any other case the given response body object is returned.
 		 * 
 		 * @param response
 		 * @param responseBody
@@ -428,9 +464,11 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	}
 
 	/**
-	 * <p>registerHandler.</p>
+	 * <p>
+	 * registerHandler.
+	 * </p>
 	 *
-	 * @param port     a int.
+	 * @param port a int.
 	 * @param endpoint a {@link java.lang.Object} object.
 	 */
 	public void registerHandler(final int port, final Object endpoint) {
