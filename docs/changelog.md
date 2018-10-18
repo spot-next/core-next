@@ -1,5 +1,9 @@
 # Change Log
 
+## **1.0.12-BETA** `2018-11-31`
+- Fix for Hibernate indexes
+- documentation update
+
 ## **1.0.11-BETA** `2018-10-31`
 - Bugfix, REST interface authentication was not checked properly
 - Added SSL to REST-interface
