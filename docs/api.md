@@ -259,9 +259,20 @@ These defintions look like this:
 
 
 ## System setup
-### Initial data import
+### (Initial) data import
+Every system needs configuration data. Also most of the time there is a need to import data in a generic way. One option is the REST interface. Though in alot of situations data is available in a tablular format (CSV, Excel etc). For table-based imports this might be a good choice, but for importing objects with relations? The **ImpEx** format solves this problem.
 
+Here is a quick demonstration:
 
+[users.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/initial/users.impex ':include')
+
+Every block that starts with a header line that specifies how the data should be imported. Each header starts with an command: `INSERT`, `INSERT_UPDATE`, `UPDATE` or `REMOVE`. Every following column is composed as follows: `propertyName(proepertyPath)[modifierKey=value,...]`.
+The `propertyName` denotes the target property of the `Item` to be imported. If the value is a complex object (aka another `Item`) a `propertyPath` has to specified in round brackets: `group(id)` means that the `UserGroup.groups` proprety will be filled with an object of type `PrincipalGroup` (as specified in the domain model) referenced by its `id` property.
+Furthermore it's possible to pass some modifiers to the `io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver`s responsible for resolving the string-based values.
+The supported modifiers are:
+* `default`: the default value used if there is no actualy value supplied. If the value is an empty string, it has to be surrounded with quotes
+
+Supported header
 
 ## Build process
 ### Maven 
