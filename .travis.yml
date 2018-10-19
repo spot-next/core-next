@@ -28,7 +28,7 @@ before_install:
 #  coverity_scan:
 #
 #    project:
-#      name: "mojo2012/spot-framework"
+#      name: "spot-next/spot-framework"
 #      description: "Build submitted via Travis CI"
 #    notification_email: meister.fuchs@gmail.com
 #    build_command_prepend: "mvn clean"

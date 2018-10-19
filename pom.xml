@@ -215,6 +215,11 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -490,8 +495,7 @@
 					<version>3.0.5</version>
 					<configuration>
 						<effort>Max</effort>
-						<!-- Enables analysis which takes more memory but finds more bugs. 
-							If you run out of memory, changes the value of the effort element to 'low'. -->
+						<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
 						<effort>medium</effort>
 						<!-- Reports all bugs (other values are medium and max) -->
 						<threshold>Low</threshold>
@@ -673,6 +677,9 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
@@ -683,12 +690,15 @@
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						<autoDropAfterRelease>true</autoDropAfterRelease>
+						<keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
+						<keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
 						<stagingProfileId>5f2e64bdcef503</stagingProfileId>
-						<stagingDescription>spOt stating repo</stagingDescription>
+						<stagingDescription>spOt staging repo</stagingDescription>
 					</configuration>
 					<executions>
 						<execution>
-							<id>sonatype deploy</id>
+							<id>default-deploy</id>
 							<phase>deploy</phase>
 							<goals>
 								<goal>deploy</goal>
@@ -705,8 +715,7 @@
 				</plugin>
 
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -819,8 +828,7 @@
 				<version>3.0.5</version>
 				<configuration>
 					<skip>true</skip>
-					<!-- Enables analysis which takes more memory but finds more bugs. If 
-						you run out of memory, changes the value of the effort element to 'low'. -->
+					<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
 
 					<effort>Max</effort>
 					<!-- Reports all bugs (other values are medium and max) -->
