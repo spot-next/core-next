@@ -88,8 +88,8 @@ import io.spotnext.support.util.ClassUtil;
 @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
-	@Value("${hibernate.jdbc.batch_size}")
-	private Integer jdbcBatchSize;
+	@Value("${hibernate.jdbc.batch_size:}")
+	private int jdbcBatchSize = 100;
 
 	protected MetadataExtractorIntegrator metadataIntegrator = MetadataExtractorIntegrator.INSTANCE;
 
@@ -376,24 +376,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						}
 
 						// use same as the JDBC batch size
-						if (jdbcBatchSize != null && i > jdbcBatchSize && i % jdbcBatchSize == 0) {
+						if (i >= jdbcBatchSize && i % jdbcBatchSize == 0) {
 							// flush a batch of inserts and release memory:
 							session.flush();
-//							session.clear();
 						}
 						i++;
 					}
 
+					// this is needed, otherwise saved entities are not 
 					session.flush();
-					// this is needed! 
 					items.stream().forEach(o -> session.evict(o));
-					// session.clear();
-
-					try {
-//						refresh(items);
-					} catch (final ModelNotFoundException e) {
-						throw new ModelSaveException("Could not save given items", e);
-					}
 				} catch (final ValidationException e) {
 					final String message;
 					if (e instanceof ConstraintViolationException) {
