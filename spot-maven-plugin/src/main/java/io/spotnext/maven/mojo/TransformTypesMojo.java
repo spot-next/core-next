@@ -203,7 +203,8 @@ public class TransformTypesMojo extends AbstractMojo {
 						throw new MojoExecutionException(e.getMessage(), e);
 					}
 				} else {
-					getLog().debug(String.format("Artifact %s:%s not a jar file", artifact.getGroupId(), artifact.getArtifactId()));
+					getLog().debug(String.format("Artifact %s not a jar file",
+							artifact != null ? (artifact.getGroupId() + ":" + artifact.getArtifactId()) : "<null>"));
 				}
 			}
 		} else {
