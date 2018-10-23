@@ -902,7 +902,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			throws IOException, MojoExecutionException {
 
 		for (final AbstractComplexJavaType type : types) {
-			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
+			final String srcPackagePath = type.getPackagePath().replace(".", File.separator);
 
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
 					type.getName() + ".java");
