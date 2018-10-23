@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +72,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		classPool.appendSystemPath();
 
 		if (StringUtils.isNotBlank(className)) {
-			final String classId = className.replace("/", ".");
+			// the className is using the OS-specific path separator
+			String classId = className.replace(File.separator, ".");
+			// when replacing the path separator on windows, the string is prefixed with a dot? so remove it
+			classId = StringUtils.removeStart(classId, ".");
 
 			classPool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 
@@ -123,7 +128,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Filters primitive types, proxy, internal and java base types.
 	 *
-	 * @param className the class name to check
+	 * @param className
+	 *            the class name to check
 	 * @return true if not filtered out by the above definition.
 	 */
 	protected boolean isValidClass(final String className) {
@@ -136,12 +142,20 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * transform.
 	 * </p>
 	 *
-	 * @param loader              the defining loader of the class to be transformed, may be null if the bootstrap loader
-	 * @param clazz               the class in the internal form of the JVM.
-	 * @param classBeingRedefined if this is triggered by a redefine or retransform, the class being redefined or retransformed; if this is a class load, null
-	 * @param protectionDomain    the protection domain of the class being defined or redefined
-	 * @return the transformed class object. If the class was not changed, return null instead.
-	 * @throws IllegalClassTransformationException in case there is an error
+	 * @param loader
+	 *            the defining loader of the class to be transformed, may be null if
+	 *            the bootstrap loader
+	 * @param clazz
+	 *            the class in the internal form of the JVM.
+	 * @param classBeingRedefined
+	 *            if this is triggered by a redefine or retransform, the class being
+	 *            redefined or retransformed; if this is a class load, null
+	 * @param protectionDomain
+	 *            the protection domain of the class being defined or redefined
+	 * @return the transformed class object. If the class was not changed, return
+	 *         null instead.
+	 * @throws IllegalClassTransformationException
+	 *             in case there is an error
 	 */
 	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -150,9 +164,11 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns the annotation for the given class.
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
 	 * @return a {@link java.util.List} object.
-	 * @throws IllegalClassTransformationException in case there is an error
+	 * @throws IllegalClassTransformationException
+	 *             in case there is an error
 	 */
 	protected List<Annotation> getAnnotations(final CtClass clazz) throws IllegalClassTransformationException {
 		final List<Annotation> annotations = new ArrayList<>();
@@ -169,13 +185,18 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * Returns the {@link javassist.bytecode.ClassFile} of the given class. If defrost = true, and the {@link javassist.CtClass#getClassFile2()} is null, the
-	 * class is defrosted and {@link javassist.CtClass#getClassFile()} is returned instead.
+	 * Returns the {@link javassist.bytecode.ClassFile} of the given class. If
+	 * defrost = true, and the {@link javassist.CtClass#getClassFile2()} is null,
+	 * the class is defrosted and {@link javassist.CtClass#getClassFile()} is
+	 * returned instead.
 	 *
-	 * @param clazz   a {@link javassist.CtClass} object.
-	 * @param defrost a boolean.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param defrost
+	 *            a boolean.
 	 * @return a {@link javassist.bytecode.ClassFile} object.
-	 * @throws IllegalClassTransformationException in case there is an error
+	 * @throws IllegalClassTransformationException
+	 *             in case there is an error
 	 */
 	protected ClassFile getClassFile(final CtClass clazz, final boolean defrost)
 			throws IllegalClassTransformationException {
@@ -199,10 +220,13 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns the annotation for the given class.
 	 *
-	 * @param clazz      a {@link javassist.CtClass} object.
-	 * @param annotation a {@link java.lang.Class} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param annotation
+	 *            a {@link java.lang.Class} object.
 	 * @return a {@link java.util.Optional} object.
-	 * @throws IllegalClassTransformationException in case there is an error
+	 * @throws IllegalClassTransformationException
+	 *             in case there is an error
 	 */
 	protected Optional<Annotation> getAnnotation(final CtClass clazz,
 			final Class<? extends java.lang.annotation.Annotation> annotation)
@@ -215,7 +239,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns all annotations of the given field.
 	 *
-	 * @param field a {@link javassist.CtField} object.
+	 * @param field
+	 *            a {@link javassist.CtField} object.
 	 * @return a {@link java.util.List} object.
 	 */
 	protected List<Annotation> getAnnotations(final CtField field) {
@@ -233,8 +258,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns the given annotation.
 	 *
-	 * @param field      a {@link javassist.CtField} object.
-	 * @param annotation a {@link java.lang.Class} object.
+	 * @param field
+	 *            a {@link javassist.CtField} object.
+	 * @param annotation
+	 *            a {@link java.lang.Class} object.
 	 * @return a {@link java.util.Optional} object.
 	 */
 	protected Optional<Annotation> getAnnotation(final CtField field,
@@ -247,7 +274,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns all annotations of the given method.
 	 *
-	 * @param method a {@link javassist.CtMethod} object.
+	 * @param method
+	 *            a {@link javassist.CtMethod} object.
 	 * @return a {@link java.util.List} object.
 	 */
 	protected List<Annotation> getAnnotations(final CtMethod method) {
@@ -265,8 +293,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns the the given annotation.
 	 *
-	 * @param annotation a {@link java.lang.Class} object.
-	 * @param method     a {@link javassist.CtMethod} object.
+	 * @param annotation
+	 *            a {@link java.lang.Class} object.
+	 * @param method
+	 *            a {@link javassist.CtMethod} object.
 	 * @return a {@link java.util.Optional} object.
 	 */
 	protected Optional<Annotation> getAnnotation(final CtMethod method,
@@ -279,10 +309,13 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Creates a new javassist annotation for the given class.
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
-	 * @param type  a {@link java.lang.Class} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param type
+	 *            a {@link java.lang.Class} object.
 	 * @return a {@link javassist.bytecode.annotation.Annotation} object.
-	 * @throws IllegalClassTransformationException in case there is an error
+	 * @throws IllegalClassTransformationException
+	 *             in case there is an error
 	 */
 	protected Annotation createAnnotation(final CtClass clazz,
 			final Class<? extends java.lang.annotation.Annotation> type) throws IllegalClassTransformationException {
@@ -295,8 +328,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * createAnnotation.
 	 * </p>
 	 *
-	 * @param cpool a {@link javassist.bytecode.ConstPool} object.
-	 * @param type  a {@link java.lang.Class} object.
+	 * @param cpool
+	 *            a {@link javassist.bytecode.ConstPool} object.
+	 * @param type
+	 *            a {@link java.lang.Class} object.
 	 * @return a {@link javassist.bytecode.annotation.Annotation} object.
 	 */
 	protected Annotation createAnnotation(final ConstPool cpool,
@@ -310,9 +345,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Adds the given annotation to a class field.
 	 *
-	 * @param clazz       a {@link javassist.CtClass} object.
-	 * @param field       a {@link javassist.CtField} object.
-	 * @param annotations a {@link java.util.List} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param field
+	 *            a {@link javassist.CtField} object.
+	 * @param annotations
+	 *            a {@link java.util.List} object.
 	 */
 	protected void addAnnotations(final CtClass clazz, final CtField field, final List<Annotation> annotations) {
 		for (final Annotation a : annotations) {
@@ -331,9 +369,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * addAnnotations.
 	 * </p>
 	 *
-	 * @param clazz       a {@link javassist.CtClass} object.
-	 * @param annotations a {@link java.util.List} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param annotations
+	 *            a {@link java.util.List} object.
+	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException
+	 *             if any.
 	 */
 	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations)
 			throws IllegalClassTransformationException {
@@ -353,9 +394,11 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * getConstPool.
 	 * </p>
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
 	 * @return a {@link javassist.bytecode.ConstPool} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
+	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException
+	 *             if any.
 	 */
 	protected ConstPool getConstPool(final CtClass clazz) throws IllegalClassTransformationException {
 		final ClassFile cfile = getClassFile(clazz, false);
@@ -366,7 +409,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns all accessible fields (even from super classes) for the given class.
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
 	 * @return a {@link java.util.List} object.
 	 */
 	protected List<CtField> getDeclaredFields(final CtClass clazz) {
@@ -388,7 +432,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	/**
 	 * Returns all accessible methods (even from super classes) for the given class.
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
 	 * @return a {@link java.util.List} object.
 	 */
 	protected List<CtMethod> getDeclaredMethods(final CtClass clazz) {
@@ -412,9 +457,12 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * writeClass.
 	 * </p>
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
-	 * @param file  a {@link java.io.File} object.
-	 * @throws java.io.IOException if any.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param file
+	 *            a {@link java.io.File} object.
+	 * @throws java.io.IOException
+	 *             if any.
 	 */
 	protected void writeClass(final CtClass clazz, final File file) throws IOException {
 		final DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
@@ -437,8 +485,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * hasInterface.
 	 * </p>
 	 *
-	 * @param clazz         a {@link javassist.CtClass} object.
-	 * @param interfaceType a {@link java.lang.Class} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
+	 * @param interfaceType
+	 *            a {@link java.lang.Class} object.
 	 * @return a boolean.
 	 */
 	protected boolean hasInterface(final CtClass clazz, final Class<?> interfaceType) {
@@ -461,7 +511,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * getInterfaces.
 	 * </p>
 	 *
-	 * @param clazz a {@link javassist.CtClass} object.
+	 * @param clazz
+	 *            a {@link javassist.CtClass} object.
 	 * @return a {@link java.util.List} object.
 	 */
 	protected List<CtClass> getInterfaces(final CtClass clazz) {
@@ -482,8 +533,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * createAnnotationArrayValue.
 	 * </p>
 	 *
-	 * @param constPool a {@link javassist.bytecode.ConstPool} object.
-	 * @param values    a {@link javassist.bytecode.annotation.MemberValue} object.
+	 * @param constPool
+	 *            a {@link javassist.bytecode.ConstPool} object.
+	 * @param values
+	 *            a {@link javassist.bytecode.annotation.MemberValue} object.
 	 * @return a {@link javassist.bytecode.annotation.ArrayMemberValue} object.
 	 */
 	protected ArrayMemberValue createAnnotationArrayValue(final ConstPool constPool, final MemberValue... values) {
@@ -499,8 +552,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * createAnnotationStringValue.
 	 * </p>
 	 *
-	 * @param constPool a {@link javassist.bytecode.ConstPool} object.
-	 * @param value     a {@link java.lang.String} object.
+	 * @param constPool
+	 *            a {@link javassist.bytecode.ConstPool} object.
+	 * @param value
+	 *            a {@link java.lang.String} object.
 	 * @return a {@link javassist.bytecode.annotation.StringMemberValue} object.
 	 */
 	protected StringMemberValue createAnnotationStringValue(final ConstPool constPool, final String value) {
@@ -515,7 +570,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * addClassPaths.
 	 * </p>
 	 *
-	 * @param classPaths a {@link java.lang.String} object.
+	 * @param classPaths
+	 *            a {@link java.lang.String} object.
 	 */
 	public void addClassPaths(final String... classPaths) {
 		this.classPaths.addAll(Arrays.asList(classPaths));
@@ -526,7 +582,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * addClassPaths.
 	 * </p>
 	 *
-	 * @param classPaths a {@link java.util.List} object.
+	 * @param classPaths
+	 *            a {@link java.util.List} object.
 	 */
 	public void addClassPaths(final List<String> classPaths) {
 		this.classPaths.addAll(classPaths);
@@ -580,7 +637,9 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * @param the consumer that can do additional logging when exceptions occur. Can be null.
+	 * @param the
+	 *            consumer that can do additional logging when exceptions occur. Can
+	 *            be null.
 	 */
 	public void setErrorLogger(Consumer<Throwable> errorLogger) {
 		this.errorLogger = errorLogger;
