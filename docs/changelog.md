@@ -1,10 +1,13 @@
 # Change Log
 
-## **1.0.12-BETA** `2018-11-31`
+## **1.0.13-BETA** `2018-11-31`
 - Fix for Hibernate indexes
 - documentation update
 
-## **1.0.11-BETA** `2018-10-31`
+## **1.0.12-BETA** `2018-10-23`
+- Fix for ´spot:transform-types` not working properly on windows
+
+## **1.0.11-BETA** `2018-10-17`
 - Bugfix, REST interface authentication was not checked properly
 - Added SSL to REST-interface
 - Hibernate performance improvements
@@ -13,7 +16,6 @@
 - Lots of fixes related to transaction handling
 - Updated/fixed quickstart
 - Improved Eclipse/m2e integration (types are generated and woven/transformed automatically from eclipse on workspace refresh)
-- 
 
 ## **1.0.9-BETA** `2018-09-12`
 - Lots of impex fixes
