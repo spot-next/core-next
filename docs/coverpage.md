@@ -1,3 +1,7 @@
+<div class="wave-container">
+	<div class="wave"></div>
+</div>
+
 <a href="/#/intro">
 <img class="logo-coverpage" src="/resources/spot_logo.svg" width="400">
 </a>
