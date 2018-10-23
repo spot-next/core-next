@@ -1,4 +1,7 @@
 # Introduction
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework)
+[![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Join the chat at https://gitter.im/spot-next/Lobby](https://badges.gitter.im/spot-next/Lobby.svg)](https://gitter.im/spot-next/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 The idea of the spOt microservice framework is to take the good parts of the SAP Hybris framework and bring them to the next level. For those who don't know SAP Hybris: it's a enterprise-grade ecommerce framework with it's own custom object-oriented persistence layer. You don't need to setup database tables or anything like that - all models are generated from XML definitions. It allows you to extend all models, even those who are defined by the framework itself. This makes it pretty easy to add new properties to types like Product, Category or Customer.
 
@@ -56,3 +59,18 @@ org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch mult
 Don't worry, although Hibernate is used for persistence, such thing never can happen to you. I could go on for hours and whine about the hundreds of hours that I lost debugging the insane behaviour and pitfalls ... but I won't bore you with the details ;-)
 
 You are still here? Well, then let's better get started!
+
+## Contact & Support
+* Create a [GitHub issue](https://github.com/spot-next/spot-framework/issues) for bug reports, feature requests, or questions
+* Join [spot-next@gitter](https://gitter.im/spot-next/Lobby) for announcements
+* Add a ⭐️ [star on GitHub](https://github.com/spot-next/spot-framework) or ❤️ to support the project!
+
+
+## License
+This project is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+Copyright (c) 2018 Matthias Fuchs
+
+"spot next" is a registered trademark of Matthias Fuchs
+
+
