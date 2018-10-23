@@ -70,7 +70,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		classPool.appendSystemPath();
 
 		if (StringUtils.isNotBlank(className)) {
-			final String classId = className.replaceAll("/", ".");
+			final String classId = className.replace("/", ".");
 
 			classPool.insertClassPath(new ByteArrayClassPath(classId, classfileBuffer));
 

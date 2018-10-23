@@ -102,85 +102,79 @@ public class TransformTypesMojo extends AbstractMojo {
 		final ClassLoader classLoader = getClassloader();
 		final List<ClassFileTransformer> transformers = getClassFileTransformers(classLoader);
 
-//		final ExecutorService executorService = Executors.newFixedThreadPool(4);
-
 		List<File> classFiles = FileUtils.getFiles(project.getBuild().getOutputDirectory(), f -> f.getAbsolutePath().endsWith(".class"));
 		getLog().debug("Found class files for processing: " + classFiles.stream().map(f -> f.getName()).collect(Collectors.joining(", ")));
 
 		if (CollectionUtils.isNotEmpty(transformers)) {
-			for (final File f : classFiles) {
-				if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
-//					executorService.submit(() -> {
-					String relativeClassFilePath = StringUtils.remove(f.getPath(),
-							project.getBuild().getOutputDirectory());
-					relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
-					final String className = relativeClassFilePath.substring(0,
-							relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
+			if (CollectionUtils.isNotEmpty(classFiles)) {
+				getLog().info(String.format("Transforming %s classes", classFiles.size()));
 
-					trackExecution("Loading class: " + f.getAbsolutePath());
+				for (final File f : classFiles) {
+					if (f.getName().endsWith(Constants.CLASS_EXTENSION)) {
+						String relativeClassFilePath = StringUtils.remove(f.getPath(),
+								project.getBuild().getOutputDirectory());
+						relativeClassFilePath = StringUtils.removeStart(relativeClassFilePath, "/");
+						final String className = relativeClassFilePath.substring(0,
+								relativeClassFilePath.length() - Constants.CLASS_EXTENSION.length());
 
-					byte[] byteCode;
-					try {
-						byteCode = Files.readAllBytes(f.toPath());
-					} catch (final IOException e) {
-						String message = String.format("Can't read bytecode for class %s", className);
-						buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-						throw new IllegalStateException(message, e);
-					}
+						trackExecution("Loading class: " + f.getAbsolutePath());
 
-					trackExecution("Loaded class: " + f.getAbsolutePath());
-
-					for (final ClassFileTransformer t : transformers) {
+						byte[] byteCode;
 						try {
-
-							// log exceptions into separate folder, to be able to inspect them even if Eclipse swallows them ...
-							if (t instanceof AbstractBaseClassTransformer) {
-								((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
-							}
-
-							// returns null if nothing has been transformed
-							byteCode = t.transform(classLoader, className, null, null, byteCode);
-						} catch (final Exception e) {
-							String exception = "Exception during transformation of class: " + f.getAbsolutePath() + "\n" + e.getMessage();
-							trackExecution(exception);
-							String message = String.format("Can't transform class %s, transformer %s: %s", className,
-									t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
-							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-							throw new MojoExecutionException(exception, e);
-						}
-					}
-
-					if (byteCode != null && byteCode.length > 0) {
-						try {
-							Files.write(f.toPath(), byteCode, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
-									StandardOpenOption.TRUNCATE_EXISTING);
-
-							trackExecution("Saved transformed class: " + f.getAbsolutePath());
+							byteCode = Files.readAllBytes(f.toPath());
 						} catch (final IOException e) {
-							String message = "Could not write modified class: " + relativeClassFilePath;
+							String message = String.format("Can't read bytecode for class %s", className);
 							buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
-							throw new IllegalStateException(message);
-						} finally {
-							buildContext.refresh(f);
-							getLog().info("Applied transformation to type: " + f.getAbsolutePath());
+							throw new IllegalStateException(message, e);
 						}
-					} else {
-						trackExecution("No changes made for class: " + f.getAbsolutePath());
-						getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
+
+						trackExecution("Loaded class: " + f.getAbsolutePath());
+
+						for (final ClassFileTransformer t : transformers) {
+							try {
+
+								// log exceptions into separate folder, to be able to inspect them even if Eclipse swallows them ...
+								if (t instanceof AbstractBaseClassTransformer) {
+									((AbstractBaseClassTransformer) t).setErrorLogger(this::logError);
+								}
+
+								// returns null if nothing has been transformed
+								byteCode = t.transform(classLoader, className, null, null, byteCode);
+							} catch (final Exception e) {
+								String exception = "Exception during transformation of class: " + f.getAbsolutePath() + "\n" + e.getMessage();
+								trackExecution(exception);
+								String message = String.format("Can't transform class %s, transformer %s: %s", className,
+										t.getClass().getSimpleName(), ExceptionUtils.getStackTrace(e));
+								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+								throw new MojoExecutionException(exception, e);
+							}
+						}
+
+						if (byteCode != null && byteCode.length > 0) {
+							try {
+								Files.write(f.toPath(), byteCode, StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+										StandardOpenOption.TRUNCATE_EXISTING);
+
+								trackExecution("Saved transformed class: " + f.getAbsolutePath());
+							} catch (final IOException e) {
+								String message = "Could not write modified class: " + relativeClassFilePath;
+								buildContext.addMessage(f, 0, 0, message, BuildContext.SEVERITY_ERROR, e);
+								throw new IllegalStateException(message);
+							} finally {
+								buildContext.refresh(f);
+								getLog().info("Applied transformation to type: " + f.getAbsolutePath());
+							}
+						} else {
+							trackExecution("No changes made for class: " + f.getAbsolutePath());
+							getLog().debug("No transformation was applied to type: " + f.getAbsolutePath());
+						}
 					}
-//					});
 				}
+			} else {
+				getLog().info("No class files found");
 			}
 
 			trackExecution("All classes in build output folder transformed");
-
-//			executorService.shutdown();
-//
-//			try {
-//				executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-//			} catch (InterruptedException e) {
-//				throw new MojoExecutionException("Could not execute type transformation", e);
-//			}
 
 			if (includeJars) {
 				final String packaging = project.getPackaging();
@@ -209,9 +203,11 @@ public class TransformTypesMojo extends AbstractMojo {
 						throw new MojoExecutionException(e.getMessage(), e);
 					}
 				} else {
-					getLog().debug("Not a jar file");
+					getLog().debug(String.format("Artifact %s:%s not a jar file", artifact.getGroupId(), artifact.getArtifactId()));
 				}
 			}
+		} else {
+			getLog().info("No class transformers configured");
 		}
 	}
 
