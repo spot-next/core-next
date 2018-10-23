@@ -75,49 +75,50 @@
 	}
 
 	.wave-container {
-		position: relative;
-		padding: 0px;
-		border: none;
-		top: -520px;
-		left: 0px;
-		right: 0px;
+    position: relative;
+    padding: 0px;
+    border: none;
+    top: -520px;
+    left: 0px;
+    right: 0px;
 	}
 
 	.wave {
-	    position: relative;
-	    width: 100%;
-	    height: 100px;
-	    top: -1200px;
+    position: relative;
+    width: 100%;
+    height: 100px;
+    top: -1200px;
 	 }
-    .wave::before,
-	.wave::after {
-        content: "";
-        position: absolute;
-        width: 6000px;
-        height: 6000px;
-        top: 0;
-        left: 50%;
-        background-color: rgba(115, 218, 11, .15);
-        border-radius: 45%;
-        transform: translate(-50%, -70%) rotate(0);
-        animation: rotate 60s linear infinite;
+  
+  .wave::before,
+  .wave::after {
+    content: "";
+    position: absolute;
+    width: 6000px;
+    height: 6000px;
+    top: 0;
+    left: 50%;
+    background-color: rgba(115, 218, 11, .15);
+    border-radius: 45%;
+    transform: translate(-50%, -70%) rotate(0);
+    animation: rotate 60s linear infinite;
 /*         z-index: 21; */
-    }
+  }
 	    
-    .wave::after {
-        border-radius: 47%;
-        background-color: rgba(115, 218, 11, .3);
-        transform: translate(-50%, -70%) rotate(0);
-        animation: rotate 40s linear -40s infinite;
+  .wave::after {
+    border-radius: 47%;
+    background-color: rgba(115, 218, 11, .3);
+    transform: translate(-50%, -70%) rotate(0);
+    animation: rotate 40s linear -40s infinite;
 /*         z-index: 20; */
 	}
 	
 	@keyframes rotate {
-	    50% {
-	        transform: translate(-50%, -73%) rotate(180deg);
-	    } 100% {
-	        transform: translate(-50%, -70%) rotate(360deg);
-	    }
+    50% {
+      transform: translate(-50%, -73%) rotate(180deg);
+    } 100% {
+      transform: translate(-50%, -70%) rotate(360deg);
+    }
 	}
 	
 		
@@ -128,14 +129,18 @@
 		
 		.wave::before,
 		.wave::after {
-	        width: 2000px;
-	        height: 2000px;
-        }
+      width: 2000px;
+      height: 2000px;
+     }
         
-        .wave {
-		    top: -20px;
-		 }
+    .wave {
+      top: -20px;
+    }
 	}
+
+  .gitter-open-chat-button {
+    background-color: rgb(115,218,11);
+  }
 	
   </style>
 </head>
@@ -187,6 +192,11 @@
       '}',
       '' // important!
     ].join('\n');
+    
+	// register service worker to enable offline mode
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      navigator.serviceWorker.register('sw.js')
+    }
 
     window.$docsify = {
       name: 'spOt framework',
@@ -203,7 +213,7 @@
       onlyCover: true,
       mergeNavbar: true,
       themeable : { 
-        // readyTransition : false, 
+        // readyTransition : true, 
         // responsiveTables: false 
       },
       markdown: {
@@ -239,7 +249,22 @@
   <script src="node_modules/prismjs/components/prism-properties.min.js"></script>
   <script src="node_modules/prismjs/components/prism-sql.min.js"></script>
   <script src="node_modules/prismjs/components/prism-markup.min.js"></script>
-  
+
+  <!-- gitter chat -->
+  <script>
+    ((window.gitter = {}).chat = {}).options = {
+      room: 'spot-next/Lobby'
+    };
+  </script>
+  <script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
+
+  <!-- disqus -->
+  <!-- <script>
+    window.$docsify = {
+      disqus: 'https-spot-next-io'
+    }
+  </script>
+  <script src="//unpkg.com/docsify/lib/plugins/disqus.min.js"></script> -->
 
   <style>
     /* mermaid css */

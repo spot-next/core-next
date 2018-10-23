@@ -138,7 +138,7 @@ Interceptors are called synchronously and therefore have a high impact on the pe
 The handled item can be accessed using `ItemModificationEvent.getItem()` (used in the condition SPEL expression). Furthermore the kind of modification is expose through `ItemModificationEvent.getModificationType()`.
 
 #### ModelService API
-Handling the various item persistence operations is achived by utilising the `ModelService`.
+Handling the various item persistence operations is achived by utilizing the `ModelService`.
 
 This is the way to instantiate and save a new item:
 ```java
@@ -159,48 +159,59 @@ A Hibernate session can only contain **one** physical instance of an entity. If 
 Already persisted Item instances can be removed using `ModelService.remove(...)`.
 
 ##### Model queries
-Items can be queried in various ways
-
-Query by example:
+Items can be queried in various ways. One of the easiest ones is "Query by example" (or QBE):
 ```java
 final LocalizationValue example = new LocalizationValue();
 example.setId("test.key");
 example.setLocale(Locale.ENGLISH);
-final LocalizationValue loaded = modelService.getByExample(example);
+final LocalizationValue result = modelService.getByExample(example);
 ```
 
-Query by key-value pairs
-
-
-Query using JPQL:
+The same can be achieved using a `java.util.Map` containg the key-value pairs used for quering:
 ```java
-final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
-query.addParam("id", "testUser");
-query.setEagerFetchRelations(true);
-final QueryResult<UserGroup> result = queryService.query(query);
+Map<String, Object> example = Collections.singletonMap(LocalizationValue.PROPERTY_ID, "test.key");
+final LocalizationValue result = modelService.get(LocalizationValue.class, example);
 ```
 
-Type-safe queries:
+Another possible way of making type-safe queries is using so called `LambdaQuery`s:
 ```java
 final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testUser"));
 final QueryResult<User> result = queryService.query(query);
 ```
-> Internally a JPQL query will be generated!
+> Internally a JPQL query will be generated, using joins to fetch related objects.
 
-JPQL queries with complex non-Item type results:
+The most flexible way to query data is to write those JPQL queries by yourself using `JpqlQuery`:
+```java
+final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
+query.addParam("id", "testUser");
+final QueryResult<UserGroup> result = queryService.query(query);
+```
+To execute a JPQL query the `QueryService` is used instead of the `ModelService`. The reason is that using JPQL not only domain models can be retrieved, but also arbitrary java types, most likely Data Transfer Object (DTOs):
 ```java
 final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id", UserData.class);
 query.addParam("id", "testUser");
 final QueryResult<UserData> result = queryService.query(query);
 ```
 > The properties `UserData.id` and `UserData.shortName` are automatically populated - either by using a suitable constructor or by directly accessing the setters.
+> Because of limitations in Hibernate, it is not possible right now to infert the corresponding DTO properties based on the implicite column names. Therefore every selected column has to be aliased!
 
-JPQL queries with primitive results:
+Of course, it's also possible to query for primitive types:
 ```java
 final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id = :id", String.class);
 query.addParam("id", "testUser");
 final QueryResult<String> result = queryService.query(query);
 ```
+
+The `io.spotnext.core.persistence.query.Query` can be configured to influnce the way data is queried:
+* `eagerFetchRelations`: if true, alls releations (1-1, 1-N, N-M) will be fetched using a `FETCH JOIN` using one single SQL select. If used together with `page` and/or `pageSize` a second query will be issues to avoid Hibernate problem **HHH000104** (firstResult/maxResults specified with collection fetch; applying in memory), which can be a major source of performance issues.
+* `eagerFetchRelationProperties`: instead of eagerly fetching all relation properties, this allows to configure only specific properties by using their name.
+* `page`: specifies the page for pagination, defaults to page `0` (= first page)
+* `pageSize`: specifies the page sie used for pagination, defaults to `0` (= no limitation)
+* `cachable`:specifies that the query can can be cached using Hibernate's second level cache (if enabled)
+* `ignoreCache`: specifies that the results should always be fetched from the database, and caches should be ignored.
+
+> Iterating over all item properties (e.g. when serializing) will lead to the infamous **N+1 problem**, because by default all **relational propertie are lazy-loaded**! Therefore the relations will be loaded on access. This can cause a lot of database queries and drastically decrease performance. **To avoid this, use the eager-fetch settings**!
+
 
 
 ##### Other operations
