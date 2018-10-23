@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -226,6 +227,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(localization);
 
+		// test using item
 		final LocalizationValue example = new LocalizationValue();
 		example.setId("test.key");
 		example.setLocale(Locale.ENGLISH);
@@ -233,6 +235,12 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final LocalizationValue loaded = modelService.getByExample(example);
 
 		Assert.assertEquals(localization.getId(), loaded.getId());
+
+		// test using map
+		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_ID, "test.key");
+		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
+
+		Assert.assertEquals(localization.getId(), resultFromMap.getId());
 	}
 
 	@Test
