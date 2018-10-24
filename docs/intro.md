@@ -71,6 +71,6 @@ This project is licensed under the [Apache 2.0 License](http://www.apache.org/li
 
 Copyright (c) 2018 Matthias Fuchs
 
-"spot next" is a registered trademark of Matthias Fuchs
+"spot next" and the "spot next" logo are a registered trademark of Matthias Fuchs
 
 
