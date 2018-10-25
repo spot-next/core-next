@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -365,9 +363,8 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	}
 
 	/**
-	 * <p>
-	 * addAnnotations.
-	 * </p>
+	 * 
+	 * Adds the given annotations to the given class.
 	 *
 	 * @param clazz
 	 *            a {@link javassist.CtClass} object.

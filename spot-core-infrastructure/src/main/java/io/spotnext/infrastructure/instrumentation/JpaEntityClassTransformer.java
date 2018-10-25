@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -22,6 +23,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,6 +59,7 @@ import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
+import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 /**
@@ -131,7 +134,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						{ // mark property as unique and add indexes
 							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(field,
 									propertyAnn.get());
-							final Optional<Annotation> indexAnn = createIndexAnnotation(field, propertyAnn.get());
+							final Optional<Annotation> indexAnn = createIndexAnnotation(clazz, field, propertyAnn.get());
 
 							if (uniqueAnn.isPresent()) {
 								fieldAnnotations.add(uniqueAnn.get());
@@ -154,6 +157,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 						addAnnotations(clazz, field, fieldAnnotations);
 					}
 				}
+
+//				addIndexAnnotation(clazz);
 
 				return Optional.of(clazz);
 			}
@@ -287,19 +292,59 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
-	protected Optional<Annotation> createIndexAnnotation(final CtField field, final Annotation propertyAnnotation) {
+	protected Optional<Annotation> createIndexAnnotation(final CtClass itemType, final CtField field, final Annotation propertyAnnotation) {
 		Annotation ann = null;
 
-//		if (isIndexable(field, propertyAnnotation) && !getAnnotation(field, Index.class).isPresent()) {
-//			ann = createAnnotation(field.getFieldInfo2().getConstPool(), Index.class);
-//
-//			StringMemberValue indexName = new StringMemberValue(field.getFieldInfo2().getConstPool());
-//			indexName.setValue("idx_" + field.getName());
-//
-//			ann.addMemberValue("name", indexName);
-//		}
+		if (isIndexable(field, propertyAnnotation) && !getAnnotation(field, org.hibernate.annotations.Index.class).isPresent()) {
+			ann = createAnnotation(field.getFieldInfo2().getConstPool(), org.hibernate.annotations.Index.class);
+
+			final StringMemberValue indexName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+			indexName.setValue("idx_" + itemType.getSimpleName() + "_" + field.getName());
+			ann.addMemberValue("name", indexName);
+		}
 
 		return Optional.ofNullable(ann);
+	}
+
+	@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
+	protected void addIndexAnnotation(CtClass itemType) throws IllegalClassTransformationException {
+		Annotation tableAnnotation = getAnnotation(itemType, Table.class).orElse(null);
+
+		if (tableAnnotation == null) {
+			tableAnnotation = createAnnotation(getConstPool(itemType), Table.class);
+		}
+
+		final List<AnnotationMemberValue> indexAnnotations = new ArrayList<>();
+
+		for (CtField field : itemType.getFields()) {
+			Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
+
+			if (propertyAnn.isPresent() && isIndexable(field, propertyAnn.get())) {
+
+				Annotation indexAnnotation = createAnnotation(getConstPool(itemType), Index.class);
+
+				StringMemberValue indexName = new StringMemberValue(getConstPool(itemType));
+				indexName.setValue("idx_" + field.getName());
+				indexAnnotation.addMemberValue("name", indexName);
+
+				StringMemberValue columnList = new StringMemberValue(getConstPool(itemType));
+				columnList.setValue(field.getName());
+
+				indexAnnotation.addMemberValue("columnList", columnList);
+
+				final AnnotationMemberValue v = new AnnotationMemberValue(getConstPool(itemType));
+				v.setValue(indexAnnotation);
+
+				indexAnnotations.add(v);
+			}
+		}
+
+		final ArrayMemberValue tableIndexesValue = new ArrayMemberValue(getConstPool(itemType));
+		tableIndexesValue.setValue(indexAnnotations.toArray(new MemberValue[indexAnnotations.size()]));
+
+		tableAnnotation.addMemberValue("indexes", tableIndexesValue);
+
+		addAnnotations(itemType, Arrays.asList(tableAnnotation));
 	}
 
 	/**

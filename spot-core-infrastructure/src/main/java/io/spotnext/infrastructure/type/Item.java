@@ -16,11 +16,9 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
@@ -44,8 +42,6 @@ import io.spotnext.support.util.ClassUtil;
 // Hibernate
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "items")
 // JPA
-//TODO: indexes don't seem to be picked up properly
-@Table(indexes = { @Index(name = "createdAt", columnList = "createdAt"), @Index(name = "lastModifiedBy", columnList = "lastModifiedBy") })
 @Cacheable
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -77,6 +73,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 //	@Index(name = "idx_lastModifiedAt")
 	@UpdateTimestamp
 	@LastModifiedDate
+	// needed for ORDER BY in combination with FETCH JOINS and pagination!
+	@Property(indexed = true)
 	protected Date lastModifiedAt;
 
 	@LastModifiedBy
