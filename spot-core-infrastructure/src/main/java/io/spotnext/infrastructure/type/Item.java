@@ -26,6 +26,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedBy;
@@ -73,8 +74,9 @@ public abstract class Item implements Serializable, Comparable<Item> {
 //	@Index(name = "idx_lastModifiedAt")
 	@UpdateTimestamp
 	@LastModifiedDate
-	// needed for ORDER BY in combination with FETCH JOINS and pagination!
-	@Property(indexed = true)
+	// the index is needed for ORDER BY in combination with FETCH JOINS and pagination!
+//	@Property(indexed = true)
+	@Index(name = "idx_Item_lastModifiedAt")
 	protected Date lastModifiedAt;
 
 	@LastModifiedBy
