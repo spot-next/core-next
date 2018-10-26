@@ -59,6 +59,13 @@ import spark.route.HttpMethod;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class RemoteHttpEndpointHandlerService extends AbstractService {
 
+	public static final String HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+
 	private boolean isStarted = false;
 
 	@Resource
@@ -204,6 +211,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
 			}
 
+			setupCors(service);
+
 			for (final Object endpoint : endpointEntry.getValue()) {
 				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
 						RemoteEndpoint.class);
@@ -308,6 +317,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				service.after((request, response) -> {
 					cleanup();
 					setupEncoding(request, response);
+					setupCorsHeaders(response);
 				});
 
 				service.init();
@@ -377,6 +387,37 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
 			response.header("Content-Encoding", "gzip");
 		}
+	}
+
+	/**
+	 * Sets the CORS headers up and handles OPTIONS requests 
+	 * @param service the service to setup CORS for
+	 */
+	protected void setupCors(Service service) {
+		service.staticFiles.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+		service.options("/*", (request, response) -> {
+			final String accessControlRequestHeaders = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS);
+			if (accessControlRequestHeaders != null) {
+				response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, accessControlRequestHeaders);
+			}
+
+			final String accessControlRequestMethod = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD);
+			if (accessControlRequestMethod != null) {
+				response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, accessControlRequestMethod);
+			}
+			
+			response.status(HttpStatus.OK.ordinal());
+
+			return "";
+		});
+	}
+
+	protected void setupCorsHeaders(Response response) {
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "*");
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, "TRACE,CONNECT,OPTIONS,GET,PUT,POST,DELETE,HEAD,PATCH");
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 	}
 
 	/**
@@ -468,7 +509,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 * registerHandler.
 	 * </p>
 	 *
-	 * @param port a int.
+	 * @param port     a int.
 	 * @param endpoint a {@link java.lang.Object} object.
 	 */
 	public void registerHandler(final int port, final Object endpoint) {
