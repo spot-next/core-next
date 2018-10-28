@@ -59,6 +59,13 @@ import spark.route.HttpMethod;
 @SuppressWarnings("PMD.TooManyStaticImports")
 public class RemoteHttpEndpointHandlerService extends AbstractService {
 
+	public static final String HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
+	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+
 	private boolean isStarted = false;
 
 	@Resource
@@ -188,6 +195,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try {
 				service = Service.ignite();
 				service.staticFileLocation("/public");
+
+				// setup CORS for the static files to allow access from all origins
+				// the notFound router also contain CORS logic
+				service.staticFiles.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 				service.port(endpointEntry.getKey());
 
 				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
@@ -297,13 +308,23 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					// session
 					setupSession(service, request, response);
 					setupLocale(request);
+					setupCorsHeaders(request, response);
 				});
 
-//					service.notFound((request, response) -> {
-//						Spark.halt(HttpStatus.NOT_FOUND.value());
-//						response.status();
-//						return null;
-//					});
+				// CORS is handled using a notFound router, as it doesn't seem to be possible to have a fallback "match-all" (/*) together with an more specific
+				// OPTIONS route. If we'd use service.options("/*") we would lose the possibility to create OPTIONS controllers at all!
+				service.notFound((request, response) -> {
+					// if the http method is OPTIONS and the CORS header is present, this is most likely a CORS request
+					if (org.eclipse.jetty.http.HttpMethod.OPTIONS.toString().matches(request.raw().getMethod())
+							&& request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS) != null) {
+
+						// so we set the status to OK, otherwise this would be 404 and the CORS request would fail
+						response.status(HttpStatus.OK.value());
+					}
+
+					// don't return any content and leave the status code 404 in other cases
+					return null;
+				});
 
 				service.after((request, response) -> {
 					cleanup();
@@ -324,6 +345,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request,
 			final Response response) throws Exception {
+
 		authenticationFilters.get(autenticationFilterType).handle(request, response);
 	}
 
@@ -377,6 +399,22 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
 			response.header("Content-Encoding", "gzip");
 		}
+	}
+
+	protected void setupCorsHeaders(Request request, Response response) {
+		// we mirror the desired results from the browser
+		final String accessControlRequestHeaders = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS);
+		if (accessControlRequestHeaders != null) {
+			response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, accessControlRequestHeaders);
+		}
+
+		final String accessControlRequestMethod = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD);
+		if (accessControlRequestMethod != null) {
+			response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, accessControlRequestMethod);
+		}
+
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 	}
 
 	/**
@@ -468,7 +506,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 * registerHandler.
 	 * </p>
 	 *
-	 * @param port a int.
+	 * @param port     a int.
 	 * @param endpoint a {@link java.lang.Object} object.
 	 */
 	public void registerHandler(final int port, final Object endpoint) {

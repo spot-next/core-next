@@ -22,6 +22,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemDeserializer;
 import io.spotnext.core.infrastructure.serialization.jackson.ItemSerializationMixIn;
@@ -126,11 +127,11 @@ public class DefaultJsonSerializationStrategy extends AbstractService implements
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
+	public <T> T deserialize(final String serializedObject, final Class<T> type) throws DeserializationException {
 		try {
 			return this.jacksonMapper.readValue(serializedObject, type);
 		} catch (final Exception e) {
-			throw new SerializationException("Cannot deserialize object: " + e.getMessage(), e);
+			throw new DeserializationException("Cannot deserialize object: " + e.getMessage(), e);
 		}
 	}
 
