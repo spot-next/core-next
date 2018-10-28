@@ -3,6 +3,7 @@
 ## **1.0.13-BETA** `2018-11-31`
 - Fix for Hibernate indexes
 - Documentation update
+- CORS support
 
 ## **1.0.12-BETA** `2018-10-23`
 - Fix for ´spot:transform-types` not working properly on windows
