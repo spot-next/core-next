@@ -195,6 +195,10 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			try {
 				service = Service.ignite();
 				service.staticFileLocation("/public");
+
+				// setup CORS for the static files to allow access from all origins
+				// the notFound router also contain CORS logic
+				service.staticFiles.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 				service.port(endpointEntry.getKey());
 
 				if (StringUtils.isNotBlank(keystoreFilePath) && StringUtils.isNotBlank(keystorePassword)) {
@@ -210,8 +214,6 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				throw new RemoteServiceInitException(
 						String.format("Could not start HTTP service on port %s", endpointEntry.getKey()), e);
 			}
-
-			setupCors(service);
 
 			for (final Object endpoint : endpointEntry.getValue()) {
 				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
@@ -306,18 +308,27 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					// session
 					setupSession(service, request, response);
 					setupLocale(request);
+					setupCorsHeaders(request, response);
 				});
 
-//					service.notFound((request, response) -> {
-//						Spark.halt(HttpStatus.NOT_FOUND.value());
-//						response.status();
-//						return null;
-//					});
+				// CORS is handled using a notFound router, as it doesn't seem to be possible to have a fallback "match-all" (/*) together with an more specific
+				// OPTIONS route. If we'd use service.options("/*") we would lose the possibility to create OPTIONS controllers at all!
+				service.notFound((request, response) -> {
+					// if the http method is OPTIONS and the CORS header is present, this is most likely a CORS request
+					if (org.eclipse.jetty.http.HttpMethod.OPTIONS.toString().matches(request.raw().getMethod())
+							&& request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS) != null) {
+
+						// so we set the status to OK, otherwise this would be 404 and the CORS request would fail
+						response.status(HttpStatus.OK.value());
+					}
+
+					// don't return any content and leave the status code 404 in other cases
+					return null;
+				});
 
 				service.after((request, response) -> {
 					cleanup();
 					setupEncoding(request, response);
-					setupCorsHeaders(response);
 				});
 
 				service.init();
@@ -334,6 +345,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	protected void authenticate(final Class<? extends Filter> autenticationFilterType, final Request request,
 			final Response response) throws Exception {
+
 		authenticationFilters.get(autenticationFilterType).handle(request, response);
 	}
 
@@ -389,34 +401,19 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		}
 	}
 
-	/**
-	 * Sets the CORS headers up and handles OPTIONS requests 
-	 * @param service the service to setup CORS for
-	 */
-	protected void setupCors(Service service) {
-		service.staticFiles.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+	protected void setupCorsHeaders(Request request, Response response) {
+		// we mirror the desired results from the browser
+		final String accessControlRequestHeaders = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS);
+		if (accessControlRequestHeaders != null) {
+			response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, accessControlRequestHeaders);
+		}
 
-		service.options("/*", (request, response) -> {
-			final String accessControlRequestHeaders = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS);
-			if (accessControlRequestHeaders != null) {
-				response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, accessControlRequestHeaders);
-			}
+		final String accessControlRequestMethod = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD);
+		if (accessControlRequestMethod != null) {
+			response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, accessControlRequestMethod);
+		}
 
-			final String accessControlRequestMethod = request.headers(HTTP_HEADER_ACCESS_CONTROL_REQUEST_METHOD);
-			if (accessControlRequestMethod != null) {
-				response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, accessControlRequestMethod);
-			}
-			
-			response.status(HttpStatus.OK.ordinal());
-
-			return "";
-		});
-	}
-
-	protected void setupCorsHeaders(Response response) {
 		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS, "*");
-		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_METHODS, "TRACE,CONNECT,OPTIONS,GET,PUT,POST,DELETE,HEAD,PATCH");
 		response.header(HTTP_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 	}
 
