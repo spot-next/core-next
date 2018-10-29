@@ -212,14 +212,150 @@ The `io.spotnext.core.persistence.query.Query` can be configured to influnce the
 
 > Iterating over all item properties (e.g. when serializing) will lead to the infamous **N+1 problem**, because by default all **relational propertie are lazy-loaded**! Therefore the relations will be loaded on access. This can cause a lot of database queries and drastically decrease performance. **To avoid this, use the eager-fetch settings**!
 
+### Serialization
+Often it is required to exchange data with external systems - mostly using JSON or XML. The `SerializationService` is a convenient way to convert to or from **any java object to one of these formats**.
 
+A new `User` item can be deserialized just with this one-liner:
+```java
+User user = serializationService.fromJson(jsonString);
+```
 
-##### Other operations
+Relations can be setup by just using a JSON object that contains both a `pk` and a `typeCode` property - **nothing else**:
+```json
+{
+	"id":"testerUser",
+	"groups": [
+		{
+			"typeCode": "usergroup",
+			"pk": 4513155367448757049
+		}	
+	]
+}
+```
 
+It's also possible to overwrite an object's properties with the data from a JSON string:
+```java
+User userToUpdate = ....;
+serializationService.fromJson(json, userToUpdate);
+```
+> Only the target object's properties, that are defined in the JSON, are overwritten!
 
-#### ImportService
-#### ConversionService
-#### LoggingService
+**Deserialized** `Item`s are automatically attached to the persistence context and can be used as if they were loaded using `ModelService` or `QueryService`.
+
+When **serializing** `Item`s, their sub-items (relation properties) are only partially serialized - only the `pk` and a `typeCode` JSON properties are included:
+
+```java
+{
+	"pk": 4003256542000269317,
+	
+	...
+
+	"shortName": {
+		"pk": 8617539322739705278,
+		"typeCode": "localizedstring"
+	},
+	"longName": {
+		"pk": 5123398329302468367,
+		"typeCode": "localizedstring"
+	},
+	"phoneCountryCode": "43",
+	"languages": []
+}
+```
+
+This mechanism averts problems when serializing cyclic dependencies. But it only applies for objects of type `Item`!
+
+> A similar API is available for XML
+
+### Data import
+The `SerializationService` is not the only way to import data into the system. The `ImportService` offers similar functionality, but it's focus is not on data transfer, but rather on local data that is being batch-imported, like during **system initialization**.
+
+In alot of situations data is provided by business people and is therefore only available in a tablular format (CSV, Excel etc). For table-based imports this might be a good choice, but for importing objects with relations, this can get cumbersome pretty fast.
+
+The **ImpEx** format solves this problem (although it has the same name, it is not 100% compatible to the implementation SAP Hybris Commerce Cloud offers).
+
+An simple ImpEx file is a CSV-like format that can be "annotated" with import instruction:
+```impex
+INSERT_UPDATE Media ; id[unique=true] ; catalogVersion(catalog(id),id)[unique=true] ;
+                    ; testMedia       ; Media:Staged                                ;
+```
+
+Every import block starts with a header line that specifies how the data should be imported.
+
+The supported command are:
+* `INSERT`: inserts new item, if it doesn't exist yet (based on the uniqueness criteria)
+* `INSERT_UPDATE`: inserts a new item, if it doesn't exist, or updates an existing one. The unique properties have to be specified with the column modifier `unique=true`
+* `UPDATE`: updates an existing item based on the specified unique columns, is ignored if there is not such item
+* `REMOVE`: removes an item based on the specified unique column
+
+> The commands are similar to the basic SQL commands
+
+Every column (except for the first, which is the command) can be configured with a **selector** (`(catalog(id),id)`) and some **modifiers** (`[unique=true]`). These settings are used by the `io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver`s to interpret the column value.
+
+The framework provides these resolvers out of the box:
+* `ReferenceValueResolver`: used for resolving relation items
+* `PrimitiveValueResolver`: converts the string column values to the target type
+* `FileValueResolver`: reads the file content of the file specified as the column value.
+
+> The column resolver can be configured using the modifier `[resolver=<bean name>]` (not necessary for the first two resolvers).
+
+The selector definition is only needed for relational data, like for the linked `CatalogVersion` object in the example above. The selector `(catalog(id),id)` defines how the column value (`Media:Staged`) should be interpreted:
+* "Media" is resolved using the nested selector `catalog(id)`, which in turn leads to a `Catalog` item with the `id` "Media".
+* "Staged" is a "primitive" value used for the `version` property of the aforementioned `CatalogVersion` item.
+
+> Although in this example the `CatalogVersion` items unique properties are the same as the ones used in the example, the selector can use other non-unique properties too. **Altough, if more than one item is found using this selector, an exception is thrown!**
+
+The supported modifiers are:
+* `unique=true`: used by the `ReferenceValueResolver`, to specifiy that this column value is used to defined the "uniqueness" of the item to import
+* `resolver=`: used to determine the responsible resolver
+* `default`: the default value used if there is no actualy value supplied. If the value is an empty string, it has to be surrounded with quotes
+* `lang=<iso code>`: the `Locale` used for localized properties
+
+> (Custom) resolvers have access to both the selector and the modifers!
+
+Here is a quick demonstration of references and default values:
+
+[users.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/initial/users.impex ':include')
+
+... and localized strings:
+
+[localized_strings.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/test/localized_string.impex ':include')
+
+More examples can be found [**here**](https://github.com/spot-next/spot-framework/tree/develop/spot-core/src/main/resources/data/test)
+
+The `ImpportService` API looks like:
+```java
+ImportConfiguration conf = new ImportConfiguration();
+conf.setIgnoreErrors(false);
+conf.setScriptIdentifier(path);
+
+InputStream stream = CoreInit.class.getResourceAsStream(conf.getScriptIdentifier());
+importService.importItems(ImportFormat.ImpEx, conf, stream);
+```
+
+The `ImportConfiguration` can be configured:
+* `ìgnoreErrors`: if true, errors (like unresolvable item references) are ignored (although logged) and as many as possible items are being imported. By default this is disabled though.
+* `scriptIdentifier`: is optional, but can be useful for debugging purposes (in the logs)
+
+> During **system initialization** bot the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
+
+```java
+@Override
+protected void importInitialData() throws ModuleInitializationException {
+	super.importInitialData();
+}
+
+@Override
+protected void importSampleData() throws ModuleInitializationException {
+	super.importSampleData();
+}
+```
+
+For conventience the `ModuleInit.importScript` method can be used:
+```java
+ModuleInit.importScript("/data/initial/countries.impex", "Importing countries");
+```
+
 #### I18nService
 #### L10nService
 #### SessionService
@@ -271,17 +407,6 @@ These defintions look like this:
 
 ## System setup
 ### (Initial) data import
-Every system needs configuration data. Also most of the time there is a need to import data in a generic way. One option is the REST interface. Though in alot of situations data is available in a tablular format (CSV, Excel etc). For table-based imports this might be a good choice, but for importing objects with relations? The **ImpEx** format solves this problem.
-
-Here is a quick demonstration:
-
-[users.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/initial/users.impex ':include')
-
-Every block that starts with a header line that specifies how the data should be imported. Each header starts with an command: `INSERT`, `INSERT_UPDATE`, `UPDATE` or `REMOVE`. Every following column is composed as follows: `propertyName(proepertyPath)[modifierKey=value,...]`.
-The `propertyName` denotes the target property of the `Item` to be imported. If the value is a complex object (aka another `Item`) a `propertyPath` has to specified in round brackets: `group(id)` means that the `UserGroup.groups` proprety will be filled with an object of type `PrincipalGroup` (as specified in the domain model) referenced by its `id` property.
-Furthermore it's possible to pass some modifiers to the `io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver`s responsible for resolving the string-based values.
-The supported modifiers are:
-* `default`: the default value used if there is no actualy value supplied. If the value is an empty string, it has to be surrounded with quotes
 
 Supported header
 
