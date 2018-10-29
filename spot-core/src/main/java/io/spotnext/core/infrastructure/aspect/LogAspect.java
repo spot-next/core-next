@@ -65,7 +65,7 @@ public class LogAspect extends AbstractBaseAspect {
 		}
 
 		final long startTime = System.currentTimeMillis();
-		boolean logTime = ann.measureExecutionTime();
+		boolean logTime = ann != null ? ann.measureExecutionTime() : false;
 
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
 
