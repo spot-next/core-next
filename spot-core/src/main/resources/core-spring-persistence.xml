@@ -22,11 +22,37 @@
 
 	<context:component-scan base-package="io.spotnext.core.persistence.hibernate.impl" />
 
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+	<bean id="dataSourceConfigProperties" class="java.util.Properties">
+		<constructor-arg>
+			<props>
+				<prop key="cachePrepStmts">true</prop>
+				<prop key="prepStmtCacheSize">250</prop>
+				<prop key="cacheprepStmtCacheSqlLimitPrepStmts">2048</prop>
+				<prop key="useServerPrepStmts">true</prop>
+				<prop key="useLocalSessionState">true</prop>
+				<prop key="rewriteBatchedStatements">true</prop>
+				<prop key="cacheResultSetMetadata">true</prop>
+				<prop key="cacheServerConfiguration">true</prop>
+				<prop key="elideSetAutoCommits">true</prop>
+				<prop key="maintainTimeStats">true</prop>
+				<prop key="minimumIdle">5</prop>
+				<prop key="maximumPoolSize">20</prop>
+				<prop key="idleTimeout">30000</prop>
+			</props>
+		</constructor-arg>
+	</bean>
+
+	<bean id="dataSourceConfig" class="com.zaxxer.hikari.HikariConfig">
+		<constructor-arg ref="dataSourceConfigProperties" />
+		
 		<property name="driverClassName" value="${database.jdbc.driverClassName}" />
 		<property name="jdbcUrl" value="${database.jdbc.url}" />
 		<property name="username" value="${database.jdbc.username}" />
 		<property name="password" value="${database.jdbc.password}" />
+	</bean>
+
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<constructor-arg ref="dataSourceConfig" />
 	</bean>
 
 	<bean id="jpaProperties" class="java.util.Properties">
@@ -40,6 +66,7 @@
 				<prop key="hibernate.order_updates">true</prop>
 				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
 
+				<prop key="hibernate.generate_statistics">${service.persistence.hibernate.generate_statistics}</prop>
 				<prop key="hibernate.dialect">${service.persistence.hibernate.dialect}</prop>
 				<prop key="hibernate.show_sql">${service.persistence.hibernate.show_sql}</prop>
 				<prop key="hibernate.format_sql">${service.persistence.hibernate.format_sql}</prop>

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -141,10 +142,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			event.getApplicationContext().getBeansOfType(AuthenticationFilter.class).forEach(
 					(beanName, bean) -> authenticationFilters.put((Class<AuthenticationFilter>) bean.getClass(), bean));
 
-			// wait for the all contexts to be started before starting the spark
-			// service
-			// it's not possible to add new routes to already started spark
-			// instances
+			// wait for the all contexts to be started before starting the spark service
+			// it's not possible to add new routes to already started spark instances
 			if (isBootComplete(event.getApplicationContext())) {
 				init();
 				isStarted = true;
@@ -166,10 +165,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			context.getBean(Registry.getMainClass());
 
 			// we don't care if the ModuleInit has finished initializing (like
-			// import sample
-			// data). But if this line is reached, the most inner child context
-			// containing
-			// the startup ModuleInit has been loaded. Therefore all beans have
+			// import sample data). But if this line is reached, the most inner child context
+			// containing the startup ModuleInit has been loaded. Therefore all beans have
 			// already been scanned for remote endpoints.
 			return true;
 		} catch (final BeansException e) {
@@ -301,6 +298,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				});
 
 				service.before((request, response) -> {
+					Logger.debug(() -> request.requestMethod() + " " + request.url() + " from " + request.ip() + ":"
+							+ request.headers().stream().collect(Collectors.toMap(h -> h, h -> request.headers(h))));
 					// store current request for the thread
 					HttpRequestHolder.setRequest(request);
 

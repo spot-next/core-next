@@ -54,8 +54,7 @@ public class LogAspect extends AbstractBaseAspect {
 	 */
 	@Around("logAnnotation()")
 	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {
-		final Log ann = getAnnotation(joinPoint,
-				Log.class);
+		final Log ann = getAnnotation(joinPoint, Log.class);
 
 		Class<?> targetClass = getRealClass(joinPoint.getTarget());
 
@@ -66,11 +65,11 @@ public class LogAspect extends AbstractBaseAspect {
 		}
 
 		final long startTime = System.currentTimeMillis();
+		boolean logTime = ann.measureExecutionTime();
 
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
 
-		if (ann != null && ann.after()) {
-			boolean logTime = ann.measureExecutionTime();
+		if (ann != null && (ann.after() || logTime)) {
 			final Long executionTime = logTime ? (System.currentTimeMillis() - startTime) : null;
 
 			if (ann.executionTimeThreshold() == -1 || (ann.executionTimeThreshold() > -1 && executionTime >= ann.executionTimeThreshold())) {

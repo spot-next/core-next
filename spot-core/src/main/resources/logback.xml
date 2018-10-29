@@ -31,7 +31,9 @@
 	<logger name="org.hibernate.SQL" level="INFO" />
 	<logger name="org.hibernate.cache" level="INFO" />
 	<logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="ERROR" />
-	
+	<logger name="org.hibernate.stat" level="DEBUG" />
+	<logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" />
+
 	<logger name="org.ehcache" level="INFO" />
 
 	<logger name="org.springframework" level="WARN" />
@@ -41,14 +43,16 @@
 	<logger name="org.reflections.Reflections" level="WARN" />
 	<logger name="org.apache.catalina.core" level="WARN" />
 	<logger name="com.zaxxer.hikari" level="WARN" />
-	<logger name="org.eclipse.jetty" level="INFO" />
+	<logger name="org.eclipse.jetty" level="WARN" />
 
 	<logger name="io.spotnext.core.persistence" level="INFO" />
-	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="DEBUG" />
+	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="INFO" />
 	<logger name="io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy" level="INFO" />
-	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="DEBUG" />
+	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="INFO" />
 	<logger name="io.spotnext.core.infrastructure.service.impl.AbstractModelService" level="INFO" />
 	<logger name="io.spotnext.core.infrastructure.service.impl.DefaultModelService" level="INFO" />
+
+	<logger name="io.spotnext.core.infrastructure.service.impl.RemoteHttpEndpointHandlerService" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

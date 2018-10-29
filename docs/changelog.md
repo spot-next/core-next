@@ -1,5 +1,8 @@
 # Change Log
 
+## **1.0.x-RELEASE** `~2019-01-XX`
+- Final release
+
 ## **1.0.13-BETA** `2018-11-31`
 - Fix for Hibernate indexes
 - Documentation update
