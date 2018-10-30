@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * <p>Abstract ItemSerializationMixIn class.</p>
+ * <p>
+ * Abstract ItemSerializationMixIn class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -13,7 +15,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" ,"uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
 public abstract class ItemSerializationMixIn {
-	
+
+//	@JacksonXmlProperty(isAttribute = true)
+//	public abstract String getTypeCode();
 }

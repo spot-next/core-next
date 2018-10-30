@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
@@ -34,8 +35,20 @@ public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Ite
 		for (final Item item : source) {
 			if (item != null) {
 				gen.writeStartObject();
+				
+				String typeCode = getTypeService().getTypeCodeForClass(item.getClass());
+				
+				if (gen instanceof ToXmlGenerator) {
+					((ToXmlGenerator) gen).setNextIsAttribute(true);
+					gen.writeFieldName("typeCode");
+					gen.writeString(typeCode);
+					((ToXmlGenerator) gen).setNextIsAttribute(false);
+				} else {
+					gen.writeObjectField("typeCode", typeCode);
+				}
+				
 				gen.writeObjectField("pk", item.getPk());
-				gen.writeObjectField("typeCode", getTypeService().getTypeCodeForClass(item.getClass()));
+				
 				gen.writeEndObject();
 			}
 		}

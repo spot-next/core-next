@@ -1,14 +1,15 @@
 INSERT UserGroup ; id[unique=true]   ;
                  ; employee-group    ;
                  ; customer-group    ;
+                 ; guest-group       ;
 
 # password = test1234
 INSERT User ; id[unique=true] ; password                             ; groups(id)     
             ; anonymous       ;                                      ; customer-group
             
-            ;tester1          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group
-            ;tester2          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group
-            ;tester3          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group
+            ;tester1          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group,guest-group
+            ;tester2          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group,employee-group
+            ;tester3          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; 
             ;tester4          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group
             ;tester5          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group
             ;tester6          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group

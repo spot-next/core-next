@@ -381,7 +381,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToMany.class, null));
 
 				// necessary for serialization
-				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field,
 						"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 
 				// necessary for FETCH JOINS
@@ -397,10 +397,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.addAll(o2mAnn);
 
 				// necessary for serialization
-				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field,
 						"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
-				// jpaAnnotations.add(createCollectionTypeAnnotation(entityClass,
-				// field));
+				// jpaAnnotations.add(createCollectionTypeAnnotation(entityClass, field));
 
 				// necessary for FETCH JOINS
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
@@ -410,7 +409,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 				// necessary for serialization
-				jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field,
 						"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 			} else {
 				// one to one in case the field type is a subtype of Item
@@ -423,13 +422,13 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 			// necessary for serialization
-			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+			jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field,
 					"io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer"));
 		} else if (hasInterface(field.getType(), Collection.class) || hasInterface(field.getType(), Map.class)) {
 			jpaAnnotations.addAll(createElementCollectionAnnotation(entityClass, field));
 
 			// necessary for serialization
-			jpaAnnotations.add(createSerializationAnnotation(entityClass, field,
+			jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field,
 					"io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"));
 		}
 
@@ -492,11 +491,11 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * 
 	 * @param entityClass         the class of the field
 	 * @param field               the field which will be annotated with a JsonSerialize annotation.
-	 * @param serializerClassName the name of the serialzed
+	 * @param serializerClassName the name of the serialized
 	 * @return the created annotation, never null
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
-	protected Annotation createSerializationAnnotation(final CtClass entityClass, final CtField field,
+	protected List<Annotation> createSerializationAnnotation(final CtClass entityClass, final CtField field,
 			final String serializerClassName) throws IllegalClassTransformationException {
 
 		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
@@ -505,7 +504,39 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		val.setValue(serializerClassName);
 		jsonSerializeAnn.addMemberValue("using", val);
 
-		return jsonSerializeAnn;
+//		// configure the Jackson XML collection name
+//		final Annotation xmlCollectionAnn = createAnnotation(getConstPool(entityClass),
+//				"com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper");
+//
+//		final StringMemberValue collectionName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+//		collectionName.setValue(field.getName());
+//		xmlCollectionAnn.addMemberValue("localName", collectionName);
+//
+//		// configure the Jackson XML collection element name
+//		final Annotation xmlCollectionElementAnn = createAnnotation(getConstPool(entityClass),
+//				"com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty");
+//
+//		final StringMemberValue elementName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+//		elementName.setValue(field.getName() + "Entry");
+//		xmlCollectionElementAnn.addMemberValue("localName", elementName);
+		
+		// configure the Jackson XML collection name
+		final Annotation xmlCollectionAnn = createAnnotation(getConstPool(entityClass),
+				"javax.xml.bind.annotation.XmlElementWrapper");
+
+		final StringMemberValue collectionName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		collectionName.setValue(field.getName());
+		xmlCollectionAnn.addMemberValue("name", collectionName);
+
+		// configure the Jackson XML collection element name
+		final Annotation xmlCollectionElementAnn = createAnnotation(getConstPool(entityClass),
+				"javax.xml.bind.annotation.XmlElement");
+
+		final StringMemberValue elementName = new StringMemberValue(field.getFieldInfo2().getConstPool());
+		elementName.setValue(field.getName() + "Entry");
+		xmlCollectionElementAnn.addMemberValue("name", elementName);
+
+		return Arrays.asList(jsonSerializeAnn, xmlCollectionAnn, xmlCollectionElementAnn);
 	}
 
 	protected void addMappedByAnnotationValue(final CtField field, final Annotation annotation,
@@ -573,7 +604,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	/**
 	 * @param clazz the class of the given field
 	 * @param field the field for which the annotation is created
-	 * @return the creataed collection type annotation
+	 * @return the created collection type annotation
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
 	@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
