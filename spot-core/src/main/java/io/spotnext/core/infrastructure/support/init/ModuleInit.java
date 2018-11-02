@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 
+import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,7 +31,7 @@ import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
-import io.spotnext.itemtype.core.enumeration.ImportFormat;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 
 /**
  * <p>
@@ -153,9 +154,10 @@ public abstract class ModuleInit implements ApplicationContextAware {
 			final ImportConfiguration conf = new ImportConfiguration();
 			conf.setIgnoreErrors(false);
 			conf.setScriptIdentifier(path);
+			conf.setFormat(DataFormat.ImpEx);
 
 			stream = CoreInit.class.getResourceAsStream(conf.getScriptIdentifier());
-			importService.importItems(ImportFormat.ImpEx, conf, stream);
+			importService.importItems(conf, stream);
 		} finally {
 			CloseUtil.closeQuietly(stream);
 		}

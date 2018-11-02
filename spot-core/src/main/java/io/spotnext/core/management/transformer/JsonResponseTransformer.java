@@ -7,6 +7,8 @@ import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
+import io.spotnext.itemtype.core.beans.SerializationConfiguration;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 
 /**
  * Converts the given object to JSON.
@@ -21,10 +23,15 @@ public class JsonResponseTransformer implements ResponseTransformer {
 	@Autowired
 	protected SerializationService serializationService;
 
+	private static final SerializationConfiguration CONFIG = new SerializationConfiguration();
+	static {
+		CONFIG.setFormat(DataFormat.JSON);
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public String handleResponse(final Object object) throws Exception {
-		return getSeriaizationService().toJson(object);
+		return getSeriaizationService().serialize(CONFIG, object);
 	}
 
 	protected SerializationService getSeriaizationService() {

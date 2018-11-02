@@ -50,7 +50,7 @@
 		<value code="UNAPPROVED" />
 	</enum>
 
-	<enum name="ImportFormat" package="io.spotnext.itemtype.core.enumeration">
+	<enum name="DataFormat" package="io.spotnext.itemtype.core.enumeration">
 		<description>Formats that are supported for import of data.</description>
 		<value code="ImpEx" />
 		<value code="JSON" />
@@ -60,6 +60,12 @@
 	<bean name="ImportConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
 		<properties>
+			<property name="format" type="DataFormat">
+				<description>Specifies the import format.</description>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
+			</property>
 			<property name="scriptIdentifier" type="String">
 				<description>Holds the filename or abstract identifier of the import data</description>
 				<annotations>
@@ -69,6 +75,19 @@
 			<property name="ignoreErrors" type="Boolean">
 				<description>If true import errors are ignored are ignored and processing is continued</description>
 				<defaultValue>false</defaultValue>
+			</property>
+		</properties>
+	</bean>
+	
+	<bean name="SerializationConfiguration" package="io.spotnext.itemtype.core.beans">
+		<description>Holds serialization configuration and parameters.</description>
+		<properties>
+			<property name="format" type="DataFormat">
+				<description>Specifies the serialization format.</description>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>
+				<annotations>
+					<annotation javaClass="javax.validation.constraints.NotNull" />
+				</annotations>
 			</property>
 		</properties>
 	</bean>

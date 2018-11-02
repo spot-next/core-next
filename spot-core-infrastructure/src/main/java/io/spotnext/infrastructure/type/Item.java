@@ -229,6 +229,15 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 		return props;
 	}
+	
+	/**
+	 * Returns all fields annotated with the {@link Property} annotation.
+	 * 
+	 * @return all item properties
+	 */
+	public Map<String, Object> getProperties() {
+		return getProperties(null);
+	}
 
 	/**
 	 * Gets the property value for the given property name.

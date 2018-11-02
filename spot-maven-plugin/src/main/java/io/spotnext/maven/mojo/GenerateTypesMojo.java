@@ -324,14 +324,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 					field.setName(prop.getName());
 
 					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
-						try {
-							field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
-						} catch (final ClassNotFoundException e) {
-							throw new MojoExecutionException(String
-									.format(String.format("Could not set default value for property %s of bean type %s",
-											field.getName(), bean.getFullyQualifiedName())),
-									e);
-						}
+						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), JavaValueType.LITERAL));
 					}
 
 					field.setType(propType);

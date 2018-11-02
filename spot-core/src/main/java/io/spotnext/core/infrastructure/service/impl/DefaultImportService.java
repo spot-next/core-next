@@ -6,13 +6,13 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.util.CloseUtil;
 import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
-import io.spotnext.itemtype.core.enumeration.ImportFormat;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 import io.spotnext.support.util.ValidationUtil;
-import ch.qos.logback.core.util.CloseUtil;
 
 /**
  * <p>DefaultImportService class.</p>
@@ -29,16 +29,16 @@ public class DefaultImportService implements ImportService {
 
 	/** {@inheritDoc} */
 	@Override
-	public void importItems(ImportFormat format, ImportConfiguration config, InputStream inputStream)
+	public void importItems(ImportConfiguration config, InputStream inputStream)
 			throws ImportException {
 
 		ValidationUtil.validateNotNull("Input stream must not be null", inputStream);
 
 		try {
-			if (ImportFormat.ImpEx.equals(format)) {
+			if (DataFormat.ImpEx.equals(config.getFormat())) {
 				impexImportStrategy.importImpex(config, inputStream);
 			} else {
-				throw new ImportException(String.format("Format %s is currently not implemented", format));
+				throw new ImportException(String.format("Format %s is currently not implemented", config.getFormat()));
 			}
 		} finally {
 			CloseUtil.closeQuietly(inputStream);

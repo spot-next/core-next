@@ -7,7 +7,7 @@ package io.spotnext.core.infrastructure.exception;
  * @version 1.0
  * @since 1.0
  */
-public class DeserializationException extends Exception {
+public class DeserializationException extends SerializationException {
 	private static final long serialVersionUID = 1L;
 
 	/**

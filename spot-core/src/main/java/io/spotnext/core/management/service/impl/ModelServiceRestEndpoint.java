@@ -41,6 +41,8 @@ import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.infrastructure.type.Item;
+import io.spotnext.itemtype.core.beans.SerializationConfiguration;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 import io.spotnext.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
@@ -66,6 +68,11 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 	@Autowired
 	protected QueryService queryService;
+
+	private static final SerializationConfiguration SERIALIZATION_CONFIG = new SerializationConfiguration();
+	static {
+		SERIALIZATION_CONFIG.setFormat(DataFormat.JSON);
+	}
 
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
@@ -463,9 +470,9 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		final T item;
 
 		if (objectToUpdate != null) {
-			item = serializationService.fromJson(request.body(), objectToUpdate);
+			item = serializationService.deserialize(SERIALIZATION_CONFIG, request.body(), objectToUpdate);
 		} else {
-			item = serializationService.fromJson(request.body(), type);
+			item = serializationService.deserialize(SERIALIZATION_CONFIG, request.body(), type);
 		}
 
 		if (item == null) {
@@ -479,7 +486,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			throws UnknownTypeException, DeserializationException {
 		final String content = request.body();
 
-		return serializationService.fromJson(content, JsonNode.class);
+		return serializationService.deserialize(SERIALIZATION_CONFIG, content, JsonNode.class);
 	}
 
 	private void setCachingHeaderFields(int version, Date lastModifiedDate, Response response) {
