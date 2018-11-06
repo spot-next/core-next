@@ -120,27 +120,27 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		User tester1 = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
 
 		JSONArray groups = new JSONArray();
-		
+
 		for (PrincipalGroup g : tester1.getGroups()) {
-			JSONObject  gr= new JSONObject();
+			JSONObject gr = new JSONObject();
 			gr.put("pk", g.getPk());
 			gr.put("typeCode", g.getTypeCode());
 			groups.put(gr);
 		}
-		
+
 		final JSONObject newUser = new JSONObject() //
 				.put("id", "user@integrationtest") //
 				.put("groups", groups);
 
-		final Long pk = given().body(newUser.toString())
+		final Long pk = Long.valueOf(given().body(newUser.toString())
 				.post("/user").then() //
 				.statusCode(HttpStatus.CREATED.value()) //
-				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk");
+				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk"));
 
 		assertNotNull(pk);
 
 		final User user = modelService.get(User.class, pk);
-		
+
 		assertEquals(tester1.getGroups().size(), user.getGroups().size());
 		assertEquals(tester1.getGroups().iterator().next().getId(), user.getGroups().iterator().next().getId());
 
@@ -154,7 +154,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		final UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_ID, "employee-group"));
 
 		final JSONObject group = new JSONObject();
-		group.put("pk", usergroup.getPk());
+		group.put("pk", usergroup.getPk() + "");
 		group.put("typeCode", usergroup.getTypeCode());
 
 		final JSONArray groups = new JSONArray();
@@ -162,7 +162,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		final JSONObject shortNameUpdate = new JSONObject() //
 				.put("shortName", "integrationtester")//
-				.put("pk", user.getPk())
+				.put("pk", user.getPk() + "")
 				.put("groups", groups);
 
 		given().body(shortNameUpdate.toString())
@@ -180,10 +180,10 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	public void createOrUpdateModel_WithoutPK() throws JSONException {
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
 
-		final Long pk = given().body(shortNameUpdate.toString())
+		final Long pk = Long.valueOf(given().body(shortNameUpdate.toString())
 				.put("/user").then() //
 				.statusCode(HttpStatus.CREATED.value())
-				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk");
+				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk"));
 
 		final User user = modelService.get(User.class, pk);
 

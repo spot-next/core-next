@@ -40,7 +40,7 @@ public class ItemProxySerializer extends JsonSerializer<Item> {
 			throws IOException {
 
 		// see ItemSerializationMixIn
-		gen.writeObjectField("pk", "a");
+		gen.writeObjectField("pk", source.getPk());
 		gen.writeObjectField("typeCode", getTypeService().getTypeCodeForClass(source.getClass()));
 	}
 

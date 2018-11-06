@@ -25,6 +25,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.ConstraintViolationException;
@@ -68,6 +69,8 @@ import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.SortOrder;
+import io.spotnext.core.persistence.query.SortOrder.OrderDirection;
 import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.core.persistence.service.impl.AbstractPersistenceService;
 import io.spotnext.infrastructure.annotation.Property;
@@ -383,7 +386,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						i++;
 					}
 
-					// this is needed, otherwise saved entities are not 
+					// this is needed, otherwise saved entities are not
 					session.flush();
 					items.stream().forEach(o -> session.evict(o));
 				} catch (final ValidationException e) {
@@ -540,15 +543,30 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					pkCriteriaQuery = pkCriteriaQuery.where(whereClause);
 				}
 
+				List<Order> orderBys = new ArrayList<>();
+				
 				// always apply the same order for all queries
-				pkCriteriaQuery = pkCriteriaQuery.orderBy(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)), builder.asc(pkRoot.get(Item.PROPERTY_PK)));
-
-				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery);
+				if (sourceQuery.getOrderBy().size() > 0) {
+					for (SortOrder order : sourceQuery.getOrderBy()) {
+						if (OrderDirection.ASC.equals(order.getDirection())) {
+							orderBys.add(builder.asc(pkRoot.get(order.getColumnName())));
+						} else {
+							orderBys.add(builder.desc(pkRoot.get(order.getColumnName())));
+						}
+					}
+				} else {
+					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)));
+					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_PK)));
+				}
+				
+				final Order[] orderBysArray = orderBys.toArray(new Order[orderBys.size()]);
+				
+				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery.orderBy(orderBysArray));
 				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
 
 				final List<Long> pksToSelect = pkQuery.getResultList();
 
-				itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
+				itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect)).orderBy(orderBysArray);
 			} else {
 				if (whereClause != null) {
 					itemSelect = itemSelect.where(whereClause);

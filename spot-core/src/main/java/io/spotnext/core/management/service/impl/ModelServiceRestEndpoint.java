@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -23,6 +26,7 @@ import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.http.DataResponse;
+import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.ModelService;
@@ -39,6 +43,7 @@ import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.query.QueryResult;
+import io.spotnext.core.persistence.query.SortOrder;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.itemtype.core.beans.SerializationConfiguration;
@@ -98,6 +103,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.ok();
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -135,6 +142,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			}
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -158,6 +167,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final ModelQuery<T> query = new ModelQuery<>(type, null);
 			query.setPage(page);
 			query.setPageSize(pageSize);
+			setOrderBy(request, query);
 
 			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);
@@ -168,6 +178,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -181,7 +193,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse getModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse getModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
@@ -209,6 +221,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Item not found.");
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -223,7 +237,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse queryModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse queryModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
 		final Class<T> type;
@@ -238,8 +252,11 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
+			String orderByClause = getOrderByClause(request);
+			orderByClause = StringUtils.isNotBlank(orderByClause) ? "ORDER BY " + orderByClause : "";
+
 			final JpqlQuery<T> query = new JpqlQuery<>(
-					String.format("SELECT x FROM %s x WHERE %s", type.getSimpleName(), queryParamValues[0]), type);
+					String.format("SELECT x FROM %s x WHERE %s %s", type.getSimpleName(), queryParamValues[0], orderByClause), type);
 			query.setEagerFetchRelations(true);
 			query.setPage(page);
 			query.setPageSize(pageSize);
@@ -255,6 +272,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			} catch (final QueryException e) {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
 						"Cannot execute given query: " + e.getMessage());
+			} catch (Exception e) {
+				return handleGenericException(e);
 			}
 		} else {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("query.error",
@@ -276,7 +295,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse queryModelByExample(final Request request, final Response response) {
+	public <T extends Item> HttpResponse queryModelByExample(final Request request, final Response response) {
 
 		try {
 			final T example = deserializeToItem(request);
@@ -292,6 +311,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("query.unknowntype",
 					"Could not deserialize request body into valid example item.");
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -306,13 +327,14 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse createModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse createModel(final Request request, final Response response) {
 
 		try {
 			final T item = deserializeToItem(request);
 			modelService.save(item);
 
-			return DataResponse.created().withPayload(Collections.singletonMap("pk", item.getPk()));
+			// convert to string! see ItemSerializationMixIn
+			return DataResponse.created().withPayload(Collections.singletonMap("pk", item.getPk() + ""));
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
@@ -331,6 +353,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.validation",
 					String.join("\n", messages));
+		} catch (Exception e) {
+			return handleGenericException(e);
 		}
 	}
 
@@ -344,7 +368,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse deleteModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse deleteModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
@@ -362,6 +386,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return DataResponse.withStatus(HttpStatus.ACCEPTED);
 			} catch (final ModelNotFoundException e) {
 				return DataResponse.notFound().withError("error.ondelete", "Item with given PK not found.");
+			} catch (Exception e) {
+				return handleGenericException(e);
 			}
 		} else {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.ondelete",
@@ -380,12 +406,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.put, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse createOrUpdateModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse createOrUpdateModel(final Request request, final Response response) {
 		try {
 			final JSONObject jsonBody = new JSONObject(request.body());
 
 			if (jsonBody.has("pk")) {
-				return partiallyUpdateModel(request, jsonBody.getLong("pk"));
+				// jsonBody.getLong doesn't work correctly, because the java long is bigger than the javascript number type
+				return partiallyUpdateModel(request, NumberUtils.toLong(jsonBody.getString("pk")));
 			} else {
 				return createModel(request, response);
 			}
@@ -406,7 +433,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> DataResponse partiallyUpdateModel(final Request request, final Response response) {
+	public <T extends Item> HttpResponse partiallyUpdateModel(final Request request, final Response response) {
 
 		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
 
@@ -417,7 +444,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		}
 	}
 
-	protected <T extends Item> DataResponse partiallyUpdateModel(final Request request, final long pk) {
+	protected <T extends Item> HttpResponse partiallyUpdateModel(final Request request, final long pk) {
 		// get type
 		final String typeCode = request.params(":typecode");
 		final Class<T> type;
@@ -453,6 +480,32 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
 					"Could not deserialize body json content.");
+		} catch (Exception e) {
+			return handleGenericException(e);
+		}
+	}
+
+	private HttpResponse handleGenericException(Exception e) {
+		final Throwable cause = (e instanceof TransactionException && e.getCause() != null) ? e.getCause() : e;
+
+		return ExceptionResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.general", cause.getMessage());
+	}
+
+	private String getOrderByClause(Request request) {
+		return request.queryParams("sort");
+	}
+
+	private void setOrderBy(Request request, ModelQuery<?> query) {
+		String orderBy = getOrderByClause(request);
+
+		if (StringUtils.isNotBlank(orderBy)) {
+			String[] parts = StringUtils.split(orderBy, ",");
+
+			if (parts.length > 0) {
+				for (String part : parts) {
+					query.addOrderBy(SortOrder.of(part));
+				}
+			}
 		}
 	}
 
