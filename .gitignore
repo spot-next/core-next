@@ -38,3 +38,7 @@ data
 .idea/libraries
 *.asc
 ajcore.*.txt
+
+*.iml
+*.eml
+.idea
