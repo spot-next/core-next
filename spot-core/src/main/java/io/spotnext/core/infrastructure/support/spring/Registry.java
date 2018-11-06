@@ -30,7 +30,8 @@ import io.spotnext.core.persistence.service.PersistenceService;
 @SuppressFBWarnings({ "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE", "LI_LAZY_INIT_STATIC",
 		"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" })
 public class Registry implements ApplicationContextAware {
-
+	private static Registry INSTANCE = new Registry();
+	
 	private static ApplicationContext context;
 	private static Thread mainThread;
 	private static Class<? extends ModuleInit> mainClass = CoreInit.class;
@@ -40,6 +41,14 @@ public class Registry implements ApplicationContextAware {
 	private static LoggingService loggingService;
 	private static PersistenceService persistenceService;
 
+	private Registry() {
+		INSTANCE = this;
+	}
+	
+	public static Registry instance() {
+		return INSTANCE;
+	}
+	
 	/**
 	 * <p>Getter for the field <code>mainClass</code>.</p>
 	 *
@@ -63,7 +72,7 @@ public class Registry implements ApplicationContextAware {
 	public void setApplicationContext(final ApplicationContext ctx) throws BeansException {
 		context = ctx;
 	}
-
+	
 	/**
 	 * <p>getApplicationContext.</p>
 	 *

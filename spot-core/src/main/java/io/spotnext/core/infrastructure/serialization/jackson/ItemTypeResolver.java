@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.ClassNameIdResolver;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.type.Item;
@@ -24,7 +23,6 @@ import io.spotnext.infrastructure.type.Item;
 public class ItemTypeResolver extends ClassNameIdResolver {
 
 	private TypeService typeService;
-	private ModelService modelService;
 
 	/**
 	 * <p>Constructor for ItemTypeResolver.</p>
@@ -107,17 +105,8 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 		return typeService;
 	}
 
-	/**
-	 * <p>Getter for the field <code>modelService</code>.</p>
-	 *
-	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
-	 */
-	public ModelService getModelService() {
-		if (modelService == null) {
-			modelService = Registry.getApplicationContext().getBean(ModelService.class);
-		}
-
-		return modelService;
+	public void setTypeService(TypeService typeService) {
+		this.typeService = typeService;
 	}
-
+	
 }

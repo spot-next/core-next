@@ -19,6 +19,7 @@ import io.restassured.RestAssured;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.Transactionless;
+import io.spotnext.itemtype.core.user.PrincipalGroup;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
@@ -87,7 +88,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		get("/user/" + user.getPk()).then()//
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload.pk", Matchers.equalTo(user.getPk()));
+				.body("payload.pk", Matchers.equalTo(user.getPk() + ""));
 	}
 
 	@Test
@@ -116,7 +117,20 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Test
 	public void createModel() throws JSONException {
-		final JSONObject newUser = new JSONObject().put("id", "user@integrationtest");
+		User tester1 = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+
+		JSONArray groups = new JSONArray();
+		
+		for (PrincipalGroup g : tester1.getGroups()) {
+			JSONObject  gr= new JSONObject();
+			gr.put("pk", g.getPk());
+			gr.put("typeCode", g.getTypeCode());
+			groups.put(gr);
+		}
+		
+		final JSONObject newUser = new JSONObject() //
+				.put("id", "user@integrationtest") //
+				.put("groups", groups);
 
 		final Long pk = given().body(newUser.toString())
 				.post("/user").then() //
@@ -126,6 +140,9 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		assertNotNull(pk);
 
 		final User user = modelService.get(User.class, pk);
+		
+		assertEquals(tester1.getGroups().size(), user.getGroups().size());
+		assertEquals(tester1.getGroups().iterator().next().getId(), user.getGroups().iterator().next().getId());
 
 		assertNotNull(user);
 	}

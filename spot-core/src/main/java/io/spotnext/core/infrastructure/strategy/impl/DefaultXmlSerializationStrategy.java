@@ -3,6 +3,7 @@ package io.spotnext.core.infrastructure.strategy.impl;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -22,9 +23,10 @@ public class DefaultXmlSerializationStrategy extends AbstractJacksonSerializatio
 	protected ObjectMapper createMapper() {
 		// enables serialization to XML
 		final JacksonXmlModule xmlModule = new JacksonXmlModule();
-//		xmlModule.setDefaultUseWrapper(false);
+		xmlModule.setDefaultUseWrapper(true);
 		
 		final ObjectMapper objectMapper = new XmlMapper(xmlModule);
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		
 //		objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
 //		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);

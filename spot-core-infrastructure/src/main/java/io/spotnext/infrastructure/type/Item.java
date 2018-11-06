@@ -172,11 +172,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	public LocalDateTime getLastModifiedAt() {
-		return LocalDateTime.ofInstant(lastModifiedAt.toInstant(), ZoneId.systemDefault());
+		return lastModifiedAt != null ? LocalDateTime.ofInstant(lastModifiedAt.toInstant(), ZoneId.systemDefault()) : null;
 	}
 
 	public LocalDateTime getCreatedAt() {
-		return LocalDateTime.ofInstant(createdAt.toInstant(), ZoneId.systemDefault());
+		return createdAt != null ? LocalDateTime.ofInstant(createdAt.toInstant(), ZoneId.systemDefault()) : null;
 	}
 
 	/**

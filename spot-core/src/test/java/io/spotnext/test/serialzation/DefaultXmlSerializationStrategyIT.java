@@ -5,7 +5,6 @@ import java.util.Collections;
 import javax.annotation.Resource;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import io.spotnext.core.infrastructure.exception.DeserializationException;
@@ -28,7 +27,6 @@ public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 		//
 	}
 
-	@Ignore
 	@Test
 	public void test_itemWithRelations() throws DeserializationException {
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
