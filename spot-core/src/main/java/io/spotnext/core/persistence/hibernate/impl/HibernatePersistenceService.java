@@ -544,7 +544,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				}
 
 				List<Order> orderBys = new ArrayList<>();
-				
+
 				// always apply the same order for all queries
 				if (sourceQuery.getOrderBy().size() > 0) {
 					for (SortOrder order : sourceQuery.getOrderBy()) {
@@ -558,15 +558,20 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)));
 					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_PK)));
 				}
-				
+
 				final Order[] orderBysArray = orderBys.toArray(new Order[orderBys.size()]);
-				
+
 				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery.orderBy(orderBysArray));
 				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
 
 				final List<Long> pksToSelect = pkQuery.getResultList();
 
-				itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect)).orderBy(orderBysArray);
+				// only add where clause when there are actual PKs to select
+				if (pksToSelect.size() > 0) {
+					itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
+				}
+				
+				itemSelect = itemSelect.orderBy(orderBysArray);
 			} else {
 				if (whereClause != null) {
 					itemSelect = itemSelect.where(whereClause);
