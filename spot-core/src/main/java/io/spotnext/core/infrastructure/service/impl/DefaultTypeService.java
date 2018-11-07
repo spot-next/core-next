@@ -147,8 +147,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	/*
-	 * *************************************************************************
-	 * ITEM TYPE DEFINITIONS
+	 * ************************************************************************* ITEM TYPE DEFINITIONS
 	 * *************************************************************************
 	 */
 

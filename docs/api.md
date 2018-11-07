@@ -173,6 +173,8 @@ Map<String, Object> example = Collections.singletonMap(LocalizationValue.PROPERT
 final LocalizationValue result = modelService.get(LocalizationValue.class, example);
 ```
 
+> When `ModelQuery`s are configured to use pagination (`ModelQuery.pageSize > 0`), the query results will be ordered by `createdAt` and `pk` (both ascending) when there is not custom ordering specified using `Query.addOrderBy(SortOrder)`. This is necessary to ensure consistent ordering.
+
 Another possible way of making type-safe queries is using so called `LambdaQuery`s:
 ```java
 final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testUser"));

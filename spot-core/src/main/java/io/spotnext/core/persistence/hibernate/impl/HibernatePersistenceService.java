@@ -532,36 +532,24 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 			// always order by last created date and THEN PK, so we have a consistent ordering, even if new items are created
 			// PKs are random, so they don't increment!
+			boolean orderByNeeded = false;
 
 			// make additional query to fetch the pks, applied the "maxResults" correctly
 			if (isPkQueryForPaginationNeeded) {
+				// we always have to order in case of a PK subquery for both queries!
+				orderByNeeded = true;
+
 				CriteriaQuery<Long> pkCriteriaQuery = builder.createQuery(Long.class);
 				final Root<T> pkRoot = pkCriteriaQuery.from(sourceQuery.getResultClass());
 				pkCriteriaQuery = pkCriteriaQuery.select(pkRoot.get(Item.PROPERTY_PK));
 
+				// apply original where clause here, it will be indirectly applied to the original query using the fetched PKs
 				if (whereClause != null) {
 					pkCriteriaQuery = pkCriteriaQuery.where(whereClause);
 				}
 
-				List<Order> orderBys = new ArrayList<>();
-
 				// always apply the same order for all queries
-				if (sourceQuery.getOrderBy().size() > 0) {
-					for (SortOrder order : sourceQuery.getOrderBy()) {
-						if (OrderDirection.ASC.equals(order.getDirection())) {
-							orderBys.add(builder.asc(pkRoot.get(order.getColumnName())));
-						} else {
-							orderBys.add(builder.desc(pkRoot.get(order.getColumnName())));
-						}
-					}
-				} else {
-					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_CREATED_AT)));
-					orderBys.add(builder.asc(pkRoot.get(Item.PROPERTY_PK)));
-				}
-
-				final Order[] orderBysArray = orderBys.toArray(new Order[orderBys.size()]);
-
-				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery.orderBy(orderBysArray));
+				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery.orderBy(applyOrderBy(sourceQuery, builder, pkRoot)));
 				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
 
 				final List<Long> pksToSelect = pkQuery.getResultList();
@@ -570,16 +558,21 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				if (pksToSelect.size() > 0) {
 					itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
 				}
-				
-				itemSelect = itemSelect.orderBy(orderBysArray);
 			} else {
 				if (whereClause != null) {
 					itemSelect = itemSelect.where(whereClause);
 				}
+
+				// if we have a single query, we only need to order if pagination is used
+				if (sourceQuery.getOrderBy().size() > 0) {
+					orderByNeeded = true;
+				}
 			}
 
-			// always apply the same order for all queries
-//			itemSelect = itemSelect.orderBy(builder.asc(queryResultType.get(Item.PROPERTY_CREATED_AT)), builder.asc(queryResultType.get(Item.PROPERTY_PK)));
+			if (orderByNeeded) {
+				// always apply the order here again, even if using pk sub-query!
+				itemSelect = itemSelect.orderBy(applyOrderBy(sourceQuery, builder, queryResultType));
+			}
 
 			final TypedQuery<T> query = session.createQuery(itemSelect);
 
@@ -596,6 +589,34 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 			return results;
 		});
+	}
+
+	/**
+	 * Generates the ORDER BY clause either for the {@link ModelQuery#getOrderBy()} or if empty for the default properties ({@link Item#PROPERTY_CREATED_AT} and
+	 * {@link Item#PROPERTY_PK}).
+	 * 
+	 * @param sourceQuery
+	 * @param builder
+	 * @param root
+	 * @return the generated order by clause
+	 */
+	protected Order[] applyOrderBy(final ModelQuery<?> sourceQuery, CriteriaBuilder builder, Root<?> root) {
+		final List<Order> orderBys = new ArrayList<>();
+
+		if (sourceQuery.getOrderBy().size() > 0) {
+			for (SortOrder order : sourceQuery.getOrderBy()) {
+				if (OrderDirection.ASC.equals(order.getDirection())) {
+					orderBys.add(builder.asc(root.get(order.getColumnName())));
+				} else {
+					orderBys.add(builder.desc(root.get(order.getColumnName())));
+				}
+			}
+		} else {
+			orderBys.add(builder.asc(root.get(Item.PROPERTY_CREATED_AT)));
+			orderBys.add(builder.asc(root.get(Item.PROPERTY_PK)));
+		}
+
+		return orderBys.toArray(new Order[orderBys.size()]);
 	}
 
 	/** {@inheritDoc} */

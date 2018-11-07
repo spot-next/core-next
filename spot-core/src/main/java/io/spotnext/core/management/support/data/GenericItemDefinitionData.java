@@ -29,7 +29,9 @@ public class GenericItemDefinitionData {
 	protected final List<Annotation> propertyAnnotations = new ArrayList<>();
 
 	/**
-	 * <p>addProperty.</p>
+	 * <p>
+	 * addProperty.
+	 * </p>
 	 *
 	 * @param prop a {@link io.spotnext.infrastructure.type.support.ItemTypePropertyDefinition} object.
 	 */
@@ -38,7 +40,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>addPropertyAnnotation.</p>
+	 * <p>
+	 * addPropertyAnnotation.
+	 * </p>
 	 *
 	 * @param annotation a A object.
 	 * @param            <A> a A object.
@@ -48,7 +52,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>addTypeAnnotationProperty.</p>
+	 * <p>
+	 * addTypeAnnotationProperty.
+	 * </p>
 	 *
 	 * @param annotation a A object.
 	 * @param            <A> a A object.
@@ -58,7 +64,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeCode</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeCode</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -67,7 +75,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Setter for the field <code>typeCode</code>.</p>
+	 * <p>
+	 * Setter for the field <code>typeCode</code>.
+	 * </p>
 	 *
 	 * @param typeCode a {@link java.lang.String} object.
 	 */
@@ -76,7 +86,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -85,7 +97,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Setter for the field <code>typeName</code>.</p>
+	 * <p>
+	 * Setter for the field <code>typeName</code>.
+	 * </p>
 	 *
 	 * @param typeName a {@link java.lang.String} object.
 	 */
@@ -94,7 +108,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeClass</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeClass</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -103,7 +119,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Setter for the field <code>typeClass</code>.</p>
+	 * <p>
+	 * Setter for the field <code>typeClass</code>.
+	 * </p>
 	 *
 	 * @param typeClass a {@link java.lang.String} object.
 	 */
@@ -112,7 +130,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>packageName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>packageName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -121,7 +141,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Setter for the field <code>packageName</code>.</p>
+	 * <p>
+	 * Setter for the field <code>packageName</code>.
+	 * </p>
 	 *
 	 * @param packageName a {@link java.lang.String} object.
 	 */
@@ -130,7 +152,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeAnnotations</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeAnnotations</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
@@ -139,7 +163,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Setter for the field <code>typeAnnotations</code>.</p>
+	 * <p>
+	 * Setter for the field <code>typeAnnotations</code>.
+	 * </p>
 	 *
 	 * @param typeAnnotations a {@link java.util.List} object.
 	 */
@@ -148,7 +174,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>properties</code>.</p>
+	 * <p>
+	 * Getter for the field <code>properties</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
@@ -157,7 +185,9 @@ public class GenericItemDefinitionData {
 	}
 
 	/**
-	 * <p>Getter for the field <code>propertyAnnotations</code>.</p>
+	 * <p>
+	 * Getter for the field <code>propertyAnnotations</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.List} object.
 	 */

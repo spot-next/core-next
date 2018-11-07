@@ -21,7 +21,9 @@ public class ItemTypeDefinition {
 	protected final Map<String, ItemTypePropertyDefinition> properties;
 
 	/**
-	 * <p>Constructor for ItemTypeDefinition.</p>
+	 * <p>
+	 * Constructor for ItemTypeDefinition.
+	 * </p>
 	 *
 	 * @param typeCode    a {@link java.lang.String} object.
 	 * @param typeClass   a {@link java.lang.String} object.
@@ -41,7 +43,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeCode</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeCode</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -50,7 +54,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeClass</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeClass</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -59,7 +65,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -68,7 +76,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>packageName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>packageName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
