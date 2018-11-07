@@ -3,7 +3,12 @@
 ## **1.0.x-RELEASE** `~2019-01-XX`
 - Final release
 
-## **1.0.13-BETA** `2018-11-29`
+## **1.0.14-BETA** `2018-11-7``
+- REST interface fixes (added sorting param, fixed JSON PK number overflows)
+- Fixed query ordering when using pagination
+- Implemented/fixed XML serialization for `Item` types
+
+## **1.0.13-BETA** `2018-10-30`
 - Fix for Hibernate indexes
 - Documentation update
 - CORS support
