@@ -21,6 +21,7 @@ public class GenericItemDefinitionData {
 	protected String typeName;
 	protected String typeClass;
 	protected String packageName;
+	protected boolean isAbstract;
 
 	protected List<Annotation> typeAnnotations = new ArrayList<>();
 
@@ -40,7 +41,7 @@ public class GenericItemDefinitionData {
 	 * <p>addPropertyAnnotation.</p>
 	 *
 	 * @param annotation a A object.
-	 * @param <A> a A object.
+	 * @param            <A> a A object.
 	 */
 	public <A extends Annotation> void addPropertyAnnotation(A annotation) {
 		propertyAnnotations.add(annotation);
@@ -50,7 +51,7 @@ public class GenericItemDefinitionData {
 	 * <p>addTypeAnnotationProperty.</p>
 	 *
 	 * @param annotation a A object.
-	 * @param <A> a A object.
+	 * @param            <A> a A object.
 	 */
 	public <A extends Annotation> void addTypeAnnotationProperty(A annotation) {
 		typeAnnotations.add(annotation);
@@ -163,4 +164,23 @@ public class GenericItemDefinitionData {
 	public List<Annotation> getPropertyAnnotations() {
 		return propertyAnnotations;
 	}
+
+	/**
+	 * Specifies if the item type is abstact
+	 * 
+	 * @return
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+
+	/**
+	 * Specifies if the item type is abstact
+	 * 
+	 * @param isAbstract
+	 */
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
+	}
+
 }

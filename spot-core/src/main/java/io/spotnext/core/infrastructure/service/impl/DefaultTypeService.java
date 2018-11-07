@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,7 +136,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				Class<? extends Item> itemTypeClass = itemTypeClasses.get(t.getTypeCode());
 
 				itemTypeDefinitions.put(t.getTypeCode(), createItemTypeDefinition(t.getTypeCode(), t.getName(),
-						t.getPackage(), getItemTypeProperties(itemTypeClass)));
+						t.getPackage(), t.isAbstract(), getItemTypeProperties(itemTypeClass)));
 			} catch (ClassNotFoundException e) {
 				throw new BeanCreationException(
 						String.format("Cannot instantiate class object for item type %s.", t.getTypeCode()), e);
@@ -209,10 +210,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		return getItemTypeDefinition(typeCode).getProperties();
 	}
 
-	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName,
+	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName, Boolean isAbstract,
 			Map<String, ItemTypePropertyDefinition> properties) {
 
-		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, properties);
+		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, BooleanUtils.toBoolean(isAbstract), properties);
 	}
 
 	/**

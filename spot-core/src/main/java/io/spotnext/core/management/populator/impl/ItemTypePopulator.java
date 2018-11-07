@@ -7,7 +7,6 @@ import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.management.populator.Populator;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
-import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
@@ -36,6 +35,7 @@ public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericIt
 		target.setTypeName(source.getTypeName());
 		target.setTypeClass(source.getTypeClass());
 		target.setPackageName(source.getPackageName());
+		target.setAbstract(source.isAbstract());
 
 		for (final ItemTypePropertyDefinition member : source.getProperties().values()) {
 			target.addProperty(member);
