@@ -15,8 +15,15 @@
 		<plugins>
 			<!-- COMPILING -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>io.spot-next</groupId>
+						<artifactId>spot-core-infrastructure</artifactId>
+						<version>${revision}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 			<plugin>

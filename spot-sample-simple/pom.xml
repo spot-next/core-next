@@ -20,8 +20,8 @@
 
 			<!-- COMPILING -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
 			</plugin>
 
 			<!-- RESOURCE GENERTATION -->

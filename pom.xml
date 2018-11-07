@@ -215,7 +215,7 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>flatten-maven-plugin</artifactId>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -347,56 +347,95 @@
 				</plugin>
 
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>aspectj-maven-plugin</artifactId>
-					<version>1.11</version>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.8</version>
 					<dependencies>
+						<!-- <dependency> -->
+						<!-- <groupId>sun.jdk</groupId> -->
+						<!-- <artifactId>tools</artifactId> -->
+						<!-- <version>1.8.0</version> -->
+						<!-- <scope>system</scope> -->
+						<!-- <systemPath>${java.home}/../lib/tools.jar</systemPath> -->
+						<!-- </dependency> -->
 						<dependency>
 							<groupId>org.aspectj</groupId>
-							<artifactId>aspectjtools</artifactId>
-							<version>${aspectj.version}</version>
-						</dependency>
-						<dependency>
-							<groupId>org.aspectj</groupId>
-							<artifactId>aspectjrt</artifactId>
+							<artifactId>aspectjtools</artifactId> <!-- apectj ant plugin -->
 							<version>${aspectj.version}</version>
 						</dependency>
 					</dependencies>
-					<configuration>
-						<complianceLevel>1.8</complianceLevel>
-						<source>1.8</source>
-						<target>1.8</target>
-						<aspectLibraries>
-							<aspectLibrary>
-								<groupId>org.springframework</groupId>
-								<artifactId>spring-aspects</artifactId>
-							</aspectLibrary>
-						</aspectLibraries>
 
-						<!-- setting this to true can cause build errors im M2E -->
-						<showWeaveInfo>true</showWeaveInfo>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<Xlint>ignore</Xlint>
-						<XnoInline>true</XnoInline>
-						<complianceLevel>${java.version}</complianceLevel>
-						<encoding>UTF-8</encoding>
-						<verbose>false</verbose>
-						<forceAjcCompile>false</forceAjcCompile>
-						<preserveAllLocals>true</preserveAllLocals>
-						<proceedOnError>false</proceedOnError>
-
-					</configuration>
 					<executions>
 						<execution>
+							<phase>compile</phase>
 							<goals>
-								<!-- IMPORTANT -->
-								<goal>compile</goal>
-								<goal>test-compile</goal>
+								<goal>run</goal>
 							</goals>
+							<configuration>
+								<tasks>
+									<echo>AntRun: Compiling AspectJ classes with ajc, java.home=${java.home}</echo>
+									<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="maven.plugin.classpath" />
+
+									<iajc sourceRoots="src/main/java;src/gen/java" destDir="target/classes" verbose="false" showWeaveInfo="true" source="${java.version}"
+										classpathRef="maven.compile.classpath" Xlint="ignore">
+									</iajc>
+								</tasks>
+							</configuration>
 						</execution>
 					</executions>
 				</plugin>
+
+				<!-- <plugin> -->
+				<!-- <groupId>org.codehaus.mojo</groupId> -->
+				<!-- <artifactId>aspectj-maven-plugin</artifactId> -->
+				<!-- <version>1.11</version> -->
+				<!-- <dependencies> -->
+				<!-- <dependency> -->
+				<!-- <groupId>org.aspectj</groupId> -->
+				<!-- <artifactId>aspectjtools</artifactId> -->
+				<!-- <version>${aspectj.version}</version> -->
+				<!-- </dependency> -->
+				<!-- <dependency> -->
+				<!-- <groupId>org.aspectj</groupId> -->
+				<!-- <artifactId>aspectjrt</artifactId> -->
+				<!-- <version>${aspectj.version}</version> -->
+				<!-- </dependency> -->
+				<!-- </dependencies> -->
+				<!-- <configuration> -->
+				<!-- <complianceLevel>1.8</complianceLevel> -->
+				<!-- <source>1.8</source> -->
+				<!-- <target>1.8</target> -->
+				<!-- <aspectLibraries> -->
+				<!-- <aspectLibrary> -->
+				<!-- <groupId>org.springframework</groupId> -->
+				<!-- <artifactId>spring-aspects</artifactId> -->
+				<!-- </aspectLibrary> -->
+				<!-- </aspectLibraries> -->
+
+				<!-- setting this to true can cause build errors im M2E -->
+				<!-- <showWeaveInfo>true</showWeaveInfo> -->
+				<!-- <source>${java.version}</source> -->
+				<!-- <target>${java.version}</target> -->
+				<!-- <Xlint>ignore</Xlint> -->
+				<!-- <XnoInline>true</XnoInline> -->
+				<!-- <complianceLevel>${java.version}</complianceLevel> -->
+				<!-- <encoding>UTF-8</encoding> -->
+				<!-- <verbose>false</verbose> -->
+				<!-- <forceAjcCompile>false</forceAjcCompile> -->
+				<!-- <preserveAllLocals>true</preserveAllLocals> -->
+				<!-- <proceedOnError>false</proceedOnError> -->
+
+				<!-- </configuration> -->
+				<!-- <executions> -->
+				<!-- <execution> -->
+				<!-- <goals> -->
+				<!-- IMPORTANT -->
+				<!-- <goal>compile</goal> -->
+				<!-- <goal>test-compile</goal> -->
+				<!-- </goals> -->
+				<!-- </execution> -->
+				<!-- </executions> -->
+				<!-- </plugin> -->
 
 				<!-- RESOURCE GENERATION -->
 				<plugin>
@@ -749,6 +788,23 @@
 										<goals>
 											<goal>compile</goal>
 											<goal>test-compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>true</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
+										<!-- <ignore /> -->
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-antrun-plugin</artifactId>
+										<versionRange>[1.8,)</versionRange>
+										<goals>
+											<goal>compile</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
