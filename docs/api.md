@@ -219,7 +219,9 @@ Often it is required to exchange data with external systems - mostly using JSON 
 
 A new `User` item can be deserialized just with this one-liner:
 ```java
-User user = serializationService.fromJson(jsonString);
+SerializationConfiguration config = new SerializationConfiguration();
+config.setFormat(DataFormat.JSON);
+User user = serializationService.deserialize(config, jsonString, User.class);
 ```
 
 Relations can be setup by just using a JSON object that contains both a `pk` and a `typeCode` property - **nothing else**:
@@ -229,7 +231,7 @@ Relations can be setup by just using a JSON object that contains both a `pk` and
 	"groups": [
 		{
 			"typeCode": "usergroup",
-			"pk": 4513155367448757049
+			"pk": "4513155367448757049"
 		}	
 	]
 }
@@ -238,7 +240,9 @@ Relations can be setup by just using a JSON object that contains both a `pk` and
 It's also possible to overwrite an object's properties with the data from a JSON string:
 ```java
 User userToUpdate = ....;
-serializationService.fromJson(json, userToUpdate);
+SerializationConfiguration config = new SerializationConfiguration();
+config.setFormat(DataFormat.JSON);
+User user = serializationService.deserialize(config, jsonString, userToUpdate);
 ```
 > Only the target object's properties, that are defined in the JSON, are overwritten!
 
@@ -248,16 +252,16 @@ When **serializing** `Item`s, their sub-items (relation properties) are only par
 
 ```java
 {
-	"pk": 4003256542000269317,
+	"pk": "4003256542000269317",
 	
 	...
 
 	"shortName": {
-		"pk": 8617539322739705278,
+		"pk": "8617539322739705278",
 		"typeCode": "localizedstring"
 	},
 	"longName": {
-		"pk": 5123398329302468367,
+		"pk": "5123398329302468367",
 		"typeCode": "localizedstring"
 	},
 	"phoneCountryCode": "43",
@@ -267,7 +271,7 @@ When **serializing** `Item`s, their sub-items (relation properties) are only par
 
 This mechanism averts problems when serializing cyclic dependencies. But it only applies for objects of type `Item`!
 
-> A similar API is available for XML
+> Currently the only other supported data format is XML. Although a custom `io.spotnext.core.infrastructure.strategy.SerializationStrategy` is easy to implement.
 
 ### Data import
 The `SerializationService` is not the only way to import data into the system. The `ImportService` offers similar functionality, but it's focus is not on data transfer, but rather on local data that is being batch-imported, like during **system initialization**.
@@ -336,10 +340,10 @@ importService.importItems(ImportFormat.ImpEx, conf, stream);
 ```
 
 The `ImportConfiguration` can be configured:
-* `ìgnoreErrors`: if true, errors (like unresolvable item references) are ignored (although logged) and as many as possible items are being imported. By default this is disabled though.
+* `ignoreErrors`: if true, errors (like unresolvable item references) are ignored (although logged) and as many as possible items are being imported. By default this is disabled though.
 * `scriptIdentifier`: is optional, but can be useful for debugging purposes (in the logs)
 
-> During **system initialization** bot the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
+> During **system initialization** botj the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
 
 ```java
 @Override
@@ -358,13 +362,43 @@ For conventience the `ModuleInit.importScript` method can be used:
 ModuleInit.importScript("/data/initial/countries.impex", "Importing countries");
 ```
 
-#### I18nService
-#### L10nService
-#### SessionService
-#### TypeService
-#### UserService
+#### Localization & Internationalization
+
+There are two services dealing with this topic:
+
+* `I18NService`: is basically just a convenience wrapper to access `Locale` and `Currency` information
+* `L10NService`: handles message translation/interpolation.
+
+The `L10NService` both implements `org.springframework.context.MessageSource` and `javax.validation.MessageInterpolator`. Therefore it can easily be plugged into a lot of existing frameworks, or just used manually. At first, messages are looked up in the persistence store (`io.spotnext.itemtype.core.internationalization.LocalizationValue` items).
+This allows for translations to be changed at runtime, e.g through the REST interface.
+
+If the message key cannot be resolved, the fallback (Spring) parent message source is invoked. It looks up the keys in `messages_XX.properties` files.
+
+#### Users and permissions
+
+A lot of business logic revolves around users and their permissions. The `UserServer` aims at simplifying access to these objects. Besides various DAO-like features (like `getAllUserGroups(..)` or `isUserInGroup(..)`), it also allows to access the internal session user using `SessionService`.
+This session (not to confused with a web session) is used to determine all sorts of permissions. In combination with the `AuthenticationService` integration into various security-related frameworks (like Spring Security) can easily be achived.
+To integrate into Spring Security these classes can be used:
+
+* `io.spotnext.spring.web.security.DefaultAuthenticationProvider`
+* `io.spotnext.spring.web.session.WebSessionFilter`
+* `io.spotnext.spring.web.session.WebSessionListener`
+
+> Other Spring-related helper classes can be found in the `spot-spring-web-support` library.
+
 #### ValidationService
-#### ConfigurationService
+
+The `ValidationService` can be used to validate objects based on their JSR-303 annotation. It is designed to be a central point of validation. So if any custom validation is needed, this service should be extended!
+
+#### TypeService
+
+The `TypeService` provides functionality to access to the type definitions (from the `*-itemtypes.xml`s). It can also be used to retrieve a `Class` object for `typeCode` or vice-versa.
+
+### ConfigurationService
+
+A typical Spring application contains various sources of configuration settings, like `application.properties` or even command-line arguments. The `ConfigurationService` allows to access these settings in a type-safe manner, e.g. using `getInteger(String key, Integer defaultValue)`. It also allows to access settings based on a certain prefix `getPropertiesForPrefix()`.
+
+> Settings injection using @Value("{property.key}") is supported too! Also see: [Configuration](api/#Configuration)
 
 ## Domain modelling
 These defintions look like this:
