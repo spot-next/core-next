@@ -61,6 +61,9 @@
 				<prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
 				<prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
 				<prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+				
+				<prop key="hibernate.query.plan_cache_max_size">64</prop>
+				<prop key="plan_parameter_metadata_max_size">32</prop>
 
 				<prop key="hibernate.order_inserts">true</prop>
 				<prop key="hibernate.order_updates">true</prop>
