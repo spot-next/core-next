@@ -6,8 +6,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -19,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListenerMethodProcessor;
+import org.springframework.context.support.GenericApplicationContext;
 
 import ch.qos.logback.core.util.CloseUtil;
 import io.spotnext.core.CoreInit;
@@ -27,7 +30,7 @@ import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ImportService;
-import io.spotnext.core.infrastructure.service.LoggingService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
@@ -50,14 +53,13 @@ import io.spotnext.itemtype.core.enumeration.DataFormat;
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class })
 public abstract class ModuleInit implements ApplicationContextAware {
 
+	protected static final String BEANNAME_EVENT_LISTENER_PROCESSOR = "org.springframework.context.event.internalEventListenerProcessor";
+
 	protected ApplicationContext applicationContext;
 	protected boolean alreadyInitialized = false;
 
 	@Resource
 	protected ConfigurationService configurationService;
-
-	@Resource
-	protected LoggingService loggingService;
 
 	@Resource
 	protected ImportService importService;
@@ -80,7 +82,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 				importSampleData();
 			}
 
-			loggingService.info("Initialization complete");
+			Logger.info("Initialization complete");
 			alreadyInitialized = true;
 		}
 	}
@@ -133,10 +135,18 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * @return the custom event listener instance
 	 */
 	@Bean(name = "org.springframework.context.event.internalEventListenerProcessor")
-	protected EventListenerMethodProcessor eventListenerMethodProcessor() {
+	protected static EventListenerMethodProcessor eventListenerMethodProcessor() {
 		final EventListenerMethodProcessor processor = new HierarchyAwareEventListenerMethodProcessor();
 
 		return processor;
+	}
+
+	protected ListableBeanFactory getBeanFactory() {
+		if (applicationContext instanceof GenericApplicationContext) {
+			return ((GenericApplicationContext) applicationContext).getBeanFactory();
+		}
+
+		throw new IllegalStateException("Unexpected application context type.");
 	}
 
 	/**
@@ -147,7 +157,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	}
 
 	protected void importScript(final String path, final String logMessage) throws ImportException {
-		loggingService.debug(logMessage);
+		Logger.debug(logMessage);
 
 		InputStream stream = null;
 		try {
@@ -171,11 +181,13 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		Registry.setMainClass(childInit != null ? childInit : parentInit);
 
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(parentInit).addCommandLineProperties(true);
-
+		
 		if (childInit != null) {
 			builder = builder.child(childInit).bannerMode(Mode.OFF).addCommandLineProperties(true);
 		}
 
-		builder.build(commandLineArgs).run(commandLineArgs);
+		String[] args = ArrayUtils.addAll(commandLineArgs, "--spring.main.allow-bean-definition-overriding=true");
+		
+		builder.build(commandLineArgs).run(args);
 	}
 }

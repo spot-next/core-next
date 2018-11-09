@@ -33,6 +33,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
@@ -348,7 +349,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	protected <T> void setParameters(final Map<String, Object> params, final Query<T> query) {
 		for (final Map.Entry<String, Object> entry : params.entrySet()) {
-			query.setParameter(entry.getKey(), entry.getValue());
+			if (NumberUtils.isCreatable(entry.getKey())) {
+				query.setParameter(Integer.parseInt(entry.getKey()), entry.getValue());
+			} else {
+				query.setParameter(entry.getKey(), entry.getValue());
+			}
 		}
 	}
 

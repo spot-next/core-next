@@ -126,9 +126,21 @@ public class ClassUtil {
 	 * @param value     a {@link java.lang.Object} object.
 	 */
 	public static void setField(final Object object, final String fieldName, final Object value) {
+		setField(object, fieldName, value, true);
+	}
+
+	/**
+	 * Set the field value for the given object. This silently fails if something goes wrong. something goes wrong.
+	 *
+	 * @param object             a {@link java.lang.Object} object.
+	 * @param fieldName          a {@link java.lang.String} object.
+	 * @param value              a {@link java.lang.Object} object.
+	 * @param includeActualClass include actual class or only super classes?
+	 */
+	public static void setField(final Object object, final String fieldName, final Object value, boolean includeActualClass) {
 		boolean fieldSet = false;
 
-		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, includeActualClass)) {
 			try {
 				final Field field = c.getDeclaredField(fieldName);
 				setAccessable(field);
@@ -213,6 +225,19 @@ public class ClassUtil {
 	 * @return a {@link java.lang.Object} object.
 	 */
 	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
+		return invokeMethod(object, true, methodName, args);
+	}
+
+	/**
+	 * Invokes a method on a given object. This silently fails if something goes wrong.
+	 *
+	 * @param object             a {@link java.lang.Object} object.
+	 * @param includeActualClass include actual class or only super classes?
+	 * @param methodName         a {@link java.lang.String} object.
+	 * @param args               a {@link java.lang.Object} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
+	public static Object invokeMethod(final Object object, boolean includeActualClass, final String methodName, final Object... args) {
 		Object retVal = null;
 
 		final Class<?>[] paramArgs = new Class<?>[args.length];
@@ -227,7 +252,7 @@ public class ClassUtil {
 		Method method = null;
 
 		// iterate over all superclasses and look for given method
-		for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
+		for (final Class<?> c : getAllAssignableClasses(object.getClass(), includeActualClass)) {
 			try {
 				final List<Method> possibleMethods = Stream.of(c.getDeclaredMethods())
 						.filter(m -> methodName.equals(m.getName())).collect(Collectors.toList());
@@ -312,7 +337,7 @@ public class ClassUtil {
 	public static Set<Field> getFields(final Class<?> type, Predicate<Field> filter) {
 		final Set<Field> fields = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Field field : c.getDeclaredFields()) {
 				if (filter == null || filter.test(field)) {
 					fields.add(field);
@@ -350,7 +375,7 @@ public class ClassUtil {
 	public static Set<Method> getMethods(final Class<?> type, Predicate<Method> filter) {
 		final Set<Method> methods = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Method method : c.getDeclaredMethods()) {
 				if (filter == null || filter.test(method)) {
 					methods.add(method);
@@ -374,7 +399,7 @@ public class ClassUtil {
 
 		final Set<Method> annotatedMethds = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Method method : c.getDeclaredMethods()) {
 				if (method.isAnnotationPresent(annotation)) {
 					annotatedMethds.add(method);
@@ -391,9 +416,13 @@ public class ClassUtil {
 	 * @param type a {@link java.lang.Class} object.
 	 * @return a {@link java.util.List} object.
 	 */
-	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
+	public static List<Class<?>> getAllAssignableClasses(final Class<?> type, boolean includeActualClass) {
 		final List<Class<?>> classes = new ArrayList<>();
-		classes.add(type);
+
+		if (includeActualClass) {
+			classes.add(type);
+		}
+
 		classes.addAll(ClassUtils.getAllSuperclasses(type));
 
 		return classes;

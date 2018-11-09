@@ -1,8 +1,6 @@
 package io.spotnext.sample;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 import io.spotnext.cms.CmsBaseConfiguration;
@@ -11,7 +9,6 @@ import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 
 @Import(value = { CmsBaseConfiguration.class })
-@EnableAutoConfiguration(exclude = { ThymeleafAutoConfiguration.class })
 @SpringBootApplication
 public class SampleInit extends ModuleInit {
 

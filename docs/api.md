@@ -361,8 +361,8 @@ For conventience the `ModuleInit.importScript` method can be used:
 ```java
 ModuleInit.importScript("/data/initial/countries.impex", "Importing countries");
 ```
-
-#### Localization & Internationalization
+### Other Services
+#### Localization & internationalization
 
 There are two services dealing with this topic:
 
@@ -386,7 +386,7 @@ To integrate into Spring Security these classes can be used:
 
 > Other Spring-related helper classes can be found in the `spot-spring-web-support` library.
 
-#### ValidationService
+#### Data validation
 
 The `ValidationService` can be used to validate objects based on their JSR-303 annotation. It is designed to be a central point of validation. So if any custom validation is needed, this service should be extended!
 

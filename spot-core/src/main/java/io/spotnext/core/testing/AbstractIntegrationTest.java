@@ -40,7 +40,7 @@ import io.spotnext.support.util.ClassUtil;
  * @version 1.0
  * @since 1.0
  */
-@TestPropertySource(locations = "classpath:/core-testing.properties")
+@TestPropertySource(locations = "classpath:/core-testing.properties", properties = { "spring.main.allow-bean-definition-overriding=true" })
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = CoreInit.class)

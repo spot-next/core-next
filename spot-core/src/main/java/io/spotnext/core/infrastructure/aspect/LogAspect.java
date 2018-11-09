@@ -12,7 +12,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.TargetClassAware;
-import org.springframework.context.annotation.DependsOn;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
@@ -25,7 +24,6 @@ import io.spotnext.core.infrastructure.support.Logger;
  * @version 1.0
  * @since 1.0
  */
-@DependsOn("loggingService")
 @Aspect
 @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
