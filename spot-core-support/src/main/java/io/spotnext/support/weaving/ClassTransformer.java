@@ -1,4 +1,4 @@
-package io.spotnext.instrumentation;
+package io.spotnext.support.weaving;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

@@ -18,14 +18,14 @@
 	<build>
 		<plugins>
 			<!-- COMPILING -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-				<configuration>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.codehaus.mojo</groupId> -->
+<!-- 				<artifactId>aspectj-maven-plugin</artifactId> -->
+<!-- 				<configuration> -->
 					<!-- include hibernate to enable persistencecontext fix -->
 					<!-- <weaveDependencies> <weaveDependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> </weaveDependency> </weaveDependencies> -->
-				</configuration>
-			</plugin>
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 
 			<!-- RESOURCE GENERTATION -->
 			<plugin>

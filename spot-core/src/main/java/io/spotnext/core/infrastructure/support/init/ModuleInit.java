@@ -12,6 +12,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +34,8 @@ import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
+import io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer;
+import io.spotnext.instrumentation.DynamicInstrumentationLoader;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 import io.spotnext.itemtype.core.enumeration.DataFormat;
 
@@ -50,7 +53,7 @@ import io.spotnext.itemtype.core.enumeration.DataFormat;
 @Configuration
 @Priority(value = -1)
 // needed to avoid some spring/hibernate problems
-@EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class })
 public abstract class ModuleInit implements ApplicationContextAware {
 
 	protected static final String BEANNAME_EVENT_LISTENER_PROCESSOR = "org.springframework.context.event.internalEventListenerProcessor";
@@ -173,21 +176,34 @@ public abstract class ModuleInit implements ApplicationContextAware {
 		}
 	}
 
+	/**
+	 * Initializes the load time weaving support and registers the necessary classtransformers.
+	 */
+	public static void initializeWeavingSupport() {
+		Logger.info("Initializing weaving support");
+		DynamicInstrumentationLoader.initialize(JpaEntityClassTransformer.class);
+
+		// weave all classes before they are loaded as beans
+//		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();
+	}
+
 	public static void bootstrap(Class<? extends ModuleInit> init, String... commandLineArgs) {
 		bootstrap(init, null, commandLineArgs);
 	}
 
 	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit, String... commandLineArgs) {
+		initializeWeavingSupport();
+
 		Registry.setMainClass(childInit != null ? childInit : parentInit);
 
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(parentInit).addCommandLineProperties(true);
-		
+
 		if (childInit != null) {
 			builder = builder.child(childInit).bannerMode(Mode.OFF).addCommandLineProperties(true);
 		}
 
 		String[] args = ArrayUtils.addAll(commandLineArgs, "--spring.main.allow-bean-definition-overriding=true");
-		
+
 		builder.build(commandLineArgs).run(args);
 	}
 }

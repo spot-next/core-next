@@ -1,4 +1,4 @@
-package io.spotnext.instrumentation.transformer;
+package io.spotnext.support.weaving;
 
 import java.lang.instrument.IllegalClassFormatException;
 

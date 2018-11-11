@@ -38,9 +38,10 @@ public class JacksonXmlSerializationTest {
 		Mockito.when(context.getBean(TypeService.class)).thenReturn(typeService);
 		Registry.instance().setApplicationContext(context);
 
-		Mockito.when(typeService.getClassForTypeCode("user")).thenReturn((Class) User.class);
-		Mockito.when(typeService.getClassForTypeCode("usergroup")).thenReturn((Class) UserGroup.class);
-		Mockito.when(typeService.getTypeCodeForClass(User.class)).thenReturn("user");
+		Mockito.when(typeService.getClassForTypeCode(User.TYPECODE)).thenReturn((Class) User.class);
+		Mockito.when(typeService.getClassForTypeCode(UserGroup.TYPECODE)).thenReturn((Class) UserGroup.class);
+		Mockito.when(typeService.getTypeCodeForClass(User.class)).thenReturn(User.TYPECODE);
+		Mockito.when(typeService.getTypeCodeForClass(UserGroup.class)).thenReturn(UserGroup.TYPECODE);
 
 		xmlStrategy.setTypeService(typeService);
 		xmlStrategy.init();
@@ -82,7 +83,7 @@ public class JacksonXmlSerializationTest {
 
 		assertUser(user, deserializedUser);
 	}
-	
+
 	@Test
 	public void testJsonSerialization() {
 		User user = mockUser();
@@ -92,7 +93,7 @@ public class JacksonXmlSerializationTest {
 
 		assertUser(user, deserializedUser);
 	}
-	
+
 	void assertUser(User expected, User deserializedUser) {
 		Assert.assertEquals(expected.getGroups().size(), deserializedUser.getGroups().size());
 		Assert.assertEquals(expected.getPk(), deserializedUser.getPk());

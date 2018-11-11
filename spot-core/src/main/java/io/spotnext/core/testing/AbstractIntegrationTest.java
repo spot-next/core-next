@@ -47,6 +47,10 @@ import io.spotnext.support.util.ClassUtil;
 @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest implements ApplicationContextAware {
 
+	static {
+		ModuleInit.initializeWeavingSupport();
+	}
+
 	private static final int waitInMillis = 500;
 
 	private int maxMillisToWaitForModuleInitialization = 10 * 60 * 60 * 1000;

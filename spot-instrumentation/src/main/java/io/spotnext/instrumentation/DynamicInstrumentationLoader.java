@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
@@ -48,16 +49,25 @@ public final class DynamicInstrumentationLoader {
 	static GenericXmlApplicationContext ltwCtx;
 
 	/**
-	 * <p>Constructor for DynamicInstrumentationLoader.</p>
+	 * <p>
+	 * Constructor for DynamicInstrumentationLoader.
+	 * </p>
 	 */
 	protected DynamicInstrumentationLoader() {
 	}
 
+	public static List<Class<? extends ClassFileTransformer>> getRegisteredTranformers() {
+		return Arrays.asList(registeredTranformers);
+	}
+
 	/**
-	 * <p>initialize.</p>
+	 * <p>
+	 * initialize.
+	 * </p>
 	 *
 	 * @param transformers a {@link java.lang.Class} object.
 	 */
+	@SafeVarargs
 	public static void initialize(final Class<? extends ClassFileTransformer>... transformers) {
 		registeredTranformers = transformers;
 
@@ -146,10 +156,12 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * <p>loadAgent.</p>
+	 * <p>
+	 * loadAgent.
+	 * </p>
 	 *
 	 * @param tempAgentJar a {@link java.io.File} object.
-	 * @param pid a {@link java.lang.String} object.
+	 * @param pid          a {@link java.lang.String} object.
 	 * @throws java.lang.Exception if any.
 	 */
 	protected static void loadAgent(final File tempAgentJar, final String pid) throws Exception {
@@ -164,8 +176,7 @@ public final class DynamicInstrumentationLoader {
 			final List<String> command = new ArrayList<String>();
 			command.add(javaExecutable);
 			command.add("-classpath");
-			command.add(loadAgentJar.getAbsolutePath()); // tools.jar not needed
-															// since java9
+			command.add(loadAgentJar.getAbsolutePath()); // tools.jar not needed since java9
 			command.add(DynamicInstrumentationLoadAgentMain.class.getName());
 			command.add(pid);
 			command.add(tempAgentJar.getAbsolutePath());
@@ -177,7 +188,9 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * <p>getJavaHome.</p>
+	 * <p>
+	 * getJavaHome.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -188,7 +201,9 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * <p>getJavaVersion.</p>
+	 * <p>
+	 * getJavaVersion.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -199,7 +214,9 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * <p>setAgentClassLoaderReference.</p>
+	 * <p>
+	 * setAgentClassLoaderReference.
+	 * </p>
 	 *
 	 * @throws java.lang.Exception if any.
 	 */
@@ -216,7 +233,9 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * <p>createTempAgentJar.</p>
+	 * <p>
+	 * createTempAgentJar.
+	 * </p>
 	 *
 	 * @return a {@link java.io.File} object.
 	 * @throws java.lang.ClassNotFoundException if any.
@@ -225,7 +244,7 @@ public final class DynamicInstrumentationLoader {
 		try {
 			return createTempJar(DynamicInstrumentationAgent.class, true);
 		} catch (final Throwable e) {
-			final String message = "Unable to find class [io.spotnext.instrumentation.internal.DynamicInstrumentationAgent] in classpath."
+			final String message = "Unable to find class [" + DynamicInstrumentationAgent.class.getName() + "] in classpath."
 					+ "\nPlease make sure you have added invesdwin-instrument.jar to your classpath properly,"
 					+ "\nor make sure you have embedded it correctly into your fat-jar."
 					+ "\nThey can be created e.g. with \"maven-shade-plugin\"."
@@ -235,8 +254,7 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	/**
-	 * Creates a new jar that only contains the DynamicInstrumentationAgent
-	 * class.
+	 * Creates a new jar that only contains the {@link DynamicInstrumentationAgent} class.
 	 *
 	 * @param clazz a {@link java.lang.Class} object.
 	 * @param agent a boolean.

@@ -14,7 +14,9 @@ import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.type.Item;
 
 /**
- * <p>ItemTypeResolver class.</p>
+ * <p>
+ * ItemTypeResolver class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -25,7 +27,9 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	private TypeService typeService;
 
 	/**
-	 * <p>Constructor for ItemTypeResolver.</p>
+	 * <p>
+	 * Constructor for ItemTypeResolver.
+	 * </p>
 	 */
 	public ItemTypeResolver() {
 		super(TypeFactory.defaultInstance().constructType(Item.class), TypeFactory.defaultInstance());
@@ -44,7 +48,9 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	}
 
 	/**
-	 * <p>getMechanism.</p>
+	 * <p>
+	 * getMechanism.
+	 * </p>
 	 *
 	 * @return a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.Id} object.
 	 */
@@ -84,6 +90,10 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	/** {@inheritDoc} */
 	@Override
 	public JavaType typeFromId(DatabindContext context, String id) throws IOException {
+		if ("null".equals(id)) {
+			return null;
+		}
+
 		return super.typeFromId(context, id);
 	}
 
@@ -93,7 +103,9 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
@@ -108,5 +120,5 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	public void setTypeService(TypeService typeService) {
 		this.typeService = typeService;
 	}
-	
+
 }

@@ -29,5 +29,5 @@ public abstract class ItemSerializationMixIn {
 	// see also ItemProxySerializer and ItemCollectionProxySerializer
 	@JsonSerialize(using = ToStringSerializer.class)
 	public abstract long getPk();
-	
+
 }

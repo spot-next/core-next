@@ -100,7 +100,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -114,11 +117,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -133,11 +136,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>

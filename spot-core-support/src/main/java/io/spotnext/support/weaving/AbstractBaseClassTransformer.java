@@ -1,4 +1,4 @@
-package io.spotnext.instrumentation.transformer;
+package io.spotnext.support.weaving;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -345,7 +345,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 *
 	 * @param clazz       a {@link javassist.CtClass} object.
 	 * @param annotations a {@link java.util.List} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
+	 * @throws io.spotnext.support.weaving.IllegalClassTransformationException if any.
 	 */
 	protected void addAnnotations(final CtClass clazz, final List<Annotation> annotations)
 			throws IllegalClassTransformationException {
@@ -367,7 +367,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 *
 	 * @param clazz a {@link javassist.CtClass} object.
 	 * @return a {@link javassist.bytecode.ConstPool} object.
-	 * @throws io.spotnext.instrumentation.transformer.IllegalClassTransformationException if any.
+	 * @throws io.spotnext.support.weaving.IllegalClassTransformationException if any.
 	 */
 	protected ConstPool getConstPool(final CtClass clazz) throws IllegalClassTransformationException {
 		final ClassFile cfile = getClassFile(clazz, false);
