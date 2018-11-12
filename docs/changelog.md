@@ -3,6 +3,10 @@
 ## **1.0.x-RELEASE** `~2019-01-XX`
 - Final release
 
+## **1.0.15-BETA** `2018-11-12``
+- Updated to latest Spring Boot
+- Updated other dependencies
+
 ## **1.0.14-BETA** `2018-11-7``
 - REST interface fixes (added sorting param, fixed JSON PK number overflows)
 - Fixed query ordering when using pagination
