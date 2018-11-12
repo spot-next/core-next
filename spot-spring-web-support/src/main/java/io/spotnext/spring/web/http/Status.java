@@ -1,7 +1,5 @@
 package io.spotnext.spring.web.http;
 
-import com.google.gson.annotations.Expose;
-
 /**
  * <p>Status class.</p>
  *
@@ -10,9 +8,7 @@ import com.google.gson.annotations.Expose;
  * @since 1.0
  */
 public class Status {
-	@Expose
 	protected String code;
-	@Expose
 	protected String message;
 
 	/**

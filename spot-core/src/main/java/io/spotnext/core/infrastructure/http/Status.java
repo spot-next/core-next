@@ -1,24 +1,28 @@
 package io.spotnext.core.infrastructure.http;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * <p>Status class.</p>
+ * <p>
+ * Status class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 public class Status {
-	@Expose
+	@JsonProperty
 	protected String code;
-	@Expose
+	@JsonProperty
 	protected String message;
 
 	/**
-	 * <p>Constructor for Status.</p>
+	 * <p>
+	 * Constructor for Status.
+	 * </p>
 	 *
-	 * @param code a {@link java.lang.String} object.
+	 * @param code    a {@link java.lang.String} object.
 	 * @param message a {@link java.lang.String} object.
 	 */
 	public Status(final String code, final String message) {
@@ -27,7 +31,9 @@ public class Status {
 	}
 
 	/**
-	 * <p>Getter for the field <code>code</code>.</p>
+	 * <p>
+	 * Getter for the field <code>code</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -36,7 +42,9 @@ public class Status {
 	}
 
 	/**
-	 * <p>Setter for the field <code>code</code>.</p>
+	 * <p>
+	 * Setter for the field <code>code</code>.
+	 * </p>
 	 *
 	 * @param code a {@link java.lang.String} object.
 	 */
@@ -45,7 +53,9 @@ public class Status {
 	}
 
 	/**
-	 * <p>Getter for the field <code>message</code>.</p>
+	 * <p>
+	 * Getter for the field <code>message</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -54,7 +64,9 @@ public class Status {
 	}
 
 	/**
-	 * <p>Setter for the field <code>message</code>.</p>
+	 * <p>
+	 * Setter for the field <code>message</code>.
+	 * </p>
 	 *
 	 * @param message a {@link java.lang.String} object.
 	 */

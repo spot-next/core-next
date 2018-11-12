@@ -48,7 +48,6 @@ import io.spotnext.infrastructure.type.RelationCollectionType;
 import io.spotnext.infrastructure.type.RelationNodeType;
 import io.spotnext.infrastructure.type.RelationType;
 import io.spotnext.support.weaving.AbstractBaseClassTransformer;
-import io.spotnext.support.weaving.ClassTransformer;
 import io.spotnext.support.weaving.IllegalClassTransformationException;
 import javassist.CtClass;
 import javassist.CtField;
@@ -65,7 +64,6 @@ import javassist.bytecode.annotation.StringMemberValue;
 /**
  * Transforms custom {@link ItemType} annotations to JPA entity annotations.
  */
-@ClassTransformer
 public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
     private static final Logger LOG = LoggerFactory.getLogger(JpaEntityClassTransformer.class);

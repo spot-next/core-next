@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ConstantExpression;
+import com.trigersoft.jaque.expression.DelegateExpression;
 import com.trigersoft.jaque.expression.Expression;
 import com.trigersoft.jaque.expression.ExpressionType;
 import com.trigersoft.jaque.expression.ExpressionVisitor;
@@ -323,10 +324,10 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 
 	private Optional<String> getColumnName(final MemberExpression ex) {
 
-		// @formatter:off
-		return Optional.of(ex.getMember()).filter(e -> e instanceof Method).map(e -> (Method) e)
-				.map(e -> e.getAnnotation(Accessor.class)).map(Accessor::propertyName);
-		// @formatter:on
+		return Optional.of(ex.getMember()) //
+				.filter(e -> e instanceof Method).map(e -> (Method) e) //
+				.map(e -> e.getAnnotation(Accessor.class)) //
+				.map(Accessor::propertyName);
 	}
 
 	private boolean isBoolean(final Member member) {
@@ -342,6 +343,11 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public PredicateTranslationResult visit(DelegateExpression delegateExpression) {
+		throw new UnsupportedOperationException("delegateExpression unsupported" + delegateExpression);
 	}
 
 }
