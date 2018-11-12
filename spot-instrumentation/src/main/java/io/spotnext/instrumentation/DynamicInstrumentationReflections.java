@@ -2,6 +2,7 @@ package io.spotnext.instrumentation;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,9 +20,12 @@ import java.util.Stack;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.instrument.InstrumentationSavingAgent;
 
 /**
- * <p>DynamicInstrumentationReflections class.</p>
+ * <p>
+ * DynamicInstrumentationReflections class.
+ * </p>
  *
  * @since 1.0
  */
@@ -71,7 +75,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>isBeforeJava9.</p>
+	 * <p>
+	 * isBeforeJava9.
+	 * </p>
 	 *
 	 * @return a boolean.
 	 */
@@ -116,7 +122,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>getUnsafe.</p>
+	 * <p>
+	 * getUnsafe.
+	 * </p>
 	 *
 	 * @return a {@link sun.misc.Unsafe} object.
 	 */
@@ -139,7 +147,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>getContextClassLoader.</p>
+	 * <p>
+	 * getContextClassLoader.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.ClassLoader} object.
 	 */
@@ -148,7 +158,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>getSystemClassLoader.</p>
+	 * <p>
+	 * getSystemClassLoader.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.ClassLoader} object.
 	 */
@@ -157,7 +169,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>Getter for the field <code>pathsAddedToSystemClassLoader</code>.</p>
+	 * <p>
+	 * Getter for the field <code>pathsAddedToSystemClassLoader</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
@@ -209,7 +223,9 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	/**
-	 * <p>getClassInputStream.</p>
+	 * <p>
+	 * getClassInputStream.
+	 * </p>
 	 *
 	 * @param clazz a {@link java.lang.Class} object.
 	 * @return a {@link java.io.InputStream} object.
@@ -224,4 +240,10 @@ public final class DynamicInstrumentationReflections {
 		return classIn;
 	}
 
+	/**
+	 * @return the instrumentation instance
+	 */
+	public static Instrumentation getInstrumentation() {
+		return InstrumentationSavingAgent.getInstrumentation();
+	}
 }

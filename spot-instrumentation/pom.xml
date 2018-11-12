@@ -18,6 +18,10 @@
 		</license>
 	</licenses>
 
+	<properties>
+		<version.maven-jdk-tools-wrapper>0.1</version.maven-jdk-tools-wrapper>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -133,7 +137,12 @@
 			<artifactId>javassist</artifactId>
 			<version>3.23.1-GA</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.github.olivergondza</groupId>
+			<artifactId>maven-jdk-tools-wrapper</artifactId>
+			<version>${version.maven-jdk-tools-wrapper}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
