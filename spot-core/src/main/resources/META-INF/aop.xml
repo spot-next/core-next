@@ -2,7 +2,7 @@
 <aspectj>
 
 	<!-- -debug -->
-    <weaver options=" -showWeaveInfo -Xlint:ignore -Xset:weaveJavaxPackages=true"> 
+    <weaver options=" -showWeaveInfo -Xlint:ignore -Xset:weaveJavaxPackages=false"> 
         <!-- only weave classes in our application-specific packages -->
         <include  within="io.spotnext.*"/>
         <exclude within="org.springframework.data.jpa.domain.support.AuditingEntityListener"/>
