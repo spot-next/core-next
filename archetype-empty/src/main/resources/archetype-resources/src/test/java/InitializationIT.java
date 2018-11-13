@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.IntegrationTest;
+import io.spotnext.instrumentation.DynamicInstrumentationLoader;
 import ${package}.Init;
 
 /**
@@ -17,7 +18,7 @@ import ${package}.Init;
  */
 @IntegrationTest(initClass = Init.class)
 @SpringBootTest(classes = { Init.class, CoreInit.class })
-public class InitIT extends AbstractIntegrationTest {
+public class InitializationIT extends AbstractIntegrationTest {
 
 	@Resource
 	Init init;
@@ -34,7 +35,8 @@ public class InitIT extends AbstractIntegrationTest {
 
 	@Test
 	public void moduleInitialized() {
-		assertTrue(init.isAlreadyInitialized());
+		assertTrue(Init.class.getSimpleName() + " not initialized", init.isAlreadyInitialized());
+		assertTrue("Instrumentation not initiazed", DynamicInstrumentationLoader.isInstrumentationAvailable());
 	}
 
 }

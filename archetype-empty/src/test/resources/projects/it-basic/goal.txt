@@ -1,1 +1,1 @@
--Dtest=EmptyTest test
+-Dtest=EmptyTest -Dit.test=InitializationIT verify
