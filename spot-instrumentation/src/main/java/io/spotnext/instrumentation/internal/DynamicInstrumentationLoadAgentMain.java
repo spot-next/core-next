@@ -5,6 +5,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // @Immutable
 /**
  * <p>
@@ -14,6 +17,8 @@ import java.util.List;
  * @since 1.0
  */
 public final class DynamicInstrumentationLoadAgentMain {
+
+	private static final Logger LOG = LoggerFactory.getLogger(DynamicInstrumentationLoadAgentMain.class);
 
 	private DynamicInstrumentationLoadAgentMain() {
 	}
@@ -52,14 +57,16 @@ public final class DynamicInstrumentationLoadAgentMain {
 				final Constructor<?> vmConstructor = virtualMachineClass.getDeclaredConstructor(attachProviderClass,
 						String.class);
 				vmConstructor.setAccessible(true);
-				final Object dummyAttachProvider = Class.forName("de.invesdwin.instrument.internal.DummyAttachProvider")
-						.getDeclaredConstructor()
+				final Object dummyAttachProvider = Class.forName("io.spotnext.instrumentation.internal.DummyAttachProvider").getDeclaredConstructor()
 						.newInstance();
 				virtualMachine = vmConstructor.newInstance(dummyAttachProvider, pid);
 			} else {
 				virtualMachineClass = Class.forName("com.sun.tools.attach.VirtualMachine");
 				virtualMachine = virtualMachineClass.getMethod("attach", String.class).invoke(null, pid);
 			}
+
+			LOG.debug("Agent path: " + agentJarAbsolutePath);
+
 			virtualMachineClass.getMethod("loadAgent", String.class).invoke(virtualMachine, agentJarAbsolutePath);
 			virtualMachineClass.getMethod("detach").invoke(virtualMachine);
 		} catch (final IllegalAccessException e) {

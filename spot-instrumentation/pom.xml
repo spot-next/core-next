@@ -65,10 +65,11 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Premain-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
-							<Agent-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
+							<Premain-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
+							<Agent-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
 							<Can-Redefine-Classes>true</Can-Redefine-Classes>
 							<Can-Retransform-Classes>true</Can-Retransform-Classes>
+							<Permissions>all-permissions</Permissions>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -83,9 +84,9 @@
 			<version>3.8.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.11.1</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -108,25 +109,19 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.zeroturnaround</groupId>
-			<artifactId>zt-exec</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.24.0-GA</version>
-		</dependency>
-		<dependency>
 			<groupId>com.github.olivergondza</groupId>
 			<artifactId>maven-jdk-tools-wrapper</artifactId>
 			<version>${version.maven-jdk-tools-wrapper}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -495,6 +495,9 @@
 									<java.source>${java.version}</java.source>
 									<java.target>${java.version}</java.target>
 								</additionalProperties>
+								<jvmArguments>
+									-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
+								</jvmArguments>
 							</configuration>
 						</execution>
 					</executions>
@@ -927,6 +930,11 @@
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.7.25</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

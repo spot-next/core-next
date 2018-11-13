@@ -6,7 +6,6 @@
     <option name="delegateToJavac" value="true" />
   </component>
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="ajc" />
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/archetype-empty/src/main/resources/archetype-resources" includeSubdirectories="true" />
     </excludeFromCompile>
