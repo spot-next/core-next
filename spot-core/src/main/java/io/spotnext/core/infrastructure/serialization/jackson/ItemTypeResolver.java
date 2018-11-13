@@ -9,13 +9,14 @@ import com.fasterxml.jackson.databind.jsontype.impl.ClassNameIdResolver;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.type.Item;
 
 /**
- * <p>ItemTypeResolver class.</p>
+ * <p>
+ * ItemTypeResolver class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -24,10 +25,11 @@ import io.spotnext.infrastructure.type.Item;
 public class ItemTypeResolver extends ClassNameIdResolver {
 
 	private TypeService typeService;
-	private ModelService modelService;
 
 	/**
-	 * <p>Constructor for ItemTypeResolver.</p>
+	 * <p>
+	 * Constructor for ItemTypeResolver.
+	 * </p>
 	 */
 	public ItemTypeResolver() {
 		super(TypeFactory.defaultInstance().constructType(Item.class), TypeFactory.defaultInstance());
@@ -46,7 +48,9 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	}
 
 	/**
-	 * <p>getMechanism.</p>
+	 * <p>
+	 * getMechanism.
+	 * </p>
 	 *
 	 * @return a {@link com.fasterxml.jackson.annotation.JsonTypeInfo.Id} object.
 	 */
@@ -86,6 +90,10 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	/** {@inheritDoc} */
 	@Override
 	public JavaType typeFromId(DatabindContext context, String id) throws IOException {
+		if ("null".equals(id)) {
+			return null;
+		}
+
 		return super.typeFromId(context, id);
 	}
 
@@ -95,7 +103,9 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.infrastructure.service.TypeService} object.
 	 */
@@ -107,17 +117,8 @@ public class ItemTypeResolver extends ClassNameIdResolver {
 		return typeService;
 	}
 
-	/**
-	 * <p>Getter for the field <code>modelService</code>.</p>
-	 *
-	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
-	 */
-	public ModelService getModelService() {
-		if (modelService == null) {
-			modelService = Registry.getApplicationContext().getBean(ModelService.class);
-		}
-
-		return modelService;
+	public void setTypeService(TypeService typeService) {
+		this.typeService = typeService;
 	}
 
 }

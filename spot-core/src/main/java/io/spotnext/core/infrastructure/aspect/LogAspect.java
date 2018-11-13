@@ -12,10 +12,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.TargetClassAware;
-import org.springframework.context.annotation.DependsOn;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 
 /**
  * Annotation-based aspect that logs method execution.
@@ -24,7 +24,6 @@ import io.spotnext.core.infrastructure.support.Log;
  * @version 1.0
  * @since 1.0
  */
-@DependsOn("loggingService")
 @Aspect
 @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class LogAspect extends AbstractBaseAspect {
@@ -36,11 +35,11 @@ public class LogAspect extends AbstractBaseAspect {
 	 */
 	@PostConstruct
 	public void init() {
-		Log.debug("Initialized logging aspect.");
+		Logger.debug("Initialized logging aspect.");
 	}
 
 	/**
-	 * Define the pointcut for all methods that are annotated with {@link io.spotnext.infrastructure.annotation.logging.Log}.
+	 * Define the pointcut for all methods that are annotated with {@link io.spotnext.infrastructure.annotation.Logger.Log}.
 	 */
 	@Pointcut("@annotation(io.spotnext.core.infrastructure.annotation.logging.Log) && execution(* *.*(..))")
 	final protected void logAnnotation() {
@@ -53,26 +52,29 @@ public class LogAspect extends AbstractBaseAspect {
 	 */
 	@Around("logAnnotation()")
 	public Object logAround(final ProceedingJoinPoint joinPoint) throws Throwable {
-		final io.spotnext.core.infrastructure.annotation.logging.Log ann = getAnnotation(joinPoint, io.spotnext.core.infrastructure.annotation.logging.Log.class);
-
-		final long startTime = System.currentTimeMillis();
+		final Log ann = getAnnotation(joinPoint, Log.class);
 
 		Class<?> targetClass = getRealClass(joinPoint.getTarget());
 
-		if (ann != null && ann.before()) {
-			Log.log(ann.logLevel(),
+		if (ann != null && ann.before() && StringUtils.isNotBlank(ann.message())) {
+			Logger.log(ann.logLevel(),
 					createLogMessage(joinPoint, "Before", ann.message(), targetClass, ann.messageArguments(), null), null, null,
 					targetClass);
 		}
 
+		final long startTime = System.currentTimeMillis();
+		boolean logTime = ann != null ? ann.measureExecutionTime() : false;
+
 		final Object ret = joinPoint.proceed(joinPoint.getArgs());
 
-		if (ann != null && ann.after()) {
-			final Long runDuration = ann.measureTime() ? (System.currentTimeMillis() - startTime) : null;
+		if (ann != null && (ann.after() || logTime)) {
+			final Long executionTime = logTime ? (System.currentTimeMillis() - startTime) : null;
 
-			Log.log(ann.logLevel(),
-					createLogMessage(joinPoint, "After", null, targetClass, ann.messageArguments(), runDuration), null, null,
-					targetClass);
+			if (ann.executionTimeThreshold() == -1 || (ann.executionTimeThreshold() > -1 && executionTime >= ann.executionTimeThreshold())) {
+				Logger.log(ann.logLevel(),
+						createLogMessage(joinPoint, "After", joinPoint.getSignature().toString(), targetClass, ann.messageArguments(), executionTime),
+						null, null, targetClass);
+			}
 		}
 
 		return ret;

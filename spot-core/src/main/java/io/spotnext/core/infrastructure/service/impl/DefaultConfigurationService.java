@@ -17,7 +17,9 @@ import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.LoggingService;
 
 /**
- * <p>DefaultConfigurationService class.</p>
+ * <p>
+ * DefaultConfigurationService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -115,7 +117,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 
 	/** {@inheritDoc} */
 	@Override
-	public Properties getPropertiesForPrefix(String prefix) {
+	public Properties getPropertiesForPrefix(final String prefix) {
 		final Properties ret = new Properties();
 
 		final String sanitizedPrefix = StringUtils.trimToEmpty(prefix);
@@ -124,7 +126,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 			if (s instanceof EnumerablePropertySource) {
 				for (final String propertyKey : ((EnumerablePropertySource<?>) s).getPropertyNames()) {
 					if (propertyKey.startsWith(sanitizedPrefix) && sanitizedPrefix.length() > 0) {
-						Object value = environment.getProperty(propertyKey);
+						final Object value = environment.getProperty(propertyKey);
 
 						if (value != null) {
 							ret.put(propertyKey, value);
@@ -173,6 +175,10 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 	/** {@inheritDoc} */
 	@Override
 	public void setEnvironment(final Environment environment) {
-		this.environment = (StandardEnvironment) environment;
+		if (environment instanceof StandardEnvironment) {
+			this.environment = (StandardEnvironment) environment;
+		} else {
+			throw new IllegalStateException(String.format("Cannot handle environment of type %s", environment.getClass().getName()));
+		}
 	}
 }

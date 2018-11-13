@@ -1,5 +1,7 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.util.function.Function;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -8,9 +10,13 @@ import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.SerializationException;
 import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
+import io.spotnext.itemtype.core.beans.SerializationConfiguration;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 
 /**
- * <p>DefaultSerializationService class.</p>
+ * <p>
+ * DefaultSerializationService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -25,40 +31,50 @@ public class DefaultSerializationService implements SerializationService {
 	@Resource
 	protected SerializationStrategy xmlSerializationStrategy;
 
-	/** {@inheritDoc} */
 	@Override
-	public <T> String toJson(final T object) throws SerializationException {
-		return jsonSerializationStrategy.serialize(object);
+	public <T> String serialize(SerializationConfiguration configuration, T object) throws SerializationException {
+		return apply(configuration.getFormat(), //
+				(s) -> s.serialize(object), //
+				() -> {
+					throw new SerializationException("No serialization strategy found for data format " + configuration.getFormat());
+				});
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public <T> String toXml(final T object) throws SerializationException {
-		return xmlSerializationStrategy.serialize(object);
+	public <T> T deserialize(SerializationConfiguration configuration, String value, Class<T> type) throws DeserializationException {
+		return apply(configuration.getFormat(), //
+				(s) -> s.deserialize(value, type), //
+				() -> {
+					throw new DeserializationException("No deserialization strategy found for data format " + configuration.getFormat());
+				});
 	}
 
-	/** {@inheritDoc} */
 	@Override
-	public <T> T fromJson(final String value, final Class<T> type) throws DeserializationException {
-		return jsonSerializationStrategy.deserialize(value, type);
+	public <T> T deserialize(SerializationConfiguration configuration, String value, T instanceToUpdate) throws DeserializationException {
+		return apply(configuration.getFormat(), //
+				(s) -> s.deserialize(value, instanceToUpdate), //
+				() -> {
+					throw new DeserializationException("No deserialization strategy found for data format " + configuration.getFormat());
+				});
 	}
 
-	/** {@inheritDoc} */
-	@Override
-	public <T> T fromJson(final String value, final T instanceToUpdate) throws DeserializationException {
-		return jsonSerializationStrategy.deserialize(value, instanceToUpdate);
-	}
+	protected <T> T apply(DataFormat format, Function<SerializationStrategy, T> formatFound,
+			Runnable formatNotFound) {
 
-	/** {@inheritDoc} */
-	@Override
-	public <T> T fromXml(final String value, final Class<T> type) throws DeserializationException {
-		return xmlSerializationStrategy.deserialize(value, type);
-	}
+		SerializationStrategy strategy = null;
 
-	/** {@inheritDoc} */
-	@Override
-	public <T> T fromXml(final String value, final T instanceToUpdate) throws DeserializationException {
-		return xmlSerializationStrategy.deserialize(value, instanceToUpdate);
-	}
+		if (DataFormat.JSON.equals(format)) {
+			strategy = jsonSerializationStrategy;
+		} else if (DataFormat.XML.equals(format)) {
+			strategy = xmlSerializationStrategy;
+		}
 
+		if (strategy != null) {
+			return formatFound.apply(strategy);
+		} else {
+			formatNotFound.run();
+		}
+
+		return null;
+	}
 }

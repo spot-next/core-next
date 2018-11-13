@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java-Klasse für Annotation complex type.
+ * <p>Java class for Annotation complex type.
  * 
- * <p>Das folgende Schemafragment gibt den erwarteten Content an, der in dieser Klasse enthalten ist.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="Annotation">
@@ -69,7 +69,7 @@ public class Annotation {
     }
 
     /**
-     * Ruft den Wert der javaClass-Eigenschaft ab.
+     * Gets the value of the javaClass property.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class Annotation {
     }
 
     /**
-     * Legt den Wert der javaClass-Eigenschaft fest.
+     * Sets the value of the javaClass property.
      * 
      * @param value
      *     allowed object is

@@ -1,5 +1,35 @@
 # Change Log
 
+## **1.0.x-RELEASE** `~2019-01-XX`
+- Final release
+
+## **1.0.15-BETA** `2018-11-12`
+- Updated to latest Spring Boot
+- Updated other dependencies
+
+## **1.0.14-BETA** `2018-11-7`
+- REST interface fixes (added sorting param, fixed JSON PK number overflows)
+- Fixed query ordering when using pagination
+- Implemented/fixed XML serialization for `Item` types
+
+## **1.0.13-BETA** `2018-10-30`
+- Fix for Hibernate indexes
+- Documentation update
+- CORS support
+
+## **1.0.12-BETA** `2018-10-23`
+- Fix for ´spot:transform-types` not working properly on windows
+
+## **1.0.11-BETA** `2018-10-17`
+- Bugfix, REST interface authentication was not checked properly
+- Added SSL to REST-interface
+- Hibernate performance improvements
+
+## **1.0.10-BETA** `2018-09-23`
+- Lots of fixes related to transaction handling
+- Updated/fixed quickstart
+- Improved Eclipse/m2e integration (types are generated and woven/transformed automatically from eclipse on workspace refresh)
+
 ## **1.0.9-BETA** `2018-09-12`
 - Lots of impex fixes
 - Build system fixes (type generation and transformation)

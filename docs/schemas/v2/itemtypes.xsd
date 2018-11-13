@@ -187,7 +187,8 @@
 	</xs:complexType>
 
 	<xs:complexType name="Persistence" mixed="true">
-		<xs:attribute name="columnType" use="required" type="DatabaseColumnType" />
+		<xs:attribute name="indexed" use="optional" type="xs:boolean" default="false" />
+		<xs:attribute name="columnType" use="optional" type="DatabaseColumnType" default="DEFAULT" />
 	</xs:complexType>
 
 	<xs:complexType name="Property">

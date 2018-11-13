@@ -18,16 +18,14 @@
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
 
-			<!-- COMPILING -->
-			<plugin>
-				<groupId>com.github.m50d</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-			</plugin>
-
 			<!-- RESOURCE GENERTATION -->
 			<plugin>
 				<groupId>io.spot-next</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 
 			<!-- CODE ANALYSIS -->
@@ -75,7 +73,8 @@
 		<pluginManagement>
 			<plugins>
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -95,7 +94,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -109,11 +111,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -128,11 +130,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -149,6 +151,23 @@
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
 											<runOnConfiguration>false</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>pl.project13.maven</groupId>
+										<artifactId>git-commit-id-plugin</artifactId>
+										<versionRange>[2.0.0,)</versionRange>
+										<goals>
+											<goal>revision</goal>
+											<goal>validateRevision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>
@@ -176,7 +195,7 @@
 		<dependency>
 			<groupId>org.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
-			<version>5.0.3</version>
+			<version>5.0.8</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,0 +1,16 @@
+@startuml Spring setup
+
+rectangle "Spring context" {
+	component CoreInit #WhiteSmoke [
+		<b>CoreInit application</b>
+		(parent context)
+	]
+	component SampleInit [
+		<b>SampleInit</b>
+		(custom child context)
+	] 
+
+	CoreInit <-- SampleInit
+}
+
+@enduml

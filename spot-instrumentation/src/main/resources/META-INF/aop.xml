@@ -1,0 +1,15 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+
+	<!-- -debug -->
+    <weaver options="-Xreweavable -showWeaveInfo -Xlint:ignore -Xset:weaveJavaxPackages=true"> 
+        <!-- only weave classes in our application-specific packages -->
+        <include  within="*"/>
+    </weaver>
+
+    <aspects>
+        <!-- weave in just this aspect -->
+<!--         <aspect name="*Aspect"/> -->
+    </aspects>
+
+</aspectj>

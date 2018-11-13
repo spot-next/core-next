@@ -12,12 +12,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.SessionService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.spring.web.constants.SpringWebSupportConstants;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Sets the current session calling
@@ -53,7 +54,7 @@ public class WebSessionFilter extends OncePerRequestFilter {
 			// if it is null we create a new one
 			if (spotSession == null) {
 				spotSession = getSessionService().createSession(true);
-				getLoggingService().debug(String.format("Created new session %s", spotSession.getId()));
+				Logger.debug(String.format("Created new session %s", spotSession.getId()));
 
 				// and store the session id in the web session
 				request.getSession().setAttribute(SpringWebSupportConstants.SPOT_SESSION_ID, spotSession.getId());

@@ -1,84 +1,82 @@
 package io.spotnext.core.persistence.query;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * <p>QueryResult class.</p>
- *
+ * This object holds the results of a persistence query.
+ * 
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 public class QueryResult<T> {
-	private List<T> results;
+	private final List<T> results;
 	private final int pageSize;
 	private final int page;
+	private final int resultCount;
 
 	/**
-	 * <p>Constructor for QueryResult.</p>
-	 *
-	 * @param results a {@link java.util.List} object.
-	 * @param page a int.
-	 * @param pageSize a int.
+	 * @param results
+	 *            the result list
+	 * @param page
+	 *            the current page of the paged result
+	 * @param pageSize
+	 *            the page size
 	 */
 	public QueryResult(final List<T> results, final int page, final int pageSize) {
-		this.results = results;
+		if (results != null) {
+			this.results = results;
+		} else {
+			this.results = Collections.emptyList();
+		}
+
+		this.resultCount = this.results.size();
 		this.page = page;
 		this.pageSize = pageSize;
 	}
 
 	/**
-	 * <p>getResultList.</p>
-	 *
-	 * @return a {@link java.util.List} object.
+	 * @return the results.
 	 */
 	public List<T> getResultList() {
 		return results;
 	}
 
 	/**
-	 * <p>getResultStream.</p>
-	 *
-	 * @return a {@link java.util.stream.Stream} object.
+	 * @return a stream of the results.
 	 */
 	public Stream<T> getResultStream() {
 		return results.stream();
 	}
 
 	/**
-	 * <p>count.</p>
-	 *
-	 * @return a long.
-	 */
-	public long count() {
-		return results.size();
-	}
-
-	/**
-	 * <p>isEmpty.</p>
-	 *
-	 * @return a boolean.
+	 * @return returns true if the result is empty.
 	 */
 	public boolean isEmpty() {
-		return count() == 0;
+		return resultCount == 0;
 	}
 
 	/**
-	 * <p>Getter for the field <code>pageSize</code>.</p>
-	 *
-	 * @return a int.
+	 * @return the current page size of the result.
 	 */
 	public int getPageSize() {
 		return pageSize;
 	}
 
 	/**
-	 * <p>Getter for the field <code>page</code>.</p>
-	 *
-	 * @return a int.
+	 * @return the current page of the paged result.
 	 */
 	public int getPage() {
 		return page;
 	}
+
+	/**
+	 * @return the amount of result objects.
+	 */
+	public int getResultCount() {
+		return resultCount;
+	}
+
 }

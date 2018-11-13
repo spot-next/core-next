@@ -6,10 +6,8 @@
     <file url="file://$PROJECT_DIR$/build-tools" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-cms-base" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-commerce-base" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/spot-commerce-spring-base" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-core" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/spot-core-base-models" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/spot-core-model-infrastructure" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spot-core-infrastructure" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-core-shell" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-core-support" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spot-instrumentation" charset="UTF-8" />

@@ -45,14 +45,11 @@ public class ClassUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassUtil.class);
 
 	/**
-	 * Returns a {@link java.lang.reflect.Field} instance from the given
-	 * {@link java.lang.Class} object. If the field does not exist, null is
-	 * returned.
+	 * Returns a {@link java.lang.reflect.Field} instance from the given {@link java.lang.Class} object. If the field does not exist, null is returned.
 	 *
 	 * @param type              a {@link java.lang.Class} object.
 	 * @param fieldName         a {@link java.lang.String} object.
-	 * @param includeSuperTypes if this is true all super classes till and including
-	 *                          {@link java.lang.Object} will be invoked.
+	 * @param includeSuperTypes if this is true all super classes till and including {@link java.lang.Object} will be invoked.
 	 * @return a {@link java.lang.reflect.Field} object.
 	 */
 	public static Field getFieldDefinition(final Class<?> type, final String fieldName,
@@ -84,15 +81,12 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all super classes of the given {@link java.lang.Class} in the order
-	 * "most concrete class" to {@link java.lang.Object}.
+	 * Returns all super classes of the given {@link java.lang.Class} in the order "most concrete class" to {@link java.lang.Object}.
 	 *
 	 * @param type              a {@link java.lang.Class} object.
 	 * @param stopClass         {@link java.lang.Object} if null
-	 * @param includeStopClass  if this is true, the stop class will be included.
-	 *                          defaults to
-	 * @param includeStartClass if this is true, the given {@link java.lang.Class}
-	 *                          is included in the result
+	 * @param includeStopClass  if this is true, the stop class will be included. defaults to
+	 * @param includeStartClass if this is true, the given {@link java.lang.Class} is included in the result
 	 * @return a sorted list of all super classes of the given class.
 	 */
 	public static List<Class<?>> getAllSuperClasses(final Class<?> type, Class<?> stopClass,
@@ -125,17 +119,28 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Set the field value for the given object. This silently fails if something
-	 * goes wrong. something goes wrong.
+	 * Set the field value for the given object. This silently fails if something goes wrong. something goes wrong.
 	 *
 	 * @param object    a {@link java.lang.Object} object.
 	 * @param fieldName a {@link java.lang.String} object.
 	 * @param value     a {@link java.lang.Object} object.
 	 */
 	public static void setField(final Object object, final String fieldName, final Object value) {
+		setField(object, fieldName, value, true);
+	}
+
+	/**
+	 * Set the field value for the given object. This silently fails if something goes wrong. something goes wrong.
+	 *
+	 * @param object             a {@link java.lang.Object} object.
+	 * @param fieldName          a {@link java.lang.String} object.
+	 * @param value              a {@link java.lang.Object} object.
+	 * @param includeActualClass include actual class or only super classes?
+	 */
+	public static void setField(final Object object, final String fieldName, final Object value, boolean includeActualClass) {
 		boolean fieldSet = false;
 
-		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, true)) {
+		for (final Class<?> c : getAllSuperClasses(object.getClass(), Object.class, false, includeActualClass)) {
 			try {
 				final Field field = c.getDeclaredField(fieldName);
 				setAccessable(field);
@@ -156,8 +161,7 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns the field value for the given object. This silently fails if
-	 * something goes wrong. something goes wrong.
+	 * Returns the field value for the given object. This silently fails if something goes wrong. something goes wrong.
 	 *
 	 * @param object                    a {@link java.lang.Object} object.
 	 * @param fieldName                 a {@link java.lang.String} object.
@@ -213,8 +217,7 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Invokes a method on a given object. This silently fails if something goes
-	 * wrong.
+	 * Invokes a method on a given object. This silently fails if something goes wrong.
 	 *
 	 * @param object     a {@link java.lang.Object} object.
 	 * @param methodName a {@link java.lang.String} object.
@@ -222,6 +225,19 @@ public class ClassUtil {
 	 * @return a {@link java.lang.Object} object.
 	 */
 	public static Object invokeMethod(final Object object, final String methodName, final Object... args) {
+		return invokeMethod(object, true, methodName, args);
+	}
+
+	/**
+	 * Invokes a method on a given object. This silently fails if something goes wrong.
+	 *
+	 * @param object             a {@link java.lang.Object} object.
+	 * @param includeActualClass include actual class or only super classes?
+	 * @param methodName         a {@link java.lang.String} object.
+	 * @param args               a {@link java.lang.Object} object.
+	 * @return a {@link java.lang.Object} object.
+	 */
+	public static Object invokeMethod(final Object object, boolean includeActualClass, final String methodName, final Object... args) {
 		Object retVal = null;
 
 		final Class<?>[] paramArgs = new Class<?>[args.length];
@@ -236,7 +252,7 @@ public class ClassUtil {
 		Method method = null;
 
 		// iterate over all superclasses and look for given method
-		for (final Class<?> c : getAllAssignableClasses(object.getClass())) {
+		for (final Class<?> c : getAllAssignableClasses(object.getClass(), includeActualClass)) {
 			try {
 				final List<Method> possibleMethods = Stream.of(c.getDeclaredMethods())
 						.filter(m -> methodName.equals(m.getName())).collect(Collectors.toList());
@@ -315,14 +331,13 @@ public class ClassUtil {
 	 * Retrieves all fields recursively that match the given filter predicate.
 	 *
 	 * @param type   must not be null
-	 * @param filter returns true for all selected fields. If null, all fields will
-	 *               be returned.
+	 * @param filter returns true for all selected fields. If null, all fields will be returned.
 	 * @return all filtered fields
 	 */
 	public static Set<Field> getFields(final Class<?> type, Predicate<Field> filter) {
 		final Set<Field> fields = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Field field : c.getDeclaredFields()) {
 				if (filter == null || filter.test(field)) {
 					fields.add(field);
@@ -334,17 +349,33 @@ public class ClassUtil {
 	}
 
 	/**
+	 * Retrieves the method with the given name
+	 * 
+	 * @param type       the class to inspect
+	 * @param methodName of the method to retrieve
+	 * @return the method with the given name, if found.
+	 */
+	public static Optional<Method> getMethodDefinition(Class<?> type, String methodName) {
+		Set<Method> methods = getMethods(type, (m) -> m.getName().equals(methodName));
+
+		if (methods.size() > 0) {
+			return Optional.of(methods.iterator().next());
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Retrieves all methods recursively that match the given filter predicate.
 	 *
 	 * @param type   must not be null
-	 * @param filter returns true for all selected methods. If null, all methods
-	 *               will be returned.
+	 * @param filter returns true for all selected methods. If null, all methods will be returned.
 	 * @return all filtered methods
 	 */
 	public static Set<Method> getMethods(final Class<?> type, Predicate<Method> filter) {
 		final Set<Method> methods = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Method method : c.getDeclaredMethods()) {
 				if (filter == null || filter.test(method)) {
 					methods.add(method);
@@ -368,7 +399,7 @@ public class ClassUtil {
 
 		final Set<Method> annotatedMethds = new HashSet<>();
 
-		for (final Class<?> c : getAllAssignableClasses(type)) {
+		for (final Class<?> c : getAllAssignableClasses(type, true)) {
 			for (final Method method : c.getDeclaredMethods()) {
 				if (method.isAnnotationPresent(annotation)) {
 					annotatedMethds.add(method);
@@ -380,15 +411,18 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns all assignable classes for the given class, starting with the actual
-	 * class.
+	 * Returns all assignable classes for the given class, starting with the actual class.
 	 *
 	 * @param type a {@link java.lang.Class} object.
 	 * @return a {@link java.util.List} object.
 	 */
-	public static List<Class<?>> getAllAssignableClasses(final Class<?> type) {
+	public static List<Class<?>> getAllAssignableClasses(final Class<?> type, boolean includeActualClass) {
 		final List<Class<?>> classes = new ArrayList<>();
-		classes.add(type);
+
+		if (includeActualClass) {
+			classes.add(type);
+		}
+
 		classes.addAll(ClassUtils.getAllSuperclasses(type));
 
 		return classes;
@@ -407,8 +441,7 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
+	 * Returns the given annotation object, if present. If the annotation is not found, null is returned.
 	 *
 	 * @param joinPoint  a {@link org.aspectj.lang.JoinPoint} object.
 	 * @param annotation a {@link java.lang.Class} object.
@@ -455,8 +488,7 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
+	 * Returns the given annotation object, if present. If the annotation is not found, null is returned.
 	 *
 	 * @param type       a {@link java.lang.Class} object.
 	 * @param annotation a {@link java.lang.Class} object.
@@ -481,8 +513,7 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Returns the given annotation object, if present. If the annotation is not
-	 * found, null is returned.
+	 * Returns the given annotation object, if present. If the annotation is not found, null is returned.
 	 *
 	 * @param member     a {@link java.lang.reflect.AccessibleObject} object.
 	 * @param annotation a {@link java.lang.Class} object.
@@ -658,21 +689,18 @@ public class ClassUtil {
 	}
 
 	/**
-	 * Invokes the getter method for the given property name (= field name). The
-	 * method MUST not have any parameters.
+	 * Invokes the getter method for the given property name (= field name). The method MUST not have any parameters.
 	 * 
 	 * @param object       to read from
 	 * @param propertyName the name of the property/field
-	 * @return the property value. If no matching getter is found, null is returned
-	 *         also.
+	 * @return the property value. If no matching getter is found, null is returned also.
 	 */
 	public static Object getProperty(Object object, String propertyName) {
 		return invokeMethod(object, createGetterMethodName(propertyName));
 	}
 
 	/**
-	 * Invokes the setter method for the given property name (= field name). The
-	 * method MUST only have one parameter.
+	 * Invokes the setter method for the given property name (= field name). The method MUST only have one parameter.
 	 * 
 	 * @param object       to write to
 	 * @param propertyName the name of the property/field

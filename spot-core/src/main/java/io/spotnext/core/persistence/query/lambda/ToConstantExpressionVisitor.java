@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.trigersoft.jaque.expression.BinaryExpression;
 import com.trigersoft.jaque.expression.ConstantExpression;
+import com.trigersoft.jaque.expression.DelegateExpression;
 import com.trigersoft.jaque.expression.Expression;
 import com.trigersoft.jaque.expression.ExpressionVisitor;
 import com.trigersoft.jaque.expression.InvocationExpression;
@@ -90,6 +91,11 @@ public class ToConstantExpressionVisitor implements ExpressionVisitor<ConstantEx
 	@Override
 	public ConstantExpression visit(final UnaryExpression unaryExpression) {
 		throw new UnsupportedOperationException("unaryExpression unsupported" + unaryExpression);
+	}
+
+	@Override
+	public ConstantExpression visit(DelegateExpression delegateExpression) {
+		throw new UnsupportedOperationException("delegateExpression unsupported" + delegateExpression);
 	}
 
 }

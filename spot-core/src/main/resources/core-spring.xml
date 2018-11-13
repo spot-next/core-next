@@ -38,10 +38,8 @@
 	<context:component-scan base-package="io.spotnext.itemtype" />
 
 
-	<bean id="itemTypeAnnotationProcessor" class="io.spotnext.infrastructure.spring.ItemTypeAnnotationProcessor" />
-
-	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true">
-	</bean>
+<!-- 	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true"> -->
+<!-- 	</bean> -->
 
 <!-- 	<bean class="io.spotnext.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
 	<!-- <bean class="io.spotnext.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
@@ -90,11 +88,7 @@
 		</property>
 	</bean>
 
-	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<property name="corePoolSize" value="5" />
-		<property name="maxPoolSize" value="10" />
-		<property name="queueCapacity" value="25" />
-	</bean>
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" />
 
 	<!-- event handling -->
 	<bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
@@ -115,8 +109,6 @@
 	<bean id="hibernatePersistenceService" class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" />
 
 	<bean id="abstractService" class="io.spotnext.core.infrastructure.service.impl.AbstractService" abstract="true" />
-
-	<bean id="abstractSerialNumberGeneratorService" class="io.spotnext.core.persistence.service.impl.AbstractSerialNumberGeneratorService" abstract="true" />
 
 	<!-- ALIASES -->
 

@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import org.json.JSONObject;
 
 import io.spotnext.support.exception.CannotInvokeException;
 
@@ -21,9 +20,6 @@ public class DynamicObject {
 	/** Constant <code>DATE_FORMAT="yyyy-MM-dd HH:mm:ss"</code> */
 	protected static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	/** Constant <code>GSON</code> */
-	protected static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().serializeNulls()
-			.setDateFormat(DATE_FORMAT).create();
-
 	protected Map<String, Object> properties = new HashMap<>();
 
 	/**
@@ -79,6 +75,6 @@ public class DynamicObject {
 	 */
 	@Override
 	public String toString() {
-		return GSON.toJson(properties);
+		return new JSONObject(properties).toString();
 	}
 }

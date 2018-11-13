@@ -39,6 +39,7 @@ public class ItemProxySerializer extends JsonSerializer<Item> {
 	public void serialize(final Item source, final JsonGenerator gen, final SerializerProvider serializers)
 			throws IOException {
 
+		// see ItemSerializationMixIn
 		gen.writeObjectField("pk", source.getPk());
 		gen.writeObjectField("typeCode", getTypeService().getTypeCodeForClass(source.getClass()));
 	}

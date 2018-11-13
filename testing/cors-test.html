@@ -1,0 +1,48 @@
+<meta charset="UTF-8"> 
+<html> 
+
+<head>
+
+</head>
+
+<body>
+	<script type="text/javascript">
+	  var createCORSRequest = function(method, url) {
+	  var xhr = new XMLHttpRequest();
+	  if ("withCredentials" in xhr) {
+	    // Most browsers.
+	    xhr.open(method, url, true);
+	  } else if (typeof XDomainRequest != "undefined") {
+	    // IE8 & IE9
+	    xhr = new XDomainRequest();
+	    xhr.open(method, url);
+	  } else {
+	    // CORS not supported.
+	    xhr = null;
+	  }
+	  return xhr;
+	};
+
+	var url = 'http://localhost:19000/v1/models/user';
+	var method = 'POST';
+	var xhr = createCORSRequest(method, url);
+
+	xhr.onload = function() {
+	  // Success code goes here.
+	};
+
+	xhr.onerror = function() {
+	  // Error code goes here.
+	};
+
+
+	xhr.setRequestHeader('Authorization', 'Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk');
+
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.send();
+
+	</script>
+
+</body>
+
+</html>

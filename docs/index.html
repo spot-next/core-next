@@ -6,36 +6,213 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="spOt framework">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="/resources/spot_icon.ico">
   <link rel="stylesheet" href="node_modules/docsify-themeable/dist/css/theme-simple.css">
   <style>
-	:root {
-		/* Reduce the font size */ 
-		--base-font-size: 16px;
+  :root {
+    /* Reduce the font size */ 
+    --base-font-size: 16px;
 
-		/* Change the theme color hue (0-360) */
-		--theme-hue: 90;
-		--cover-background-color: #F1FCE7;
-		--sidebar-nav-link-font-weight--active: bold;
+    /* Change the theme color hue (0-360) */
+    --theme-hue: 90;
+    --cover-background-color: #F1FCE7;
+    --sidebar-nav-link-font-weight--active: bold;
+    --code-font-size: calc(var(--font-size-m) * 0.85);
+  }
+  .logo-coverpage {
+    max-width: 100%;
+    height: auto;
+  }
+  main.hidden {
+    display:none
+  }
+  .cover h1 {
+    color: black;
+    font-size: 25px;
+  }
+
+  img.plantuml {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  ul li ul li a {
+    font-size: 15px;
+  }
+
+  /* third sidebar header layer */
+  ul li ul ul li a {
+    font-size: 14px;
+  }
+
+  h5 {
+    margin-bottom: 0px;
+  }
+
+  h5 + p {
+    margin-top: 0px !important;
+  }
+  
+/*   .cover::after { */
+/* 	background-image: url(/resources/hero-background.png); */
+/* 	background-repeat: no-repeat; */
+/* 	background-attachment: fixed; */
+/*     background-position: top;  */
+/*   } */
+
+/* 	main { */
+/* 		z-index: 22; */
+/* 		background-color: white; */
+/* 	} */
+	
+/* 	.sidebar-toggle { */
+/* 		z-index: 23; */
+/* 	} */
+
+	.cover.show {
+	    overflow: hidden;
 	}
-	.logo-coverpage {
-		max-width: 100%;
-		height: auto;
+
+	.wave-container {
+    position: relative;
+    padding: 0px;
+    border: none;
+    top: -520px;
+    left: 0px;
+    right: 0px;
 	}
-	main.hidden {
-		display:none
+
+	.wave {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    top: -1200px;
+	 }
+  
+  .wave::before,
+  .wave::after {
+    content: "";
+    position: absolute;
+    width: 6000px;
+    height: 6000px;
+    top: 0;
+    left: 50%;
+    background-color: rgba(115, 218, 11, .15);
+    border-radius: 45%;
+    transform: translate(-50%, -70%) rotate(0);
+    animation: rotate 60s linear infinite;
+/*         z-index: 21; */
+  }
+	    
+  .wave::after {
+    border-radius: 47%;
+    background-color: rgba(115, 218, 11, .3);
+    transform: translate(-50%, -70%) rotate(0);
+    animation: rotate 40s linear -40s infinite;
+/*         z-index: 20; */
 	}
-	.cover h1 {
-		color: black;
-		font-size: 25px;
+	
+	@keyframes rotate {
+    50% {
+      transform: translate(-50%, -73%) rotate(180deg);
+    } 100% {
+      transform: translate(-50%, -70%) rotate(360deg);
+    }
 	}
+	
+		
+	@media only screen and (max-width: 600px) {
+		.wave-container {
+			height: 60px;
+		}
+		
+		.wave::before,
+		.wave::after {
+      width: 2000px;
+      height: 2000px;
+     }
+        
+    .wave {
+      top: -20px;
+    }
+	}
+
+  .gitter-open-chat-button {
+    font-size: 15px;
+    padding: 6px;
+    padding-right: 15px;
+    padding-left: 15px;
+    padding-bottom: 3px;
+  }
+
+  .gitter-open-chat-button,
+  .gitter-open-chat-button:focus,
+  .gitter-open-chat-button:hover {
+    background-color: rgb(115,218,11);
+  }
+
   </style>
 </head>
 <body>
   <div id="app"></div>
+  <script src="javascript/plantuml-encoder.min.js"></script>
+  <script src="node_modules/mermaid/dist/mermaid.min.js"></script>
+  
   <script>
+    mermaid.initialize({ 
+      startOnLoad: false,
+      "theme": null
+    });
+
+    // plantuml themeing, will be prepended to all diagrams
+    var plantUmlConfig = [
+      'skinparam {',
+      '  BackgroundColor<<Strong>>  #66ffcc',
+      
+      '  componentStyle              uml2',
+      '  defaultTextAlignment        center',
+      
+      '  Shadowing                   false',
+      '  BackgroundColor             transparent',
+      '  ArrowColor                  #888a88',
+      '  ActorBackgroundColor        #F1FCE7',
+      
+      '  ActivityBackgroundColor     #F1FCE7',
+      '  ComponentBackgroundColor    #F1FCE7',
+      '  ClassBackgroundColor        #F1FCE7',
+      '  ParticipantBackgroundColor  #F1FCE7',
+      '  UsecaseBackgroundColor      #F1FCE7',
+      '  LifeLineBackgroundColor     #F1FCE7',
+      
+      '  ActorBorderColor            #555',
+      '  ActivityBorderColor         #555',
+      '  LifeLineBorderColor         #555',
+      '  ComponentBorderColor        #555',
+      '  ParticipantBorderColor      #555',
+      '  SequenceLifeLineBorderColor #555',
+      
+      '  ActivityBorderThickness     1',
+      '  UsecaseBorderThickness      1',
+      '  TitleBorderThickness        1',
+      '  RectangleBorderThickness    1',
+      '  ComponentBorderThickness    1',
+      '  ParticipantBorderThickness  1',
+      '  ClassBorderThickness        1',
+      '}',
+      '' // important!
+    ].join('\n');
+    
+	// register service worker to enable offline mode
+    if (typeof navigator.serviceWorker !== 'undefined') {
+      navigator.serviceWorker.register('sw.js')
+    }
+
     window.$docsify = {
       name: 'spOt framework',
-      repo: 'https://github.com/mojo2012/spot-framework',
+      repo: 'https://github.com/spot-next/spot-framework',
+      ga: 'UA-127039085-1',
+//       coverpage: 'coverpage.html',
       coverpage: 'coverpage.md',
       formatUpdated: '{YYYY}-{MM}-{DD} {HH}:{mm}',
       loadSidebar: true,
@@ -46,24 +223,72 @@
       onlyCover: true,
       mergeNavbar: true,
       themeable : { 
-        // readyTransition : false, 
+        // readyTransition : true, 
         // responsiveTables: false 
+      },
+      markdown: {
+        renderer: {
+          code: function(code, lang) {
+            if (lang === "mermaid") {
+              return (
+                '<div class="mermaid">' + mermaid.render(lang, code) + "</div>"
+              );
+            } else if (lang === 'plantuml') {
+              var plantUmlCode = plantUmlConfig + code;
+              return '<img class="plantuml" src="http://www.plantuml.com/plantuml/png/' + plantumlEncoder.encode(plantUmlCode) + '">';
+            }
+
+            return this.origin.code.apply(this, arguments);
+          }
+        }
       }
     }
   </script>
+  
   <script src="node_modules/docsify/lib/docsify.min.js"></script>
-  <script src="node_modules/docsify-themeable/dist/js/docsify-themeable.min.js"></script>
   <script src="node_modules/docsify/lib/plugins/search.min.js"></script>
+  <script src="node_modules/docsify/lib/plugins/external-script.min.js"></script>
+  <script src="node_modules/docsify/lib/plugins/ga.min.js"></script>
+  <script src="node_modules/docsify-themeable/dist/js/docsify-themeable.min.js"></script>
   <script src="node_modules/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
   
-<script src="node_modules/prismjs/components/prism-java.min.js"></script>
-<script src="node_modules/prismjs/components/prism-json.min.js"></script>
-<script src="node_modules/prismjs/components/prism-bash.min.js"></script>
-<script src="node_modules/prismjs/components/prism-http.min.js"></script>
-<script src="node_modules/prismjs/components/prism-properties.min.js"></script>
-<script src="node_modules/prismjs/components/prism-sql.min.js"></script>
-<script src="node_modules/prismjs/components/prism-markup.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-java.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-json.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-bash.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-http.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-properties.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-sql.min.js"></script>
+  <script src="node_modules/prismjs/components/prism-markup.min.js"></script>
 
+  <!-- gitter chat -->
+  <script>
+    ((window.gitter = {}).chat = {}).options = {
+      room: 'spot-next/Lobby'
+    };
+  </script>
+  <script src="https://sidecar.gitter.im/dist/sidecar.v1.js" async defer></script>
 
+  <!-- disqus -->
+  <!-- <script>
+    window.$docsify = {
+      disqus: 'https-spot-next-io'
+    }
+  </script>
+  <script src="//unpkg.com/docsify/lib/plugins/disqus.min.js"></script> -->
+
+  <style>
+    /* mermaid css */
+    #mermaid .node rect { 
+      /*fill: #87db35;*/
+      fill: #F1FCE7;
+      stroke: #888a88;
+      stroke-width: 1.5px;
+    }
+
+    #mermaid .edgePath .path {
+      stroke: #888a88;
+      stroke-width: 1.5px;
+    }
+  </style>
 </body>
 </html>

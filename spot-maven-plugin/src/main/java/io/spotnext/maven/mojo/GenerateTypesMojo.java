@@ -324,14 +324,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 					field.setName(prop.getName());
 
 					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
-						try {
-							field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), propType));
-						} catch (final ClassNotFoundException e) {
-							throw new MojoExecutionException(String
-									.format(String.format("Could not set default value for property %s of bean type %s",
-											field.getName(), bean.getFullyQualifiedName())),
-									e);
-						}
+						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), JavaValueType.LITERAL));
 					}
 
 					field.setType(propType);
@@ -902,7 +895,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			throws IOException, MojoExecutionException {
 
 		for (final AbstractComplexJavaType type : types) {
-			final String srcPackagePath = type.getPackagePath().replaceAll("\\.", File.separator);
+			final String srcPackagePath = type.getPackagePath().replace(".", File.separator);
 
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
 					type.getName() + ".java");
@@ -1050,6 +1043,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 				&& propertyDefinition.getPersistence().getColumnType() != null) {
 			propAnn.addParameter("columnType", propertyDefinition.getPersistence().getColumnType(),
 					JavaValueType.ENUM_VALUE);
+			propAnn.addParameter("indexed", propertyDefinition.getPersistence().isIndexed(),
+					JavaValueType.LITERAL);
 		}
 	}
 

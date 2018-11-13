@@ -1,14 +1,18 @@
 package io.spotnext.core.infrastructure.serialization.jackson;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 /**
- * <p>Abstract ItemSerializationMixIn class.</p>
+ * <p>
+ * Abstract ItemSerializationMixIn class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -16,21 +20,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonPropertyOrder({ "typeCode", "pk", "version", "createdAt", "createdBy", "lastModifiedAt", "lastModifiedBy" })
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "pk")
 public abstract class ItemSerializationMixIn {
-	/**
-	 * <p>getUniqueProperties.</p>
-	 *
-	 * @return a {@link java.util.Map} object.
-	 */
-	@JsonIgnore
-	public abstract Map<String, Object> getUniqueProperties();
 
-	/**
-	 * <p>isPersisted.</p>
-	 *
-	 * @return a boolean.
-	 */
-	@JsonIgnore
-	public abstract boolean isPersisted();
+	// render PKs as string in JSON, because otherwise it would cause an overflow, javascript can't interpret it correctly
+	// see also ItemProxySerializer and ItemCollectionProxySerializer
+	@JsonSerialize(using = ToStringSerializer.class)
+	public abstract long getPk();
+
 }

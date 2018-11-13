@@ -108,7 +108,7 @@ It's easy to guess what this does: list all user objects:
     "data": {
         "objects": [
             {
-                "pk": 22207630153109145,
+                "pk": "22207630153109145",
                 "createdAt": 1534017556159,
                 "createdBy": "<system>",
                 "lastModifiedAt": 1534017556159,
@@ -120,7 +120,7 @@ It's easy to guess what this does: list all user objects:
                 "shortName": null,
                 "groups": [
                     {
-                        "pk": 2672514096731801604,
+                        "pk": "2672514096731801604",
                         "typeCode": "usergroup"
                     }
                 ],
@@ -159,9 +159,9 @@ First we add the new `Party` type:
 		<property name="title" type="String">
 			<description>The unique title of the party</description>
 			<modifiers unique="true" />
-			<validators>
-				<validator javaClass="javax.validation.constraints.NotNull" />
-			</validators>
+			<annotations>
+				<annotation javaClass="javax.validation.constraints.NotNull" />
+			</annotations>
 		</property>
 		<property name="motto" type="LocalizedString" localized="true">
 			<description>The localized motto of the party</description>
@@ -282,7 +282,7 @@ This results in something like this:
     "data": {
         "results": [
             {
-                "pk": 4003256542000269317,
+                "pk": "4003256542000269317",
                 "createdAt": 1534017553477,
                 "createdBy": "<system>",
                 "lastModifiedAt": 1534017553477,
@@ -293,11 +293,11 @@ This results in something like this:
                 "isoCode": "AT",
                 "iso3Code": "AUT",
                 "shortName": {
-                    "pk": 8617539322739705278,
+                    "pk": "8617539322739705278",
                     "typeCode": "localizedstring"
                 },
                 "longName": {
-                    "pk": 5123398329302468367,
+                    "pk": "5123398329302468367",
                     "typeCode": "localizedstring"
                 },
                 "phoneCountryCode": "43",
@@ -327,7 +327,7 @@ After fixing our POST request the creation of a `Party` item succeeds:
 	    	"postalCode": "1030",
 	    	"country": {
 	    		"typeCode": "country",
-	    		"pk": 4003256542000269317
+	    		"pk": "4003256542000269317"
 	    	}
     },
     "invitedGuests": [
@@ -348,7 +348,7 @@ The REST interface returns the following JSON:
     "errors": [],
     "warnings": [],
     "data": {
-        "pk": 5653851201092010438
+        "pk": "5653851201092010438"
     }
 } 
 ```
@@ -388,14 +388,10 @@ public class PartyModificationListener {
 
 As we are only interested in **save** events of parties that have the `fixed` property set to `true`, we add a condition to the `@EventListener` annotation:
 ```java
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
-import io.spotnext.core.infrastructure.event.ItemModificationEvent;
-import io.spotnext.test.types.itemtypes.Party;
 
 @EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
 public void handleEvent(final ItemModificationEvent<Party> event) {
-	final Party fixedParty = event.getItem();
+	...
 }
 ```
 
@@ -470,6 +466,7 @@ Now we can extend the `PartyModificationListener` to actually create `mail` obje
 package io.spotnext.test.listeners;
 
 import javax.annotation.Resource;
+
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.springframework.context.event.EventListener;

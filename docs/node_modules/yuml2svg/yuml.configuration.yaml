@@ -1,0 +1,29 @@
+yuml:
+  comments:
+    lineComment: "//"
+    # blockComment: ["/*", "*/"]
+  
+  # symbols used as brackets
+  brackets: [
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"]
+  ]
+
+  # symbols that are auto closed when typing
+  autoClosingPairs: [
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"],
+      ["\"", "\""],
+      ["'", "'"]
+  ]
+
+  # symbols that that can be used to surround a selection
+  surroundingPairs: [
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"],
+      ["\"", "\""],
+      ["'", "'"]
+  ]

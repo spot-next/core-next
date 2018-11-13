@@ -17,29 +17,35 @@ public class ItemTypeDefinition {
 	protected final String typeClass;
 	protected final String typeName;
 	protected final String packageName;
+	protected final boolean isAbstract;
 	protected final Map<String, ItemTypePropertyDefinition> properties;
 
 	/**
-	 * <p>Constructor for ItemTypeDefinition.</p>
+	 * <p>
+	 * Constructor for ItemTypeDefinition.
+	 * </p>
 	 *
-	 * @param typeCode a {@link java.lang.String} object.
-	 * @param typeClass a {@link java.lang.String} object.
-	 * @param typeName a {@link java.lang.String} object.
+	 * @param typeCode    a {@link java.lang.String} object.
+	 * @param typeClass   a {@link java.lang.String} object.
+	 * @param typeName    a {@link java.lang.String} object.
 	 * @param packageName a {@link java.lang.String} object.
-	 * @param properties a {@link java.util.Map} object.
+	 * @param properties  a {@link java.util.Map} object.
 	 */
-	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName,
+	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName, boolean isAbstract,
 			Map<String, ItemTypePropertyDefinition> properties) {
 
 		this.typeCode = typeCode;
 		this.typeClass = typeClass;
 		this.typeName = typeName;
 		this.packageName = packageName;
+		this.isAbstract = isAbstract;
 		this.properties = properties;
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeCode</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeCode</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -48,7 +54,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeClass</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeClass</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -57,7 +65,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>typeName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>typeName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -66,7 +76,9 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>packageName</code>.</p>
+	 * <p>
+	 * Getter for the field <code>packageName</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -75,7 +87,17 @@ public class ItemTypeDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>properties</code>.</p>
+	 * Specifies if the item type is abstract and hence not persistable or not.
+	 * @return true if the item type is abstract
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+
+	/**
+	 * <p>
+	 * Getter for the field <code>properties</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */

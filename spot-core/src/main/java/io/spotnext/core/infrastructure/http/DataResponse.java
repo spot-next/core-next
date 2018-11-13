@@ -20,7 +20,7 @@ public class DataResponse extends AbstractResponse {
 	final protected List<Status> errors = new ArrayList<>();
 	final protected List<Status> warnings = new ArrayList<>();
 
-	private DataResponse(HttpStatus httpStatus) {
+	protected DataResponse(HttpStatus httpStatus) {
 		super(httpStatus);
 	}
 

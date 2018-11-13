@@ -26,11 +26,12 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import io.spotnext.core.infrastructure.exception.SerializationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.service.SerializationService;
+import io.spotnext.itemtype.core.beans.SerializationConfiguration;
+import io.spotnext.itemtype.core.enumeration.DataFormat;
 import io.spotnext.spring.web.dto.UserStatus;
 
 /**
- * This handler implementation combines a few spring security handlers together.
- * It is primarily useful for RESTful services.
+ * This handler implementation combines a few spring security handlers together. It is primarily useful for RESTful services.
  *
  * @author mojo2012
  * @version 1.0
@@ -46,10 +47,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	protected SerializationService serializationService;
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Aborts a request in case it is not authenticated. It don't sends the
-	 * www-authenticate header though as this would show a login box in the
+	 * {@inheritDoc} Aborts a request in case it is not authenticated. It don't sends the www-authenticate header though as this would show a login box in the
 	 * browser..
 	 */
 	@Override
@@ -64,9 +62,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Called when authentication was success.
+	 * {@inheritDoc} Called when authentication was success.
 	 */
 	@Override
 	public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -83,9 +79,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Called when authentication failed.
+	 * {@inheritDoc} Called when authentication failed.
 	 */
 	@Override
 	public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
@@ -100,9 +94,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Called when access to resource is denied.
+	 * {@inheritDoc} Called when access to resource is denied.
 	 */
 	@Override
 	public void handle(final HttpServletRequest request, final HttpServletResponse response,
@@ -119,9 +111,7 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * Called when logout was successful.
+	 * {@inheritDoc} Called when logout was successful.
 	 */
 	@Override
 	public void onLogoutSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -172,8 +162,11 @@ public class RestAuthenticationHandler implements AuthenticationEntryPoint, Auth
 			ret.withError("login.error", exception.getMessage());
 		}
 
+		SerializationConfiguration config = new SerializationConfiguration();
+		config.setFormat(DataFormat.JSON);
+
 		try {
-			response.getWriter().println(serializationService.toJson(ret));
+			response.getWriter().println(serializationService.serialize(config, ret));
 		} catch (final SerializationException e) {
 			throw new IOException("Could not serialize authentication response payload", e);
 		}

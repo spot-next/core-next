@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.spotnext.core.infrastructure.exception.CannotCreateUserException;
-import io.spotnext.core.security.service.AuthenticationService;
+import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
@@ -34,7 +34,7 @@ public interface UserService<U extends User, G extends UserGroup> {
 	 * @param userId a {@link java.lang.String} object.
 	 * @return the newly created {@link io.spotnext.itemtype.core.user.User}.
 	 * @throws io.spotnext.infrastructure.exception.CannotCreateUserException
-	 * @param type a {@link java.lang.Class} object.
+	 * @param type     a {@link java.lang.Class} object.
 	 * @param password a {@link java.lang.String} object.
 	 */
 	U createUser(Class<U> type, String userId, String password) throws CannotCreateUserException;
@@ -79,20 +79,20 @@ public interface UserService<U extends User, G extends UserGroup> {
 	Set<G> getAllGroupsOfUser(String uid);
 
 	/**
-	 * <p>isUserInGroup.</p>
+	 * Checks if the specified user is in a group with the given id.
 	 *
-	 * @param userUid a {@link java.lang.String} object.
-	 * @param groupUid a {@link java.lang.String} object.
-	 * @return a boolean.
+	 * @param userId  of the user to check
+	 * @param groupId of the group the user should be in
+	 * @return true if the user is in the specified group
 	 */
-	boolean isUserInGroup(String userUid, String groupUid);
+	boolean isUserInGroup(String userId, String groupId);
 
 	/**
 	 * Returns the current user in the session.
 	 *
-	 * @return a U object.
+	 * @return a {@link UserData} object.
 	 */
-	U getCurrentUser();
+	UserData getCurrentUser();
 
 	/**
 	 * Sets the given user as the current session user.

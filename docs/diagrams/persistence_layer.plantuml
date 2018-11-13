@@ -1,0 +1,23 @@
+@startuml Persistence layer
+
+rectangle "Persistence layer" as PersLayer {
+	component QueryService [
+		QueryService
+	]
+	component ModelService [
+		ModelService
+	]
+	component PersistenceService #WhiteSmoke [
+		PersistenceService
+	]
+	component TypeService #WhiteSmoke [
+		TypeService
+	]
+
+	QueryService --> PersistenceService
+	ModelService --> PersistenceService
+	ModelService --> TypeService
+	PersistenceService -> TypeService
+}
+
+@enduml

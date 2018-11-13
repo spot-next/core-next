@@ -6,13 +6,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spotnext.instrumentation.ClassTransformer;
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-import io.github.lukehutch.fastclasspathscanner.matchprocessor.ImplementingClassMatchProcessor;
+import io.spotnext.instrumentation.DynamicInstrumentationLoader;
 
 // @Immutable
 /**
- * <p>DynamicInstrumentationAgent class.</p>
+ * <p>
+ * DynamicInstrumentationAgent class.
+ * </p>
  *
  * @since 1.0
  */
@@ -22,7 +22,9 @@ public final class DynamicInstrumentationAgent {
 	}
 
 	/**
-	 * <p>premain.</p>
+	 * <p>
+	 * premain.
+	 * </p>
 	 *
 	 * @param args a {@link java.lang.String} object.
 	 * @param inst a {@link java.lang.instrument.Instrumentation} object.
@@ -30,6 +32,7 @@ public final class DynamicInstrumentationAgent {
 	 */
 	public static void premain(final String args, final Instrumentation inst)
 			throws Exception {
+
 		final ClassLoader agentClassLoader = AgentClassLoaderReference
 				.getAgentClassLoader();
 		final Class<?> agentInstrumentationInitializer = agentClassLoader
@@ -40,7 +43,7 @@ public final class DynamicInstrumentationAgent {
 				.getDeclaredMethod("initialize", String.class,
 						Instrumentation.class);
 
-		for (final ClassFileTransformer t : findClassTransformers()) {
+		for (final ClassFileTransformer t : loadClassTransformers()) {
 			inst.addTransformer(t);
 		}
 
@@ -48,7 +51,9 @@ public final class DynamicInstrumentationAgent {
 	}
 
 	/**
-	 * <p>agentmain.</p>
+	 * <p>
+	 * agentmain.
+	 * </p>
 	 *
 	 * @param args a {@link java.lang.String} object.
 	 * @param inst a {@link java.lang.instrument.Instrumentation} object.
@@ -61,35 +66,19 @@ public final class DynamicInstrumentationAgent {
 	}
 
 	/**
-	 * <p>findClassTransformers.</p>
+	 * Instantiate the {@link ClassFileTransformer}s registered in {@link DynamicInstrumentationLoader#getRegisteredTranformers()}.
 	 *
 	 * @param <T> a T object.
 	 * @return a {@link java.util.List} object.
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	protected static <T extends ClassFileTransformer> List<T> findClassTransformers() {
+	protected static <T extends ClassFileTransformer> List<T> loadClassTransformers() throws InstantiationException, IllegalAccessException {
 		final List<T> transformers = new ArrayList<>();
 
-		new FastClasspathScanner().matchClassesImplementing(
-				ClassFileTransformer.class,
-				new ImplementingClassMatchProcessor<ClassFileTransformer>() {
-					@Override
-					public void processMatch(
-							final Class<? extends ClassFileTransformer> implementingClass) {
-						if (implementingClass
-								.isAnnotationPresent(ClassTransformer.class)) {
-							try {
-								final T transformer = (T) implementingClass
-										.newInstance();
-
-								transformers.add(transformer);
-							} catch (final Exception e) {
-								throw new RuntimeException(String.format(
-										"Could not instantiate ClassFileTransformer '%s'",
-										implementingClass.getName()), e);
-							}
-						}
-					}
-				}).scan();
+		for (Class<? extends ClassFileTransformer> t : DynamicInstrumentationLoader.getRegisteredTranformers()) {
+			transformers.add((T) t.newInstance());
+		}
 
 		return transformers;
 	}

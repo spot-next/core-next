@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.LoggingService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.LogLevel;
 
 @Service
@@ -13,67 +13,67 @@ public class DefaultLoggingService implements LoggingService {
 
 	@Override
 	public void debug(String message) {
-		debug(message, Log.getCallingClass());
+		debug(message, Logger.getCallingClass());
 	}
 
 	@Override
 	public void debug(Supplier<String> message) {
-		Log.debug(message);
+		Logger.debug(message);
 	}
 
 	@Override
 	public void debug(String message, Class<?> callingClass) {
-		Log.debug(message, callingClass);
+		Logger.debug(message, callingClass);
 	}
 
 	@Override
 	public void info(String message) {
-		info(message, Log.getCallingClass());
+		info(message, Logger.getCallingClass());
 	}
 
 	@Override
 	public void info(String message, Class<?> callingClass) {
-		Log.info(message, callingClass);
+		Logger.info(message, callingClass);
 	}
 
 	@Override
 	public void warn(String message) {
-		warn(message, Log.getCallingClass());
+		warn(message, Logger.getCallingClass());
 	}
 
 	@Override
 	public void warn(String message, Class<?> callingClass) {
-		Log.warn(message, callingClass);
+		Logger.warn(message, callingClass);
 	}
 
 	@Override
 	public void error(String message) {
-		error(message, Log.getCallingClass());
+		error(message, Logger.getCallingClass());
 	}
 
 	@Override
 	public void error(String message, Class<?> callingClass) {
-		Log.error(message, callingClass);
+		Logger.error(message, callingClass);
 	}
 
 	@Override
 	public void exception(String message, Throwable exception) {
-		exception(message, exception, Log.getCallingClass());
+		exception(message, exception, Logger.getCallingClass());
 	}
 
 	@Override
 	public void exception(String message, Throwable exception, Class<?> callingClass) {
-		Log.exception(message, exception, callingClass);
+		Logger.exception(message, exception, callingClass);
 	}
 
 	@Override
 	public void log(LogLevel level, String message, Throwable exception, Object object) {
-		log(level, message, exception, object, Log.getCallingClass());
+		log(level, message, exception, object, Logger.getCallingClass());
 	}
 
 	@Override
 	public void log(LogLevel level, String message, Throwable exception, Object object, Class<?> callingClass) {
-		Log.log(level, message, exception, object, callingClass);
+		Logger.log(level, message, exception, object, callingClass);
 	}
 
 }

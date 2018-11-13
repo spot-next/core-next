@@ -1,17 +1,26 @@
 package io.spotnext.test.persistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
+import javax.persistence.OptimisticLockException;
+
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
+import io.spotnext.core.infrastructure.support.Logger;
+import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
@@ -20,12 +29,16 @@ import io.spotnext.itemtype.core.internationalization.LocalizationValue;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserAddress;
 import io.spotnext.itemtype.core.user.UserGroup;
+import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
 
+	@Resource
+	protected SequenceGenerator sequenceGenerator;
+
 	@Rule
 	public ExpectedException expectedExeption = ExpectedException.none();
-	
+
 	@Override
 	protected void prepareTest() {
 	}
@@ -34,21 +47,63 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	protected void teardownTest() {
 	}
 
+	@Ignore
+	@Test
+	public void testDuplicateEntityAttachedToPersistenceContext() {
+		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		loaded.setShortName("loaded");
+
+		final User duplicate = new User();
+		ClassUtil.setField(duplicate, "pk", loaded.getPk());
+		modelService.refresh(duplicate);
+		duplicate.setShortName("loaded");
+
+		modelService.save(duplicate);
+
+		try {
+			modelService.save(loaded);
+		} catch (final ModelSaveException e) {
+			assertTrue(e.getCause() instanceof OptimisticLockException);
+		}
+	}
+
 	/**
-	 * The catalogVersion Default:Online already be available through the initial
-	 * data. Therefore saving a second item will cause a uniqueness constraint
+	 * The catalogVersion Default:Online already be available through the initial data. Therefore saving a second item will cause a uniqueness constraint
 	 * violation.
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
-		final Catalog catalog = modelService.get(Catalog.class,
-				Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
+		final Catalog catalog = modelService.get(Catalog.class, Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
 
 		final CatalogVersion version = modelService.create(CatalogVersion.class);
 		version.setCatalog(catalog);
 		version.setId("Online");
 
 		modelService.save(version);
+	}
+
+	private User createUser(final String id, final String shortName) {
+		final User user = modelService.create(User.class);
+		user.setId(id);
+		user.setShortName(shortName);
+		modelService.save(user);
+
+		return user;
+	}
+
+	@Test
+	public void testUniqueIdGenerator() {
+		final User user1 = createUser(null, "user-1");
+		final User user2 = createUser(null, "user-2");
+
+		// we don't care what the id values are, important is that those values
+		// were generated!
+
+		assertNotNull(user1.getId());
+		assertEquals("user-1", user1.getShortName());
+
+		assertNotNull(user2.getId());
+		assertEquals("user-2", user2.getShortName());
 	}
 
 	@Test
@@ -98,21 +153,18 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		address.setStreetName("Test");
 		user.getAddresses().add(address);
 
-		loggingService.debug("Addresses before save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+		Logger.debug("Addresses before save: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
-		loggingService.debug("Addresses after save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+		Logger.debug("Addresses after save: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		final User loadedUser = modelService.get(User.class, user.getPk());
 
-		loggingService.debug("Addresses after load: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName())
-						.collect(Collectors.joining(",")));
+		Logger.debug("Addresses after load: "
+				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
 		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
@@ -175,6 +227,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(localization);
 
+		// test using item
 		final LocalizationValue example = new LocalizationValue();
 		example.setId("test.key");
 		example.setLocale(Locale.ENGLISH);
@@ -182,6 +235,12 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final LocalizationValue loaded = modelService.getByExample(example);
 
 		Assert.assertEquals(localization.getId(), loaded.getId());
+
+		// test using map
+		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_ID, "test.key");
+		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
+
+		Assert.assertEquals(localization.getId(), resultFromMap.getId());
 	}
 
 	@Test
@@ -202,22 +261,44 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
 
-		assertEquals(null, loadedAdmin.getShortName());
+		assertEquals("Administrator", loadedAdmin.getShortName());
 	}
 
 	@Test
 	public void testValidateModelRecursively() {
 		expectedExeption.expect(ModelSaveException.class);
-		
-		// TODO: how to handle localized messages?
-//		expectedExeption.expectMessage("User.id must not be null");
 
-		UserGroup group = modelService.create(UserGroup.class);
+		// TODO: how to handle localized messages?
+		// expectedExeption.expectMessage("User.id must not be null");
+
+		final UserGroup group = modelService.create(UserGroup.class);
 		group.setId("test");
 
-		User user = modelService.create(User.class);
+		final User user = modelService.create(User.class);
 		group.getMembers().add(user);
 
 		modelService.save(group);
+	}
+
+	/**
+	 * Fetch the current sequence id and compare it against the newly created user.
+	 */
+	@Test
+	public void testUserPrepareInterceptor() {
+		final User user = modelService.create(User.class);
+		user.setShortName("test user");
+
+		modelService.save(user);
+		modelService.refresh(user);
+
+		// this is the id that will be used next, so we have to add -1 to get the last used one
+		long lastUsedId = sequenceGenerator.getCurrentSequenceValue(user.getTypeCode() + "_" + "id");
+
+		// if it is 0, it was never incremented and we don't have to subtract 1
+		if (lastUsedId > 0) {
+			lastUsedId--;
+		}
+
+		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getId());
 	}
 }

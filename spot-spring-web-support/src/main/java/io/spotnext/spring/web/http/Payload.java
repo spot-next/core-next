@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.google.gson.annotations.Expose;
 
 /**
  * <p>Payload class.</p>
@@ -18,11 +17,8 @@ import com.google.gson.annotations.Expose;
  */
 @JsonInclude(value = Include.NON_NULL)
 public class Payload<T> {
-	@Expose
 	final protected List<Status> errors = new ArrayList<>();
-	@Expose
 	final protected List<Status> warnings = new ArrayList<>();
-	@Expose
 	protected T data;
 
 	/**

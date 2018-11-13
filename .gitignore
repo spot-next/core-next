@@ -36,3 +36,9 @@ data
 .settings
 .classpath
 .idea/libraries
+*.asc
+ajcore.*.txt
+
+*.iml
+*.eml
+.idea

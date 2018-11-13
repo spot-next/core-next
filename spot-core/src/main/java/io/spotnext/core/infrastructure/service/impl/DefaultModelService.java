@@ -5,20 +5,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
+import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.support.util.ValidationUtil;
 
 /**
- * <p>DefaultModelService class.</p>
+ * <p>
+ * DefaultModelService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -46,6 +51,7 @@ public class DefaultModelService extends AbstractModelService {
 
 	/** {@inheritDoc} */
 	@Override
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
 	public <T extends Item> void saveAll(final List<T> models)
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException {
 
@@ -61,7 +67,13 @@ public class DefaultModelService extends AbstractModelService {
 	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
-		final T item = persistenceService.load(type, pk);
+		return get(type, pk, false);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public <T extends Item> T get(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
+		final T item = persistenceService.load(type, pk, returnProxy);
 
 		if (item != null) {
 			applyLoadInterceptors(Collections.singletonList(item));
@@ -84,11 +96,11 @@ public class DefaultModelService extends AbstractModelService {
 	public <T extends Item> T get(final ModelQuery<T> query) throws ModelNotUniqueException {
 		final List<T> items = getAllInternal(query);
 
-		if (items.size() > 1) {
+		if (items != null && items.size() > 1) {
 			throw new ModelNotUniqueException("Found more than 1 result for the given search parameters");
 		}
 
-		if (items.size() > 0) {
+		if (CollectionUtils.isNotEmpty(items)) {
 			applyLoadInterceptors(Collections.singletonList(items.get(0)));
 			publishEvents(items, ModificationType.LOAD);
 
@@ -166,6 +178,10 @@ public class DefaultModelService extends AbstractModelService {
 	@Override
 	public <T extends Item> void remove(final Class<T> type, final long pk) {
 		final T itemToRemove = get(type, pk);
+
+		if (itemToRemove == null) {
+			throw new ModelNotFoundException(String.format("The item of type %s with PK=%s is no found.", type.getSimpleName(), pk));
+		}
 
 		removeAll(Arrays.asList(itemToRemove));
 	}

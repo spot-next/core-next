@@ -98,4 +98,8 @@ public class JpqlQuery<T> extends Query<T> {
 		this.isNativeQuery = isNativeQuery;
 	}
 
+	@Override
+	public String toString() {
+		return query + ", params = " + params.toString();
+	}
 }

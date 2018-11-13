@@ -91,16 +91,14 @@
 				</executions>
 			</plugin>
 
-			<!-- COMPILING -->
-			<plugin>
-				<groupId>com.github.m50d</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-			</plugin>
-
 			<!-- RESOURCE GENERTATION -->
 			<plugin>
 				<groupId>io.spot-next</groupId>
 				<artifactId>spot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
 
 			<!-- CODE ANALYSIS -->
@@ -177,7 +175,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
+										</execute>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -191,11 +192,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -210,11 +211,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute>
-											<runOnIncremental>true</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-										<!-- <ignore /> -->
+<!-- 										<execute> -->
+<!-- 											<runOnIncremental>true</runOnIncremental> -->
+<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
+<!-- 										</execute> -->
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -231,6 +232,23 @@
 										<execute>
 											<runOnIncremental>false</runOnIncremental>
 											<runOnConfiguration>false</runOnConfiguration>
+										</execute>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>pl.project13.maven</groupId>
+										<artifactId>git-commit-id-plugin</artifactId>
+										<versionRange>[2.0.0,)</versionRange>
+										<goals>
+											<goal>revision</goal>
+											<goal>validateRevision</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute>
+											<runOnIncremental>false</runOnIncremental>
+											<runOnConfiguration>true</runOnConfiguration>
 										</execute>
 									</action>
 								</pluginExecution>

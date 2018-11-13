@@ -2,6 +2,8 @@ package io.spotnext.core.infrastructure.strategy;
 
 import org.apache.commons.lang3.SerializationException;
 
+import io.spotnext.core.infrastructure.exception.DeserializationException;
+
 /**
  * <p>SerializationStrategy interface.</p>
  *
@@ -32,7 +34,7 @@ public interface SerializationStrategy {
 	 * @throws org.apache.commons.lang3.SerializationException
 	 * @param <T> a T object.
 	 */
-	<T extends Object> T deserialize(String serializedObject, Class<T> type) throws SerializationException;
+	<T extends Object> T deserialize(String serializedObject, Class<T> type) throws DeserializationException;
 
 	/**
 	 * Deserializes the given string and then merges the date into the given

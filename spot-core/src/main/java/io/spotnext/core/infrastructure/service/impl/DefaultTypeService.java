@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Service;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
-import io.spotnext.core.infrastructure.support.Log;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
@@ -70,14 +71,14 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 
 		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCodeForClass(i.getClass()))
 				.collect(Collectors.toList());
-		Log.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
+		Logger.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
 	}
 
 	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
 	protected void loadMergedItemTypeDefinitions() {
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 
-		Log.info(String.format("Detected application root path: %s", applicationRoot.toString()));
+		Logger.info(String.format("Detected application root path: %s", applicationRoot.toString()));
 
 		InputStream mergedItemDef = null;
 
@@ -109,7 +110,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			}
 		}
 
-		Log.debug(String.format("Loading merged item type definitions from %s", applicationRoot.toString()));
+		Logger.debug(String.format("Loading merged item type definitions from %s", applicationRoot.toString()));
 
 		Types typeDef = null;
 
@@ -123,7 +124,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			MiscUtil.closeQuietly(mergedItemDef);
 		}
 
-		Log.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
+		Logger.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
 				typeDef.getType().size()));
 
 		for (final io.spotnext.infrastructure.maven.xml.ItemType t : typeDef.getType()) {
@@ -135,19 +136,18 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				Class<? extends Item> itemTypeClass = itemTypeClasses.get(t.getTypeCode());
 
 				itemTypeDefinitions.put(t.getTypeCode(), createItemTypeDefinition(t.getTypeCode(), t.getName(),
-						t.getPackage(), getItemTypeProperties(itemTypeClass)));
+						t.getPackage(), t.isAbstract(), getItemTypeProperties(itemTypeClass)));
 			} catch (ClassNotFoundException e) {
 				throw new BeanCreationException(
 						String.format("Cannot instantiate class object for item type %s.", t.getTypeCode()), e);
 			}
 		}
 
-		Log.info(String.format("Type service initialized"));
+		Logger.info(String.format("Type service initialized"));
 	}
 
 	/*
-	 * *************************************************************************
-	 * ITEM TYPE DEFINITIONS
+	 * ************************************************************************* ITEM TYPE DEFINITIONS
 	 * *************************************************************************
 	 */
 
@@ -178,7 +178,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			return annotation.typeCode();
 		}
 
-		Log.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
+		Logger.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
 
 		return null;
 	}
@@ -209,10 +209,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		return getItemTypeDefinition(typeCode).getProperties();
 	}
 
-	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName,
+	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName, Boolean isAbstract,
 			Map<String, ItemTypePropertyDefinition> properties) {
 
-		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, properties);
+		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, BooleanUtils.toBoolean(isAbstract), properties);
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 					} else if (t instanceof Class) {
 						genericTypeArguments.add((Class<?>) t);
 					} else {
-						Log.warn(String.format("Unsupported generic argument type: %s", t.getClass()));
+						Logger.warn(String.format("Unsupported generic argument type: %s", t.getClass()));
 					}
 				}
 

@@ -1,95 +1,43 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.SerializationException;
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 /**
- * <p>DefaultXmlSerializationStrategy class.</p>
+ * <p>
+ * DefaultXmlSerializationStrategy class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 @Service
-public class DefaultXmlSerializationStrategy implements SerializationStrategy {
-
-	private boolean prettyPrint = true;
-
-	/** {@inheritDoc} */
+public class DefaultXmlSerializationStrategy extends AbstractJacksonSerializationStrategy {
 	@Override
-	public <T> String serialize(final T object) throws SerializationException {
-		if (object == null) {
-			return null;
-		}
+	protected ObjectMapper createMapper() {
+		// enables serialization to XML
+		final JacksonXmlModule xmlModule = new JacksonXmlModule();
+		xmlModule.setDefaultUseWrapper(true);
+		
+		final ObjectMapper objectMapper = new XmlMapper(xmlModule);
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		
+//		objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+//		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+//		objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 
-		String xmlString = "";
+//		objectMapper.configure(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME, true);
+//		objectMapper.configure(MapperFeature.USE_ANNOTATIONS, true);
+		
+		// support JAXB annotations
+		objectMapper.registerModule(new JaxbAnnotationModule());
 
-		try {
-			final JAXBContext context = JAXBContext.newInstance(object.getClass());
-			final Marshaller m = context.createMarshaller();
-
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, isPrettyPrint());
-
-			final StringWriter sw = new StringWriter();
-			m.marshal(object, sw);
-			xmlString = sw.toString();
-		} catch (final JAXBException e) {
-			throw new SerializationException("Cannot serialize object", e);
-		}
-
-		return xmlString;
+		return objectMapper;
 	}
-
-	/** {@inheritDoc} */
-	@Override
-	public <T> T deserialize(final String serializedObject, final Class<T> type) throws SerializationException {
-		T object = null;
-
-		try {
-			final JAXBContext context = JAXBContext.newInstance(type);
-			final Unmarshaller m = context.createUnmarshaller();
-
-			object = (T) m.unmarshal(new StringReader(serializedObject));
-		} catch (final JAXBException e) {
-			throw new SerializationException("Cannot deserialize object", e);
-		}
-
-		return object;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public <T> T deserialize(final String serializedObject, final T instanceToUpdate) throws SerializationException {
-		throw new NotImplementedException();
-	}
-
-	/**
-	 * <p>isPrettyPrint.</p>
-	 *
-	 * @return a boolean.
-	 */
-	public boolean isPrettyPrint() {
-		return prettyPrint;
-	}
-
-	/**
-	 * <p>Setter for the field <code>prettyPrint</code>.</p>
-	 *
-	 * @param prettyPrint a boolean.
-	 */
-	public void setPrettyPrint(final boolean prettyPrint) {
-		this.prettyPrint = prettyPrint;
-	}
-
 }

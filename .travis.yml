@@ -1,5 +1,8 @@
 language: java
 
+jdk:
+  - openjdk8
+  
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
@@ -8,14 +11,14 @@ env:
 
 #cache:
 #  directories:
-#  - "$HOME/.cache"
-
-before_cache:
-  script: "rm -R ~/.m2/repository/io/spot-next/"
+#  - $HOME/.cache
 
 cache:
   directories:
-    - ~/.m2/repository
+    - $HOME/.m2/repository
+
+before_cache:
+  - rm -R $HOME/.m2/repository/io/spot-next
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_2dffe6d9f24e_key -iv $encrypted_2dffe6d9f24e_iv -in codesigning.asc.enc -out codesigning.asc -d
@@ -28,7 +31,7 @@ before_install:
 #  coverity_scan:
 #
 #    project:
-#      name: "mojo2012/spot-framework"
+#      name: "spot-next/spot-framework"
 #      description: "Build submitted via Travis CI"
 #    notification_email: meister.fuchs@gmail.com
 #    build_command_prepend: "mvn clean"

@@ -61,14 +61,17 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 		}
 
 		final JpqlQuery<T> jpqlQuery = createQuery(allFiltersResult, query.getResultClass());
-		if (query.getLimit() > 0) {
-			jpqlQuery.setLimit(query.getLimit());
-		}
+//		if (query.getLimit() > 0) {
+//			jpqlQuery.setLimit(query.getLimit());
+//		}
+		
+		jpqlQuery.setCachable(query.isCachable());
 		jpqlQuery.setIgnoreCache(query.isIgnoreCache());
 		jpqlQuery.setEagerFetchRelationProperties(query.getEagerFetchRelationProperties());
 		jpqlQuery.setPage(query.getPage());
 		jpqlQuery.setPageSize(query.getPageSize());
 		jpqlQuery.setClearCaches(query.isClearCaches());
+		
 		return jpqlQuery;
 	}
 
