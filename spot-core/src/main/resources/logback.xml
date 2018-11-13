@@ -2,16 +2,16 @@
 <!DOCTYPE xml>
 
 <configuration>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%10.10thread] %-5(%level) %-45.45(%logger{45}) : %msg%n</pattern>
 		</encoder>
 	</appender>
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%10.10thread] %highlight(%-5(%level)) %blue(%-45.45(%logger{45})) : %msg%n</pattern>
 		</encoder>
 		<File>log/console.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -24,7 +24,14 @@
 	</appender>
 
 	<logger name="io.spotnext" level="INFO" />
+	<logger name="io.spotnext.core.persistence" level="INFO" />
 	<logger name="io.spotnext.core.persistence.instrumentation" level="WARN" />
+	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="INFO" />
+	<logger name="io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy" level="INFO" />
+	<logger name="io.spotnext.core.infrastructure.service.impl.AbstractModelService" level="INFO" />
+	<logger name="io.spotnext.core.infrastructure.service.impl.DefaultModelService" level="INFO" />
+	<logger name="io.spotnext.core.infrastructure.service.impl.RemoteHttpEndpointHandlerService" level="INFO" />
+	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="INFO" />
 
 	<!-- framework logs -->
 	<logger name="org.hibernate" level="WARN" />
@@ -39,20 +46,12 @@
 	<logger name="org.springframework" level="WARN" />
 	<logger name="org.springframework.context.support" level="WARN" />
 	<logger name="org.springframework.beans.factory" level="WARN" />
+	
 	<logger name="ch.qos.logback" level="WARN" />
 	<logger name="org.reflections.Reflections" level="WARN" />
 	<logger name="org.apache.catalina.core" level="WARN" />
 	<logger name="com.zaxxer.hikari" level="WARN" />
 	<logger name="org.eclipse.jetty" level="WARN" />
-
-	<logger name="io.spotnext.core.persistence" level="INFO" />
-	<logger name="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" level="INFO" />
-	<logger name="io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy" level="INFO" />
-	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="INFO" />
-	<logger name="io.spotnext.core.infrastructure.service.impl.AbstractModelService" level="INFO" />
-	<logger name="io.spotnext.core.infrastructure.service.impl.DefaultModelService" level="INFO" />
-
-	<logger name="io.spotnext.core.infrastructure.service.impl.RemoteHttpEndpointHandlerService" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />

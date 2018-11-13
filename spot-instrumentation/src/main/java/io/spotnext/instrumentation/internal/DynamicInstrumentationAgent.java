@@ -4,10 +4,6 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 // @Immutable
 /**
  * <p>
@@ -18,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class DynamicInstrumentationAgent {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DynamicInstrumentationAgent.class);
+//	private static final Logger LOG = LoggerFactory.getLogger(DynamicInstrumentationAgent.class);
 
 	private DynamicInstrumentationAgent() {
 	}
@@ -36,8 +32,7 @@ public final class DynamicInstrumentationAgent {
 			throws Exception {
 
 		try {
-			final ClassLoader agentClassLoader = AgentClassLoaderReference
-					.getAgentClassLoader();
+			final ClassLoader agentClassLoader = AgentClassLoaderReference.getAgentClassLoader();
 			final Class<?> agentInstrumentationInitializer = agentClassLoader
 					.loadClass(DynamicInstrumentationAgent.class.getPackage().getName() + ".AgentInstrumentationInitializer");
 			final Method initializeMethod = agentInstrumentationInitializer.getDeclaredMethod("initialize", String.class,
@@ -45,14 +40,15 @@ public final class DynamicInstrumentationAgent {
 
 			String transformers = System.getProperty("transformers");
 
-			if (StringUtils.isNotBlank(transformers)) {
-				LOG.debug("Registering class transformers: " + transformers);
+			if (transformers != null && transformers.trim().length() > 0) {
+//				LOG.debug("Registering class transformers: " + transformers);
 
-				loadClassTransformers(transformers, inst);
+				loadClassTransformers(transformers, agentClassLoader, inst);
 			}
 			initializeMethod.invoke(null, args, inst);
 		} catch (Exception e) {
-			LOG.error("Could not initialize instrumentation", e);
+//			LOG.error("Could not initialize instrumentation", e);
+			e.printStackTrace();
 		}
 	}
 
@@ -78,11 +74,11 @@ public final class DynamicInstrumentationAgent {
 	 * @param instrumentation      instance
 	 * @throws Exception
 	 */
-	protected static void loadClassTransformers(String transformersProperty, Instrumentation instrumentation) throws Exception {
+	protected static void loadClassTransformers(String transformersProperty, ClassLoader classLoader, Instrumentation instrumentation) throws Exception {
 		if (transformersProperty != null) {
 			for (String t : transformersProperty.split(",")) {
 				t = t.trim();
-				final ClassFileTransformer trans = (ClassFileTransformer) Class.forName(t).getDeclaredConstructor().newInstance();
+				final ClassFileTransformer trans = (ClassFileTransformer) classLoader.loadClass(t).getDeclaredConstructor().newInstance();
 				instrumentation.addTransformer(trans);
 			}
 		}
