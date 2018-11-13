@@ -336,6 +336,7 @@
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
+						<forceJavacCompilerUse>true</forceJavacCompilerUse>
 						<!-- <skip>true</skip> -->
 						<!-- <skipMain>true</skipMain> -->
 					</configuration>
@@ -453,7 +454,7 @@
 				<plugin>
 					<groupId>org.bsc.maven</groupId>
 					<artifactId>maven-processor-plugin</artifactId>
-					<version>3.3.2</version>
+					<version>3.3.3</version>
 				</plugin>
 
 				<plugin>

@@ -2,14 +2,9 @@ package io.spotnext.instrumentation;
 
 import static org.junit.Assert.assertTrue;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.junit.Test;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 
-import io.spotnext.instrumentation.DynamicInstrumentationLoader;
-
-@NotThreadSafe
 public class DynamicInstrumentationLoaderTest {
 
 	static {

@@ -24,31 +24,27 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.bsc.maven</groupId>
-				<artifactId>maven-processor-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>process</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<outputDirectory>${project.build.directory}/generated-sources/apt</outputDirectory>
-							<failOnError>false</failOnError>
-							<excludes>
-								<exclude>module-info.java</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-			</plugin>
+			<!-- doesn't work in java 9 -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.bsc.maven</groupId> -->
+			<!-- <artifactId>maven-processor-plugin</artifactId> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>process</id> -->
+			<!-- <goals> -->
+			<!-- <goal>process</goal> -->
+			<!-- </goals> -->
+			<!-- <phase>generate-sources</phase> -->
+			<!-- <configuration> -->
+			<!-- <outputDirectory>${project.build.directory}/generated-sources/apt</outputDirectory> -->
+			<!-- <failOnError>false</failOnError> -->
+			<!-- <excludes> -->
+			<!-- <exclude>module-info.java</exclude> -->
+			<!-- </excludes> -->
+			<!-- </configuration> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -68,8 +64,8 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Premain-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
-							<Agent-Class>io.spot-next.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
+							<Premain-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Premain-Class>
+							<Agent-Class>io.spotnext.instrumentation.internal.DynamicInstrumentationAgent</Agent-Class>
 							<Can-Redefine-Classes>true</Can-Redefine-Classes>
 							<Can-Retransform-Classes>true</Can-Retransform-Classes>
 						</manifestEntries>

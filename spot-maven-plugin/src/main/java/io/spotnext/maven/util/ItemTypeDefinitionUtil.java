@@ -34,11 +34,11 @@ import io.spotnext.infrastructure.maven.xml.CollectionType;
 import io.spotnext.infrastructure.maven.xml.EnumType;
 import io.spotnext.infrastructure.maven.xml.EnumValue;
 import io.spotnext.infrastructure.maven.xml.ItemType;
+import io.spotnext.infrastructure.maven.xml.JavaType.Properties;
 import io.spotnext.infrastructure.maven.xml.MapType;
 import io.spotnext.infrastructure.maven.xml.Property;
 import io.spotnext.infrastructure.maven.xml.RelationType;
 import io.spotnext.infrastructure.maven.xml.Types;
-import io.spotnext.infrastructure.maven.xml.JavaType.Properties;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
 import io.spotnext.support.util.FileUtils;
@@ -61,8 +61,8 @@ public class ItemTypeDefinitionUtil {
 	 * Constructor for ItemTypeDefinitionUtil.
 	 * </p>
 	 *
-	 * @param project         a {@link org.apache.maven.project.MavenProject} object.
-	 * @param localRepository a {@link org.apache.maven.artifact.repository.ArtifactRepository} object.
+	 * @param project         a {@link MavenProject} object.
+	 * @param localRepository a {@link ArtifactRepository} object.
 	 * @param buildContext    the plexus utils build context for Eclipse intergration
 	 * @param log             a {@link org.apache.maven.plugin.logging.Log} object.
 	 */

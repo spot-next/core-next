@@ -1,15 +1,18 @@
 module io.spotnext.support {
 	exports io.spotnext.support;
-	exports io.spotnext.core.support.util;
+	exports io.spotnext.support.weaving;
 	exports io.spotnext.support.exception;
 	exports io.spotnext.support.util;
-	exports io.spotnext.core.support.util.data;
 
+	requires java.xml;
+	requires org.assertj.core;
+	requires org.aspectj.weaver;
+	requires java.instrument;
+	requires android.json;
 	requires annotations;
-	requires aspectjweaver;
-	requires commons.collections4;
-	requires gson;
+	requires javassist;
 	requires junit;
+	requires org.apache.commons.collections4;
 	requires org.apache.commons.lang3;
 	requires slf4j.api;
 	requires spring.beans;

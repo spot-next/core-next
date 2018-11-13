@@ -9,26 +9,23 @@ module io.spotnext.infrastructure {
 	exports io.spotnext.infrastructure.type;
 	exports io.spotnext.infrastructure.handler;
 
-	requires java.base;
 	requires annotations;
-	requires aspectjweaver;
 	requires com.fasterxml.jackson.databind;
-	requires commons.collections4;
-	requires hibernate.core;
-	requires hibernate.jpa;
+	requires io.spotnext.support;
 	requires jackson.annotations;
 	requires java.instrument;
+	requires java.persistence;
 	requires java.validation;
+	requires java.xml.bind;
 	requires javassist;
+	requires org.apache.commons.collections4;
 	requires org.apache.commons.lang3;
-	requires org.slf4j;
-	requires io.spotnext.support;
-	requires io.spotnext.instrumentation;
+	requires org.aspectj.weaver;
+	requires org.hibernate.orm.core;
+	requires org.hibernate.commons.annotations;
+	requires slf4j.api;
 	requires spring.beans;
 	requires spring.context;
 	requires spring.data.commons;
 	requires spring.data.jpa;
-	requires java.se.ee;
-	requires java.xml.bind;
-	
 }

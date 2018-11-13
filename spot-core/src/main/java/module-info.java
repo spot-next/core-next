@@ -1,3 +1,10 @@
+/**
+ * 
+ */
+/**
+ * @author matthias
+ *
+ */
 module io.spotnext.core {
 	exports io.spotnext.core.infrastructure.strategy;
 	exports io.spotnext.core.testing;
@@ -6,11 +13,12 @@ module io.spotnext.core {
 	exports io.spotnext.core.infrastructure.http;
 	exports io.spotnext.core.persistence.query.lambda;
 	exports io.spotnext.core.infrastructure.interceptor.impl;
+	exports io.spotnext.test.serialzation;
 	exports io.spotnext.core.infrastructure.support.impex;
 	exports io.spotnext.core.infrastructure.serialization.jackson;
 	exports io.spotnext.core.security.service.impl;
 	exports io.spotnext.core.security.service;
-	exports io.spotnext.itemtype.core.catalog;
+	exports io.spotnext.test.registry;
 	exports io.spotnext.core.infrastructure.annotation.validation;
 	exports io.spotnext.core;
 	exports io.spotnext.core.management.populator;
@@ -19,7 +27,6 @@ module io.spotnext.core {
 	exports io.spotnext.core.management.transformer;
 	exports io.spotnext.core.management.service.impl;
 	exports io.spotnext.core.management.exception;
-	exports io.spotnext.itemtype.core.internationalization;
 	exports io.spotnext.core.management.support.data;
 	exports io.spotnext.core.management.converter;
 	exports io.spotnext.core.infrastructure.annotation.logging;
@@ -29,21 +36,16 @@ module io.spotnext.core {
 	exports io.spotnext.core.constant;
 	exports io.spotnext.core.management.annotation;
 	exports io.spotnext.core.infrastructure.service;
-	exports io.spotnext.itemtype.core;
 	exports io.spotnext.core.persistence.valueprovider;
 	exports io.spotnext.core.persistence.hibernate.support;
-	exports io.spotnext.core.infrastructure.serialization;
 	exports io.spotnext.core.management.populator.impl;
 	exports io.spotnext.core.infrastructure.aspect;
 	exports io.spotnext.core.infrastructure.support.spring;
 	exports io.spotnext.core.persistence.query;
 	exports io.spotnext.core.persistence.cache;
 	exports io.spotnext.core.infrastructure.resolver.impex;
-	exports io.spotnext.itemtype.core.beans;
 	exports io.spotnext.core.persistence.exception;
 	exports io.spotnext.core.persistence.hibernate.impl;
-	exports io.spotnext.itemtype.core.media;
-	exports io.spotnext.itemtype.core.user;
 	exports io.spotnext.core.infrastructure.exception;
 	exports io.spotnext.core.infrastructure.service.impl;
 	exports io.spotnext.core.security.strategy.impl;
@@ -51,46 +53,49 @@ module io.spotnext.core {
 	exports io.spotnext.core.persistence.service.impl;
 	exports io.spotnext.core.infrastructure.strategy.impl;
 	exports io.spotnext.core.infrastructure.support.init;
-	exports io.spotnext.itemtype.core.configuration;
-	exports io.spotnext.itemtype.core.enumeration;
 	exports io.spotnext.core.infrastructure.support;
 
-	requires java.xml.ws.annotation;
+	requires java.xml;
+	requires java.xml.bind;
+	requires android.json;
 	requires annotations;
-	requires aspectjweaver;
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.dataformat.xml;
 	requires com.fasterxml.jackson.datatype.jdk8;
 	requires com.fasterxml.jackson.datatype.jsr310;
+	requires com.fasterxml.jackson.module.jaxb;
 	requires commons.beanutils;
-	requires commons.collections4;
 	requires commons.lang;
-	requires gson;
+	requires ehcache;
 	requires hamcrest.core;
-	requires hibernate.core;
-	requires hibernate.jpa;
+	requires hamcrest.library;
+	requires io.spotnext.infrastructure;
+	requires io.spotnext.instrumentation;
+	requires io.spotnext.support;
 	requires jackson.annotations;
 	requires jaque;
 	requires java.annotation;
+	requires java.instrument;
 	requires java.naming;
+	requires java.persistence;
 	requires java.sql;
 	requires java.validation;
 	requires javax.servlet.api;
+	requires jetty.http;
 	requires jetty.util;
 	requires jsr305;
-	requires java.xml.bind;
 	requires junit;
 	requires logback.core;
 	requires opencsv;
+	requires org.apache.commons.collections4;
 	requires org.apache.commons.io;
 	requires org.apache.commons.lang3;
-	requires org.apache.commons.logging;
-	requires org.hibernate.validator;
+	requires org.aspectj.weaver;
+	requires org.hibernate.orm.core;
 	requires org.mockito;
 	requires slf4j.api;
 	requires spark.core;
-	requires spot.core.infrastructure;
-	requires spot.core.support;
 	requires spring.aop;
 	requires spring.beans;
 	requires spring.boot;
@@ -98,9 +103,9 @@ module io.spotnext.core {
 	requires spring.boot.test;
 	requires spring.context;
 	requires spring.core;
+	requires spring.jcl;
 	requires spring.modules.validation;
 	requires spring.orm;
 	requires spring.test;
 	requires spring.tx;
-	requires java.base;
 }
