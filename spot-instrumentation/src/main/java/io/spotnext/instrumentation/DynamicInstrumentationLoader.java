@@ -35,8 +35,7 @@ import io.spotnext.instrumentation.util.Assert;
 @ThreadSafe
 public final class DynamicInstrumentationLoader {
 
-	protected static final String KEY_TRANSFORMERS = "transformers";
-
+	private static final String KEY_TRANSFORMERS = "transformers";
 	private static final String LOAD_AGENT_THREAD_NAME = "instrumentationAgentStarter";
 
 	private static volatile Throwable threadFailed;
