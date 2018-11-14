@@ -10,7 +10,7 @@ import org.junit.Test;
 public class EmptyTest {
 
 	@Test
-	public void moduleInitialized() {
+	public void emptyUnitTest() {
 		assertTrue(true);
 	}
 

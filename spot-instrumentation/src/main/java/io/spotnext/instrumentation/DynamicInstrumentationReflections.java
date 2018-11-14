@@ -22,6 +22,8 @@ import javax.annotation.concurrent.Immutable;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.instrument.InstrumentationSavingAgent;
 
+import io.spotnext.instrumentation.util.Assert;
+
 /**
  * <p>
  * DynamicInstrumentationReflections class.
@@ -48,8 +50,8 @@ public final class DynamicInstrumentationReflections {
 		}
 		try {
 			final String normalizedPath = FilenameUtils.normalize(dirOrJar.getAbsolutePath());
-			org.assertj.core.api.Assertions.assertThat(pathsAddedToSystemClassLoader.add(normalizedPath))
-					.as("Path [%s] has already been added before!", normalizedPath).isTrue();
+			Assert.assertTrue(pathsAddedToSystemClassLoader.add(normalizedPath), String.format("Path [%s] has already been added before!", normalizedPath));
+
 			final URL url = new File(normalizedPath).toURI().toURL();
 			if (isBeforeJava9()) {
 				addUrlToURLClassLoader(url);

@@ -3,6 +3,9 @@
 ## **1.0.x-RELEASE** `~2019-01-XX`
 - Final release
 
+## **1.0.16-BETA** `2018-11-13`
+- Fixed boot problem in archetype - instrumentation/weaving caused a crash
+
 ## **1.0.15-BETA** `2018-11-12`
 - Updated to latest Spring Boot
 - Updated other dependencies

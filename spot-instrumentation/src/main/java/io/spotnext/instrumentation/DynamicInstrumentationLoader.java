@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -19,14 +20,12 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 import io.spotnext.instrumentation.internal.AgentClassLoaderReference;
-import io.spotnext.instrumentation.internal.DummyAttachProvider;
 import io.spotnext.instrumentation.internal.DynamicInstrumentationAgent;
 import io.spotnext.instrumentation.internal.DynamicInstrumentationLoadAgentMain;
 import io.spotnext.instrumentation.internal.JdkFilesFinder;
+import io.spotnext.instrumentation.util.Assert;
 
 /**
  * This class installs dynamic instrumentation into the current JVM.
@@ -36,6 +35,7 @@ import io.spotnext.instrumentation.internal.JdkFilesFinder;
 @ThreadSafe
 public final class DynamicInstrumentationLoader {
 
+	private static final String KEY_TRANSFORMERS = "transformers";
 	private static final String LOAD_AGENT_THREAD_NAME = "instrumentationAgentStarter";
 
 	private static volatile Throwable threadFailed;
@@ -103,7 +103,7 @@ public final class DynamicInstrumentationLoader {
 	 * @return a {@link org.springframework.context.support.GenericXmlApplicationContext} object.
 	 */
 	public static synchronized GenericXmlApplicationContext initLoadTimeWeavingSpringContext() {
-		org.assertj.core.api.Assertions.assertThat(isInstrumentationAvailable()).isTrue();
+		Assert.assertTrue(isInstrumentationAvailable(), "Instrumentation not available");
 
 		if (ltwCtx == null) {
 			final GenericXmlApplicationContext ctx = new GenericXmlApplicationContext();
@@ -166,13 +166,18 @@ public final class DynamicInstrumentationLoader {
 	 * @throws java.lang.Exception if any.
 	 */
 	protected static void loadAgent(final File tempAgentJar, final String pid) throws Exception {
+		// transform transformer classes to comma-separated FQNs
+		String registeredTransformers = DynamicInstrumentationLoader.getRegisteredTranformers().stream().map(t -> t.getName()).collect(Collectors.joining(","));
+
 		if (DynamicInstrumentationReflections.isBeforeJava9()) {
+			System.setProperty(KEY_TRANSFORMERS, registeredTransformers);
 			DynamicInstrumentationLoadAgentMain.loadAgent(pid, tempAgentJar.getAbsolutePath());
 		} else {
 			// -Djdk.attach.allowAttachSelf
 			// https://www.bountysource.com/issues/45231289-self-attach-fails-on-jdk9
 			// workaround this limitation by attaching from a new process
-			final File loadAgentJar = createTempJar(DynamicInstrumentationLoadAgentMain.class, false, DummyAttachProvider.class);
+			final File loadAgentJar = createTempJar(DynamicInstrumentationLoadAgentMain.class, false,
+					io.spotnext.instrumentation.internal.DummyAttachProvider.class);
 			final String javaExecutable = getJavaHome() + File.separator + "bin" + File.separator + "java";
 			final List<String> command = new ArrayList<String>();
 			command.add(javaExecutable);
@@ -181,10 +186,9 @@ public final class DynamicInstrumentationLoader {
 			command.add(DynamicInstrumentationLoadAgentMain.class.getName());
 			command.add(pid);
 			command.add(tempAgentJar.getAbsolutePath());
+			command.add("-D" + KEY_TRANSFORMERS + "=" + registeredTransformers);
 
-			new ProcessExecutor().command(command).destroyOnExit().exitValueNormal()
-					.redirectOutput(Slf4jStream.of(DynamicInstrumentationLoader.class).asInfo())
-					.redirectError(Slf4jStream.of(DynamicInstrumentationLoader.class).asWarn()).execute();
+			Runtime.getRuntime().exec(command.toArray(new String[command.size()]));
 		}
 	}
 
@@ -246,7 +250,7 @@ public final class DynamicInstrumentationLoader {
 			return createTempJar(DynamicInstrumentationAgent.class, true);
 		} catch (final Throwable e) {
 			final String message = "Unable to find class [" + DynamicInstrumentationAgent.class.getName() + "] in classpath."
-					+ "\nPlease make sure you have added invesdwin-instrument.jar to your classpath properly,"
+					+ "\nPlease make sure you have added spot-instrumentation.jar to your classpath properly,"
 					+ "\nor make sure you have embedded it correctly into your fat-jar."
 					+ "\nThey can be created e.g. with \"maven-shade-plugin\"."
 					+ "\nPlease be aware that some fat-jar solutions might not work well due to classloader issues.";
@@ -271,6 +275,7 @@ public final class DynamicInstrumentationLoader {
 			manifest.getMainAttributes().putValue("Agent-Class", className);
 			manifest.getMainAttributes().putValue("Can-Redefine-Classes", String.valueOf(true));
 			manifest.getMainAttributes().putValue("Can-Retransform-Classes", String.valueOf(true));
+			manifest.getMainAttributes().putValue("Permissions", String.valueOf("all-permissions"));
 		}
 		final JarOutputStream tempJarOut = new JarOutputStream(new FileOutputStream(tempAgentJar), manifest);
 		final JarEntry entry = new JarEntry(className.replace(".", "/") + ".class");

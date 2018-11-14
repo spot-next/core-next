@@ -12,9 +12,12 @@ import java.util.Set;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.instrumentation.util.Assert;
 
 /**
- * <p>JdkFilesFinder class.</p>
+ * <p>
+ * JdkFilesFinder class.
+ * </p>
  *
  * @since 1.0
  */
@@ -25,7 +28,9 @@ public class JdkFilesFinder {
 	private final Set<File> potentialFolders;
 
 	/**
-	 * <p>Constructor for JdkFilesFinder.</p>
+	 * <p>
+	 * Constructor for JdkFilesFinder.
+	 * </p>
 	 */
 	public JdkFilesFinder() {
 		// determine the java home via the system variables
@@ -85,7 +90,9 @@ public class JdkFilesFinder {
 	}
 
 	/**
-	 * <p>findToolsJar.</p>
+	 * <p>
+	 * findToolsJar.
+	 * </p>
 	 *
 	 * @return a {@link java.io.File} object.
 	 */
@@ -103,14 +110,14 @@ public class JdkFilesFinder {
 	}
 
 	private void assertFileFound(final File toolsJar, final Object potentialFileNames) {
-		org.assertj.core.api.Assertions.assertThat(toolsJar)
-				.as("No %s found in %s. Please make sure a JDK is installed and JAVA_HOME points there.",
-						potentialFileNames, potentialFolders)
-				.exists();
+		Assert.assertTrue(toolsJar != null && toolsJar.exists(), String.format(
+				"No %s found in %s. Please make sure a JDK is installed and JAVA_HOME points there.", potentialFileNames, potentialFolders));
 	}
 
 	/**
-	 * <p>findAttachLib.</p>
+	 * <p>
+	 * findAttachLib.
+	 * </p>
 	 *
 	 * @return a {@link java.io.File} object.
 	 */
