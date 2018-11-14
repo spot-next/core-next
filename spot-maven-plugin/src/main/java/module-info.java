@@ -22,7 +22,7 @@ module io.spotnext.maven {
 	requires org.apache.commons.io;
 	requires org.apache.commons.lang3;
 	requires plexus.build.api;
-	requires spring.core;
+//	requires spring.core;
 	requires velocity.engine.core;
 	requires roaster.api;
 	requires maven.artifact;
