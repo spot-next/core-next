@@ -385,7 +385,7 @@
 							</aspectLibrary>
 						</aspectLibraries>
 
-						setting this to true can cause build errors im M2E
+						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>true</showWeaveInfo>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
@@ -473,6 +473,12 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${spring.boot.version}</version>
+					<configuration>
+					<arguments>
+						<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
+						<argument>--spring.main.allow-bean-definition-overriding</argument>
+					</arguments>
+					</configuration>
 					<executions>
 						<execution>
 							<id>repackage</id>
