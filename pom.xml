@@ -476,7 +476,7 @@
 					<configuration>
 					<arguments>
 						<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
-						<argument>--spring.main.allow-bean-definition-overriding</argument>
+						<argument>--spring.main.allow-bean-definition-overriding=true</argument>
 					</arguments>
 					</configuration>
 					<executions>
