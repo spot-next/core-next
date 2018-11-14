@@ -1,16 +1,19 @@
 package io.spotnext.core.infrastructure.support.init;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -193,17 +196,43 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit, String... commandLineArgs) {
 		initializeWeavingSupport();
-
 		Registry.setMainClass(childInit != null ? childInit : parentInit);
 
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(parentInit).addCommandLineProperties(true);
 
 		if (childInit != null) {
-			builder = builder.child(childInit).bannerMode(Mode.OFF).addCommandLineProperties(true);
+			builder = builder.child(childInit).addCommandLineProperties(true);
 		}
 
-		String[] args = ArrayUtils.addAll(commandLineArgs, "--spring.main.allow-bean-definition-overriding=true");
+		builder.build(prepareCommandLineArguments(commandLineArgs)).run(prepareCommandLineArguments(commandLineArgs));
+	}
 
-		builder.build(commandLineArgs).run(args);
+	/**
+	 * Inject the "allow bean override" setting otherwise spring-boot doesn't run
+	 * 
+	 * @param commandLineArgs the original command line args
+	 * @return the customized arguments
+	 */
+	private static String[] prepareCommandLineArguments(String... commandLineArgs) {
+
+		final Map<String, String> parsedArgs = new HashMap<>();
+
+		if (commandLineArgs != null) {
+			for (String a : commandLineArgs) {
+				String[] split = StringUtils.split(a, "=");
+
+				if (StringUtils.trimToEmpty(split[0]).length() > 0) {
+					parsedArgs.put(split[0], split.length > 1 && StringUtils.trimToEmpty(split[1]).length() > 1 ? split[1] : null);
+				}
+			}
+		}
+
+		parsedArgs.put("--spring.main.allow-bean-definition-overriding", "true");
+
+		final List<String> args = parsedArgs.entrySet().stream() //
+				.map(e -> e.getKey() + (e.getValue() != null ? "=" + e.getValue() : "")) //
+				.collect(Collectors.toList());
+
+		return args.toArray(new String[args.size()]);
 	}
 }
