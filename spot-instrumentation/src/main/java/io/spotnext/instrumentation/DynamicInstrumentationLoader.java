@@ -7,6 +7,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
@@ -42,7 +43,7 @@ public final class DynamicInstrumentationLoader {
 	private static volatile String toolsJarPath;
 	private static volatile String attachLibPath;
 
-	private static Class<? extends ClassFileTransformer>[] registeredTranformers;
+	private static List<Class<? extends ClassFileTransformer>> registeredTranformers = new ArrayList<>();
 
 	/**
 	 * Keeping a reference here so it is not garbage collected
@@ -58,7 +59,7 @@ public final class DynamicInstrumentationLoader {
 	}
 
 	public static List<Class<? extends ClassFileTransformer>> getRegisteredTranformers() {
-		return Arrays.asList(registeredTranformers);
+		return Collections.unmodifiableList(registeredTranformers);
 	}
 
 	/**
@@ -70,7 +71,9 @@ public final class DynamicInstrumentationLoader {
 	 */
 	@SafeVarargs
 	public static void initialize(final Class<? extends ClassFileTransformer>... transformers) {
-		registeredTranformers = transformers;
+		if (transformers != null) {
+			registeredTranformers.addAll(Arrays.asList(transformers));
+		}
 
 		try {
 			while (!isInstrumentationAvailable() && threadFailed == null) {
