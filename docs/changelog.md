@@ -3,6 +3,10 @@
 ## **1.0.x-RELEASE** `~2019-01-XX`
 - Final release
 
+## **1.0.18-BETA** `2018-11-15`
+- Fixed item type bean registration issue
+- Fixed REST crud interface issue (sub-items PK properties was long, not string)
+
 ## **1.0.17-BETA** `2018-11-14`
 - Fixed boot problem in archetype (spring bean overriding not activated)
 
