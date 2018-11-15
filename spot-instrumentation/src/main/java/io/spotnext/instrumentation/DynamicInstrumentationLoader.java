@@ -184,14 +184,22 @@ public final class DynamicInstrumentationLoader {
 			final String javaExecutable = getJavaHome() + File.separator + "bin" + File.separator + "java";
 			final List<String> command = new ArrayList<String>();
 			command.add(javaExecutable);
+//			command.add("-D" + KEY_TRANSFORMERS + "=a" + registeredTransformers);
 			command.add("-classpath");
 			command.add(loadAgentJar.getAbsolutePath()); // tools.jar not needed since java9
 			command.add(DynamicInstrumentationLoadAgentMain.class.getName());
 			command.add(pid);
-			command.add(tempAgentJar.getAbsolutePath());
-			command.add("-D" + KEY_TRANSFORMERS + "=" + registeredTransformers);
 
-			Runtime.getRuntime().exec(command.toArray(new String[command.size()]));
+			// if we are on java > 9 we have to pass the registered transformers via command line
+			command.add(tempAgentJar.getAbsolutePath() + "=" + KEY_TRANSFORMERS + "=" + registeredTransformers);
+
+			final Process agentProcess = new ProcessBuilder(command.toArray(new String[command.size()])).inheritIO().start();
+
+			agentProcess.toHandle().onExit().thenAccept(p -> {
+				if (p.pid() != 0) {
+					throw new IllegalStateException("Could not start instrumentation agent!");
+				}
+			});
 		}
 	}
 
