@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,6 +27,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -66,16 +67,14 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	final protected Map<String, ItemTypeDefinition> itemTypeDefinitions = new HashMap<>();
 
 	@Autowired
-	protected DefaultTypeService(List<? extends Item> itemTypes) throws JAXBException {
-		loadMergedItemTypeDefinitions();
+	protected DefaultTypeService(GenericApplicationContext applicationContext) throws JAXBException {
+		loadMergedItemTypeDefinitions(applicationContext);
 
-		final List<String> typeCodes = itemTypes.stream().map(i -> getTypeCodeForClass(i.getClass()))
-				.collect(Collectors.toList());
-		Logger.info(String.format("Registered item types: %s", StringUtils.join(typeCodes, ", ")));
+		Logger.info(String.format("Registered item types: %s", StringUtils.join(itemTypeDefinitions.keySet(), ", ")));
 	}
 
 	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
-	protected void loadMergedItemTypeDefinitions() {
+	protected void loadMergedItemTypeDefinitions(GenericApplicationContext applicationContext) {
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 
 		Logger.info(String.format("Detected application root path: %s", applicationRoot.toString()));
@@ -124,8 +123,9 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			MiscUtil.closeQuietly(mergedItemDef);
 		}
 
-		Logger.debug(String.format("Loading %s enum types and %s item types.", typeDef.getEnum().size(),
-				typeDef.getType().size()));
+		Logger.debug(String.format("Loading %s item types, %s bean types, %s enum types, %s collection types, %s map types, %s atomic types.",
+				typeDef.getType().size(), typeDef.getBean().size(), typeDef.getEnum().size(),
+				typeDef.getCollection().size(), typeDef.getMap().size(), typeDef.getAtomic().size()));
 
 		for (final io.spotnext.infrastructure.maven.xml.ItemType t : typeDef.getType()) {
 			xmlItemTypeDefinitions.put(t.getTypeCode(), t);
@@ -134,6 +134,14 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				itemTypeClasses.put(t.getTypeCode(), getItemClass(t.getPackage(), t.getName()));
 
 				Class<? extends Item> itemTypeClass = itemTypeClasses.get(t.getTypeCode());
+
+				// register types in the spring context
+				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+				beanDefinition.setBeanClass(itemTypeClass);
+				beanDefinition.setScope("prototype");
+
+				applicationContext.registerBeanDefinition(itemTypeClass.getName(), beanDefinition);
+				applicationContext.registerAlias(itemTypeClass.getName(), t.getTypeCode());
 
 				itemTypeDefinitions.put(t.getTypeCode(), createItemTypeDefinition(t.getTypeCode(), t.getName(),
 						t.getPackage(), t.isAbstract(), getItemTypeProperties(itemTypeClass)));
