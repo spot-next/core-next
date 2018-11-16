@@ -1,2 +1,2 @@
-INSERT_UPDATE Party;title [ unique = true ];
-                   ;test-party              ;
+INSERT_UPDATE Party;title [ unique = true ] ; date[resolver=localDateValueResolver]
+                   ;test-party              ; 2019-03-31

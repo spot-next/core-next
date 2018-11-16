@@ -31,7 +31,7 @@ import io.spotnext.support.util.ClassUtil;
  * @since 1.0
  */
 @Service
-public class ReferenceValueResolver extends AbstractService implements ImpexValueResolver {
+public class ReferenceValueResolver<T extends Item> extends AbstractService implements ImpexValueResolver<T> {
 
 	@Resource
 	private TypeService typeService;
@@ -41,7 +41,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+	public T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		return resolve(value, targetType, genericArguments, columnDefinition.getValueResolutionDescriptor(), 0);
