@@ -12,7 +12,7 @@ import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
  * @version 1.0
  * @since 1.0
  */
-public interface ImpexValueResolver {
+public interface ImpexValueResolver<T> {
 	/**
 	 * Resolves the given string to an instance of the given type.
 	 *
@@ -23,7 +23,7 @@ public interface ImpexValueResolver {
 	 * @return a T object.
 	 * @throws io.spotnext.infrastructure.exception.ValueResolverException if any.
 	 */
-	<T> T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments, ColumnDefinition columnDefinition)
+	T resolve(String value, Class<T> targetType, List<Class<?>> genericArguments, ColumnDefinition columnDefinition)
 			throws ValueResolverException;
 
 }

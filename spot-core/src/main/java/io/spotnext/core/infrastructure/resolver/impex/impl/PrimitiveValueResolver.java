@@ -30,13 +30,13 @@ import io.spotnext.infrastructure.type.Localizable;
  * @since 1.0
  */
 @Service
-public class PrimitiveValueResolver implements ImpexValueResolver {
+public class PrimitiveValueResolver<T extends Object> implements ImpexValueResolver<T> {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition)
+	public T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition)
 			throws ValueResolverException {
 
 		if (StringUtils.isBlank(value)) {
@@ -61,7 +61,7 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 							String.format("Cannot resolve generic value of localizable for %s.%s", type.getSimpleName(), columnDefinition.getPropertyName()));
 				}
 
-				return (T) resolve(value, genericType, genericArguments, columnDefinition);
+				return resolve(value, (Class<T>) genericType, genericArguments, columnDefinition);
 			}
 			if (type.isAssignableFrom(value.getClass())) {
 				return (T) value;

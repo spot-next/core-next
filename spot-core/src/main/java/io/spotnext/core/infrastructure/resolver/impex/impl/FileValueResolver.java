@@ -31,7 +31,7 @@ import io.spotnext.core.persistence.service.QueryService;
  * @since 1.0
  */
 @Service
-public class FileValueResolver extends AbstractService implements ImpexValueResolver {
+public class FileValueResolver extends AbstractService implements ImpexValueResolver<Object> {
 
 	@Resource
 	private TypeService typeService;
@@ -41,7 +41,7 @@ public class FileValueResolver extends AbstractService implements ImpexValueReso
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+	public Object resolve(final String value, final Class<Object> targetType, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		if (StringUtils.isBlank(value)) {
@@ -76,6 +76,6 @@ public class FileValueResolver extends AbstractService implements ImpexValueReso
 			throw new ValueResolverException(String.format("Could not read file: %s", value), e);
 		}
 
-		return (T) fileContent;
+		return fileContent;
 	}
 }

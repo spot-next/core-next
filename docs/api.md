@@ -302,8 +302,12 @@ The framework provides these resolvers out of the box:
 * `ReferenceValueResolver`: used for resolving relation items
 * `PrimitiveValueResolver`: converts the string column values to the target type
 * `FileValueResolver`: reads the file content of the file specified as the column value.
+* `LocalDateValueResolver`: parses the string of the format `2018-01-31` into a `java.time.LocalDate` object.
+* `LocalTimeValueResolver`: parses the string of the format `10:15:30` into a `java.time.LocalTime` object.
+* `LocalDateTimeResolver`: parses the string of the format `2018-01-31 10:15:30` into a `java.time.LocalDateTime` object.
+* `FileValueResolver`: reads the file content of the file specified as the column value.
 
-> The column resolver can be configured using the modifier `[resolver=<bean name>]` (not necessary for the first two resolvers).
+> The column resolver can be configured using the modifier `[resolver=<bean name>]` (not necessary for the first two resolvers). The bean names are usually the class names, staring with a lower first key.
 
 The selector definition is only needed for relational data, like for the linked `CatalogVersion` object in the example above. The selector `(catalog(id),id)` defines how the column value (`Media:Staged`) should be interpreted:
 * "Media" is resolved using the nested selector `catalog(id)`, which in turn leads to a `Catalog` item with the `id` "Media".
@@ -313,7 +317,7 @@ The selector definition is only needed for relational data, like for the linked 
 
 The supported modifiers are:
 * `unique=true`: used by the `ReferenceValueResolver`, to specifiy that this column value is used to defined the "uniqueness" of the item to import
-* `resolver=`: used to determine the responsible resolver
+* `resolver=`: used to determine the responsible resolver (specified by using the Spring bean name)
 * `default`: the default value used if there is no actualy value supplied. If the value is an empty string, it has to be surrounded with quotes
 * `lang=<iso code>`: the `Locale` used for localized properties
 
