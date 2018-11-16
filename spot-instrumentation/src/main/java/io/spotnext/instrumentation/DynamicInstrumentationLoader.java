@@ -15,8 +15,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -33,7 +31,6 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-@ThreadSafe
 public final class DynamicInstrumentationLoader {
 
 	private static final String KEY_TRANSFORMERS = "transformers";

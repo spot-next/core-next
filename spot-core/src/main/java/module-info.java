@@ -1,10 +1,3 @@
-/**
- * 
- */
-/**
- * @author matthias
- *
- */
 module io.spotnext.core {
 	exports io.spotnext.core.infrastructure.strategy;
 	exports io.spotnext.core.testing;
@@ -56,7 +49,6 @@ module io.spotnext.core {
 	requires java.xml;
 	requires java.xml.bind;
 	requires android.json;
-	requires annotations;
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
 	requires com.fasterxml.jackson.dataformat.xml;
@@ -67,13 +59,11 @@ module io.spotnext.core {
 	requires commons.lang;
 	requires ehcache;
 	requires hamcrest.core;
-	requires hamcrest.library;
+//	requires hamcrest.library;
 	requires io.spotnext.infrastructure;
 	requires io.spotnext.instrumentation;
 	requires io.spotnext.support;
-	requires jackson.annotations;
 	requires jaque;
-	requires java.annotation;
 	requires java.instrument;
 	requires java.naming;
 	requires java.persistence;
@@ -82,7 +72,7 @@ module io.spotnext.core {
 	requires javax.servlet.api;
 	requires jetty.http;
 	requires jetty.util;
-	requires jsr305;
+//	requires jsr305;
 	requires junit;
 	requires logback.core;
 	requires opencsv;
@@ -106,4 +96,6 @@ module io.spotnext.core {
 	requires spring.orm;
 	requires spring.test;
 	requires spring.tx;
+	requires java.base;
+	requires java.annotation;
 }

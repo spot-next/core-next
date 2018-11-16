@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import javassist.ByteArrayClassPath;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
@@ -60,7 +59,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 	/** {@inheritDoc} */
 	@Override
-	@SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "needed according to the java specs")
+//	@SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification = "needed according to the java specs")
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 

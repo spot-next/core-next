@@ -162,11 +162,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.springframework</groupId> -->
-		<!-- <artifactId>spring-orm</artifactId> -->
-		<!-- <version>${spring.version}</version> -->
-		<!-- </dependency> -->
 
 		<!-- persistence -->
 		<dependency>
@@ -195,14 +190,6 @@
 			<artifactId>HikariCP</artifactId>
 			<version>3.2.0</version>
 		</dependency>
-
-		<!-- JPA query -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.torpedoquery</groupId> -->
-		<!-- <artifactId>org.torpedoquery</artifactId> -->
-		<!-- <version>2.5.1</version> -->
-		<!-- </dependency> -->
-
 		<dependency>
 			<groupId>com.trigersoft</groupId>
 			<artifactId>jaque</artifactId>

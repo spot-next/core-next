@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-// @Immutable
 /**
  * <p>
  * DynamicInstrumentationAgent class.

@@ -9,9 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.instrumentation.util.Assert;
 
 /**
@@ -21,8 +18,7 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-@NotThreadSafe
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+//@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class JdkFilesFinder {
 
 	private final Set<File> potentialFolders;

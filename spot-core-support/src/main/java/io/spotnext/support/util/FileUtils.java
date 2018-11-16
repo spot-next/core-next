@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * <p>
  * FileUtils class.
@@ -26,7 +24,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author mojo2012
  * @version 1.0
  */
-@SuppressFBWarnings({ "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "OS_OPEN_STREAM" })
+//@SuppressFBWarnings({ "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "OS_OPEN_STREAM" })
 public class FileUtils {
 
 	/**
