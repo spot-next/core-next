@@ -2,7 +2,6 @@ module io.spotnext.instrumentation {
 	exports io.spotnext.instrumentation.internal;
 	exports io.spotnext.instrumentation;
 
-	requires annotations;
 	requires org.apache.commons.io;
 	requires java.instrument;
 	requires java.management;

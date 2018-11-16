@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * <p>ProxyCollection class.</p>
  *
@@ -17,7 +15,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings(value = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION", justification = "The casts are necessary. A typecheck safeguards is implemented as well.")
+//@SuppressFBWarnings(value = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION", justification = "The casts are necessary. A typecheck safeguards is implemented as well.")
 public class ProxyCollection<E> implements List<E>, Set<E> {
 	private static final long serialVersionUID = 1L;
 

@@ -9,7 +9,6 @@ module io.spotnext.support {
 	requires org.aspectj.weaver;
 	requires java.instrument;
 	requires android.json;
-//	requires annotations;
 	requires javassist;
 	requires junit;
 	requires org.apache.commons.collections4;

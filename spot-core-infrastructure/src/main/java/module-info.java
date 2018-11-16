@@ -8,7 +8,6 @@ module io.spotnext.infrastructure {
 	exports io.spotnext.infrastructure.type;
 	exports io.spotnext.infrastructure.handler;
 
-	requires annotations;
 	requires com.fasterxml.jackson.databind;
 	requires io.spotnext.support;
 	requires jackson.annotations;
