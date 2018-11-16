@@ -1,2 +1,2 @@
-INSERT_UPDATE Party;title      ;
-                   ;test-party ;
+INSERT_UPDATE Party;title [ unique = true ];
+                   ;test-party              ;

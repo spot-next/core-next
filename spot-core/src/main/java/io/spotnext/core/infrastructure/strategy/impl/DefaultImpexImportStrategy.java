@@ -43,8 +43,8 @@ import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
-import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.infrastructure.support.impex.ImpexCommand;
 import io.spotnext.core.infrastructure.support.impex.ImpexMergeMode;
@@ -609,13 +609,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				continue;
 			}
 
-			if (StringUtils.isBlank(col)) {
+			String trimmedCol = col.replace(" ", "");
+
+			if (StringUtils.isBlank(trimmedCol)) {
 				continue;
 			}
 
 			final ColumnDefinition colDef = new ColumnDefinition();
 
-			final Matcher m = PATTERN_COLUMN_DEFINITION.matcher(col);
+			final Matcher m = PATTERN_COLUMN_DEFINITION.matcher(trimmedCol);
 
 			if (m.matches()) {
 				final String propertyName = m.group(1);
@@ -640,14 +642,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		if (StringUtils.isNotBlank(modifiers)) {
 			final Map<String, String> parsedModifiers = new HashMap<>();
 
-			final String[] kvPairs = StringUtils.removeAll(modifiers, "[\\[\\]]").split(COLLECTION_VALUE_SEPARATOR);
+			// remove all spaces
+			String trimmedModifiers = modifiers.replace(" ", "");
+
+			final String[] kvPairs = StringUtils.removeAll(trimmedModifiers, "[\\[\\]]").split(COLLECTION_VALUE_SEPARATOR);
 
 			if (kvPairs.length > 0) {
 				Stream.of(kvPairs).forEach(kv -> {
 					final String[] kvSplit = StringUtils.split(kv, '=');
 
 					if (kvSplit.length == 2) {
-						parsedModifiers.put(kvSplit[0], kvSplit[1]);
+						parsedModifiers.put(StringUtils.trim(kvSplit[0]), StringUtils.trim(kvSplit[1]));
 					}
 				});
 			}
