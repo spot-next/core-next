@@ -1,6 +1,5 @@
 module io.spotnext.infrastructure {
 	exports io.spotnext.infrastructure.maven.xml;
-	exports io.spotnext.infrastructure.spring;
 	exports io.spotnext.infrastructure;
 	exports io.spotnext.infrastructure.instrumentation;
 	exports io.spotnext.infrastructure.maven;

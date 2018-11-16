@@ -26,7 +26,7 @@ module io.spotnext.maven {
 	requires velocity.engine.core;
 	requires roaster.api;
 	requires maven.artifact;
-	requires maven.core;
+//	requires maven.core;
 	requires maven.model;
 	requires maven.plugin.annotations;
 	requires maven.plugin.api;

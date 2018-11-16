@@ -13,12 +13,10 @@ module io.spotnext.core {
 	exports io.spotnext.core.infrastructure.http;
 	exports io.spotnext.core.persistence.query.lambda;
 	exports io.spotnext.core.infrastructure.interceptor.impl;
-	exports io.spotnext.test.serialzation;
 	exports io.spotnext.core.infrastructure.support.impex;
 	exports io.spotnext.core.infrastructure.serialization.jackson;
 	exports io.spotnext.core.security.service.impl;
 	exports io.spotnext.core.security.service;
-	exports io.spotnext.test.registry;
 	exports io.spotnext.core.infrastructure.annotation.validation;
 	exports io.spotnext.core;
 	exports io.spotnext.core.management.populator;

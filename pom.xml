@@ -337,32 +337,14 @@
 						<target>${java.version}</target>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
 						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-						<!-- <skip>true</skip> -->
-						<!-- <skipMain>true</skipMain> -->
 					</configuration>
-					<!-- <executions> -->
-					<!-- <execution> -->
-					<!-- <id>default-compile</id> -->
-					<!-- <phase>none</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>compile</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
-					<!-- <execution> -->
-					<!-- <id>default-test-compile</id> -->
-					<!-- <phase>none</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>test-compile</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
-					<!-- </executions> -->
 				</plugin>
 
 				<!-- aspectj weaving is done at load-time -->
 				<plugin>
-					<groupId>com.github.m50d</groupId>
+					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>aspectj-maven-plugin</artifactId>
-					<version>1.11.1</version>
+					<version>1.11</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.aspectj</groupId>
@@ -376,9 +358,6 @@
 						</dependency>
 					</dependencies>
 					<configuration>
-						<complianceLevel>1.9</complianceLevel>
-						<source>1.9</source>
-						<target>1.9</target>
 						<aspectLibraries>
 							<aspectLibrary>
 								<groupId>org.springframework</groupId>
@@ -389,6 +368,7 @@
 
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>true</showWeaveInfo>
+						<complianceLevel>${java.version}</complianceLevel>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<Xlint>ignore</Xlint>
