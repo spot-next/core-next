@@ -18,7 +18,7 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-//@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+////@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public class JdkFilesFinder {
 
 	private final Set<File> potentialFolders;

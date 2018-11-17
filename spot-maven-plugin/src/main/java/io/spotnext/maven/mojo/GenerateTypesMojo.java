@@ -43,7 +43,7 @@ import org.jboss.forge.roaster.Roaster;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.springframework.util.DigestUtils;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.infrastructure.annotation.Accessor;
 import io.spotnext.infrastructure.annotation.Relation;
 import io.spotnext.infrastructure.maven.TypeDefinitions;
@@ -887,7 +887,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @throws java.io.IOException if any.
 	 * @MojoExecutionException if any.
 	 */
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
 			throws IOException, MojoExecutionException {
 

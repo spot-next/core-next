@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>Abstract BeanAware class.</p>
@@ -17,7 +17,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @since 1.0
  */
 @Service
-@SuppressFBWarnings(value = { "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" })
+//@SuppressFBWarnings(value = { "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE" })
 public abstract class BeanAware implements BeanNameAware {
 	private String beanName;
 

@@ -20,7 +20,7 @@
 				<configuration>
 					<compilerArgs>
 						<compilerArg>--patch-module</compilerArg>
-						<compilerArg>maven.artifact=/Users/matthias/.m2/repository/org/apache/maven/maven-core/3.6.0/maven-core-3.6.0.jar</compilerArg>
+						<compilerArg>maven.artifact=${user.home}/.m2/repository/org/apache/maven/maven-core/3.6.0/maven-core-3.6.0.jar</compilerArg>
 						<compilerArg>--add-exports</compilerArg>
 						<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
 					</compilerArgs>

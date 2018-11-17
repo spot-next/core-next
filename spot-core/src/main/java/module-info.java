@@ -58,8 +58,8 @@ module io.spotnext.core {
 	requires commons.beanutils;
 	requires commons.lang;
 	requires ehcache;
-	requires hamcrest.core;
-//	requires hamcrest.library;
+//	requires hamcrest.core;
+	requires hamcrest.library;
 	requires io.spotnext.infrastructure;
 	requires io.spotnext.instrumentation;
 	requires io.spotnext.support;
@@ -81,6 +81,7 @@ module io.spotnext.core {
 	requires org.apache.commons.lang3;
 	requires org.aspectj.weaver;
 	requires org.hibernate.orm.core;
+	requires org.hibernate.validator;
 	requires org.mockito;
 	requires slf4j.api;
 	requires spark.core;

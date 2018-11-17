@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.SessionService;
@@ -28,7 +28,7 @@ import io.spotnext.spring.web.constants.SpringWebSupportConstants;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("MS_PKGPROTECT")
+//@SuppressFBWarnings("MS_PKGPROTECT")
 public class WebSessionFilter extends OncePerRequestFilter {
 
 	/** Constant <code>RESOURCE_SUFFIXES</code> */

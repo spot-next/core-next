@@ -1,6 +1,6 @@
 package io.spotnext.spring.web.security.exception;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>AuthenticationException class.</p>
@@ -9,7 +9,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
+//@SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_SUPERCLASS")
 public class AuthenticationException extends org.springframework.security.core.AuthenticationException {
 
 	private static final long serialVersionUID = 1L;

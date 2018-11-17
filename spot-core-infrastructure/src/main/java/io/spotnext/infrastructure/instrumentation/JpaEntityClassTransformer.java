@@ -91,7 +91,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
     protected static final String RELATION_SOURCE_COLUMN = "source_pk";
     protected static final String RELATION_TARGET_COLUMN = "target_pk";
 
-//    @SuppressFBWarnings({"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", "REC_CATCH_EXCEPTION"})
+//    //@SuppressFBWarnings({"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", "REC_CATCH_EXCEPTION"})
     @Override
     protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
                                           final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
@@ -288,7 +288,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
         return Optional.ofNullable(ann);
     }
 
-//    @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
+//    //@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
     protected Optional<Annotation> createIndexAnnotation(final CtClass itemType, final CtField field, final Annotation propertyAnnotation) {
         Annotation ann = null;
 
@@ -303,7 +303,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
         return Optional.ofNullable(ann);
     }
 
-//    @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
+//    //@SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
     protected void addIndexAnnotation(CtClass itemType) throws IllegalClassTransformationException {
         Annotation tableAnnotation = getAnnotation(itemType, Table.class).orElse(null);
 
@@ -629,7 +629,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
      * @return the created collection type annotation
      * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
      */
-//    @SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
+//    //@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
     protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
             throws IllegalClassTransformationException {
 

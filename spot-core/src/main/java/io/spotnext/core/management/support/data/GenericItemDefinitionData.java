@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
 /**
@@ -14,7 +14,7 @@ import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+//@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public class GenericItemDefinitionData {
 
 	protected String typeCode;

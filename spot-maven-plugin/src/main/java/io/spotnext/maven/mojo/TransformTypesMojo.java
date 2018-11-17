@@ -51,7 +51,7 @@ import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import ch.qos.logback.core.util.CloseUtil;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.maven.Constants;
 import io.spotnext.maven.util.JarTransformer;
 import io.spotnext.support.util.FileUtils;
@@ -66,7 +66,7 @@ import io.spotnext.support.weaving.AbstractBaseClassTransformer;
  * @author Marco Semiao
  * @since 1.0
  */
-@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 @Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class TransformTypesMojo extends AbstractMojo {
 
@@ -90,7 +90,7 @@ public class TransformTypesMojo extends AbstractMojo {
 
 	/** {@inheritDoc} */
 	@Override
-	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
+	//@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException {
 		if (skip) {
 			getLog().info("Skipping type transformation!");
@@ -212,7 +212,7 @@ public class TransformTypesMojo extends AbstractMojo {
 		}
 	}
 
-	@SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "false positive")
+	//@SuppressFBWarnings(value = "DM_DEFAULT_ENCODING", justification = "false positive")
 	protected void logError(Throwable cause) {
 		final String tempFolder = System.getProperty("java.io.tmpdir");
 		final Path logFilePath = Paths.get(tempFolder, "spot-transform.types.log");

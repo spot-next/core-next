@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.exception.ValueResolverException;
@@ -355,7 +355,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	@SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
+	//@SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
 	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem, final Set<String> propertyToIgnore) {
 
 		final List<String> whereClauses = new ArrayList<>();

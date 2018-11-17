@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
@@ -24,7 +24,7 @@ import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+//@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 public abstract class AbstractPersistenceService extends AbstractService implements PersistenceService {
 
 	@Autowired

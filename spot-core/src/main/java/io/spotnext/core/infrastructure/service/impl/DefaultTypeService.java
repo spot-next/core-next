@@ -31,7 +31,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Service;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.Logger;
@@ -60,7 +60,7 @@ import io.spotnext.support.util.ValidationUtil;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
+	//@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 	final protected Map<String, io.spotnext.infrastructure.maven.xml.ItemType> xmlItemTypeDefinitions = new HashMap<>();
 
 	final protected Map<String, Class<? extends Item>> itemTypeClasses = new HashMap<>();
@@ -73,7 +73,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Logger.info(String.format("Registered item types: %s", StringUtils.join(itemTypeDefinitions.keySet(), ", ")));
 	}
 
-	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
+	//@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
 	protected void loadMergedItemTypeDefinitions(GenericApplicationContext applicationContext) {
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.rendering.transformers.ThymeleafRendererResponseTransformer;
 import io.spotnext.core.infrastructure.http.ModelAndView;
 import io.spotnext.core.infrastructure.service.ModelService;
@@ -88,7 +88,7 @@ public class HomePageEndpoint {
 		return ModelAndView.ok("homepage").withPayload(model);
 	}
 
-	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
+	//@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
 	public ModelAndView postCancelParty(final Request request, final Response response) {
 		String partyPk = request.queryParams("partyPk");

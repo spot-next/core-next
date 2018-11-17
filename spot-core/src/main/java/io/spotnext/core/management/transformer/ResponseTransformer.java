@@ -1,6 +1,6 @@
 package io.spotnext.core.management.transformer;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 
 /**
@@ -12,7 +12,7 @@ import io.spotnext.core.infrastructure.http.HttpResponse;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_INTERFACE")
+//@SuppressFBWarnings("NM_SAME_SIMPLE_NAME_AS_INTERFACE")
 public interface ResponseTransformer extends spark.ResponseTransformer {
 
 	/**

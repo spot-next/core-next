@@ -8,9 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" filepath="$PROJECT_DIR$/spot-commerce-base/spot-commerce-base.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core/spot-core.iml" filepath="$PROJECT_DIR$/spot-core/spot-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" filepath="$PROJECT_DIR$/spot-core-infrastructure/spot-core-infrastructure.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" filepath="$PROJECT_DIR$/spot-core-shell/spot-core-shell.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-core-support/spot-core-support.iml" filepath="$PROJECT_DIR$/spot-core-support/spot-core-support.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spot-framework.iml" filepath="$PROJECT_DIR$/spot-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/spot-framework.iml" filepath="$PROJECT_DIR$/.idea/spot-framework.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" filepath="$PROJECT_DIR$/spot-instrumentation/spot-instrumentation.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" filepath="$PROJECT_DIR$/spot-maven-plugin/spot-maven-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" filepath="$PROJECT_DIR$/spot-sample-simple/spot-sample-simple.iml" />
