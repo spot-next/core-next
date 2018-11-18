@@ -13,11 +13,6 @@
 
 	<build>
 		<plugins>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.codehaus.mojo</groupId> -->
-<!-- 				<artifactId>build-helper-maven-plugin</artifactId> -->
-<!-- 			</plugin> -->
-			
 			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -25,7 +20,9 @@
 				<configuration>
 					<compilerArgs>
 						<compilerArg>--add-modules</compilerArg>
-						<compilerArg>java.xml.ws.annotation</compilerArg>
+						<compilerArg>java.xml.ws.annotation,java.xml.bind</compilerArg>
+						<compilerArg>--add-exports</compilerArg>
+						<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
 					</compilerArgs>
 				</configuration>
 			</plugin>
@@ -70,6 +67,19 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>io.spotnext.sample</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- RELEASE -->
 			<!-- skip the deployment for this project, it's just a sample -->
 			<plugin>
@@ -85,8 +95,7 @@
 		<pluginManagement>
 			<plugins>
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -123,10 +132,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -142,10 +151,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -208,6 +217,18 @@
 			<groupId>org.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
 			<version>5.0.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -5,8 +5,6 @@ open module io.spotnext.cms {
 	exports io.spotnext.cms.strategy.impl;
 	exports io.spotnext.cms;
 	exports io.spotnext.cms.restriction;
-	exports io.spotnext.itemtype.cms.enumeration;
-	exports io.spotnext.itemtype.cms;
 	exports io.spotnext.cms.service;
 	exports io.spotnext.cms.rendering.view;
 	exports io.spotnext.cms.strategy;
