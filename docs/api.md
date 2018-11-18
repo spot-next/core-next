@@ -59,7 +59,7 @@ All (merged) properties can be accessed using either:
 #### Summary
 Aside from that, a spot application can be utilized as any regular Spring app.
 
-### Persistene layer
+### Persistence layer
 The persistence layer is based on **Hibernate/JPA** - although its complexity is highly abstracted away. In contrast to a pure JPA approach entities are not created as Java classes and configured via XML or Annotations. Entities (or so called Item types) are generated based on type definitinos written in XML.
 During building these classes are (bytecode-) transformed to JPA entities (adding annotations etc).
 
