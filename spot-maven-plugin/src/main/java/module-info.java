@@ -10,7 +10,6 @@ module io.spotnext.maven {
 	exports io.spotnext.maven.velocity.type;
 	exports io.spotnext.maven.velocity.type.annotation;
 
-	requires annotations;
 	requires com.fasterxml.jackson.core;
 	requires com.fasterxml.jackson.databind;
 	requires io.spotnext.infrastructure;

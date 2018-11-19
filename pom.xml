@@ -1,937 +1,902 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.spot-next</groupId>
-	<artifactId>spot-framework</artifactId>
-	<version>${revision}</version>
-	<name>${project.groupId}:${project.artifactId}</name>
-	<packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                              http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.spot-next</groupId>
+    <artifactId>spot-framework</artifactId>
+    <version>${revision}</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <packaging>pom</packaging>
 
-	<description>
-		The spOt microservice framework.
-	</description>
+    <description>
+        The spOt microservice framework.
+    </description>
 
-	<organization>
-		<url>https://spot-next.io</url>
-		<name>spOt</name>
-	</organization>
+    <organization>
+        <url>https://spot-next.io</url>
+        <name>spOt</name>
+    </organization>
 
-	<profiles>
-		<profile>
-			<id>release</id>
-			<activation>
-				<property>
-					<name>profile</name>
-					<value>release</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-					</plugin>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>profile</name>
+                    <value>release</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
 
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>travis</id>
-			<activation>
-				<property>
-					<name>travis</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
-						<configuration>
-							<gpgArguments combine.self="override" />
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>travis</id>
+            <activation>
+                <property>
+                    <name>travis</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <configuration>
+                            <gpgArguments combine.self="override"/>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
-	<scm>
-		<connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
-		<developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
-		<url>https://github.com/mojo2012/spot-framework/tree/master</url>
-		<tag>HEAD</tag>
-	</scm>
+    <scm>
+        <connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
+        <developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
+        <url>https://github.com/mojo2012/spot-framework/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
 
-	<ciManagement>
-		<system>travis-ci</system>
-		<url>https://travis-ci.org/mojo2012/spot-framework/</url>
-	</ciManagement>
+    <ciManagement>
+        <system>travis-ci</system>
+        <url>https://travis-ci.org/mojo2012/spot-framework/</url>
+    </ciManagement>
 
-	<developers>
-		<developer>
-			<id>mojo2012</id>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>1</timezone>
-			<url>http://github.com/mojo2012/</url>
-			<organizationUrl>https://spot-next.io</organizationUrl>
-			<organization>spOt</organization>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>mojo2012</id>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>1</timezone>
+            <url>http://github.com/mojo2012/</url>
+            <organizationUrl>https://spot-next.io</organizationUrl>
+            <organization>spOt</organization>
+        </developer>
+    </developers>
 
-	<inceptionYear>2016</inceptionYear>
+    <inceptionYear>2016</inceptionYear>
 
-	<issueManagement>
-		<system>github</system>
-		<url>https://github.com/mojo2012/spot-framework/issues</url>
-	</issueManagement>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/mojo2012/spot-framework/issues</url>
+    </issueManagement>
 
-	<url>https://mojo2012.github.io/spot-framework/</url>
+    <url>https://mojo2012.github.io/spot-framework/</url>
 
-	<contributors>
-		<contributor>
-			<name>Thomas Rotter</name>
-		</contributor>
-		<contributor>
-			<name>Benjamin Nussbaum</name>
-		</contributor>
-	</contributors>
+    <contributors>
+        <contributor>
+            <name>Thomas Rotter</name>
+        </contributor>
+        <contributor>
+            <name>Benjamin Nussbaum</name>
+        </contributor>
+    </contributors>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<modules>
-		<module>build-tools</module>
-		<module>spot-core-support</module>
-		<module>spot-instrumentation</module>
-		<module>spot-core-infrastructure</module>
-		<module>spot-maven-plugin</module>
-		<module>spot-core</module>
-		<!-- <module>spot-core-shell</module> -->
-		<module>spot-spring-web-support</module>
-		<module>spot-cms-base</module>
-		<module>spot-commerce-base</module>
-		<!-- <module>spot-mail</module> -->
-		<module>spot-sample-simple</module>
-		<module>archetype-empty</module>
-	</modules>
+    <modules>
+        <module>build-tools</module>
+        <module>spot-core-support</module>
+        <module>spot-instrumentation</module>
+        <module>spot-core-infrastructure</module>
+        <module>spot-maven-plugin</module>
+        <module>spot-core</module>
+        <!-- <module>spot-core-shell</module> -->
+        <module>spot-spring-web-support</module>
+        <module>spot-cms-base</module>
+        <module>spot-commerce-base</module>
+        <!-- <module>spot-mail</module> -->
+        <module>spot-sample-simple</module>
+        <module>archetype-empty</module>
+    </modules>
 
-	<properties>
-		<revision>1.0-SNAPSHOT</revision>
+    <properties>
+        <revision>1.0-SNAPSHOT</revision>
 
-		<!-- compiling -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.9</maven.compiler.source>
-		<maven.compiler.target>1.9</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>9</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aspectj.version>1.9.2</aspectj.version>
+        <!-- compiling -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.9</maven.compiler.source>
+        <maven.compiler.target>1.9</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>9</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <aspectj.version>1.9.2</aspectj.version>
 
-		<!-- misc -->
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<log4j.version>2.11.1</log4j.version>
-		<junit.version>4.12</junit.version>
-		<junit.jupiter.version>5.3.1</junit.jupiter.version>
-		<spring.boot.version>2.1.0.RELEASE</spring.boot.version>
-		<spring.version>5.1.2.RELEASE</spring.version>
+        <!-- misc -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <log4j.version>2.11.1</log4j.version>
+        <junit.version>4.12</junit.version>
+        <junit.jupiter.version>5.3.1</junit.jupiter.version>
+        <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
+        <spring.version>5.1.2.RELEASE</spring.version>
 
-		<!-- GPG -->
-		<gpg.keyname>${env.GPG_KEY}</gpg.keyname>
-		<gpg.passphrase>${env.GPG_PWD}</gpg.passphrase>
+        <!-- GPG -->
+        <gpg.keyname>${env.GPG_KEY}</gpg.keyname>
+        <gpg.passphrase>${env.GPG_PWD}</gpg.passphrase>
 
-		<!-- nexus repository -->
-		<nexus.snapshot.host>http://nexus.spot-next.io/repository/spot-snapshot/</nexus.snapshot.host>
-		<nexus.release.host>http://nexus.spot-next.io/repository/spot-release/</nexus.release.host>
-	</properties>
+        <!-- nexus repository -->
+        <nexus.snapshot.host>http://nexus.spot-next.io/repository/spot-snapshot/</nexus.snapshot.host>
+        <nexus.release.host>http://nexus.spot-next.io/repository/spot-release/</nexus.release.host>
+    </properties>
 
-	<repositories>
-		<repository>
-			<id>central</id>
-			<name>Central Repository</name>
-			<url>http://repo.maven.apache.org/maven2</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
 
-		<!-- eclipse lifecycle plugin is only available here -->
-		<repository>
-			<id>mvnrepository</id>
-			<name>mvnrepository</name>
-			<url>http://www.mvnrepository.com</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+        <!-- eclipse lifecycle plugin is only available here -->
+        <repository>
+            <id>mvnrepository</id>
+            <name>mvnrepository</name>
+            <url>http://www.mvnrepository.com</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
-	<distributionManagement>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-			<resource>
-				<directory>src/gen/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/gen/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+            </plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>flatten-maven-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
 
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M2</version>
-					<configuration>
-						<rules>
-							<dependencyConvergence />
-						</rules>
-					</configuration>
-				</plugin>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M2</version>
+                    <configuration>
+                        <rules>
+                            <dependencyConvergence/>
+                        </rules>
+                    </configuration>
+                </plugin>
 
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>flatten-maven-plugin</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<updatePomFile>true</updatePomFile>
-						<pomElements>
-							<profiles />
-							<pluginManagement />
-							<properties />
-							<dependencyManagement />
-							<reporting />
-							<modules />
-						</pomElements>
-						<flattenMode>oss</flattenMode>
-					</configuration>
-					<executions>
-						<execution>
-							<id>flatten</id>
-							<phase>process-resources</phase>
-							<goals>
-								<goal>flatten</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>flatten.clean</id>
-							<phase>clean</phase>
-							<goals>
-								<goal>clean</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                        <pomElements>
+                            <profiles/>
+                            <pluginManagement/>
+                            <properties/>
+                            <dependencyManagement/>
+                            <reporting/>
+                            <modules/>
+                        </pomElements>
+                        <flattenMode>oss</flattenMode>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten.clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
-					<configuration>
-						<filesets>
-							<fileset>
-								<directory>data/store</directory>
-								<includes>
-									<include>**/*.*</include>
-								</includes>
-								<excludes>
-									<exclude>**/.empty</exclude>
-								</excludes>
-								<followSymlinks>false</followSymlinks>
-							</fileset>
-							<fileset>
-								<directory>src/gen/</directory>
-								<includes>
-									<include>**/*.*</include>
-								</includes>
-								<excludes>
-									<exclude>**/.empty</exclude>
-								</excludes>
-								<followSymlinks>false</followSymlinks>
-							</fileset>
-						</filesets>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
-					<executions>
-						<execution>
-							<id>add-source</id>
-							<phase>generate-sources</phase>
-							<goals>
-								<goal>add-source</goal>
-							</goals>
-							<configuration>
-								<sources>
-									<source>${project.basedir}/src/gen/java</source>
-								</sources>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>data/store</directory>
+                                <includes>
+                                    <include>**/*.*</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/.empty</exclude>
+                                </excludes>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                            <fileset>
+                                <directory>src/gen/</directory>
+                                <includes>
+                                    <include>**/*.*</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/.empty</exclude>
+                                </excludes>
+                                <followSymlinks>false</followSymlinks>
+                            </fileset>
+                        </filesets>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>${project.basedir}/src/gen/java</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- COMPILING -->
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
-					<configuration>
-						<nonFilteredFileExtensions>
-							<nonFilteredFileExtension>jks</nonFilteredFileExtension>
-						</nonFilteredFileExtensions>
-					</configuration>
-				</plugin>
+                <!-- COMPILING -->
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <nonFilteredFileExtensions>
+                            <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                        </nonFilteredFileExtensions>
+                    </configuration>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
-					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<useIncrementalCompilation>true</useIncrementalCompilation>
-						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-					</configuration>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <useIncrementalCompilation>true</useIncrementalCompilation>
+                        <forceJavacCompilerUse>true</forceJavacCompilerUse>
+                    </configuration>
+                </plugin>
 
-				<!-- aspectj weaving is done at load-time -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>aspectj-maven-plugin</artifactId>
-					<version>1.11</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.aspectj</groupId>
-							<artifactId>aspectjtools</artifactId>
-							<version>${aspectj.version}</version>
-						</dependency>
-						<dependency>
-							<groupId>org.aspectj</groupId>
-							<artifactId>aspectjrt</artifactId>
-							<version>${aspectj.version}</version>
-						</dependency>
-					</dependencies>
-					<configuration>
-						<aspectLibraries>
-							<aspectLibrary>
-								<groupId>org.springframework</groupId>
-								<artifactId>spring-aspects</artifactId>
-							</aspectLibrary>
-						</aspectLibraries>
-						<argumentFileName>../ajc-arguments.log</argumentFileName>
+                <!-- aspectj weaving is done at load-time -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>aspectj-maven-plugin</artifactId>
+                    <version>1.11</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjtools</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                            <version>${aspectj.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <aspectLibraries>
+                            <aspectLibrary>
+                                <groupId>org.springframework</groupId>
+                                <artifactId>spring-aspects</artifactId>
+                            </aspectLibrary>
+                        </aspectLibraries>
+                        <argumentFileName>../ajc-arguments.log</argumentFileName>
 
-						<!-- setting this to true can cause build errors im M2E -->
-						<showWeaveInfo>true</showWeaveInfo>
-						<complianceLevel>${java.version}</complianceLevel>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
-						<Xlint>ignore</Xlint>
-						<XnoInline>true</XnoInline>
-						<complianceLevel>${java.version}</complianceLevel>
-						<encoding>UTF-8</encoding>
-						<verbose>false</verbose>
-						<forceAjcCompile>false</forceAjcCompile>
-						<preserveAllLocals>true</preserveAllLocals>
-						<proceedOnError>false</proceedOnError>
+                        <!-- setting this to true can cause build errors im M2E -->
+                        <showWeaveInfo>true</showWeaveInfo>
+                        <complianceLevel>${java.version}</complianceLevel>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <Xlint>ignore</Xlint>
+                        <XnoInline>true</XnoInline>
+                        <complianceLevel>${java.version}</complianceLevel>
+                        <encoding>UTF-8</encoding>
+                        <verbose>false</verbose>
+                        <forceAjcCompile>false</forceAjcCompile>
+                        <preserveAllLocals>true</preserveAllLocals>
+                        <proceedOnError>false</proceedOnError>
 
-					</configuration>
-					<executions>
-						<execution>
-							<phase>none</phase>
-						</execution>
-					</executions>
-				</plugin>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- RESOURCE GENERATION -->
-				<plugin>
-					<groupId>io.spot-next</groupId>
-					<artifactId>spot-maven-plugin</artifactId>
-					<version>${revision}</version>
-					<configuration>
-						<classFileTransformers>
-							<classFileTransformer>
-								io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer
-							</classFileTransformer>
-						</classFileTransformers>
-						<includeJars>false</includeJars>
-						<debug>true</debug>
-					</configuration>
-					<executions>
-						<execution>
-							<id>Item type generation</id>
-							<phase>generate-sources</phase>
-							<goals>
-								<goal>generate-types</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>Item type post-processing</id>
-							<phase>compile</phase>
-							<goals>
-								<goal>transform-types</goal>
-							</goals>
-							<configuration>
-								<!-- done by load-time-weaver, therefore we skip it there -->
-								<skip>true</skip>
-							</configuration>
-						</execution>
-						<execution>
-							<id>Item type post-processing (test)</id>
-							<phase>test-compile</phase>
-							<goals>
-								<goal>transform-types</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <!-- RESOURCE GENERATION -->
+                <plugin>
+                    <groupId>io.spot-next</groupId>
+                    <artifactId>spot-maven-plugin</artifactId>
+                    <version>${revision}</version>
+                    <configuration>
+                        <classFileTransformers>
+                            <classFileTransformer>
+                                io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer
+                            </classFileTransformer>
+                        </classFileTransformers>
+                        <includeJars>false</includeJars>
+                        <debug>true</debug>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>Item type generation</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>generate-types</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>Item type post-processing</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>transform-types</goal>
+                            </goals>
+                            <configuration>
+                                <!-- done by load-time-weaver, therefore we skip it there -->
+                                <skip>true</skip>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>Item type post-processing (test)</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>transform-types</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.bsc.maven</groupId>
-					<artifactId>maven-processor-plugin</artifactId>
-					<version>3.3.3</version>
-				</plugin>
+                <plugin>
+                    <groupId>org.bsc.maven</groupId>
+                    <artifactId>maven-processor-plugin</artifactId>
+                    <version>3.3.3</version>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
 
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>${spring.boot.version}</version>
-					<configuration>
-						<arguments>
-							<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
-							<argument>--spring.main.allow-bean-definition-overriding=true</argument>
-						</arguments>
-					</configuration>
-					<executions>
-						<execution>
-							<id>repackage</id>
-							<goals>
-								<goal>repackage</goal>
-							</goals>
-							<configuration>
-								<classifier>jar-with-dependencies</classifier>
-							</configuration>
-						</execution>
-						<execution>
-							<id>build-info</id>
-							<goals>
-								<goal>build-info</goal>
-							</goals>
-							<configuration>
-								<additionalProperties>
-									<encoding.source>UTF-8</encoding.source>
-									<encoding.reporting>UTF-8</encoding.reporting>
-									<java.source>${java.version}</java.source>
-									<java.target>${java.version}</java.target>
-								</additionalProperties>
-								<jvmArguments>
-									-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
-								</jvmArguments>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                    <configuration>
+                        <arguments>
+                            <!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
+                            <argument>--spring.main.allow-bean-definition-overriding=true</argument>
+                        </arguments>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>repackage</id>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>jar-with-dependencies</classifier>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>build-info</id>
+                            <goals>
+                                <goal>build-info</goal>
+                            </goals>
+                            <configuration>
+                                <additionalProperties>
+                                    <encoding.source>UTF-8</encoding.source>
+                                    <encoding.reporting>UTF-8</encoding.reporting>
+                                    <java.source>${java.version}</java.source>
+                                    <java.target>${java.version}</java.target>
+                                </additionalProperties>
+                                <jvmArguments>
+                                    -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
+                                </jvmArguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- CODE ANALYSIS -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>3.0.5</version>
-					<configuration>
-						<effort>Max</effort>
-						<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
-						<effort>medium</effort>
-						<!-- Reports all bugs (other values are medium and max) -->
-						<threshold>Low</threshold>
-						<!-- Produces XML report -->
-						<xmlOutput>true</xmlOutput>
-						<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-					</configuration>
-					<executions>
-						<!-- Ensures that FindBugs inspects source code when project is deployed. -->
-						<execution>
-							<id>analyze-deploy</id>
-							<phase>deploy</phase>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <!-- CODE ANALYSIS -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>3.1.8</version>
+                    <configuration>
+                        <jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
+                    </configuration>
+                    <executions>
+                        <!-- Ensures that spotbugs inspects source code when project is deployed. -->
+                        <execution>
+                            <id>analyze-deploy</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.2</version>
-					<executions>
-						<execution>
-							<id>prepare-agent</id>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.2</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.8</version>
-					<configuration>
-						<skip>true</skip>
-						<rulesets>
-							<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
-						</rulesets>
-						<printFailingErrors>true</printFailingErrors>
-						<verbose>true</verbose>
-					</configuration>
-					<executions>
-						<execution>
-							<phase>deploy</phase>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>3.8</version>
+                    <configuration>
+                        <skip>true</skip>
+                        <rulesets>
+                            <ruleset>spot-framework/pmd-ruleset.xml</ruleset>
+                        </rulesets>
+                        <printFailingErrors>true</printFailingErrors>
+                        <verbose>true</verbose>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- TESTING -->
-				<!-- higher plugin version are incompatible with spring boot! -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
-					<configuration>
-						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
-					</configuration>
-				</plugin>
+                <!-- TESTING -->
+                <!-- higher plugin version are incompatible with spring boot! -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+                    </configuration>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.18.1</version>
-					<configuration>
-						<includes>
-							<include>**/*IT.java</include>
-						</includes>
-						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>integration-test</goal>
-								<goal>verify</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
+                        <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- RELEASE -->
-				<plugin>
-					<groupId>pl.project13.maven</groupId>
-					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.2.4</version>
-					<configuration>
-						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-						<dateFormat>yyyyMMdd-HHmmss</dateFormat>
-						<injectAllReactorProjects>false</injectAllReactorProjects>
-						<failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
-						<failOnNoGitDirectory>false</failOnNoGitDirectory>
-						<generateGitPropertiesFile>true</generateGitPropertiesFile>
-					</configuration>
-					<executions>
-						<execution>
-							<id>get-the-git-infos</id>
-							<goals>
-								<goal>revision</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>validate-the-git-infos</id>
-							<goals>
-								<goal>validateRevision</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <!-- RELEASE -->
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>2.2.4</version>
+                    <configuration>
+                        <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                        <dateFormat>yyyyMMdd-HHmmss</dateFormat>
+                        <injectAllReactorProjects>false</injectAllReactorProjects>
+                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>get-the-git-infos</id>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>validate-the-git-infos</id>
+                            <goals>
+                                <goal>validateRevision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
-					<configuration>
-						<failOnError>false</failOnError>
-						<additionalparam>-Xdoclint:none</additionalparam>
-						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*:*Mojo*</excludePackageNames>
-						<excludes>**/gen/*</excludes>
-						<quiet>true</quiet>
-						<!-- does not work with revision property! -->
-						<ignoreClirr>true</ignoreClirr>
-						<version>false</version>
-						<nosince>true</nosince>
-						<author>false</author>
-						<defaultAuthor>mojo2012</defaultAuthor>
-						<defaultVersion>1.0</defaultVersion>
-						<level>public</level>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <failOnError>false</failOnError>
+                        <additionalparam>-Xdoclint:none</additionalparam>
+                        <excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*:*Mojo*
+                        </excludePackageNames>
+                        <excludes>**/gen/*</excludes>
+                        <quiet>true</quiet>
+                        <!-- does not work with revision property! -->
+                        <ignoreClirr>true</ignoreClirr>
+                        <version>false</version>
+                        <nosince>true</nosince>
+                        <author>false</author>
+                        <defaultAuthor>mojo2012</defaultAuthor>
+                        <defaultVersion>1.0</defaultVersion>
+                        <level>public</level>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<goals>
-								<goal>jar-no-fork</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.6</version>
-					<configuration>
-						<!-- This is necessary for gpg to not try to use the pinentry programs -->
-						<gpgArguments>
-							<arg>--pinentry-mode</arg>
-							<arg>loopback</arg>
-						</gpgArguments>
-					</configuration>
-					<executions>
-						<execution>
-							<id>sign-artifacts</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>sign</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                    <configuration>
+                        <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                        <gpgArguments>
+                            <arg>--pinentry-mode</arg>
+                            <arg>loopback</arg>
+                        </gpgArguments>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
-				<!-- DEPLOYMENT -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
-					<configuration>
-						<skip>true</skip>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>1.6.8</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						<autoDropAfterRelease>true</autoDropAfterRelease>
-						<keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
-						<keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
-						<stagingProfileId>5f2e64bdcef503</stagingProfileId>
-						<stagingDescription>spOt staging repo</stagingDescription>
-					</configuration>
-					<executions>
-						<execution>
-							<id>default-deploy</id>
-							<phase>deploy</phase>
-							<goals>
-								<goal>deploy</goal>
-							</goals>
-						</execution>
-						<!-- <execution> -->
-						<!-- <id>sonatype close</id> -->
-						<!-- <phase>deploy</phase> -->
-						<!-- <goals> -->
-						<!-- <goal>close</goal> -->
-						<!-- </goals> -->
-						<!-- </execution> -->
-					</executions>
-				</plugin>
+                <!-- DEPLOYMENT -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.8</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        <autoDropAfterRelease>true</autoDropAfterRelease>
+                        <keepStagingRepositoryOnCloseRuleFailure>true</keepStagingRepositoryOnCloseRuleFailure>
+                        <keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
+                        <stagingProfileId>5f2e64bdcef503</stagingProfileId>
+                        <stagingDescription>spOt staging repo</stagingDescription>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-deploy</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                        </execution>
+                        <!-- <execution> -->
+                        <!-- <id>sonatype close</id> -->
+                        <!-- <phase>deploy</phase> -->
+                        <!-- <goals> -->
+                        <!-- <goal>close</goal> -->
+                        <!-- </goals> -->
+                        <!-- </execution> -->
+                    </executions>
+                </plugin>
 
-				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>io.spot-next</groupId>
-										<artifactId>spot-maven-plugin</artifactId>
-										<versionRange>
-											[0.0,)
-										</versionRange>
-										<goals>
-											<goal>generate-types</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>aspectj-maven-plugin</artifactId>
-										<versionRange>[1.8,)</versionRange>
-										<goals>
-											<goal>compile</goal>
-											<goal>test-compile</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<!-- <execute> -->
-										<!-- <runOnIncremental>true</runOnIncremental> -->
-										<!-- <runOnConfiguration>true</runOnConfiguration> -->
-										<!-- </execute> -->
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>io.spot-next</groupId>
-										<artifactId>spot-maven-plugin</artifactId>
-										<versionRange>
-											[0.0,)
-										</versionRange>
-										<goals>
-											<goal>transform-types</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<!-- <execute> -->
-										<!-- <runOnIncremental>true</runOnIncremental> -->
-										<!-- <runOnConfiguration>true</runOnConfiguration> -->
-										<!-- </execute> -->
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>flatten-maven-plugin</artifactId>
-										<versionRange>[1.0.0,)</versionRange>
-										<goals>
-											<goal>flatten</goal>
-											<goal>clean</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>false</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>pl.project13.maven</groupId>
-										<artifactId>git-commit-id-plugin</artifactId>
-										<versionRange>[2.0.0,)</versionRange>
-										<goals>
-											<goal>revision</goal>
-											<goal>validateRevision</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-											<runOnConfiguration>true</runOnConfiguration>
-										</execute>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+                <!-- ECLIPSE FIX -->
+                <!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>io.spot-next</groupId>
+                                        <artifactId>spot-maven-plugin</artifactId>
+                                        <versionRange>
+                                            [0.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>generate-types</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>false</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>aspectj-maven-plugin</artifactId>
+                                        <versionRange>[1.8,)</versionRange>
+                                        <goals>
+                                            <goal>compile</goal>
+                                            <goal>test-compile</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <!-- <execute> -->
+                                        <!-- <runOnIncremental>true</runOnIncremental> -->
+                                        <!-- <runOnConfiguration>true</runOnConfiguration> -->
+                                        <!-- </execute> -->
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>io.spot-next</groupId>
+                                        <artifactId>spot-maven-plugin</artifactId>
+                                        <versionRange>
+                                            [0.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>transform-types</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <!-- <execute> -->
+                                        <!-- <runOnIncremental>true</runOnIncremental> -->
+                                        <!-- <runOnConfiguration>true</runOnConfiguration> -->
+                                        <!-- </execute> -->
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>flatten-maven-plugin</artifactId>
+                                        <versionRange>[1.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>flatten</goal>
+                                            <goal>clean</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>false</runOnIncremental>
+                                            <runOnConfiguration>false</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>pl.project13.maven</groupId>
+                                        <artifactId>git-commit-id-plugin</artifactId>
+                                        <versionRange>[2.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>revision</goal>
+                                            <goal>validateRevision</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute>
+                                            <runOnIncremental>false</runOnIncremental>
+                                            <runOnConfiguration>true</runOnConfiguration>
+                                        </execute>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
-				<configuration>
-					<skip>true</skip>
-					<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+            </plugin>
 
-					<effort>Max</effort>
-					<!-- Reports all bugs (other values are medium and max) -->
-					<threshold>Low</threshold>
-					<failOnError>true</failOnError>
-					<xmlOutput>true</xmlOutput>
-					<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <skip>true</skip>
+                    <rulesets>
+                        <ruleset>spot-framework/pmd-ruleset.xml</ruleset>
+                    </rulesets>
+                    <printFailingErrors>true</printFailingErrors>
+                    <verbose>true</verbose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.8</version>
+                <configuration>
+                    <configLocation>config/sun_checks.xml</configLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.8</version>
-				<configuration>
-					<skip>true</skip>
-					<rulesets>
-						<ruleset>spot-framework/pmd-ruleset.xml</ruleset>
-					</rulesets>
-					<printFailingErrors>true</printFailingErrors>
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.8</version>
-				<configuration>
-					<configLocation>config/sun_checks.xml</configLocation>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
+    <dependencies>
+        <!-- aspectj -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
 
-	<dependencies>
-		<!-- aspectj -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aspects</artifactId>
-			<version>${spring.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>${aspectj.version}</version>
-		</dependency>
+        <!-- apache tools -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.2</version>
+        </dependency>
 
-		<!-- findbugs -->
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<version>3.0.1u2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.findbugs</groupId>
-					<artifactId>jsr305</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.jcip</groupId>
-					<artifactId>jcip-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+    </dependencies>
 
-		<!-- apache tools -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.2</version>
-		</dependency>
-
-	</dependencies>
-
-	<dependencyManagement>
-		<!-- logging -->
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.7.25</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+    <dependencyManagement>
+        <!-- logging -->
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

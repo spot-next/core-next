@@ -20,150 +20,156 @@ import java.util.zip.ZipFile;
  * FileUtils class.
  * </p>
  *
- * @since 1.0
  * @author mojo2012
  * @version 1.0
+ * @since 1.0
  */
-////@SuppressFBWarnings({ "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "OS_OPEN_STREAM" })
 public class FileUtils {
 
-	/**
-	 * list files in the given directory and subdirs (with recursion)
-	 *
-	 * @param paths a {@link java.lang.String} object.
-	 * @return a {@link java.util.List} object.
-	 */
-	public static List<File> getFiles(final String paths, Predicate<File> filter) {
-		final List<File> filesList = new ArrayList<>();
-		for (final String path : paths.split(File.pathSeparator)) {
-			final File file = new File(path);
-			if (file.isDirectory()) {
-				recurse(filesList, file);
-			} else {
-				filesList.add(file);
-			}
-		}
+    /**
+     * list files in the given directory and subdirs (with recursion)
+     *
+     * @param paths a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    public static List<File> getFiles(final String paths, Predicate<File> filter) {
+        final List<File> filesList = new ArrayList<>();
+        for (final String path : paths.split(File.pathSeparator)) {
+            final File file = new File(path);
+            if (file.isDirectory()) {
+                recurse(filesList, file);
+            } else {
+                filesList.add(file);
+            }
+        }
 
-		return filesList.stream().filter(f -> filter == null || filter.test(f)).collect(Collectors.toList());
-	}
+        return filesList.stream().filter(f -> filter == null || filter.test(f)).collect(Collectors.toList());
+    }
 
-	/**
-	 * <p>
-	 * recurse.
-	 * </p>
-	 *
-	 * @param filesList a {@link java.util.List} object.
-	 * @param f         a {@link java.io.File} object.
-	 */
-	protected static void recurse(final List<File> filesList, final File f) {
-		final File[] list = f.listFiles();
-		for (final File file : list) {
-			if (file.isDirectory()) {
-				recurse(filesList, file);
-			} else {
-				filesList.add(file);
-			}
-		}
-	}
+    /**
+     * <p>
+     * recurse.
+     * </p>
+     *
+     * @param filesList a {@link java.util.List} object.
+     * @param f         a {@link java.io.File} object.
+     */
+    protected static void recurse(final List<File> filesList, final File file) {
+        if (file == null) {
+            return;
+        }
 
-	/**
-	 * Reads a file into an {@link java.io.InputStream}.
-	 *
-	 * @param filePath a {@link java.lang.String} object.
-	 * @return a {@link java.io.InputStream} object.
-	 * @throws java.io.FileNotFoundException if any.
-	 */
-	public static InputStream readFile(final String filePath) throws FileNotFoundException {
-		return new FileInputStream(filePath);
-	}
+        final File[] list = file.listFiles();
 
-	/**
-	 * Reads a file into an {@link java.io.InputStream}.
-	 *
-	 * @param file a {@link java.io.File} object.
-	 * @return a {@link java.io.InputStream} object.
-	 * @throws java.io.FileNotFoundException if any.
-	 */
-	public static InputStream readFile(final File file) throws FileNotFoundException {
-		return readFile(file.getAbsolutePath());
-	}
+        if (list != null) {
+            for (final File f : list) {
+                if (f.isDirectory()) {
+                    recurse(filesList, f);
+                } else {
+                    filesList.add(f);
+                }
+            }
+        }
+    }
 
-	/**
-	 * <p>
-	 * readFileFromZipFile.
-	 * </p>
-	 *
-	 * @param zipFile          a {@link java.util.zip.ZipFile} object.
-	 * @param relativeFilePath a {@link java.lang.String} object.
-	 * @return a {@link java.io.InputStream} object.
-	 * @throws java.io.FileNotFoundException if any.
-	 */
-	public static InputStream readFileFromZipFile(final ZipFile zipFile, final String relativeFilePath)
-			throws FileNotFoundException {
+    /**
+     * Reads a file into an {@link java.io.InputStream}.
+     *
+     * @param filePath a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
+    public static InputStream readFile(final String filePath) throws FileNotFoundException {
+        return new FileInputStream(filePath);
+    }
 
-		final Enumeration<? extends ZipEntry> e = zipFile.entries();
+    /**
+     * Reads a file into an {@link java.io.InputStream}.
+     *
+     * @param file a {@link java.io.File} object.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
+    public static InputStream readFile(final File file) throws FileNotFoundException {
+        return readFile(file.getAbsolutePath());
+    }
 
-		while (e.hasMoreElements()) {
-			final ZipEntry entry = e.nextElement();
-			// if the entry is not directory and matches relative file then
-			// extract it
-			if (!entry.isDirectory() && entry.getName().equals(relativeFilePath)) {
-				try {
-					return zipFile.getInputStream(entry);
-				} catch (final IOException e1) {
-					throw new FileNotFoundException(String.format("Cannot read file '%s' from zip file '%s'.",
-							relativeFilePath, zipFile.getName()));
-				}
-			}
-		}
+    /**
+     * <p>
+     * readFileFromZipFile.
+     * </p>
+     *
+     * @param zipFile          a {@link java.util.zip.ZipFile} object.
+     * @param relativeFilePath a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
+    public static InputStream readFileFromZipFile(final ZipFile zipFile, final String relativeFilePath)
+            throws FileNotFoundException {
 
-		throw new FileNotFoundException(
-				String.format("File '%s' not found in zip file '%s'.", relativeFilePath, zipFile.getName()));
-	}
+        final Enumeration<? extends ZipEntry> e = zipFile.entries();
 
-	/**
-	 * Reads a file from a zip file and returns an {@link java.io.InputStream} object. If the file is not found, an exception is thrown.
-	 *
-	 * @param zipFilePath      a {@link java.lang.String} object.
-	 * @param relativeFilePath a {@link java.lang.String} object.
-	 * @return a {@link java.io.InputStream} object.
-	 * @throws java.io.FileNotFoundException if any.
-	 */
-	public static InputStream readFileFromZipFile(final String zipFilePath, final String relativeFilePath)
-			throws FileNotFoundException {
+        while (e.hasMoreElements()) {
+            final ZipEntry entry = e.nextElement();
+            // if the entry is not directory and matches relative file then
+            // extract it
+            if (!entry.isDirectory() && entry.getName().equals(relativeFilePath)) {
+                try {
+                    return zipFile.getInputStream(entry);
+                } catch (final IOException e1) {
+                    throw new FileNotFoundException(String.format("Cannot read file '%s' from zip file '%s'.",
+                            relativeFilePath, zipFile.getName()));
+                }
+            }
+        }
 
-		try {
-			return readFileFromZipFile(new ZipFile(zipFilePath), relativeFilePath);
-		} catch (final IOException e) {
-			throw new FileNotFoundException(
-					String.format("Cannot read file '%s' from zip file '%s'.", relativeFilePath, zipFilePath));
-		}
-	}
+        throw new FileNotFoundException(
+                String.format("File '%s' not found in zip file '%s'.", relativeFilePath, zipFile.getName()));
+    }
 
-	/**
-	 * List the content of the given jar
-	 *
-	 * @param jarPath a {@link java.lang.String} object.
-	 * @return a {@link java.util.List} object.
-	 * @throws java.io.IOException if any.
-	 */
-	public static List<String> getFileListFromJar(final String jarPath) throws IOException {
-		final List<String> content = new ArrayList<String>();
-		final JarFile jarFile = new JarFile(jarPath);
-		final Enumeration<JarEntry> e = jarFile.entries();
+    /**
+     * Reads a file from a zip file and returns an {@link java.io.InputStream} object. If the file is not found, an exception is thrown.
+     *
+     * @param zipFilePath      a {@link java.lang.String} object.
+     * @param relativeFilePath a {@link java.lang.String} object.
+     * @return a {@link java.io.InputStream} object.
+     * @throws java.io.FileNotFoundException if any.
+     */
+    public static InputStream readFileFromZipFile(final String zipFilePath, final String relativeFilePath)
+            throws FileNotFoundException {
 
-		while (e.hasMoreElements()) {
-			final JarEntry entry = e.nextElement();
-			final String name = entry.getName();
-			content.add(name);
-		}
+        try {
+            return readFileFromZipFile(new ZipFile(zipFilePath), relativeFilePath);
+        } catch (final IOException e) {
+            throw new FileNotFoundException(
+                    String.format("Cannot read file '%s' from zip file '%s'.", relativeFilePath, zipFilePath));
+        }
+    }
 
-		MiscUtil.closeQuietly(jarFile);
+    /**
+     * List the content of the given jar
+     *
+     * @param jarPath a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     * @throws java.io.IOException if any.
+     */
+    public static List<String> getFileListFromJar(final String jarPath) throws IOException {
+        final List<String> content = new ArrayList<String>();
+        final JarFile jarFile = new JarFile(jarPath);
+        final Enumeration<JarEntry> e = jarFile.entries();
 
-		return content;
-	}
+        while (e.hasMoreElements()) {
+            final JarEntry entry = e.nextElement();
+            final String name = entry.getName();
+            content.add(name);
+        }
 
-	public static File getTempDirectory() {
-		return new File(System.getProperty("java.io.tmpdir"));
-	}
+        MiscUtil.closeQuietly(jarFile);
+
+        return content;
+    }
+
+    public static File getTempDirectory() {
+        return new File(System.getProperty("java.io.tmpdir"));
+    }
 }
