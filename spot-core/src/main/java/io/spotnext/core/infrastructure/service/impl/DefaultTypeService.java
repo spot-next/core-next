@@ -31,7 +31,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Service;
 
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.Logger;
@@ -60,7 +60,6 @@ import io.spotnext.support.util.ValidationUtil;
 @Service
 public class DefaultTypeService extends AbstractService implements TypeService {
 
-	//@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 	final protected Map<String, io.spotnext.infrastructure.maven.xml.ItemType> xmlItemTypeDefinitions = new HashMap<>();
 
 	final protected Map<String, Class<? extends Item>> itemTypeClasses = new HashMap<>();
@@ -73,7 +72,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 		Logger.info(String.format("Registered item types: %s", StringUtils.join(itemTypeDefinitions.keySet(), ", ")));
 	}
 
-	//@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
+	@SuppressFBWarnings("OBL_UNSATISFIED_OBLIGATION")
 	protected void loadMergedItemTypeDefinitions(GenericApplicationContext applicationContext) {
 		final URL applicationRoot = Registry.getMainClass().getProtectionDomain().getCodeSource().getLocation();
 
@@ -85,27 +84,24 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			try {
 
 				final JarFile jarFile = ((JarURLConnection) applicationRoot.openConnection()).getJarFile();
-				mergedItemDef = FileUtils.readFileFromZipFile(jarFile,
-						InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
+				mergedItemDef = FileUtils.readFileFromZipFile(jarFile, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
 			} catch (final IOException e) {
-				throw new BeanCreationException("Cannot create read merged item type defintion files from jar.", e);
+				throw new BeanCreationException("Cannot read merged item type defintion files from jar.", e);
 			}
 		} else if (applicationRoot.getProtocol().equals("file") && applicationRoot.toString().endsWith(".jar")) {
 			try {
 				final JarFile jarFile = new JarFile(applicationRoot.getFile());
-				mergedItemDef = FileUtils.readFileFromZipFile(jarFile,
-						InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
+				mergedItemDef = FileUtils.readFileFromZipFile(jarFile, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME);
 			} catch (final IOException e) {
-				throw new BeanCreationException("Cannot create read merged item type defintion files from jar.", e);
+				throw new BeanCreationException("Cannot read merged item type defintion files from jar.", e);
 			}
 		} else {
 			try {
 				final File applicationRootFile = java.nio.file.Paths.get(applicationRoot.toURI()).toFile();
 
-				mergedItemDef = new FileInputStream(
-						new File(applicationRootFile, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
+				mergedItemDef = new FileInputStream(new File(applicationRootFile, InfrastructureConstants.MERGED_ITEMTYPES_FILENAME));
 			} catch (final FileNotFoundException | URISyntaxException e) {
-				throw new BeanCreationException("Cannot create read merged item type defintion files from path.", e);
+				throw new BeanCreationException("Cannot read merged item type defintion files from path.", e);
 			}
 		}
 
@@ -118,7 +114,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			final Unmarshaller jaxb = context.createUnmarshaller();
 			typeDef = (Types) jaxb.unmarshal(mergedItemDef);
 		} catch (final JAXBException e) {
-			throw new BeanCreationException("Cannot create read merged item type defintion files.", e);
+			throw new BeanCreationException("Cannot read merged item type defintion files.", e);
 		} finally {
 			MiscUtil.closeQuietly(mergedItemDef);
 		}
@@ -186,7 +182,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 			return annotation.typeCode();
 		}
 
-		Logger.error(String.format("%s has no item type annotation", itemType.getClass().getName()));
+		Logger.error(String.format("%s has no item type annotation", itemType.getName()));
 
 		return null;
 	}

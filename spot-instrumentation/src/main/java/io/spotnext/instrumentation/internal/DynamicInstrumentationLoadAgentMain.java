@@ -25,7 +25,7 @@ public final class DynamicInstrumentationLoadAgentMain {
 	 * @param args an array of {@link java.lang.String} objects.
 	 */
 	public static void main(final String[] args) {
-		if (args.length < 2 && args.length > 3) {
+		if (args.length < 2 || args.length > 3) {
 			throw new IllegalArgumentException("Usage: " + DynamicInstrumentationLoadAgentMain.class.getSimpleName()
 					+ " <pid> <agentJarAbsolutePath>");
 		}

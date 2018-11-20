@@ -11,7 +11,19 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/archetype-empty/pom.xml" />
+        <option value="$PROJECT_DIR$/build-tools/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-cms-base/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-commerce-base/pom.xml" />
         <option value="$PROJECT_DIR$/spot-commerce-spring-base/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-core-infrastructure/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-core-support/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-core/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-instrumentation/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-maven-plugin/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-sample-simple/pom.xml" />
+        <option value="$PROJECT_DIR$/spot-spring-web-support/pom.xml" />
       </set>
     </option>
   </component>

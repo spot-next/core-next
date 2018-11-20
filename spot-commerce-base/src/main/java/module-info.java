@@ -13,4 +13,5 @@ open module io.spotnext.commerce {
 	requires spring.boot.autoconfigure;
 //	requires spring.boot.test;
 //	requires spring.context;
+	requires com.github.spotbugs.annotations;
 }

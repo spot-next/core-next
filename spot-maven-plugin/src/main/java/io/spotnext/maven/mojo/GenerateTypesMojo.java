@@ -887,7 +887,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @throws java.io.IOException if any.
 	 * @MojoExecutionException if any.
 	 */
-	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	// @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	protected void writeJavaTypes(final List<AbstractComplexJavaType> types)
 			throws IOException, MojoExecutionException {
 
@@ -902,8 +902,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 			}
 
 			if (!Files.exists(filePath)) {
-				if (filePath.getParent() != null && !Files.exists(filePath.getParent())) {
-					Files.createDirectories(filePath.getParent());
+				final Path parent = filePath.getParent();
+				if (parent != null && !Files.exists(parent)) {
+					Files.createDirectories(parent);
 				}
 
 				Files.createFile(filePath);

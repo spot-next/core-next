@@ -4,8 +4,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.http.Session;
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>WebSession class.</p>
@@ -14,7 +14,7 @@ import io.spotnext.core.infrastructure.http.Session;
  * @version 1.0
  * @since 1.0
  */
-//@SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
+@SuppressFBWarnings("UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
 public class WebSession extends Session implements HttpSession {
 
 	protected ServletContext servletContext;

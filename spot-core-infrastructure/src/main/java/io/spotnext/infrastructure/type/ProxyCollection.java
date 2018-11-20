@@ -9,13 +9,14 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
- * <p>ProxyCollection class.</p>
+ * <p>
+ * ProxyCollection class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
-@SuppressWarnings("BC_BAD_CAST_TO_ABSTRACT_COLLECTION")
 public class ProxyCollection<E> implements List<E>, Set<E> {
 	private static final long serialVersionUID = 1L;
 
@@ -24,11 +25,13 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	private transient Consumer<E> beforeRemove;
 
 	/**
-	 * <p>Constructor for ProxyCollection.</p>
+	 * <p>
+	 * Constructor for ProxyCollection.
+	 * </p>
 	 *
 	 * @param proxiedColletion a {@link java.util.Collection} object.
-	 * @param beforeAdd a {@link java.util.function.Consumer} object.
-	 * @param beforeRemove a {@link java.util.function.Consumer} object.
+	 * @param beforeAdd        a {@link java.util.function.Consumer} object.
+	 * @param beforeRemove     a {@link java.util.function.Consumer} object.
 	 */
 	public ProxyCollection(final Collection<E> proxiedColletion, final Consumer<E> beforeAdd,
 			final Consumer<E> beforeRemove) {
@@ -38,7 +41,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Getter for the field <code>beforeAdd</code>.</p>
+	 * <p>
+	 * Getter for the field <code>beforeAdd</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.function.Consumer} object.
 	 */
@@ -47,7 +52,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Setter for the field <code>beforeAdd</code>.</p>
+	 * <p>
+	 * Setter for the field <code>beforeAdd</code>.
+	 * </p>
 	 *
 	 * @param beforeAdd a {@link java.util.function.Consumer} object.
 	 */
@@ -56,7 +63,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Getter for the field <code>beforeRemove</code>.</p>
+	 * <p>
+	 * Getter for the field <code>beforeRemove</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.function.Consumer} object.
 	 */
@@ -65,7 +74,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Setter for the field <code>beforeRemove</code>.</p>
+	 * <p>
+	 * Setter for the field <code>beforeRemove</code>.
+	 * </p>
 	 *
 	 * @param beforeRemove a {@link java.util.function.Consumer} object.
 	 */
@@ -74,7 +85,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Setter for the field <code>proxiedCollection</code>.</p>
+	 * <p>
+	 * Setter for the field <code>proxiedCollection</code>.
+	 * </p>
 	 *
 	 * @param proxiedCollection a {@link java.util.Collection} object.
 	 */
@@ -83,7 +96,9 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	}
 
 	/**
-	 * <p>Getter for the field <code>proxiedCollection</code>.</p>
+	 * <p>
+	 * Getter for the field <code>proxiedCollection</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Collection} object.
 	 */
@@ -104,13 +119,17 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	/** {@inheritDoc} */
 	@Override
 	public boolean addAll(final int index, final Collection<? extends E> c) {
-		if (beforeAdd != null) {
-			for (E e : c) {
-				beforeAdd.accept(e);
+		if (proxiedCollection instanceof List) {
+			if (beforeAdd != null) {
+				for (E e : c) {
+					beforeAdd.accept(e);
+				}
 			}
+
+			return ((List<E>) proxiedCollection).addAll(index, c);
 		}
 
-		return ((List<E>) proxiedCollection).addAll(index, c);
+		return false;
 	}
 
 	/** {@inheritDoc} */
@@ -128,17 +147,21 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	/** {@inheritDoc} */
 	@Override
 	public E set(final int index, final E element) {
-		if (beforeRemove != null) {
-			beforeRemove.accept(get(index));
-		}
-
-		if (element != null) {
-			if (beforeAdd != null) {
-				beforeAdd.accept(element);
+		if (proxiedCollection instanceof List) {
+			if (beforeRemove != null) {
+				beforeRemove.accept(get(index));
 			}
+
+			if (element != null) {
+				if (beforeAdd != null) {
+					beforeAdd.accept(element);
+				}
+			}
+
+			return ((List<E>) proxiedCollection).set(index, element);
 		}
 
-		return ((List<E>) proxiedCollection).set(index, element);
+		return null;
 	}
 
 	/** {@inheritDoc} */

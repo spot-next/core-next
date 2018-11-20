@@ -99,4 +99,5 @@ module io.spotnext.core {
 	requires spring.tx;
 	requires java.base;
 	requires java.annotation;
+	requires com.github.spotbugs.annotations;
 }

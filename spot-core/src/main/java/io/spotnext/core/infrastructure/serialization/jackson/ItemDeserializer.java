@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.impl.TypeDeserializerBase;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.TypeService;
@@ -32,7 +33,7 @@ import io.spotnext.infrastructure.type.Item;
  */
 public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 
-	private static final ThreadLocal<Integer> nestingLevel = new ThreadLocal<>();
+	private static final ThreadLocal<Integer> nestingLevel = new ThreadLocal<>().withInitial(() -> 0);
 
 	private TypeService typeService;
 	private ModelService modelService;
@@ -125,27 +126,21 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 	/**
 	 * Initialized and increment the nesting level.
 	 */
+	@SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
 	private int incrementAndGetNestingLevel() {
 		Integer level = nestingLevel.get();
-
-		if (level == null) {
-			level = Integer.valueOf(0);
-		} else {
-			level++;
-		}
+		level++;
 
 		nestingLevel.set(level);
 
 		return level;
 	}
 
+	@SuppressFBWarnings("DLS_DEAD_LOCAL_STORE")
 	private void decrementNestingLevel() {
 		Integer level = nestingLevel.get();
 
-		if (level != null) {
-			level--;
-		}
-
+		level--;
 		nestingLevel.set(level);
 	}
 

@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.support.util.ClassUtil;
 
 /**
@@ -68,9 +68,13 @@ public class HierarchyAwareEventListenerMethodProcessor extends EventListenerMet
 		this.eventListenerFactories = factories;
 	}
 
-	//@SuppressFBWarnings({ "NP_NULL_PARAM_DEREF", "NP_NULL_ON_SOME_PATH" })
+	@SuppressFBWarnings({ "NP_NULL_PARAM_DEREF" })
 	@Override
 	public void afterSingletonsInstantiated() {
+		if (beanFactory == null) {
+			throw new BeanInitializationException("Could not register event handlers, beanFactory is null");
+		}
+
 		String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
 
 		for (String beanName : beanNames) {
@@ -168,7 +172,7 @@ public class HierarchyAwareEventListenerMethodProcessor extends EventListenerMet
 		}
 	}
 
-	//@SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "false positive")
+	@SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "false positive")
 	protected ConfigurableApplicationContext getRootContext(final ApplicationContext context) {
 		ApplicationContext ctx = context;
 

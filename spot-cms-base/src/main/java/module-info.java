@@ -31,4 +31,5 @@ open module io.spotnext.cms {
 	requires thymeleaf;
 	requires thymeleaf.extras.java8time;
 	requires thymeleaf.spring5;
+	requires com.github.spotbugs.annotations;
 }

@@ -575,7 +575,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				ret = resolveSingleValue(val, type, columnDefinition);
 			}
 		} else {
-			loggingService.debug(() -> String.format("Ignoring empty value and default value for %s.%s", type.getClass().getSimpleName(),
+			Logger.debug(() -> String.format("Ignoring empty value and default value for %s.%s", type.getSimpleName(),
 					columnDefinition.getPropertyName()));
 		}
 

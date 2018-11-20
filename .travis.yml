@@ -40,8 +40,7 @@ before_install:
 
 install: true
 
-#script: "mvn -e clean install spotbugs:check"
-script: "mvn -e clean install"
+script: "mvn -e clean install spotbugs:check"
 
 deploy:
   - provider: script

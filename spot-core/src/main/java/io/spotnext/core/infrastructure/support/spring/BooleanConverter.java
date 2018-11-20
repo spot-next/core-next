@@ -7,9 +7,9 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.Formatter;
 
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 public class BooleanConverter implements Converter<Boolean, Boolean>, Formatter<Boolean> {
 
 	@Override

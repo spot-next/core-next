@@ -31,4 +31,5 @@ module io.spotnext.maven {
 	requires maven.plugin.api;
 	requires maven.plugin.registry;
 	requires maven.project;
+	requires com.github.spotbugs.annotations;
 }
