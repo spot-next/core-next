@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * @version 1.0
  * @since 1.0
  */
-////@SuppressFBWarnings(value = "BC_BAD_CAST_TO_ABSTRACT_COLLECTION", justification = "The casts are necessary. A typecheck safeguards is implemented as well.")
+@SuppressWarnings("BC_BAD_CAST_TO_ABSTRACT_COLLECTION")
 public class ProxyCollection<E> implements List<E>, Set<E> {
 	private static final long serialVersionUID = 1L;
 

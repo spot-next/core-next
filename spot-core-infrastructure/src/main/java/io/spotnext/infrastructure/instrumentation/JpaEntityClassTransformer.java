@@ -629,7 +629,6 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
      * @return the created collection type annotation
      * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
      */
-//    //@SuppressFBWarnings("DB_DUPLICATE_BRANCHES")
     protected Annotation createCollectionTypeAnnotation(final CtClass clazz, final CtField field)
             throws IllegalClassTransformationException {
 
@@ -646,9 +645,9 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
             if (val == null || RelationCollectionType.List.toString().equals(val.getValue())) {
                 typeVal.setValue(
                         "io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
-            } else if (RelationCollectionType.Set.toString().equals(val.getValue())) {
-                typeVal.setValue(
-                        "io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
+//            } else if (RelationCollectionType.Set.toString().equals(val.getValue())) {
+//                typeVal.setValue(
+//                        "io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");
             } else {
                 typeVal.setValue(
                         "io.spotnext.core.persistence.hibernate.support.usertypes.RelationshipMaintainingSetType");

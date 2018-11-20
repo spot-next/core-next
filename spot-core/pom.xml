@@ -41,11 +41,11 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<configuration>
-					<excludeFilterFile>${project.build.directory}/classes/findbugs-exclude.xml</excludeFilterFile>
-				</configuration>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<!--<configuration>-->
+					<!--<excludeFilterFile>${project.build.directory}/classes/module-info-exclude.xml</excludeFilterFile>-->
+				<!--</configuration>-->
 			</plugin>
 
 			<plugin>
