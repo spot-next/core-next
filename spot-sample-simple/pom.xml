@@ -11,20 +11,38 @@
 		<version>${revision}</version>
 	</parent>
 
+	<profiles>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<!-- COMPILING -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<compilerArgs>
+								<compilerArg>--add-modules</compilerArg>
+								<compilerArg>java.xml.ws.annotation,java.xml.bind</compilerArg>
+								<compilerArg>--add-exports</compilerArg>
+								<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
+							</compilerArgs>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<!-- COMPILING -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerArgs>
-						<compilerArg>--add-modules</compilerArg>
-						<compilerArg>java.xml.ws.annotation,java.xml.bind</compilerArg>
-						<compilerArg>--add-exports</compilerArg>
-						<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
-					</compilerArgs>
-				</configuration>
 			</plugin>
 
 			<!-- RESOURCE GENERTATION -->

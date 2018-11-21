@@ -92,7 +92,7 @@
 		<profile>
 			<id>jdk9</id>
 			<activation>
-				<jdk>1.9</jdk>
+				<jdk>[1.9,)</jdk>
 			</activation>
 			<properties>
 				<maven.compiler.source>1.9</maven.compiler.source>
@@ -100,54 +100,56 @@
 				<java.version>1.9</java.version>
 			</properties>
 			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<configuration>
-							<forceJavacCompilerUse>true</forceJavacCompilerUse>
-							<compilerArgs>
-								<arg>-XDcompilePolicy=simple</arg>
-								<arg>-Xplugin:ErrorProne</arg>
-							</compilerArgs>
-							<annotationProcessorPaths>
-								<path>
-									<groupId>com.google.errorprone</groupId>
-									<artifactId>error_prone_core</artifactId>
-									<version>2.3.2</version>
-								</path>
-							</annotationProcessorPaths>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>com.github.spotbugs</groupId>
-						<artifactId>spotbugs-maven-plugin</artifactId>
-						<configuration>
-							<jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
-						</configuration>
-					</plugin>
-				</plugins>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<forceJavacCompilerUse>true</forceJavacCompilerUse>
+								<compilerArgs>
+									<arg>-XDcompilePolicy=simple</arg>
+									<arg>-Xplugin:ErrorProne</arg>
+								</compilerArgs>
+								<annotationProcessorPaths>
+									<path>
+										<groupId>com.google.errorprone</groupId>
+										<artifactId>error_prone_core</artifactId>
+										<version>2.3.2</version>
+									</path>
+								</annotationProcessorPaths>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-failsafe-plugin</artifactId>
+							<configuration>
+								<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>com.github.spotbugs</groupId>
+							<artifactId>spotbugs-maven-plugin</artifactId>
+							<configuration>
+								<jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-maven-plugin</artifactId>
+							<configuration>
+								<jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 			</build>
 		</profile>
 
@@ -226,9 +228,9 @@
 		<!-- compiling -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.9</maven.compiler.source>
-		<maven.compiler.target>1.9</maven.compiler.target>
-		<java.version>1.9</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.version>1.9.2</aspectj.version>

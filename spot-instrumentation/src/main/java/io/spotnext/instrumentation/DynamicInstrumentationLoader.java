@@ -192,11 +192,11 @@ public final class DynamicInstrumentationLoader {
 
 			final Process agentProcess = new ProcessBuilder(command.toArray(new String[command.size()])).inheritIO().start();
 
-			agentProcess.toHandle().onExit().thenAccept(p -> {
-				if (p.pid() != 0) {
-					throw new IllegalStateException("Could not start instrumentation agent!");
-				}
-			});
+			agentProcess.waitFor(60, TimeUnit.SECONDS);
+
+			if (agentProcess.exitValue() != 0) {
+				throw new IllegalStateException("Could not start instrumentation agent!");
+			}
 		}
 	}
 
