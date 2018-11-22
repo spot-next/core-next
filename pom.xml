@@ -108,8 +108,10 @@
 							<configuration>
 								<forceJavacCompilerUse>true</forceJavacCompilerUse>
 								<compilerArgs>
-									<arg>-XDcompilePolicy=simple</arg>
-									<arg>-Xplugin:ErrorProne</arg>
+									<arg>
+										-XDcompilePolicy=simple
+										-Xplugin:ErrorProne
+									</arg>
 								</compilerArgs>
 								<annotationProcessorPaths>
 									<path>
