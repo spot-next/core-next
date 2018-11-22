@@ -39,8 +39,15 @@ mvn -Psonatype-staging-archetypes archetype:generate -B \
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
-mvn spring-boot:run -Dcore.setup.typesystem.initialize=true -Dcore.setup.import.initialdata=true -Dcore.setup.import.sampledata=true
+mvn spring-boot:run -Drun.arguments="--core.setup.typesystem.initialize=true,--core.setup.import.initialdata=true,--core.setup.import.sampledata=true"
 ```
+
+or
+
+```bash
+java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true
+``
+
 > If you changed the variables above you also have to adapt the JAR-filename!
 
 So what is the meaning of the command line arguments?
