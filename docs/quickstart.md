@@ -35,12 +35,20 @@ mvn -Psonatype-staging-archetypes archetype:generate -B \
 		-Dversion=1.0-SNAPSHOT
 ```
 
+> Make sure to have `mvn > 3.6.0` installed.
 > Right now we have to use the snapshopt repository, as maven central has a problem indexing new archetypes. ([ARCHETYPE-555](https://issues.apache.org/jira/browse/ARCHETYPE-555)). Therefore the `-DarchetypeVersion` parameter is only necessary until maven central has fixed their issues. If you have used it you always have to include the `-Psonatype-staging-archetypes` for maven to be able to resolve the `1.0-SNAPSHOT` version of the project dependencies. Or otherwise update the **pom.xml** `parent` and `properties` tag with the current version (see on the top right `Project info`).
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
-mvn spring-boot:run -Dcore.setup.typesystem.initialize=true -Dcore.setup.import.initialdata=true -Dcore.setup.import.sampledata=true
+mvn spring-boot:run -Drun.arguments="--core.setup.typesystem.initialize=true,--core.setup.import.initialdata=true,--core.setup.import.sampledata=true"
 ```
+
+or
+
+```bash
+java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true
+``
+
 > If you changed the variables above you also have to adapt the JAR-filename!
 
 So what is the meaning of the command line arguments?

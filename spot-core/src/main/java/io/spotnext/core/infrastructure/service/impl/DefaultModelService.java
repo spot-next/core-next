@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -29,7 +29,7 @@ import io.spotnext.support.util.ValidationUtil;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+//@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
 public class DefaultModelService extends AbstractModelService {
 

@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.AuthenticationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
@@ -181,7 +181,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
+	//@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
 //		Security.addProvider(new OpenSSLProvider());
 //		sslContextFactory.setProvider("Conscrypt");
@@ -441,7 +441,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			this.authenticationFilter = authenticationFilter;
 		}
 
-		@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+		//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);

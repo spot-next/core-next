@@ -66,7 +66,6 @@ import io.spotnext.support.weaving.AbstractBaseClassTransformer;
  * @author Marco Semiao
  * @since 1.0
  */
-@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 @Mojo(name = "transform-types", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class TransformTypesMojo extends AbstractMojo {
 
@@ -90,7 +89,6 @@ public class TransformTypesMojo extends AbstractMojo {
 
 	/** {@inheritDoc} */
 	@Override
-	@SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
 	public void execute() throws MojoExecutionException {
 		if (skip) {
 			getLog().info("Skipping type transformation!");
@@ -193,8 +191,13 @@ public class TransformTypesMojo extends AbstractMojo {
 
 							final File sourceRename = new File(source.getParent(), "notransform-" + source.getName());
 
-							source.renameTo(sourceRename);
-							destination.renameTo(sourceRename);
+							if (source.renameTo(sourceRename)) {
+								throw new MojoExecutionException(String.format("Could not move %s to %s", source.toString(), sourceRename.toString()));
+							}
+
+							if (destination.renameTo(sourceRename)) {
+								throw new MojoExecutionException(String.format("Could not move %s to %s", destination.toString(), sourceRename.toString()));
+							}
 
 							buildContext.refresh(destination);
 						}

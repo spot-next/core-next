@@ -7,7 +7,6 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
-// @Immutable
 public class DummyAttachProvider extends com.sun.tools.attach.spi.AttachProvider {
 
     @Override

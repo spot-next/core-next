@@ -8,6 +8,61 @@
 	<artifactId>\${artifactId}</artifactId>
 	<version>\${version}</version>
 
+	<profiles>
+	<profile>
+			<id>jdk8</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>1.8</maven.compiler.source>
+				<maven.compiler.target>1.8</maven.compiler.target>
+				<java.version>1.8</java.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/module-info.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>1.9</maven.compiler.source>
+				<maven.compiler.target>1.9</maven.compiler.target>
+				<java.version>1.9</java.version>
+			</properties>
+			<build>
+				<plugins>
+					<!-- COMPILING -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<compilerArgs>
+								<compilerArg>--add-modules</compilerArg>
+								<compilerArg>java.xml.ws.annotation,java.xml.bind</compilerArg>
+								<compilerArg>--add-exports</compilerArg>
+								<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
+							</compilerArgs>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<parent>
 		<groupId>io.spot-next</groupId>
 		<artifactId>spot-framework</artifactId>
@@ -17,6 +72,9 @@
 	<properties>
 		<spot.version>\${project.parent.version}</spot.version>
 		<jar.mainclass>${package}.Init</jar.mainclass>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<repositories>
@@ -55,6 +113,17 @@
 
 	<build>
 		<plugins>
+			<!-- COMPILING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>\${java.version}</source>
+					<target>\${java.version}</target>
+					<useIncrementalCompilation>true</useIncrementalCompilation>
+				</configuration>
+			</plugin>
+
 			<!-- resolves variables and slims down POM -->
 			<!-- fixes CI-friendly \${revision} variables -->
 			<plugin>
@@ -103,8 +172,8 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -129,6 +198,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>$package</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
 			</plugin>
 
 			<!-- RELEASE -->
@@ -192,10 +274,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -211,10 +293,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -267,5 +349,16 @@
 			<version>${spot.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
+		</dependency>
 	</dependencies>
 </project>

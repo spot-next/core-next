@@ -70,7 +70,7 @@ public class FileValueResolver extends AbstractService implements ImpexValueReso
 			} else if (byte[].class.isAssignableFrom(targetType)) {
 				fileContent = fileByteContent;
 			} else {
-				throw new ValueResolverException(String.format("Cannot load file into object of type '%s'", targetType.getClass()));
+				throw new ValueResolverException(String.format("Cannot load file into object of type '%s'", targetType));
 			}
 		} catch (IOException e) {
 			throw new ValueResolverException(String.format("Could not read file: %s", value), e);

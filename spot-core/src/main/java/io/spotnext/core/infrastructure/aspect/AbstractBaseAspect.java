@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import org.aspectj.lang.JoinPoint;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.support.util.ClassUtil;
 
 /**
@@ -16,8 +16,8 @@ import io.spotnext.support.util.ClassUtil;
  */
 //@Configuration
 //@Configurable(autowire = Autowire.BY_TYPE, dependencyCheck = true, preConstruction = true)
-@SuppressFBWarnings(value = {
-		"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" }, justification = "AspectJ compile time weaving causes wrong warning")
+//@SuppressFBWarnings(value = {
+//		"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" }, justification = "AspectJ compile time weaving causes wrong warning")
 public abstract class AbstractBaseAspect {
 
 	protected <A extends Annotation> A getAnnotation(final JoinPoint joinPoint, final Class<A> annotation) {

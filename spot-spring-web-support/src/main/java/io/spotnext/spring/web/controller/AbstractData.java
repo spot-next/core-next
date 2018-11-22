@@ -1,6 +1,7 @@
 package io.spotnext.spring.web.controller;
 
 import java.io.Serializable;
+
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 

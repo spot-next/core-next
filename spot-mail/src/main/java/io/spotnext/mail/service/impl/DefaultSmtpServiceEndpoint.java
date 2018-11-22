@@ -31,7 +31,7 @@ import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.mail.model.Mail;
 import io.spotnext.mail.service.SmtpServiceEndpoint;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Implements a simple SMTP service endpoint. Received mails are stored as
@@ -70,7 +70,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		}
 	}
 
-	@SuppressFBWarnings("IL_INFINITE_LOOP")
+	//@SuppressFBWarnings("IL_INFINITE_LOOP")
 	protected void runMessageQueueLoop() {
 		Mail mail = null;
 

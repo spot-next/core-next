@@ -19,7 +19,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.annotations.Renderable;
 import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.service.impl.CmsMessageResolver;
@@ -34,7 +34,7 @@ import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
  * </p>
  */
 @Service
-@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "initialized by spring")
+//@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "initialized by spring")
 public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 
 	private static final String DEFAULT_TEMPLATE_FOLDER = "templates/";

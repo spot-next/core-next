@@ -14,39 +14,35 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="archetype-empty" />
-        <module name="build-tools" />
-        <module name="spot-cms-base" />
-        <module name="spot-commerce-base" />
-        <module name="spot-core" />
         <module name="spot-core-base-models" />
-        <module name="spot-core-infrastructure" />
         <module name="spot-core-model-infrastructure" />
         <module name="spot-core-shell" />
-        <module name="spot-core-support" />
-        <module name="spot-instrumentation" />
-        <module name="spot-maven-plugin" />
-        <module name="spot-sample-simple" />
-        <module name="spot-spring-web-support" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="archetype-empty" target="1.8" />
-      <module name="build-tools" target="1.8" />
-      <module name="spot-cms-base" target="1.8" />
-      <module name="spot-commerce-base" target="1.8" />
+      <module name="archetype-empty" target="1.9" />
+      <module name="build-tools" target="9" />
+      <module name="spot-cms-base" target="9" />
+      <module name="spot-commerce-base" target="9" />
       <module name="spot-commerce-spring-base" target="1.8" />
-      <module name="spot-core" target="1.8" />
+      <module name="spot-core" target="9" />
       <module name="spot-core-base-models" target="1.8" />
-      <module name="spot-core-infrastructure" target="1.8" />
+      <module name="spot-core-infrastructure" target="9" />
       <module name="spot-core-model-infrastructure" target="1.8" />
       <module name="spot-core-shell" target="1.8" />
-      <module name="spot-core-support" target="1.8" />
-      <module name="spot-framework" target="1.8" />
-      <module name="spot-instrumentation" target="1.8" />
-      <module name="spot-maven-plugin" target="1.8" />
-      <module name="spot-sample-simple" target="1.8" />
-      <module name="spot-spring-web-support" target="1.8" />
+      <module name="spot-core-support" target="9" />
+      <module name="spot-framework" target="1.9" />
+      <module name="spot-instrumentation" target="9" />
+      <module name="spot-maven-plugin" target="9" />
+      <module name="spot-sample-simple" target="9" />
+      <module name="spot-spring-web-support" target="9" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="spot-core" options="--patch-module hamcrest.library=$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" />
+      <module name="spot-maven-plugin" options="--patch-module maven.artifact=$MAVEN_REPOSITORY$/org/apache/maven/maven-core/3.6.0/maven-core-3.6.0.jar --add-exports java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED" />
+      <module name="spot-sample-simple" options="--add-modules java.xml.ws.annotation,java.xml.bind --add-exports java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED" />
+    </option>
   </component>
 </project>

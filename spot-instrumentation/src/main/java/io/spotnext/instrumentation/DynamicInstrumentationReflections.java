@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.annotation.concurrent.Immutable;
-
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.instrument.InstrumentationSavingAgent;
 
@@ -31,7 +29,6 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-@Immutable
 public final class DynamicInstrumentationReflections {
 
 	private static final Set<String> pathsAddedToSystemClassLoader = Collections.synchronizedSet(new HashSet<String>());

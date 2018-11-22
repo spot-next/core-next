@@ -9,8 +9,8 @@
 	<packaging>pom</packaging>
 
 	<description>
-		The spOt microservice framework.
-	</description>
+        The spOt microservice framework.
+    </description>
 
 	<organization>
 		<url>https://spot-next.io</url>
@@ -65,6 +65,96 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>jdk8</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>1.8</maven.compiler.source>
+				<maven.compiler.target>1.8</maven.compiler.target>
+				<java.version>1.8</java.version>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/module-info.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>jdk9</id>
+			<activation>
+				<jdk>[1.9,)</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>1.9</maven.compiler.source>
+				<maven.compiler.target>1.9</maven.compiler.target>
+				<java.version>1.9</java.version>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<forceJavacCompilerUse>true</forceJavacCompilerUse>
+								<compilerArgs>
+									<arg>
+										-XDcompilePolicy=simple
+										-Xplugin:ErrorProne
+									</arg>
+								</compilerArgs>
+								<annotationProcessorPaths>
+									<path>
+										<groupId>com.google.errorprone</groupId>
+										<artifactId>error_prone_core</artifactId>
+										<version>2.3.2</version>
+									</path>
+								</annotationProcessorPaths>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-failsafe-plugin</artifactId>
+							<configuration>
+								<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>com.github.spotbugs</groupId>
+							<artifactId>spotbugs-maven-plugin</artifactId>
+							<configuration>
+								<jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-maven-plugin</artifactId>
+							<configuration>
+								<jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
 	</profiles>
 
 	<scm>
@@ -142,8 +232,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.version>1.9.2</aspectj.version>
 
@@ -151,6 +241,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<log4j.version>2.11.1</log4j.version>
 		<junit.version>4.12</junit.version>
+		<junit.jupiter.version>5.3.1</junit.jupiter.version>
 		<spring.boot.version>2.1.0.RELEASE</spring.boot.version>
 		<spring.version>5.1.2.RELEASE</spring.version>
 
@@ -339,25 +430,7 @@
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
-						<!-- <skip>true</skip> -->
-						<!-- <skipMain>true</skipMain> -->
 					</configuration>
-					<!-- <executions> -->
-					<!-- <execution> -->
-					<!-- <id>default-compile</id> -->
-					<!-- <phase>none</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>compile</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
-					<!-- <execution> -->
-					<!-- <id>default-test-compile</id> -->
-					<!-- <phase>none</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>test-compile</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
-					<!-- </executions> -->
 				</plugin>
 
 				<!-- aspectj weaving is done at load-time -->
@@ -378,18 +451,17 @@
 						</dependency>
 					</dependencies>
 					<configuration>
-						<complianceLevel>1.8</complianceLevel>
-						<source>1.8</source>
-						<target>1.8</target>
 						<aspectLibraries>
 							<aspectLibrary>
 								<groupId>org.springframework</groupId>
 								<artifactId>spring-aspects</artifactId>
 							</aspectLibrary>
 						</aspectLibraries>
+						<argumentFileName>../ajc-arguments.log</argumentFileName>
 
 						<!-- setting this to true can cause build errors im M2E -->
 						<showWeaveInfo>true</showWeaveInfo>
+						<complianceLevel>${java.version}</complianceLevel>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
 						<Xlint>ignore</Xlint>
@@ -455,7 +527,7 @@
 				<plugin>
 					<groupId>org.bsc.maven</groupId>
 					<artifactId>maven-processor-plugin</artifactId>
-					<version>3.3.2</version>
+					<version>3.3.3</version>
 				</plugin>
 
 				<plugin>
@@ -477,10 +549,10 @@
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${spring.boot.version}</version>
 					<configuration>
-					<arguments>
-						<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
-						<argument>--spring.main.allow-bean-definition-overriding=true</argument>
-					</arguments>
+						<arguments>
+							<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
+							<argument>--spring.main.allow-bean-definition-overriding=true</argument>
+						</arguments>
 					</configuration>
 					<executions>
 						<execution>
@@ -514,21 +586,14 @@
 
 				<!-- CODE ANALYSIS -->
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>3.0.5</version>
+					<groupId>com.github.spotbugs</groupId>
+					<artifactId>spotbugs-maven-plugin</artifactId>
+					<version>3.1.8</version>
 					<configuration>
-						<effort>Max</effort>
-						<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
-						<effort>medium</effort>
-						<!-- Reports all bugs (other values are medium and max) -->
-						<threshold>Low</threshold>
-						<!-- Produces XML report -->
-						<xmlOutput>true</xmlOutput>
-						<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
+						<effort>more</effort>
 					</configuration>
 					<executions>
-						<!-- Ensures that FindBugs inspects source code when project is deployed. -->
+						<!-- Ensures that spotbugs inspects source code when project is deployed. -->
 						<execution>
 							<id>analyze-deploy</id>
 							<phase>deploy</phase>
@@ -638,7 +703,8 @@
 					<configuration>
 						<failOnError>false</failOnError>
 						<additionalparam>-Xdoclint:none</additionalparam>
-						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*:*Mojo*</excludePackageNames>
+						<excludePackageNames>io.spotnext.core.infrastructure.maven.xml:*itemtype*:*Mojo*
+						</excludePackageNames>
 						<excludes>**/gen/*</excludes>
 						<quiet>true</quiet>
 						<!-- does not work with revision property! -->
@@ -847,26 +913,14 @@
 	<reporting>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
-				<configuration>
-					<skip>true</skip>
-					<!-- Enables analysis which takes more memory but finds more bugs. If you run out of memory, changes the value of the effort element to 'low'. -->
-
-					<effort>Max</effort>
-					<!-- Reports all bugs (other values are medium and max) -->
-					<threshold>Low</threshold>
-					<failOnError>true</failOnError>
-					<xmlOutput>true</xmlOutput>
-					<findbugsXmlOutputDirectory>${project.build.directory}/findbugs</findbugsXmlOutputDirectory>
-				</configuration>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.5</version>
+				<version>3.0.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -884,7 +938,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.8</version>
+				<version>3.0.0</version>
 				<configuration>
 					<configLocation>config/sun_checks.xml</configLocation>
 				</configuration>
@@ -906,28 +960,17 @@
 			<version>${aspectj.version}</version>
 		</dependency>
 
-		<!-- findbugs -->
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<version>3.0.1u2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.code.findbugs</groupId>
-					<artifactId>jsr305</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.jcip</groupId>
-					<artifactId>jcip-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- apache tools -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>3.1.8</version>
 		</dependency>
 
 	</dependencies>
@@ -944,6 +987,12 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>1.7.25</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-annotations</artifactId>
+				<version>3.1.8</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

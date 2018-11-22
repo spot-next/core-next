@@ -1,7 +1,5 @@
 package io.spotnext.core.infrastructure.http;
 
-import javax.annotation.Nullable;
-
 /**
  * Enumeration of HTTP status codes.
  *
@@ -667,7 +665,6 @@ public enum HttpStatus {
 	 *         found
 	 * @since 5.0
 	 */
-	@Nullable
 	public static HttpStatus resolve(final int statusCode) {
 		for (final HttpStatus status : values()) {
 			if (status.value == statusCode) {

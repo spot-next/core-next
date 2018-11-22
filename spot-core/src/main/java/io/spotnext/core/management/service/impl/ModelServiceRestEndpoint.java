@@ -18,7 +18,7 @@ import org.springframework.transaction.TransactionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -293,7 +293,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse queryModelByExample(final Request request, final Response response) {
 
@@ -325,7 +325,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse createModel(final Request request, final Response response) {
 

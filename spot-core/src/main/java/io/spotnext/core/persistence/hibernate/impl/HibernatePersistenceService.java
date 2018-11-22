@@ -58,7 +58,7 @@ import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
@@ -89,7 +89,7 @@ import io.spotnext.support.util.ClassUtil;
  * @since 1.0
  */
 @DependsOn("typeService")
-@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
+//@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@Value("${hibernate.jdbc.batch_size:}")
@@ -181,7 +181,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	/** {@inheritDoc} */
-	@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+	//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
 	public <T> List<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 		bindSession();

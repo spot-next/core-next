@@ -4,8 +4,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-import io.spotnext.core.infrastructure.http.Session;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.http.Session;
 
 /**
  * <p>WebSession class.</p>

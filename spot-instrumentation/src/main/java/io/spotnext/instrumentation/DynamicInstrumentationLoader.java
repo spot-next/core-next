@@ -15,8 +15,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -33,7 +31,6 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-@ThreadSafe
 public final class DynamicInstrumentationLoader {
 
 	private static final String KEY_TRANSFORMERS = "transformers";
@@ -184,14 +181,22 @@ public final class DynamicInstrumentationLoader {
 			final String javaExecutable = getJavaHome() + File.separator + "bin" + File.separator + "java";
 			final List<String> command = new ArrayList<String>();
 			command.add(javaExecutable);
+//			command.add("-D" + KEY_TRANSFORMERS + "=a" + registeredTransformers);
 			command.add("-classpath");
 			command.add(loadAgentJar.getAbsolutePath()); // tools.jar not needed since java9
 			command.add(DynamicInstrumentationLoadAgentMain.class.getName());
 			command.add(pid);
-			command.add(tempAgentJar.getAbsolutePath());
-			command.add("-D" + KEY_TRANSFORMERS + "=" + registeredTransformers);
 
-			Runtime.getRuntime().exec(command.toArray(new String[command.size()]));
+			// if we are on java > 9 we have to pass the registered transformers via command line
+			command.add(tempAgentJar.getAbsolutePath() + "=" + KEY_TRANSFORMERS + "=" + registeredTransformers);
+
+			final Process agentProcess = new ProcessBuilder(command.toArray(new String[command.size()])).inheritIO().start();
+
+			agentProcess.waitFor(60, TimeUnit.SECONDS);
+
+			if (agentProcess.exitValue() != 0) {
+				throw new IllegalStateException("Could not start instrumentation agent!");
+			}
 		}
 	}
 
