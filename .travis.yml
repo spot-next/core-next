@@ -21,7 +21,7 @@ before_cache:
   - rm -R $HOME/.m2/repository/io/spot-next
 
 before_install:
-  - echo "MAVEN_OPTS=-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -noverify -server -Djava.awt.headless=true" > ~/.mavenrc
+  - echo "MAVEN_OPTS='-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -noverify -server -Djava.awt.headless=true'" > ~/.mavenrc
   - openssl aes-256-cbc -K $encrypted_2dffe6d9f24e_key -iv $encrypted_2dffe6d9f24e_iv -in codesigning.asc.enc -out codesigning.asc -d
   - gpg --fast-import codesigning.asc
   - gpg --list-keys
