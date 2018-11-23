@@ -21,7 +21,6 @@ before_install:
   - gpg --fast-import codesigning.asc
   - gpg --list-keys
   - cp .travis.settings.xml $HOME/.m2/settings.xml
-  - echo "MAVEN_OPTS='-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -noverify -server -Djava.awt.headless=true'" > ~/.mavenrc
 
 #addons:
 #  coverity_scan:
