@@ -761,7 +761,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * getSessionFactory.
 	 * </p>
 	 *
-	 * @return a {@link org.hibernate.SessionFactory} object.
+	 * @return a {@link SessionFactory} object.
 	 */
 	public SessionFactory getSessionFactory() {
 		return entityManagerFactory.unwrap(SessionFactory.class);
