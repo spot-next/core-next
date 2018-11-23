@@ -51,8 +51,6 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
 							<compilerArgs>
-								<compilerArg>--add-modules</compilerArg>
-								<compilerArg>java.xml.ws.annotation,java.xml.bind</compilerArg>
 								<compilerArg>--add-exports</compilerArg>
 								<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
 							</compilerArgs>

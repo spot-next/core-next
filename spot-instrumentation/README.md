@@ -4,26 +4,24 @@ This is an instrumentation java agent that is able to load itself into the runni
 
 ## Maven
 
-This is a fork of investd-instrument.
+This is a fork of [investd-instrument](https://github.com/subes/invesdwin-instrument) for spot-next.
 
 Dependency declaration:
 ```xml
 <dependency>
 	<groupId>at.psot</groupId>
 	<artifactId>spot-instrumentation</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ## Usage
 
-Simply define a static initializer like this:
+To inject any `ClassFileTransformer` simply call the `DynamicInstrumentationLoader` as early as possible (eg. in `static` block near your **main method**):
 ```java
-static {
-  DynamicInstrumentationLoader.waitForInitialized(); //dynamically attach java agent to jvm if not already present
-  DynamicInstrumentationLoader.initLoadTimeWeavingContext(); //weave all classes before they are loaded as beans
-}
+DynamicInstrumentationLoader.initialize(JpaEntityClassTransformer.class);
 ```
+
 With [spring-boot](http://projects.spring.io/spring-boot/) you have to ensure that the context in the aspects is updated by importing the one responsible for initializing the load time weaving into the spring-boot configuration:
 ```java
 @SpringBootApplication
