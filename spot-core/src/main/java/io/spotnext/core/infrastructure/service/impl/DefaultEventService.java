@@ -1,6 +1,6 @@
 package io.spotnext.core.infrastructure.service.impl;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEvent;
@@ -24,11 +24,11 @@ public class DefaultEventService extends AbstractService implements EventService
 	private boolean isReady = false;
 
 	// asynchronous events
-	@Resource
+	@Autowired
 	protected ApplicationEventMulticaster applicationEventMulticaster;
 
 	// synchronous events
-	@Resource
+	@Autowired
 	protected ApplicationEventPublisher applicationEventPublisher;
 
 	@EventListener

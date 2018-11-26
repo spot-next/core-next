@@ -1,7 +1,6 @@
 package io.spotnext.core.infrastructure.interceptor.impl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.interceptor.ItemCreateInterceptor;
 import io.spotnext.core.infrastructure.interceptor.ItemInterceptor;
@@ -12,6 +11,7 @@ import io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.ItemInterceptorRegistry;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.infrastructure.type.Item;
 
 /**
@@ -23,30 +23,30 @@ import io.spotnext.infrastructure.type.Item;
  * @version 1.0
  * @since 1.0
  */
-public abstract class AbstractItemInterceptor<T extends Item> extends AbstractService implements ItemInterceptor<T> {
+public abstract class AbstractItemInterceptor<T extends Item> extends AbstractService implements ItemInterceptor<T>, PostConstructor {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemCreateInterceptor<Item>> itemCreateInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
 
 	/**
 	 * Registers the current item interceptor with the appropriate registry.
 	 */
-	@PostConstruct
+	@Override
 	public void setup() {
 		String typeCode = typeService.getTypeCodeForClass(getItemType());
 

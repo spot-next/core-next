@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import net.sf.ehcache.CacheManager;
 
 public class PersistenceCachingIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	HibernatePersistenceService persistenceService;
 	
 	Cache itemCache;

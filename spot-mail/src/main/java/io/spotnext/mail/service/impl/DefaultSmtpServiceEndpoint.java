@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.mail.model.Mail;
@@ -39,7 +38,7 @@ import io.spotnext.mail.service.SmtpServiceEndpoint;
  *
  */
 @Service
-public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpServiceEndpoint, SimpleMessageListener {
+public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpServiceEndpoint, SimpleMessageListener, PostConstructor {
 
 	protected static final String CONFIG_KEY_PORT = "service.mail.smtp.port";
 	protected static final String CONFIG_KEY_BIND_ADDRESS = "service.mail.smtp.bindaddress";
@@ -57,16 +56,15 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 	protected ModelService modelService;
 
 	@Log(logLevel = LogLevel.INFO, message = "Initiating SMTP service ...")
-	@PostConstruct
 	@Override
-	public void init() throws RemoteServiceInitException {
+	public void setup() throws RemoteServiceInitException {
 		this.smtpServer.setBindAddress(getBindAddress());
 		this.smtpServer.setPort(getPort());
 
 		try {
 			this.smtpServer.start();
 		} catch (final RuntimeException e) {
-			loggingService.exception("Cannot start SMTP server: " + e.getMessage(), e);
+			Logger.exception("Cannot start SMTP server: " + e.getMessage(), e);
 		}
 	}
 
@@ -81,7 +79,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 				try {
 					modelService.save(mail);
 				} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-					loggingService.exception("Can't save received mail.", e);
+					Logger.exception("Can't save received mail.", e);
 				}
 			}
 		}
@@ -100,7 +98,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 			final String address = configurationService.getString(CONFIG_KEY_BIND_ADDRESS, DEFAULT_BIND_ADDRESS);
 			ret = InetAddress.getByName(address);
 		} catch (final UnknownHostException e) {
-			loggingService.exception(e.getMessage(), e);
+			Logger.exception(e.getMessage(), e);
 		}
 
 		return ret;
@@ -129,7 +127,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		try {
 			modelService.save(mail);
 		} catch (ModelSaveException | ModelNotUniqueException | ModelValidationException e) {
-			loggingService.exception("Can't save received mail.", e);
+			Logger.exception("Can't save received mail.", e);
 		}
 	}
 

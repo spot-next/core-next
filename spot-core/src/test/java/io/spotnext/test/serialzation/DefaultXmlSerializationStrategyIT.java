@@ -2,7 +2,7 @@ package io.spotnext.test.serialzation;
 
 import java.util.Collections;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import io.spotnext.itemtype.core.user.User;
 
 public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	DefaultXmlSerializationStrategy xmlSerializationStrategy;
 
 	@Override

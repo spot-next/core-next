@@ -3,15 +3,14 @@ package io.spotnext.core.infrastructure.aspect;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.support.Logger;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.persistence.valueprovider.ItemPropertyValueProvider;
 import io.spotnext.infrastructure.annotation.Accessor;
@@ -22,25 +21,29 @@ import io.spotnext.support.util.ClassUtil;
 
 //@Aspect
 /**
- * <p>ItemPropertyAccessAspect class.</p>
+ * <p>
+ * ItemPropertyAccessAspect class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
-public class ItemPropertyAccessAspect extends AbstractBaseAspect {
+public class ItemPropertyAccessAspect extends AbstractBaseAspect implements PostConstructor {
 
-	@Resource
+	@Autowired
 	protected ModelService modelService;
 
-	@Resource
+	@Autowired
 	protected QueryService queryService;
 
 	/**
-	 * <p>init.</p>
+	 * <p>
+	 * init.
+	 * </p>
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void setup() {
 		Logger.debug("Initialized item property access aspect.");
 	}
 
@@ -58,8 +61,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (get) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (get) on an object of type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// get(* *.*)")
@@ -70,8 +72,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all getter that are accessing a field in an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all getter that are accessing a field in an object of type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.GetProperty)
 	// && within(@io.spotnext.infrastructure.annotation.ItemType *)")
@@ -80,8 +81,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	// };
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of type @Item that are annotated with @Property.
 	 */
 	// @Pointcut("@annotation(io.spotnext.infrastructure.annotation.Property) &&
 	// set(* *.*)")
@@ -92,8 +92,7 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	};
 
 	/**
-	 * Define the pointcut for all fields that are accessed (set) on an object of
-	 * type @Item that are annotated with @Property.
+	 * Define the pointcut for all fields that are accessed (set) on an object of type @Item that are annotated with @Property.
 	 *
 	 * @param joinPoint a {@link org.aspectj.lang.JoinPoint} object.
 	 */
@@ -134,7 +133,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 
 	// @Around("getField() && notFromPersistencePackage()")
 	/**
-	 * <p>getPropertyValue.</p>
+	 * <p>
+	 * getPropertyValue.
+	 * </p>
 	 *
 	 * @param joinPoint a {@link org.aspectj.lang.ProceedingJoinPoint} object.
 	 * @return a {@link java.lang.Object} object.
@@ -173,7 +174,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	/**
-	 * <p>Getter for the field <code>modelService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>modelService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
@@ -182,7 +185,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	/**
-	 * <p>Setter for the field <code>modelService</code>.</p>
+	 * <p>
+	 * Setter for the field <code>modelService</code>.
+	 * </p>
 	 *
 	 * @param modelService a {@link io.spotnext.infrastructure.service.ModelService} object.
 	 */
@@ -191,7 +196,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	/**
-	 * <p>Getter for the field <code>queryService</code>.</p>
+	 * <p>
+	 * Getter for the field <code>queryService</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.core.persistence.service.QueryService} object.
 	 */
@@ -200,7 +207,9 @@ public class ItemPropertyAccessAspect extends AbstractBaseAspect {
 	}
 
 	/**
-	 * <p>Setter for the field <code>queryService</code>.</p>
+	 * <p>
+	 * Setter for the field <code>queryService</code>.
+	 * </p>
 	 *
 	 * @param queryService a {@link io.spotnext.core.persistence.service.QueryService} object.
 	 */

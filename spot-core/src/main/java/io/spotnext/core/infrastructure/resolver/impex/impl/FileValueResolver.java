@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +33,10 @@ import io.spotnext.core.persistence.service.QueryService;
 @Service
 public class FileValueResolver extends AbstractService implements ImpexValueResolver<Object> {
 
-	@Resource
+	@Autowired
 	private TypeService typeService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
 	/** {@inheritDoc} */

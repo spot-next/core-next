@@ -2,7 +2,7 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.util.function.Function;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -25,10 +25,10 @@ import io.spotnext.itemtype.core.enumeration.DataFormat;
 @Service
 public class DefaultSerializationService implements SerializationService {
 
-	@Resource
+	@Autowired
 	protected SerializationStrategy jsonSerializationStrategy;
 
-	@Resource
+	@Autowired
 	protected SerializationStrategy xmlSerializationStrategy;
 
 	@Override

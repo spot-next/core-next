@@ -5,7 +5,7 @@ import java.text.NumberFormat;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +45,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 	@Value("${service.persistene.transaction.timeout}")
 	protected int transactionTimeoutInSec = 60;
 
-	@Resource
+	@Autowired
 	protected PlatformTransactionManager transactionManager;
 
 	protected ThreadLocal<TransactionStatus> currentTransaction = new ThreadLocal<>();
@@ -127,7 +127,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 			return status;
 		} else {
 			throw new CannotCreateTransactionException("There is already an active transaction.");
-			// loggingService.debug("There is already a transaction running");
+			// Logger.debug("There is already a transaction running");
 		}
 	}
 

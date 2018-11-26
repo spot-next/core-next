@@ -2,7 +2,7 @@ package io.spotnext.core.persistence.service.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -28,10 +28,10 @@ public class DefaultQueryService extends AbstractService implements QueryService
 
 	protected static final int MIN_ITEM_COUNT_FOR_PARALLEL_PROCESSING = 1000;
 
-	@Resource
+	@Autowired
 	protected HibernatePersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected LambdaQueryTranslationService lambdaQueryTranslationService;
 
 	/** {@inheritDoc} */

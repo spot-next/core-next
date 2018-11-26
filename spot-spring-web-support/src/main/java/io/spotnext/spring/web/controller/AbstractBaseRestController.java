@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.spring.web.http.HttpResponse;
 import io.spotnext.spring.web.http.Status;
 
@@ -39,7 +40,7 @@ public abstract class AbstractBaseRestController extends AbstractBaseController 
 	public HttpResponse<Void> handleError(final HttpServletRequest request, final HttpServletResponse response,
 			final Exception exception) {
 
-		loggingService.exception(String.format("Unhandled exception %s occured: %s",
+		Logger.exception(String.format("Unhandled exception %s occured: %s",
 				exception.getClass().getSimpleName(), exception.getMessage()), exception);
 
 		final HttpResponse<Void> ret = new HttpResponse<>(HttpStatus.INTERNAL_SERVER_ERROR);

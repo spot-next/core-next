@@ -2,7 +2,7 @@ package io.spotnext.test.registry;
 
 import static org.junit.Assert.assertNotNull;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import io.spotnext.core.testing.AbstractIntegrationTest;
 
 public class BuildInfoIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	BuildInfo buildInfo;
 
 	@Override

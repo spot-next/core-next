@@ -1,14 +1,15 @@
 package io.spotnext.core.persistence.hibernate.impl;
 
-import javax.annotation.Resource;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
 import io.spotnext.support.util.ClassUtil;
@@ -22,14 +23,14 @@ import io.spotnext.support.util.ClassUtil;
  */
 public class TypeServicePersistenceUnitPostProcessor extends AbstractService implements PersistenceUnitPostProcessor {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
 
 	/** {@inheritDoc} */
 	@Override
 	public void postProcessPersistenceUnitInfo(final MutablePersistenceUnitInfo pui) {
 		for (final ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
-			loggingService.debug(String.format("Register item type JPA entity %s", def.getTypeClass()));
+			Logger.debug(String.format("Register item type JPA entity %s", def.getTypeClass()));
 
 			try {
 				final Class<?> typeClass = Class.forName(def.getTypeClass());

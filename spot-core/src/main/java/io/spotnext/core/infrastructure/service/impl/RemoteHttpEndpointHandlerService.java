@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -69,25 +69,25 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	private boolean isStarted = false;
 
-	@Resource
+	@Autowired
 	protected SerializationService serializationService;
 
-	@Resource
+	@Autowired
 	protected I18nService i18nService;
 
-	@Resource
+	@Autowired
 	protected AuthenticationService authenticationService;
 
-	@Resource
+	@Autowired
 	protected SessionService sessionService;
 
-	@Resource
+	@Autowired
 	protected UserService<User, UserGroup> userService;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected ResponseTransformer jsonResponseTransformer;
 
 	@Value("${service.typesystem.rest.keystore.file:}")
@@ -150,7 +150,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		} else {
 			// TODO: maybe restart the service?
-			loggingService.debug("Ignoring context refresh event, as remote endpoints have already been started.");
+			Logger.debug("Ignoring context refresh event, as remote endpoints have already been started.");
 		}
 	}
 

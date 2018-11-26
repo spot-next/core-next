@@ -44,10 +44,10 @@ public class JacksonXmlSerializationTest {
 		Mockito.when(typeService.getTypeCodeForClass(UserGroup.class)).thenReturn(UserGroup.TYPECODE);
 
 		xmlStrategy.setTypeService(typeService);
-		xmlStrategy.init();
+		xmlStrategy.setup();
 
 		jsonStrategy.setTypeService(typeService);
-		jsonStrategy.init();
+		jsonStrategy.setup();
 	}
 
 	User mockUser() {

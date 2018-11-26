@@ -20,7 +20,6 @@ module io.spotnext.infrastructure {
 	requires org.apache.commons.lang3;
 	requires org.aspectj.weaver;
 	requires org.hibernate.orm.core;
-	requires org.hibernate.commons.annotations;
 	requires slf4j.api;
 	requires spring.beans;
 	requires spring.context;

@@ -3,15 +3,14 @@ package io.spotnext.core.persistence.hibernate.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.TypeService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
 
 /**
@@ -23,11 +22,8 @@ import io.spotnext.infrastructure.type.ItemTypeDefinition;
  */
 public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
-
-	@Resource
-	protected LoggingService loggingService;
 
 	/**
 	 * Registers item types to the hibernate {@link Configuration}.
@@ -37,7 +33,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		Set<String> itemPackagePathsToscan = new HashSet<>();
 
 		for (final ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
-			loggingService.debug(String.format("Register item type Hibernate entity %s", def.getTypeClass()));
+			Logger.debug(String.format("Register item type Hibernate entity %s", def.getTypeClass()));
 
 			itemPackagePathsToscan.add(def.getPackageName());
 		}

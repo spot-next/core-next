@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
-import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -36,6 +35,7 @@ import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer;
 import io.spotnext.instrumentation.DynamicInstrumentationLoader;
@@ -57,17 +57,17 @@ import io.spotnext.itemtype.core.enumeration.DataFormat;
 @Priority(value = -1)
 // needed to avoid some spring/hibernate problems
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class })
-public abstract class ModuleInit implements ApplicationContextAware {
+public abstract class ModuleInit implements ApplicationContextAware, PostConstructor {
 
 	protected static final String BEANNAME_EVENT_LISTENER_PROCESSOR = "org.springframework.context.event.internalEventListenerProcessor";
 
 	protected ApplicationContext applicationContext;
 	protected boolean alreadyInitialized = false;
 
-	@Resource
+	@Autowired
 	protected ConfigurationService configurationService;
 
-	@Resource
+	@Autowired
 	protected ImportService importService;
 
 	/**
@@ -76,7 +76,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * @param event the spring application event name
 	 * @throws ModuleInitializationException in case there is an exception during post initialization
 	 */
-	@PostConstruct
+	@Override
 	public void setup() throws ModuleInitializationException {
 		if (!alreadyInitialized) {
 			initialize();

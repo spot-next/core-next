@@ -2,7 +2,7 @@ package io.spotnext.core.infrastructure.strategy.impl;
 
 import java.util.Locale;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
@@ -22,10 +22,10 @@ import io.spotnext.itemtype.core.user.UserGroup;
 
 public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
-	@Resource
+	@Autowired
 	private ImpexImportStrategy impexImportStrategy;
 
 	@Override

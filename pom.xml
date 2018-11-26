@@ -90,8 +90,9 @@
 			</build>
 		</profile>
 		<profile>
-			<id>jdk9</id>
+			<id>jdk9+</id>
 			<activation>
+				<!-- include future version, so that we don't have to apply the pluginManagement settings multiple times -->
 				<jdk>[1.9,)</jdk>
 			</activation>
 			<properties>
@@ -134,6 +135,7 @@
 							<artifactId>maven-failsafe-plugin</artifactId>
 							<configuration>
 								<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
+								 <!--<debugForkedProcess>true</debugForkedProcess>-->
 							</configuration>
 						</plugin>
 						<plugin>
@@ -154,19 +156,42 @@
 				</pluginManagement>
 			</build>
 		</profile>
+		<profile>
+			<id>jdk10</id>
+			<activation>
+				<jdk>10</jdk>
+			</activation>
+			<properties>
+				<maven.compiler.source>10</maven.compiler.source>
+				<maven.compiler.target>10</maven.compiler.target>
+				<java.version>10</java.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>jdk11+</id>
+			<activation>
+				<jdk>[11,)</jdk>
+			</activation>
+			<properties>
+				<!-- java 11 cannot leads to a lot of errors, so we stay on 10 for now -->
+				<maven.compiler.source>10</maven.compiler.source>
+				<maven.compiler.target>10</maven.compiler.target>
+				<java.version>10</java.version>
+			</properties>
+		</profile>
 
 	</profiles>
 
 	<scm>
 		<connection>scm:git:https://github.com/mojo2012/spot-framework.git</connection>
 		<developerConnection>scm:git:https://github.com/mojo2012/spot-framework.git</developerConnection>
-		<url>https://github.com/mojo2012/spot-framework/tree/master</url>
+		<url>https://github.com/spot-next/spot-framework/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
 
 	<ciManagement>
 		<system>travis-ci</system>
-		<url>https://travis-ci.org/mojo2012/spot-framework/</url>
+		<url>https://travis-ci.org/spot-next/spot-framework/</url>
 	</ciManagement>
 
 	<developers>
@@ -230,12 +255,12 @@
 		<!-- compiling -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<aspectj.version>1.9.2</aspectj.version>
+		<maven.compiler.source>10</maven.compiler.source>
+		<maven.compiler.target>10</maven.compiler.target>
+		<java.version>10</java.version>
 
 		<!-- misc -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -427,8 +452,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.0</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
 					</configuration>
 				</plugin>
@@ -785,7 +810,7 @@
 						<keepStagingRepositoryOnFailure>true</keepStagingRepositoryOnFailure>
 						<stagingProfileId>5f2e64bdcef503</stagingProfileId>
 						<stagingDescription>spOt staging repo</stagingDescription>
-						
+
 						<!-- TODO: disable if possible -->
 						<sslInsecure>true</sslInsecure>
 						<sslAllowAll>true</sslAllowAll>

@@ -3,9 +3,8 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.util.Properties;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -14,7 +13,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.ConfigurationService;
-import io.spotnext.core.infrastructure.service.LoggingService;
+import io.spotnext.core.infrastructure.support.Logger;
 
 /**
  * <p>
@@ -28,10 +27,8 @@ import io.spotnext.core.infrastructure.service.LoggingService;
 @Service
 public class DefaultConfigurationService extends BeanAware implements ConfigurationService, EnvironmentAware {
 
-	@Resource
-	protected LoggingService loggingService;
 
-	@Resource
+	@Autowired
 	protected StandardEnvironment environment;
 
 	/** {@inheritDoc} */
@@ -52,7 +49,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 				value = Integer.parseInt(v);
 			}
 		} catch (final NumberFormatException e) {
-			loggingService.exception(String.format("Can't load config key %s", key), e);
+			Logger.exception(String.format("Can't load config key %s", key), e);
 		}
 
 		return value;
@@ -66,7 +63,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		try {
 			value = Double.parseDouble(getProperty(key));
 		} catch (final NumberFormatException e) {
-			loggingService.exception(String.format("Can't load config key %s", key), e);
+			Logger.exception(String.format("Can't load config key %s", key), e);
 		}
 
 		return value;
@@ -134,7 +131,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 					}
 				}
 			} else {
-				loggingService.warn(String.format("Ignoring property source of type %s", s.getClass().getName()));
+				Logger.warn(String.format("Ignoring property source of type %s", s.getClass().getName()));
 			}
 		}
 
@@ -154,7 +151,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 				value = Boolean.parseBoolean(v);
 			}
 		} catch (final NumberFormatException e) {
-			loggingService.exception(String.format("Can't load config key %s", key), e);
+			Logger.exception(String.format("Can't load config key %s", key), e);
 		}
 
 		return value;

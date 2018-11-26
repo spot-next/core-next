@@ -23,11 +23,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
@@ -80,25 +79,25 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	protected Pattern PATTERN_COLUMN_DEFINITION = Pattern
 			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,._\\-\\=]{0,}\\]{0,1})");
 
-	@Resource
+	@Autowired
 	private TypeService typeService;
 
-	@Resource
+	@Autowired
 	private ModelService modelService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
-	@Resource
+	@Autowired
 	private PrimitiveValueResolver primitiveValueResolver;
 
-	@Resource
+	@Autowired
 	private ReferenceValueResolver referenceValueResolver;
 
-	@Resource
+	@Autowired
 	private TransactionService transactionService;
 
-	@Resource
+	@Autowired
 	private Map<String, ImpexValueResolver> impexValueResolvers;
 
 	/** {@inheritDoc} */
@@ -126,7 +125,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			Logger.debug(String.format("Importing %s work units", workUnits.size()));
 			transactionService.executeWithoutResult(() -> importWorkUnits(workUnits, config));
 		} else {
-			loggingService.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
+			Logger.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
 		}
 	}
 
@@ -243,15 +242,14 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 								rawItem.put(col, propertyValue);
 							} catch (final ValueResolverException e) {
 								if (config.getIgnoreErrors()) {
-									loggingService.warn(String.format("Could not resolve value '%s' for %s.%s", val,
+									Logger.warn(String.format("Could not resolve value '%s' for %s.%s", val,
 											$(() -> unit.getItemType().getSimpleName(), "<null>"), col.getPropertyName()));
 								} else {
 									throw e;
 								}
 							}
 						} else {
-							loggingService
-									.warn(String.format("Ignoring unknown column %s for type %s", col.getPropertyName(), unit.getItemType().getSimpleName()));
+							Logger.warn(String.format("Ignoring unknown column %s for type %s", col.getPropertyName(), unit.getItemType().getSimpleName()));
 						}
 					}
 
@@ -274,7 +272,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							final String message = String.format("Could not find item for update with unique properties: %s", uniqueParams);
 
 							if (config.getIgnoreErrors()) {
-								loggingService.warn(message);
+								Logger.warn(message);
 							} else {
 								throw new ImpexImportException(message);
 							}
@@ -305,11 +303,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				if (!config.getIgnoreErrors()) {
 					throw new ImpexImportException(message, e);
 				} else {
-					loggingService.warn(message);
+					Logger.warn(message);
 				}
 			}
 
-			loggingService.debug(() -> String.format("Removing %s items", itemsToRemove.size()));
+			Logger.debug(() -> String.format("Removing %s items", itemsToRemove.size()));
 			for (final JpqlQuery<Void> q : itemsToRemove) {
 				queryService.query(q);
 			}
@@ -321,7 +319,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	protected void saveItem(final ImportConfiguration config, final Item item) {
 		if (config.getIgnoreErrors()) {
 			executeWithIgnoreErrors(Arrays.asList(item), (i) -> modelService.save(i),
-					(i, e) -> loggingService.log(LogLevel.WARN, String.format("Could not save item %s: %s", i, e.getMessage()), null, item));
+					(i, e) -> Logger.log(LogLevel.WARN, String.format("Could not save item %s: %s", i, e.getMessage()), null, item));
 		} else {
 			modelService.saveAll(Arrays.asList(item));
 		}
@@ -330,7 +328,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	private <T, E extends Exception> void executeWithIgnoreErrors(final Collection<T> objects, final Consumer<T> consumer,
 			final BiConsumer<T, E> exceptionHandler) {
 
-		loggingService.debug(() -> "Import config is set to 'ignoreErrors' - this might negativly influence persistence operations!");
+		Logger.debug(() -> "Import config is set to 'ignoreErrors' - this might negativly influence persistence operations!");
 
 		for (final T o : objects) {
 			try {
@@ -355,7 +353,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	//@SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
+	// @SuppressFBWarnings("UPM_UNCALLED_PRIVATE_METHOD")
 	private JpqlQuery<Void> createUpdateQuery(final Item item, final Map<ColumnDefinition, Object> rawItem, final Set<String> propertyToIgnore) {
 
 		final List<String> whereClauses = new ArrayList<>();
@@ -414,7 +412,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
 
 				if (config.getIgnoreErrors()) {
-					loggingService.warn(message);
+					Logger.warn(message);
 				} else {
 					throw new ImpexImportException(message);
 				}
@@ -521,7 +519,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			try {
 				locale = MiscUtil.parseLocale(localeString);
 			} catch (final IllegalStateException e) {
-				loggingService.warn(String.format("Unknown locale %s", localeString));
+				Logger.warn(String.format("Unknown locale %s", localeString));
 			}
 		}
 
@@ -630,7 +628,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 				parsedColumns.add(colDef);
 			} else {
-				loggingService.warn(String.format("Could not parse header column: %s", col));
+				Logger.warn(String.format("Could not parse header column: %s", col));
 			}
 		}
 

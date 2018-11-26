@@ -9,7 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -33,7 +33,7 @@ import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
 	@Rule
