@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.stereotype.Service;
 
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
@@ -24,7 +25,7 @@ import io.spotnext.core.infrastructure.support.spring.PostConstructor;
  * @since 1.0
  */
 @Aspect
-//@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
+@Service
 public class LogAspect extends AbstractBaseAspect implements PostConstructor {
 
 	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");

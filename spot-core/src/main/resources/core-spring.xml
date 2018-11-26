@@ -34,14 +34,14 @@
 	<context:component-scan base-package="io.spotnext.core.persistence.valueprovider" />
 	<context:component-scan base-package="io.spotnext.core.security.service" />
 	<context:component-scan base-package="io.spotnext.core.security.strategy" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.aspect" />
 
 	<context:component-scan base-package="io.spotnext.itemtype" />
 
 
-<!-- 	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true"> -->
-<!-- 	</bean> -->
+	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true" />
 
-<!-- 	<bean class="io.spotnext.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
+	<bean class="io.spotnext.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
 	<!-- <bean class="io.spotnext.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
 	<!-- <property name="modelService" ref="modelService" /> -->
 	<!-- <property name="queryService" ref="queryService" /> -->

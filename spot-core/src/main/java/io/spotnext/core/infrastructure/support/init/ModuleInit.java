@@ -185,7 +185,12 @@ public abstract class ModuleInit implements ApplicationContextAware, PostConstru
 	public static void initializeWeavingSupport() {
 		// weave all classes before they are loaded as beans
 		Logger.debug("Initializing weaving support");
+
+		// AspectJ transformer: ClassPreProcessorAgentAdapter.class
 		DynamicInstrumentationLoader.initialize(JpaEntityClassTransformer.class);
+
+		// enable spring LTW
+		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();
 	}
 
 	public static void bootstrap(Class<? extends ModuleInit> init, String... commandLineArgs) {
