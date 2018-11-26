@@ -300,7 +300,7 @@ Every column (except for the first, which is the command) can be configured with
 
 The framework provides these resolvers out of the box:
 * `ReferenceValueResolver`: used for resolving relation items
-* `PrimitiveValueResolver`: converts the string column values to the target type
+* `PrimitiveValueResolver`: converts the string column values to the target type. Supporter are numbers, date and time values
 * `FileValueResolver`: reads the file content of the file specified as the column value.
 * `LocalDateValueResolver`: parses the string of the format `2018-01-31` into a `java.time.LocalDate` object.
 * `LocalTimeValueResolver`: parses the string of the format `10:15:30` into a `java.time.LocalTime` object.
@@ -320,6 +320,7 @@ The supported modifiers are:
 * `resolver=`: used to determine the responsible resolver (specified by using the Spring bean name)
 * `default`: the default value used if there is no actualy value supplied. If the value is an empty string, it has to be surrounded with quotes
 * `lang=<iso code>`: the `Locale` used for localized properties
+* `PrimitiveValueResolver` and `Local*Resolver` support the `format` modifier to set a custom date format.
 
 > (Custom) resolvers have access to both the selector and the modifers!
 

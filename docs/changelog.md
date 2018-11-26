@@ -4,7 +4,9 @@
 - Final release
 
 ## **1.0.19-BETA** `2018-11-23`
-- Support building with both Java 8, 9, 10 without any source code modifications (releases will be java 10 only starting with this)
+- Support building with Java 10 (releases from now on will be java 10 only)
+- Fixed "total count" in REST responses
+- Added support for impex value resolver "format" parameter
 
 ## **1.0.18-BETA** `2018-11-15`
 - Fixed item type bean registration issue
