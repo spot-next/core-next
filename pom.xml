@@ -67,9 +67,9 @@
 		</profile>
 		<profile>
 			<id>jdk8</id>
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
+			<!-- <activation> -->
+			<!-- <jdk>1.8</jdk> -->
+			<!-- </activation> -->
 			<properties>
 				<maven.compiler.source>1.8</maven.compiler.source>
 				<maven.compiler.target>1.8</maven.compiler.target>
@@ -91,10 +91,10 @@
 		</profile>
 		<profile>
 			<id>jdk9+</id>
-			<activation>
-				<!-- include future version, so that we don't have to apply the pluginManagement settings multiple times -->
-				<jdk>[1.9,)</jdk>
-			</activation>
+			<!-- <activation> -->
+			<!-- include future version, so that we don't have to apply the pluginManagement settings multiple times -->
+			<!-- <jdk>[1.9,)</jdk> -->
+			<!-- </activation> -->
 			<properties>
 				<maven.compiler.source>1.9</maven.compiler.source>
 				<maven.compiler.target>1.9</maven.compiler.target>
@@ -106,22 +106,21 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-compiler-plugin</artifactId>
-							<configuration>
-								<forceJavacCompilerUse>true</forceJavacCompilerUse>
-								<compilerArgs>
-									<arg>
-										-XDcompilePolicy=simple
-										-Xplugin:ErrorProne
-									</arg>
-								</compilerArgs>
-								<annotationProcessorPaths>
-									<path>
-										<groupId>com.google.errorprone</groupId>
-										<artifactId>error_prone_core</artifactId>
-										<version>2.3.2</version>
-									</path>
-								</annotationProcessorPaths>
-							</configuration>
+							<!-- <configuration> -->
+							<!-- <compilerArgs> -->
+							<!-- <arg> -->
+							<!-- -XDcompilePolicy=simple -->
+							<!-- -Xplugin:ErrorProne -->
+							<!-- </arg> -->
+							<!-- </compilerArgs> -->
+							<!-- <annotationProcessorPaths> -->
+							<!-- <path> -->
+							<!-- <groupId>com.google.errorprone</groupId> -->
+							<!-- <artifactId>error_prone_core</artifactId> -->
+							<!-- <version>2.3.2</version> -->
+							<!-- </path> -->
+							<!-- </annotationProcessorPaths> -->
+							<!-- </configuration> -->
 						</plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
@@ -157,9 +156,9 @@
 		</profile>
 		<profile>
 			<id>jdk10</id>
-			<activation>
-				<jdk>10</jdk>
-			</activation>
+			<!-- <activation> -->
+			<!-- <jdk>10</jdk> -->
+			<!-- </activation> -->
 			<properties>
 				<maven.compiler.source>10</maven.compiler.source>
 				<maven.compiler.target>10</maven.compiler.target>
@@ -168,9 +167,9 @@
 		</profile>
 		<profile>
 			<id>jdk11+</id>
-			<activation>
-				<jdk>[11,)</jdk>
-			</activation>
+			<!-- <activation> -->
+			<!-- <jdk>[11,)</jdk> -->
+			<!-- </activation> -->
 			<properties>
 				<!-- java 11 cannot leads to a lot of errors, so we stay on 10 for now -->
 				<maven.compiler.source>10</maven.compiler.source>
@@ -454,6 +453,19 @@
 						<source>${maven.compiler.source}</source>
 						<target>${maven.compiler.target}</target>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
+						<!-- <compilerArgs> -->
+						<!-- <arg> -->
+						<!-- -XDcompilePolicy=simple -->
+						<!-- -Xplugin:ErrorProne -->
+						<!-- </arg> -->
+						<!-- </compilerArgs> -->
+						<!-- <annotationProcessorPaths> -->
+						<!-- <path> -->
+						<!-- <groupId>com.google.errorprone</groupId> -->
+						<!-- <artifactId>error_prone_core</artifactId> -->
+						<!-- <version>2.3.2</version> -->
+						<!-- </path> -->
+						<!-- </annotationProcessorPaths> -->
 					</configuration>
 				</plugin>
 
@@ -577,6 +589,7 @@
 							<!-- this has to be here WITHOUT an actual value, otherwise the spring-boot:run mojo wouldn't work -->
 							<argument>--spring.main.allow-bean-definition-overriding=true</argument>
 						</arguments>
+						<jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
 					</configuration>
 					<executions>
 						<execution>
@@ -615,6 +628,7 @@
 					<version>3.1.8</version>
 					<configuration>
 						<effort>more</effort>
+						<jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
 					</configuration>
 					<executions>
 						<!-- Ensures that spotbugs inspects source code when project is deployed. -->
@@ -672,6 +686,7 @@
 					<version>2.18.1</version>
 					<configuration>
 						<!-- <debugForkedProcess>true</debugForkedProcess> -->
+						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
 					</configuration>
 				</plugin>
 
@@ -683,7 +698,8 @@
 						<includes>
 							<include>**/*IT.java</include>
 						</includes>
-<!-- 						<debugForkedProcess>true</debugForkedProcess> -->
+						<!-- <debugForkedProcess>true</debugForkedProcess> -->
+						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
 					</configuration>
 					<executions>
 						<execution>
