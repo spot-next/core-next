@@ -58,6 +58,8 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<!-- PACKAGING -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -69,10 +71,13 @@
 							<Can-Redefine-Classes>true</Can-Redefine-Classes>
 							<Can-Retransform-Classes>true</Can-Retransform-Classes>
 							<Permissions>all-permissions</Permissions>
+
+							<Automatic-Module-Name>io.spotnext.instrumentation</Automatic-Module-Name>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 	</build>
 

@@ -1,6 +1,6 @@
 # Quick start
 
-First add this to your local **~/.m2/settings.xml** to enable the spOt snapshop repository:
+To run spot you need a **Java 10+ and maven**. First add this to your local **~/.m2/settings.xml** to enable the spOt snapshop repository:
 ```xml
 <profiles>
   <profile>
@@ -48,6 +48,8 @@ or
 ```bash
 java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true
 ``
+
+> Use the main class `io.spotnext.core.CoreInit` when launching from and IDE and add the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` to bypass Java "Illegal reflective access" logs.
 
 > If you changed the variables above you also have to adapt the JAR-filename!
 
