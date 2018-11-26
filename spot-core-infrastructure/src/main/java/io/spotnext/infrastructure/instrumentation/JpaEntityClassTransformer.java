@@ -96,9 +96,16 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
 			throws IllegalClassTransformationException {
 
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Transforming: " + clazz.getName());
+		}
+
 		try {
 			// we only want to transform item types only ...
 			if (isItemType(clazz) && !alreadyTransformed(clazz)) {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Injecting JPA annotations: " + clazz.getName());
+				}
 
 				if (clazz.isFrozen()) {
 					try {
@@ -157,6 +164,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 //				addIndexAnnotation(clazz);
 
 				return Optional.of(clazz);
+			} else {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Ignoring " + clazz.getName());
+				}
 			}
 		} catch (final Exception e) {
 			logException(e);

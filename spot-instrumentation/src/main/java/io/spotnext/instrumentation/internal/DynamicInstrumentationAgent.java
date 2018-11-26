@@ -106,7 +106,9 @@ public final class DynamicInstrumentationAgent {
 			for (String t : transformersProperty.split(",")) {
 				t = t.trim();
 				final ClassFileTransformer trans = (ClassFileTransformer) classLoader.loadClass(t).getDeclaredConstructor().newInstance();
-				instrumentation.addTransformer(trans);
+
+				// assume the transformer can retransform
+				instrumentation.addTransformer(trans, true);
 			}
 		}
 	}

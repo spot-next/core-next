@@ -32,6 +32,7 @@
 	<logger name="io.spotnext.core.infrastructure.service.impl.DefaultModelService" level="INFO" />
 	<logger name="io.spotnext.core.infrastructure.service.impl.RemoteHttpEndpointHandlerService" level="INFO" />
 	<logger name="io.spotnext.core.management.service.impl.ModelServiceRestEndpoints" level="INFO" />
+	<logger name="io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer" level="INFO" />
 
 	<!-- framework logs -->
 	<logger name="org.hibernate" level="WARN" />
