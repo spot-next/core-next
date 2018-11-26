@@ -25,6 +25,9 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "pk")
 public abstract class ItemSerializationMixIn {
 
+	@JsonSerialize
+	public abstract String getTypeCode();
+
 	// render PKs as string in JSON, because otherwise it would cause an overflow, javascript can't interpret it correctly
 	// see also ItemProxySerializer and ItemCollectionProxySerializer
 	@JsonSerialize(using = ToStringSerializer.class)

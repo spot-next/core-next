@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
@@ -181,7 +180,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	}
 
 	/** {@inheritDoc} */
-	//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+	// @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
 	public <T> List<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 		bindSession();

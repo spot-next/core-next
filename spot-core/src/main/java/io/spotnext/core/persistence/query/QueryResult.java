@@ -15,7 +15,7 @@ public class QueryResult<T> {
 	private final List<T> results;
 	private final int pageSize;
 	private final int page;
-	private final int resultCount;
+	private final long totalCount;
 
 	/**
 	 * @param results
@@ -25,16 +25,16 @@ public class QueryResult<T> {
 	 * @param pageSize
 	 *            the page size
 	 */
-	public QueryResult(final List<T> results, final int page, final int pageSize) {
+	public QueryResult(final List<T> results, final int page, final int pageSize, final long totalCount) {
 		if (results != null) {
 			this.results = results;
 		} else {
 			this.results = Collections.emptyList();
 		}
 
-		this.resultCount = this.results.size();
 		this.page = page;
 		this.pageSize = pageSize;
+		this.totalCount = totalCount;
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class QueryResult<T> {
 	 * @return returns true if the result is empty.
 	 */
 	public boolean isEmpty() {
-		return resultCount == 0;
+		return totalCount == 0;
 	}
 
 	/**
@@ -75,8 +75,8 @@ public class QueryResult<T> {
 	/**
 	 * @return the amount of result objects.
 	 */
-	public int getResultCount() {
-		return resultCount;
+	public long getTotalCount() {
+		return totalCount;
 	}
 
 }

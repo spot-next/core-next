@@ -14,7 +14,7 @@ public class PageablePayload<T> {
 	private final List<T> data;
 	private final int page;
 	private final int pageSize;
-	private final int objectCount;
+	private final long totalCount;
 
 	/**
 	 * <p>Constructor for PageablePayload.</p>
@@ -23,11 +23,11 @@ public class PageablePayload<T> {
 	 * @param page a int.
 	 * @param pageSize a int.
 	 */
-	public PageablePayload(final List<T> objects, final int page, final int pageSize) {
+	public PageablePayload(final List<T> objects, final int page, final int pageSize, long totalCount) {
 		this.data = Collections.unmodifiableList(objects);
 		this.page = page;
 		this.pageSize = pageSize;
-		this.objectCount = objects.size();
+		this.totalCount = totalCount;
 	}
 
 	/**
@@ -62,8 +62,8 @@ public class PageablePayload<T> {
 	 *
 	 * @return a int.
 	 */
-	public int getObjectCount() {
-		return objectCount;
+	public long getTotalCount() {
+		return totalCount;
 	}
 
 }

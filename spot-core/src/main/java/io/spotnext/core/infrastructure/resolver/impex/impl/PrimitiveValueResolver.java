@@ -2,6 +2,9 @@ package io.spotnext.core.infrastructure.resolver.impex.impl;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -11,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +37,15 @@ import io.spotnext.infrastructure.type.Localizable;
 public class PrimitiveValueResolver<T extends Object> implements ImpexValueResolver<T> {
 
 	private final ObjectMapper mapper = new ObjectMapper();
+
+	@Autowired
+	private LocalDateValueResolver localDateValueResolver;
+
+	@Autowired
+	private LocalTimeValueResolver localTimeValueResolver;
+
+	@Autowired
+	private LocalDateTimeValueResolver localDateTimeValueResolver;
 
 	/** {@inheritDoc} */
 	@Override
@@ -71,6 +84,12 @@ public class PrimitiveValueResolver<T extends Object> implements ImpexValueResol
 				return (T) toNumber(value);
 			} else if (Enum.class.isAssignableFrom(type)) {
 				return (T) Enum.valueOf((Class<? extends Enum>) type, value);
+			} else if (LocalDate.class.isAssignableFrom(type)) {
+				return (T) localDateValueResolver.resolve(value, (Class<LocalDate>) type, genericArguments, columnDefinition);
+			} else if (LocalTime.class.isAssignableFrom(type)) {
+				return (T) localTimeValueResolver.resolve(value, (Class<LocalTime>) type, genericArguments, columnDefinition);
+			} else if (LocalDateTime.class.isAssignableFrom(type)) {
+				return (T) localDateTimeValueResolver.resolve(value, (Class<LocalDateTime>) type, genericArguments, columnDefinition);
 			} else {
 
 				// shortcut for locales

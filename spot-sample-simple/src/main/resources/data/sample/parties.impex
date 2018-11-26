@@ -1,2 +1,2 @@
-INSERT_UPDATE Party;title [ unique = true ] ; date[resolver=localDateValueResolver]
-                   ;test-party              ; 2019-03-31
+INSERT_UPDATE Party;title [ unique = true ] ; date[format=dd.MM.yyyy]
+                   ;test-party              ; 01.09.2019

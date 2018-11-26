@@ -64,7 +64,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		final LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
 		final QueryResult<Media> result = queryService.query(query);
 
-		Assert.assertTrue(result.getResultCount() == 1);
+		Assert.assertTrue(result.getTotalCount() == 1);
 	}
 
 	@Test
@@ -76,13 +76,13 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		final LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testuser"));
 		final QueryResult<User> userResult = queryService.query(userQuery);
 
-		Assert.assertTrue(userResult.getResultCount() == 1);
+		Assert.assertTrue(userResult.getTotalCount() == 1);
 		Assert.assertEquals("testuser", userResult.getResultList().get(0).getId());
 
 		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class).filter(u -> u.getId().equals("test-group"));
 		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
-		Assert.assertTrue(userGroupResult.getResultCount() == 1);
+		Assert.assertTrue(userGroupResult.getTotalCount() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
 	}
 
@@ -99,9 +99,9 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		userGroupQuery.setIgnoreCache(true);
 		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
-		Assert.assertTrue(userResult.getResultCount() == 1);
+		Assert.assertTrue(userResult.getTotalCount() == 1);
 		Assert.assertEquals("testuser", userResult.getResultList().get(0).getId());
-		Assert.assertTrue(userGroupResult.getResultCount() == 1);
+		Assert.assertTrue(userGroupResult.getTotalCount() == 1);
 		Assert.assertEquals("test-group", userGroupResult.getResultList().get(0).getId());
 
 		// check if user is in group
@@ -151,7 +151,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
 		QueryResult<Media> result = queryService.query(query);
 
-		Assert.assertTrue(result.getResultCount() == 1);
+		Assert.assertTrue(result.getTotalCount() == 1);
 
 		// and them remove it again
 		conf = new ImportConfiguration();
@@ -162,6 +162,6 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		query = new LambdaQuery<>(Media.class).filter(u -> u.getId().equals("testMedia"));
 		result = queryService.query(query);
 
-		Assert.assertTrue(result.getResultCount() == 0);
+		Assert.assertTrue(result.getTotalCount() == 0);
 	}
 }

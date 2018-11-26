@@ -42,6 +42,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.Queries;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.query.SortOrder;
 import io.spotnext.core.persistence.service.QueryService;
@@ -95,8 +96,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final String typeCode = request.params(":typecode");
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
-			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT count(i) FROM %s AS i", type.getSimpleName()), Long.class);
-			final QueryResult<Long> modelCount = queryService.query(query);
+			final QueryResult<Long> modelCount = queryService.query(Queries.countAll(type));
 
 			response.header("Item-Count", modelCount.getResultList().get(0) + "");
 
@@ -132,7 +132,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			query.addParam("pk", pk);
 			final QueryResult<ModelInfoData> model = queryService.query(query);
 
-			if (model.getResultCount() > 0) {
+			if (model.getTotalCount() > 0) {
 				final ModelInfoData info = model.getResultList().get(0);
 
 				setCachingHeaderFields(info.getVersion(), info.getLastModifiedAt(), response);
@@ -164,16 +164,16 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 		try {
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
-			final ModelQuery<T> query = new ModelQuery<>(type, null);
+			final JpqlQuery<T> query = Queries.selectAll(type);
 			query.setPage(page);
 			query.setPageSize(pageSize);
-			setOrderBy(request, query);
 
 			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);
-			final List<T> models = modelService.getAll(query);
+			final QueryResult<T> models = queryService.query(query);
 
-			final PageablePayload<T> pageableData = new PageablePayload<>(models, page, pageSize);
+			final PageablePayload<T> pageableData = new PageablePayload<>(models.getResultList(), models.getPage(), models.getPageSize(),
+					models.getTotalCount());
 
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final UnknownTypeException e) {
@@ -264,7 +264,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			try {
 				final QueryResult<T> result = queryService.query(query);
 
-				if (result.getResultCount() > 0) {
+				if (result.getTotalCount() > 0) {
 					return DataResponse.ok().withPayload(result);
 				} else {
 					return DataResponse.notFound().withPayload(result);
@@ -293,7 +293,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	// @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse queryModelByExample(final Request request, final Response response) {
 
@@ -325,7 +325,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	//@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	// @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse createModel(final Request request, final Response response) {
 
