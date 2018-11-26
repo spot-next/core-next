@@ -3,7 +3,7 @@ package io.spotnext.core.persistence.service.impl;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class DefaultLambdaQueryTranslationService implements LambdaQueryTranslat
 	/** Constant <code>FS_MAIN_ALIAS="item"</code> */
 	public static final String FS_MAIN_ALIAS = "item";
 
-	@Resource
+	@Autowired
 	private ModelService modelService;
 
 	/** {@inheritDoc} */

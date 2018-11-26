@@ -1,6 +1,6 @@
 package io.spotnext.sample.filters;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import spark.Response;
 @Service
 public class IsAdminFilter implements AuthenticationFilter {
 
-	@Resource
+	@Autowired
 	private UserService<User, UserGroup> userService;
 
 	@Override

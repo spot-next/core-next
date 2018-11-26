@@ -1,11 +1,9 @@
 package io.spotnext.spring.web.controller;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 
 /**
@@ -18,9 +16,6 @@ import io.spotnext.core.infrastructure.support.spring.Registry;
 public abstract class AbstractBaseController implements ApplicationContextAware {
 
 	private ApplicationContext applicationContext;
-
-	@Autowired
-	protected LoggingService loggingService;
 
 	/** {@inheritDoc} */
 	@Override

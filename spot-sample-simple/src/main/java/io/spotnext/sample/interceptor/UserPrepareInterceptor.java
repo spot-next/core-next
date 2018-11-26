@@ -1,6 +1,6 @@
 package io.spotnext.sample.interceptor;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import io.spotnext.itemtype.core.user.User;
 @Service
 public class UserPrepareInterceptor extends AbstractItemInterceptor<User> implements ItemPrepareInterceptor<User> {
 
-	@Resource
+	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
 	@Override

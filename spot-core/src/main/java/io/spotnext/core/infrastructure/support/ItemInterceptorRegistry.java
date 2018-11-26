@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -23,10 +23,10 @@ import io.spotnext.infrastructure.type.Item;
  */
 public class ItemInterceptorRegistry<I extends ItemInterceptor<Item>> implements MappingRegistry<String, I> {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
 	protected Map<String, List<I>> interceptors = new HashMap<>();

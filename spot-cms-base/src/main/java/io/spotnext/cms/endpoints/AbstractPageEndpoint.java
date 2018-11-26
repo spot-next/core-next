@@ -2,7 +2,7 @@ package io.spotnext.cms.endpoints;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.service.TemplateRenderService;
@@ -15,7 +15,7 @@ import io.spotnext.itemtype.cms.CmsPage;
  */
 public abstract class AbstractPageEndpoint {
 
-	@Resource
+	@Autowired
 	protected TemplateRenderService templateRenderService;
 
 	/**

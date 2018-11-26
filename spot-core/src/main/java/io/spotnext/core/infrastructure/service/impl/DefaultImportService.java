@@ -2,7 +2,7 @@ package io.spotnext.core.infrastructure.service.impl;
 
 import java.io.InputStream;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ import io.spotnext.support.util.ValidationUtil;
 @Service
 public class DefaultImportService implements ImportService {
 
-	@Resource
+	@Autowired
 	protected ImpexImportStrategy impexImportStrategy;
 
 	/** {@inheritDoc} */

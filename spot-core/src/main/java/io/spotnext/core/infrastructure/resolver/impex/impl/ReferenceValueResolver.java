@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,10 +33,10 @@ import io.spotnext.support.util.ClassUtil;
 @Service
 public class ReferenceValueResolver<T extends Item> extends AbstractService implements ImpexValueResolver<T> {
 
-	@Resource
+	@Autowired
 	private TypeService typeService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
 	/** {@inheritDoc} */

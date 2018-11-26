@@ -1,8 +1,7 @@
 package io.spotnext.spring.web.facade;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
@@ -16,10 +15,7 @@ import io.spotnext.itemtype.core.user.UserGroup;
  * @since 1.0
  */
 public abstract class AbstractBaseFacade {
-	@Resource
-	protected LoggingService loggingService;
-
-	@Resource
+	@Autowired
 	protected UserService<User, UserGroup> userService;
 
 	protected UserData getCurrentUser() {

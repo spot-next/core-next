@@ -3,7 +3,7 @@ package io.spotnext.sample.integrationtests;
 import java.time.LocalDate;
 import java.util.Collections;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 	private static final String PARTY_TITLE = "test party";
 
-	@Resource
+	@Autowired
 	QueryService queryService;
 
 	@Override

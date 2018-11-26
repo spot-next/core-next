@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.rendering.transformers.ThymeleafRendererResponseTransformer;
@@ -29,16 +29,16 @@ import spark.route.HttpMethod;
 @RemoteEndpoint(pathMapping = "/")
 public class HomePageEndpoint {
 
-	@Resource
+	@Autowired
 	private ModelService modelService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
-	@Resource
+	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Resource
+	@Autowired
 	private UserService<User, UserGroup> userService;
 
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, mimeType = MimeType.HTML)

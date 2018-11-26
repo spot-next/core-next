@@ -3,7 +3,7 @@ package io.spotnext.core.testing;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,13 +56,13 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	private int maxMillisToWaitForModuleInitialization = 10 * 60 * 60 * 1000;
 	private ApplicationContext applicationContext;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected TransactionService transactionService;
 
-	@Resource
+	@Autowired
 	protected ModelService modelService;
 
 	@Rule

@@ -1,6 +1,6 @@
 package io.spotnext.core.infrastructure.interceptor.impl;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import io.spotnext.itemtype.core.UniqueIdItem;
 public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueIdItem>
 		implements ItemPrepareInterceptor<UniqueIdItem> {
 
-	@Resource
+	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
 	/** {@inheritDoc} */

@@ -2,7 +2,7 @@ package io.spotnext.spring.web.security;
 
 import java.io.IOException;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,10 +40,10 @@ import io.spotnext.spring.web.dto.UserStatus;
 public class RestAuthenticationHandler implements AuthenticationEntryPoint, AuthenticationSuccessHandler,
 		AuthenticationFailureHandler, LogoutSuccessHandler, AccessDeniedHandler {
 
-	@Resource
+	@Autowired
 	protected CsrfTokenRepository csrfTokenRepository;
 
-	@Resource
+	@Autowired
 	protected SerializationService serializationService;
 
 	/**

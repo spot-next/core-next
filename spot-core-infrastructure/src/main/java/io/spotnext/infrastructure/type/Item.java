@@ -55,7 +55,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	public static final String PROPERTY_LAST_MODIFIED_AT = "lastModifiedAt";
 	public static final String PROPERTY_CREATED_AT = "createdAt";
 
-	// @Resource
+	// @Autowired
 	// protected AuditingHandler auditingHandler;
 
 	// JPA

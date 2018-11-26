@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManagerFactory;
@@ -101,7 +101,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	protected EntityManagerFactory entityManagerFactory;
 	protected TransactionService transactionService;
 
-	@Resource
+	@Autowired
 	protected ValidationService validationService;
 
 	/**

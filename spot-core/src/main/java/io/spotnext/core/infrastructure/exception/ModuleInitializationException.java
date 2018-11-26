@@ -7,7 +7,7 @@ package io.spotnext.core.infrastructure.exception;
  * @version 1.0
  * @since 1.0
  */
-public class ModuleInitializationException extends Exception {
+public class ModuleInitializationException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**

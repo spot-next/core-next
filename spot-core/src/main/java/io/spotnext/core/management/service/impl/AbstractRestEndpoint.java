@@ -1,6 +1,6 @@
 package io.spotnext.core.management.service.impl;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +19,7 @@ public class AbstractRestEndpoint {
 	@Autowired
 	protected TypeService typeService;
 
-	@Resource
+	@Autowired
 	protected SerializationService serializationService;
 
 }

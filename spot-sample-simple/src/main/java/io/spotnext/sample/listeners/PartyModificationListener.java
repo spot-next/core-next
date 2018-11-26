@@ -1,6 +1,6 @@
 package io.spotnext.sample.listeners;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -15,7 +15,7 @@ import io.spotnext.sample.types.itemtypes.Party;
 @Service
 public class PartyModificationListener {
 
-	@Resource
+	@Autowired
 	private EmailService emailService;
 
 	@EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")

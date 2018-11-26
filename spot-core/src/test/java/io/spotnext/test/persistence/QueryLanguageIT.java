@@ -1,15 +1,13 @@
 package io.spotnext.test.persistence;
 
-import javax.annotation.Resource;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.LambdaQuery;
 import io.spotnext.core.persistence.query.QueryResult;
-
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.itemtype.core.user.User;
@@ -17,7 +15,7 @@ import io.spotnext.itemtype.core.user.UserGroup;
 
 public class QueryLanguageIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	QueryService queryService;
 
 	User user;

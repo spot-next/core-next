@@ -3,7 +3,7 @@ package io.spotnext.core.management.support;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,10 @@ import spark.Response;
  */
 @Service
 public class BasicAuthenticationFilter implements AuthenticationFilter {
-	@Resource
+	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Resource
+	@Autowired
 	private UserService<User, UserGroup> userService;
 
 	/** {@inheritDoc} */
