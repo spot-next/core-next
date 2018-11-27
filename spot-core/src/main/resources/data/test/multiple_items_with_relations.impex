@@ -1,5 +1,5 @@
-INSERT_UPDATE UserGroup ; id[unique=true] ;
-                        ; test-group    ;
+INSERT_UPDATE UserGroup ; uid[unique=true] ;
+                        ; test-group       ;
                    
-INSERT_UPDATE User ; id[unique=true] ; password ; groups(id)[mode=append]
-                   ; testuser        ; test1234 ; test-group
+INSERT_UPDATE User ; uid[unique=true] ; password ; groups(uid)[mode=append]
+                   ; testuser         ; test1234 ; test-group

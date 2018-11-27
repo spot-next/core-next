@@ -23,10 +23,8 @@ public class MavenUtil {
 	/**
 	 * Resolves a artifact dependency file.
 	 *
-	 * @param repository a
-	 *                   {@link org.apache.maven.artifact.repository.ArtifactRepository}
-	 *                   object.
-	 * @param artifact   a {@link org.apache.maven.artifact.Artifact} object.
+	 * @param repository a {@link ArtifactRepository} object.
+	 * @param artifact   a {@link Artifact} object.
 	 * @return a {@link java.io.File} object.
 	 * @throws IOException in case the local respository can't be resolved
 	 */

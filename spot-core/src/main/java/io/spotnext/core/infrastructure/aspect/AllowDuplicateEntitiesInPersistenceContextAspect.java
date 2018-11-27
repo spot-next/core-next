@@ -7,18 +7,18 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.hibernate.NonUniqueObjectException;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.support.Logger;
 
 /**
- * Catches Hibernate's {@link NonUniqueObjectException} in case there are multiple entities with the same PK in the persistence context.
+ * Catches Hibernate's {@link NonUniqueObjectException} in case there are multiple entities with the same ID in the persistence context.
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 @Aspect
-@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
+//@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 public class AllowDuplicateEntitiesInPersistenceContextAspect {
 
 	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");

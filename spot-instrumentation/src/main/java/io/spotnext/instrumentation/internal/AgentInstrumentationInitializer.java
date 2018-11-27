@@ -2,8 +2,6 @@ package io.spotnext.instrumentation.internal;
 
 import java.lang.instrument.Instrumentation;
 
-import javax.annotation.concurrent.NotThreadSafe;
-
 import org.springframework.instrument.InstrumentationSavingAgent;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 
@@ -12,7 +10,6 @@ import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver
  *
  * @since 1.0
  */
-@NotThreadSafe
 public final class AgentInstrumentationInitializer {
 
 	private AgentInstrumentationInitializer() {

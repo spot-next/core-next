@@ -44,26 +44,26 @@ public class JacksonXmlSerializationTest {
 		Mockito.when(typeService.getTypeCodeForClass(UserGroup.class)).thenReturn(UserGroup.TYPECODE);
 
 		xmlStrategy.setTypeService(typeService);
-		xmlStrategy.init();
+		xmlStrategy.setup();
 
 		jsonStrategy.setTypeService(typeService);
-		jsonStrategy.init();
+		jsonStrategy.setup();
 	}
 
 	User mockUser() {
 		User user = new User();
-		user.setId("userID");
+		user.setUid("userID");
 		user.setShortName("user");
 		user.setGroups(new HashSet<>());
 
 		UserGroup group1 = new UserGroup();
-		group1.setId("group1ID");
+		group1.setUid("group1ID");
 		group1.setShortName("group1");
 		group1.setMembers(new HashSet<>());
 		group1.getMembers().add(user);
 
 		UserGroup group2 = new UserGroup();
-		group2.setId("group2ID");
+		group2.setUid("group2ID");
 		group2.setShortName("group2");
 		group2.setMembers(new HashSet<>());
 		group2.getMembers().add(user);
@@ -96,8 +96,8 @@ public class JacksonXmlSerializationTest {
 
 	void assertUser(User expected, User deserializedUser) {
 		Assert.assertEquals(expected.getGroups().size(), deserializedUser.getGroups().size());
-		Assert.assertEquals(expected.getPk(), deserializedUser.getPk());
 		Assert.assertEquals(expected.getId(), deserializedUser.getId());
+		Assert.assertEquals(expected.getUid(), deserializedUser.getUid());
 		Assert.assertEquals(expected.getEmailAddress(), deserializedUser.getEmailAddress());
 		Assert.assertEquals(expected.getShortName(), deserializedUser.getShortName());
 		Assert.assertEquals(expected.getPassword(), deserializedUser.getPassword());

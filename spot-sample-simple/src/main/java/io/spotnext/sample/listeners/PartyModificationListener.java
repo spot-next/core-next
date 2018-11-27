@@ -1,6 +1,6 @@
 package io.spotnext.sample.listeners;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -15,7 +15,7 @@ import io.spotnext.sample.types.itemtypes.Party;
 @Service
 public class PartyModificationListener {
 
-	@Resource
+	@Autowired
 	private EmailService emailService;
 
 	@EventListener(condition = "#event.item.fixed == true && #event.modificationType.name() == 'SAVE'")
@@ -24,7 +24,7 @@ public class PartyModificationListener {
 
 		// build email for every guest
 		for (final User guest : fixedParty.getInvitedGuests()) {
-			final Email email = EmailBuilder.startingBlank().to(guest.getShortName(), guest.getId())
+			final Email email = EmailBuilder.startingBlank().to(guest.getShortName(), guest.getUid())
 					.from("Party Service", "service@party.at")
 					.withSubject(fixedParty.getTitle() + " is on " + fixedParty.getDate())
 					.withHTMLText("Let's get this party started!").buildEmail();

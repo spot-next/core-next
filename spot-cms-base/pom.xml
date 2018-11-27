@@ -13,7 +13,7 @@
 	</parent>
 
 	<properties>
-		<ognl.version>3.1.12</ognl.version>
+		<ognl.version>3.2.8</ognl.version>
 	</properties>
 
 	<build>
@@ -32,8 +32,8 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -60,6 +60,19 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>io.spotnext.cms</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- RELEASE -->
 		</plugins>
 	</build>
@@ -73,6 +86,10 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.javassist</groupId>
+					<artifactId>javassist</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -99,6 +116,12 @@
 			<groupId>ognl</groupId>
 			<artifactId>ognl</artifactId>
 			<version>${ognl.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.javassist</groupId>
+					<artifactId>javassist</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- <dependency> -->

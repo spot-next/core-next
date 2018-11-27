@@ -1,6 +1,6 @@
 package io.spotnext.sample.filters;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
@@ -19,14 +19,14 @@ import spark.Response;
 @Service
 public class IsAdminFilter implements AuthenticationFilter {
 
-	@Resource
+	@Autowired
 	private UserService<User, UserGroup> userService;
 
 	@Override
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final UserData currentUser = userService.getCurrentUser();
 
-		if (currentUser != null && userService.isUserInGroup(currentUser.getId(), "admin")) {
+		if (currentUser != null && userService.isUserInGroup(currentUser.getUid(), "admin")) {
 			request.attribute("isLoggedIn", false);
 			response.redirect("/");
 		}

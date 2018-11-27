@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import io.spotnext.core.persistence.service.SequenceGenerator;
 @Service
 public class HibernateSequenceGenerator implements SequenceGenerator {
 
-	@Resource
+	@Autowired
 	private HibernatePersistenceService persistenceService;
 
 	private final Map<String, ItemSequence> sequences = new ConcurrentHashMap<>();

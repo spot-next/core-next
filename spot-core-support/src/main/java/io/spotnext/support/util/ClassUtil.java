@@ -431,7 +431,7 @@ public class ClassUtil {
 	/**
 	 * Checks for the presence of the given annotation on the given joinPoint.
 	 *
-	 * @param joinPoint  a {@link org.aspectj.lang.JoinPoint} object.
+	 * @param joinPoint  a {@link JoinPoint} object.
 	 * @param annotation a {@link java.lang.Class} object.
 	 * @return a boolean.
 	 * @param <A> a A object.
@@ -443,7 +443,7 @@ public class ClassUtil {
 	/**
 	 * Returns the given annotation object, if present. If the annotation is not found, null is returned.
 	 *
-	 * @param joinPoint  a {@link org.aspectj.lang.JoinPoint} object.
+	 * @param joinPoint  a {@link JoinPoint} object.
 	 * @param annotation a {@link java.lang.Class} object.
 	 * @return a A object.
 	 * @param <A> a A object.
@@ -556,7 +556,7 @@ public class ClassUtil {
 	 * getGenericCollectionType.
 	 * </p>
 	 *
-	 * @param field a {@link org.aspectj.lang.reflect.FieldSignature} object.
+	 * @param field a {@link FieldSignature} object.
 	 * @return a {@link java.lang.Class} object.
 	 */
 	public static Class<?> getGenericCollectionType(final FieldSignature field) {

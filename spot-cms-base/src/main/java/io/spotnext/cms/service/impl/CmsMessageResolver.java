@@ -1,6 +1,6 @@
 package io.spotnext.cms.service.impl;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.ITemplateContext;
@@ -11,7 +11,7 @@ import io.spotnext.core.infrastructure.service.L10nService;
 @Service
 public class CmsMessageResolver implements IMessageResolver {
 
-    @Resource
+    @Autowired
     protected L10nService l10nService;
 
     @Override

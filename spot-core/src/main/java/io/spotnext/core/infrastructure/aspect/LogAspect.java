@@ -2,8 +2,6 @@ package io.spotnext.core.infrastructure.aspect;
 
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.aspectj.lang.JoinPoint;
@@ -12,10 +10,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.stereotype.Service;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.support.Logger;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 
 /**
  * Annotation-based aspect that logs method execution.
@@ -25,16 +25,16 @@ import io.spotnext.core.infrastructure.support.Logger;
  * @since 1.0
  */
 @Aspect
-@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
-public class LogAspect extends AbstractBaseAspect {
+@Service
+public class LogAspect extends AbstractBaseAspect implements PostConstructor {
 
 	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
 	/**
 	 * The spring init method
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void setup() {
 		Logger.debug("Initialized logging aspect.");
 	}
 

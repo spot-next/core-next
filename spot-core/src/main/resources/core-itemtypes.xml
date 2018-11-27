@@ -17,11 +17,10 @@
 	<atomic name="Double" className="java.lang.Double" />
 	<atomic name="Float" className="java.lang.Float" />
 	<atomic name="BigDecimal" className="java.math.BigDecimal" />
-	<atomic name="Date" className="java.time.LocalDate" />
-	<atomic name="Time" className="java.time.LocalTime" />
-	<atomic name="DateTime" className="java.time.LocalDateTime" />
-	<atomic name="Instant" className="java.time.Instant" />
 	<atomic name="LocalDate" className="java.time.LocalDate" />
+	<atomic name="LocalTime" className="java.time.LocalTime" />
+	<atomic name="LocalDateTime" className="java.time.LocalDateTime" />
+	<atomic name="Instant" className="java.time.Instant" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
 
@@ -95,7 +94,7 @@
 	<bean name="UserData" package="io.spotnext.itemtype.core.beans">
 		<description>Holds user information.</description>
 		<properties>
-			<property name="id" type="String">
+			<property name="uid" type="String">
 				<description>The users id.</description>
 			</property>
 		</properties>
@@ -107,7 +106,7 @@
 		persistable="false">
 		<description>The base type of all types that have a unique id property.</description>
 		<properties>
-			<property name="id" type="String">
+			<property name="uid" type="String">
 				<description>The unique id of the object.</description>
 				<modifiers unique="true" />
 				<annotations>

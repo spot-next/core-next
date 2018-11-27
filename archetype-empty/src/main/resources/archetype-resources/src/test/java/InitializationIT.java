@@ -2,7 +2,7 @@ package $package;
 
 import static org.junit.Assert.assertTrue;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ import ${package}.Init;
 @SpringBootTest(classes = { Init.class, CoreInit.class })
 public class InitializationIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	Init init;
 
 	@Override

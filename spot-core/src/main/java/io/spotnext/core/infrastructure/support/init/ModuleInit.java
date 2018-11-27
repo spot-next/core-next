@@ -4,16 +4,16 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
-import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -36,6 +36,7 @@ import io.spotnext.core.infrastructure.service.ConfigurationService;
 import io.spotnext.core.infrastructure.service.ImportService;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer;
 import io.spotnext.instrumentation.DynamicInstrumentationLoader;
@@ -57,17 +58,17 @@ import io.spotnext.itemtype.core.enumeration.DataFormat;
 @Priority(value = -1)
 // needed to avoid some spring/hibernate problems
 @EnableAutoConfiguration(exclude = { HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class })
-public abstract class ModuleInit implements ApplicationContextAware {
+public abstract class ModuleInit implements ApplicationContextAware, PostConstructor {
 
 	protected static final String BEANNAME_EVENT_LISTENER_PROCESSOR = "org.springframework.context.event.internalEventListenerProcessor";
 
 	protected ApplicationContext applicationContext;
 	protected boolean alreadyInitialized = false;
 
-	@Resource
+	@Autowired
 	protected ConfigurationService configurationService;
 
-	@Resource
+	@Autowired
 	protected ImportService importService;
 
 	/**
@@ -76,7 +77,7 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * @param event the spring application event name
 	 * @throws ModuleInitializationException in case there is an exception during post initialization
 	 */
-	@PostConstruct
+	@Override
 	public void setup() throws ModuleInitializationException {
 		if (!alreadyInitialized) {
 			initialize();
@@ -183,18 +184,50 @@ public abstract class ModuleInit implements ApplicationContextAware {
 	 * Initializes the load time weaving support and registers the necessary classtransformers.
 	 */
 	public static void initializeWeavingSupport() {
+		// weave all classes before they are loaded as beans
 		Logger.debug("Initializing weaving support");
+
+		// AspectJ transformer: ClassPreProcessorAgentAdapter.class
 		DynamicInstrumentationLoader.initialize(JpaEntityClassTransformer.class);
 
-		// weave all classes before they are loaded as beans
-//		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();
+		// enable spring LTW
+		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();
 	}
 
+	/**
+	 * Builds and runs a spring application using the given configuration.
+	 * 
+	 * @param init            the main spring context configuration
+	 * @param commandLineArgs the command line arguments to be processed by spring
+	 */
 	public static void bootstrap(Class<? extends ModuleInit> init, String... commandLineArgs) {
-		bootstrap(init, null, commandLineArgs);
+		bootstrap(init, null, null, commandLineArgs);
 	}
 
-	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit, String... commandLineArgs) {
+	/**
+	 * Builds and runs a spring application using the given configurations.
+	 * 
+	 * @param parentInit      the parent context configuration
+	 * @param childInit       the actual child configuration
+	 * @param commandLineArgs the command line arguments to process by spring
+	 */
+	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit,
+			String... commandLineArgs) {
+
+		bootstrap(parentInit, childInit, null, commandLineArgs);
+	}
+
+	/**
+	 * Builds and runs a spring application using the given configurations.
+	 * 
+	 * @param parentInit      the parent context configuration
+	 * @param childInit       the actual child configuration
+	 * @param postProcessor   the way to manipulate the spring builder before launch, eg. to add enable a web context.
+	 * @param commandLineArgs the command line arguments to process by spring
+	 */
+	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit,
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> postProcessor, String... commandLineArgs) {
+
 		initializeWeavingSupport();
 		Registry.setMainClass(childInit != null ? childInit : parentInit);
 
@@ -202,6 +235,10 @@ public abstract class ModuleInit implements ApplicationContextAware {
 
 		if (childInit != null) {
 			builder = builder.child(childInit).addCommandLineProperties(true);
+		}
+
+		if (postProcessor != null) {
+			builder = postProcessor.apply(builder);
 		}
 
 		builder.build(prepareCommandLineArguments(commandLineArgs)).run(prepareCommandLineArguments(commandLineArgs));

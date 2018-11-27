@@ -67,12 +67,12 @@ public interface PersistenceService {
 	 * Returns an entity with the given.
 	 *
 	 * @param type        a {@link java.lang.Class} object.
-	 * @param pk          a long.
+	 * @param id          a long.
 	 * @param returnProxy specifies if the returned item should be a proxy (hence no database access is performed) or fetched from the database
 	 * @return a T object.
 	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException if any.
 	 */
-	<T extends Item> T load(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException;
+	<T extends Item> T load(Class<T> type, long id, boolean returnProxy) throws ModelNotFoundException;
 
 	/**
 	 * Returns an list of items based on the given search query.
@@ -90,12 +90,12 @@ public interface PersistenceService {
 	<T extends Item> void remove(List<T> items);
 
 	/**
-	 * Removes the item of the given type with the given PK.
+	 * Removes the item of the given type with the given ID.
 	 *
 	 * @param type a {@link java.lang.Class} object.
-	 * @param pk   a long.
+	 * @param id   a long.
 	 */
-	<T extends Item> void remove(Class<T> type, long pk);
+	<T extends Item> void remove(Class<T> type, long id);
 
 	/**
 	 * Saves the database to disk. This has to be done before the application quits

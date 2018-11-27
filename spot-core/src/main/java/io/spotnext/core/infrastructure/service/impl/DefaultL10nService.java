@@ -14,18 +14,21 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.L10nService;
 import io.spotnext.itemtype.core.internationalization.LocalizationValue;
 
 /**
- * <p>DefaultL10nService class.</p>
+ * <p>
+ * DefaultL10nService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings(value = { "NP_NONNULL_RETURN_VIOLATION", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" })
+//@SuppressFBWarnings(value = { "NP_NONNULL_RETURN_VIOLATION", "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" })
 public class DefaultL10nService extends AbstractService implements L10nService {
 
 	protected MessageSource parentMessageSource;
@@ -64,12 +67,14 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	/**
-	 * <p>getMessageFromStorage.</p>
+	 * <p>
+	 * getMessageFromStorage.
+	 * </p>
 	 *
-	 * @param key a {@link java.lang.String} object.
+	 * @param key            a {@link java.lang.String} object.
 	 * @param defaultMessage a {@link java.lang.String} object.
-	 * @param locale a {@link java.util.Locale} object.
-	 * @param messageParams a {@link java.lang.Object} object.
+	 * @param locale         a {@link java.util.Locale} object.
+	 * @param messageParams  a {@link java.lang.Object} object.
 	 * @return a {@link java.lang.String} object.
 	 * @throws org.springframework.context.NoSuchMessageException if any.
 	 */
@@ -77,7 +82,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 			final Object... messageParams) throws NoSuchMessageException {
 
 		LocalizationValue locResult = new LocalizationValue();
-		locResult.setId(key);
+		locResult.setUid(key);
 		locResult.setLocale(locale);
 
 		locResult = modelService.getByExample(locResult);
@@ -90,9 +95,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * {@link MessageSource} and {@link MessageInterpolator} implementations
+	 * {@inheritDoc} {@link MessageSource} and {@link MessageInterpolator} implementations
 	 */
 
 	@Override
@@ -110,6 +113,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 
 	/** {@inheritDoc} */
 	@Override
+	@SuppressFBWarnings(value = { "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", "NP_NONNULL_RETURN_VIOLATION" })
 	public String getMessage(final MessageSourceResolvable resolvable, final Locale locale)
 			throws NoSuchMessageException {
 
@@ -158,7 +162,9 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	/**
-	 * <p>Setter for the field <code>parentMessageSource</code>.</p>
+	 * <p>
+	 * Setter for the field <code>parentMessageSource</code>.
+	 * </p>
 	 *
 	 * @param messageSource a {@link org.springframework.context.MessageSource} object.
 	 */
@@ -168,7 +174,9 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 	}
 
 	/**
-	 * <p>Getter for the field <code>parentMessageSource</code>.</p>
+	 * <p>
+	 * Getter for the field <code>parentMessageSource</code>.
+	 * </p>
 	 *
 	 * @return a {@link org.springframework.context.MessageSource} object.
 	 */

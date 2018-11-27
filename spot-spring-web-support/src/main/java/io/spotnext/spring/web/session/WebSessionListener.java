@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import io.spotnext.core.infrastructure.service.LoggingService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
@@ -57,10 +56,6 @@ public class WebSessionListener
 		final UserDetails userDetails = (UserDetails) event.getAuthentication().getDetails();
 
 		getUserService().setCurrentUser(getUserService().getUser(userDetails.getUsername()));
-	}
-
-	protected LoggingService getLoggingService() {
-		return Registry.getApplicationContext().getBean(LoggingService.class);
 	}
 
 	protected UserService<User, UserGroup> getUserService() {

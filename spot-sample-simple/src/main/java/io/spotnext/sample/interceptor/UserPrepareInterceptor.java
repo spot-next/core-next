@@ -1,8 +1,7 @@
 package io.spotnext.sample.interceptor;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
@@ -15,7 +14,7 @@ import io.spotnext.itemtype.core.user.User;
 @Service
 public class UserPrepareInterceptor extends AbstractItemInterceptor<User> implements ItemPrepareInterceptor<User> {
 
-	@Resource
+	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
 	@Override
@@ -26,8 +25,8 @@ public class UserPrepareInterceptor extends AbstractItemInterceptor<User> implem
 	@Override
 	public void onPrepare(final User user) throws ItemInterceptorException {
 		try {
-			if (StringUtils.isBlank(user.getId())) {
-				user.setId("user-" + sequenceGenerator.getNextSequenceValue("user-sequence"));
+			if (StringUtils.isBlank(user.getUid())) {
+				user.setUid("user-" + sequenceGenerator.getNextSequenceValue("user-sequence"));
 			}
 		} catch (final SequenceAccessException e) {
 			throw new ItemInterceptorException(e.getMessage(), e);

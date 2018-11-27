@@ -2,7 +2,7 @@ package io.spotnext.sample.integrationtests;
 
 import static org.junit.Assert.assertTrue;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,10 +22,10 @@ import io.spotnext.sample.SampleInit;
 @SpringBootTest(classes = { SampleInit.class, CoreInit.class })
 public class InitializationIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	SampleInit init;
 
-	@Resource
+	@Autowired
 	ModelService modelService;
 
 	@Override

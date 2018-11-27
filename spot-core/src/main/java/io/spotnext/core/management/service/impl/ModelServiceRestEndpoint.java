@@ -18,7 +18,7 @@ import org.springframework.transaction.TransactionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -42,6 +42,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.Queries;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.query.SortOrder;
 import io.spotnext.core.persistence.service.QueryService;
@@ -95,8 +96,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final String typeCode = request.params(":typecode");
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
 
-			final JpqlQuery<Long> query = new JpqlQuery<>(String.format("SELECT count(i) FROM %s AS i", type.getSimpleName()), Long.class);
-			final QueryResult<Long> modelCount = queryService.query(query);
+			final QueryResult<Long> modelCount = queryService.query(Queries.countAll(type));
 
 			response.header("Item-Count", modelCount.getResultList().get(0) + "");
 
@@ -117,22 +117,22 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.head, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.head, pathMapping = "/:typecode/:id", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModelInfo(final Request request, final Response response) {
 
 		try {
 			final String typeCode = request.params(":typecode");
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-			final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+			final long id = MiscUtil.longOrDefault(request.params(":id"), -1);
 
 			final JpqlQuery<ModelInfoData> query = new JpqlQuery<>(
-					String.format("SELECT i.pk AS pk, i.version As version, i.lastModifiedAt As lastModifiedAt FROM %s AS i WHERE i.pk = :pk",
+					String.format("SELECT i.id AS id, i.version As version, i.lastModifiedAt As lastModifiedAt FROM %s AS i WHERE i.id = :id",
 							type.getSimpleName()),
 					ModelInfoData.class);
-			query.addParam("pk", pk);
+			query.addParam("id", id);
 			final QueryResult<ModelInfoData> model = queryService.query(query);
 
-			if (model.getResultCount() > 0) {
+			if (model.getTotalCount() > 0) {
 				final ModelInfoData info = model.getResultList().get(0);
 
 				setCachingHeaderFields(info.getVersion(), info.getLastModifiedAt(), response);
@@ -164,16 +164,16 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 		try {
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
-			final ModelQuery<T> query = new ModelQuery<>(type, null);
+			final JpqlQuery<T> query = Queries.selectAll(type);
 			query.setPage(page);
 			query.setPageSize(pageSize);
-			setOrderBy(request, query);
 
 			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);
-			final List<T> models = modelService.getAll(query);
+			final QueryResult<T> models = queryService.query(query);
 
-			final PageablePayload<T> pageableData = new PageablePayload<>(models, page, pageSize);
+			final PageablePayload<T> pageableData = new PageablePayload<>(models.getResultList(), models.getPage(), models.getPageSize(),
+					models.getTotalCount());
 
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final UnknownTypeException e) {
@@ -184,7 +184,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the PK.
+	 * Gets an item based on the ID.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.
@@ -192,16 +192,16 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/:id", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
-		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+		final long id = MiscUtil.longOrDefault(request.params(":id"), -1);
 
 		try {
-			if (pk > 0) {
+			if (id > 0) {
 				final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-				ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("pk", pk));
+				ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("id", id));
 				query.setEagerFetchRelations(true);
 				final T model = modelService.get(query);
 
@@ -215,7 +215,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return DataResponse.ok().withPayload(model);
 			} else {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onget",
-						"No valid PK provided.");
+						"No valid ID provided.");
 			}
 		} catch (final ModelNotFoundException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Item not found.");
@@ -264,7 +264,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			try {
 				final QueryResult<T> result = queryService.query(query);
 
-				if (result.getResultCount() > 0) {
+				if (result.getTotalCount() > 0) {
 					return DataResponse.ok().withPayload(result);
 				} else {
 					return DataResponse.notFound().withPayload(result);
@@ -293,7 +293,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	// @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse queryModelByExample(final Request request, final Response response) {
 
@@ -325,7 +325,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+	// @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
 	@Handler(method = HttpMethod.post, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse createModel(final Request request, final Response response) {
 
@@ -334,14 +334,14 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			modelService.save(item);
 
 			// convert to string! see ItemSerializationMixIn
-			return DataResponse.created().withPayload(Collections.singletonMap("pk", item.getPk() + ""));
+			return DataResponse.created().withPayload(Collections.singletonMap("id", item.getId() + ""));
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.oncreate", e.getMessage());
 		} catch (final ModelNotUniqueException | ModelSaveException e) {
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.notunique", String.format(
-					"Another item with the same uniqueness criteria (but a different PK) was found: %s", e.getMessage()));
+					"Another item with the same uniqueness criteria (but a different ID) was found: %s", e.getMessage()));
 		} catch (final ModelValidationException e) {
 			final List<String> messages = new ArrayList<>();
 			messages.add(e.getMessage());
@@ -359,7 +359,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Removes the given item. The PK or a search criteria has to be set.
+	 * Removes the given item. The ID or a search criteria has to be set.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.
@@ -367,13 +367,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.delete, pathMapping = "/:typecode/:id", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse deleteModel(final Request request, final Response response) {
 
 		final String typeCode = request.params(":typecode");
-		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+		final long id = MiscUtil.longOrDefault(request.params(":id"), -1);
 
-		if (pk > -1) {
+		if (id > -1) {
 			final Class<T> type;
 			try {
 				type = (Class<T>) typeService.getClassForTypeCode(typeCode);
@@ -381,22 +381,22 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return RESPONSE_UNKNOWN_TYPE;
 			}
 			try {
-				modelService.remove(type, pk);
+				modelService.remove(type, id);
 
 				return DataResponse.withStatus(HttpStatus.ACCEPTED);
 			} catch (final ModelNotFoundException e) {
-				return DataResponse.notFound().withError("error.ondelete", "Item with given PK not found.");
+				return DataResponse.notFound().withError("error.ondelete", "Item with given ID not found.");
 			} catch (Exception e) {
 				return handleGenericException(e);
 			}
 		} else {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.ondelete",
-					"No valid PK given.");
+					"No valid ID given.");
 		}
 	}
 
 	/**
-	 * Updates an existing or creates the item with the given values. The PK must be provided. If the new item is not unique, an error is returned.<br/>
+	 * Updates an existing or creates the item with the given values. The ID must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
 	 * @param          <T> a T object.
@@ -410,9 +410,9 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		try {
 			final JSONObject jsonBody = new JSONObject(request.body());
 
-			if (jsonBody.has("pk")) {
+			if (jsonBody.has("id")) {
 				// jsonBody.getLong doesn't work correctly, because the java long is bigger than the javascript number type
-				return partiallyUpdateModel(request, NumberUtils.toLong(jsonBody.getString("pk")));
+				return partiallyUpdateModel(request, NumberUtils.toLong(jsonBody.getString("id")));
 			} else {
 				return createModel(request, response);
 			}
@@ -424,7 +424,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Update an existing model with the given values. If the item with the given PK doesn't not exist, an exception is thrown.
+	 * Update an existing model with the given values. If the item with the given ID doesn't not exist, an exception is thrown.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.
@@ -432,19 +432,19 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:pk", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.patch, pathMapping = "/:typecode/:id", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse partiallyUpdateModel(final Request request, final Response response) {
 
-		final long pk = MiscUtil.longOrDefault(request.params(":pk"), -1);
+		final long id = MiscUtil.longOrDefault(request.params(":id"), -1);
 
-		if (pk > 0) {
-			return partiallyUpdateModel(request, pk);
+		if (id > 0) {
+			return partiallyUpdateModel(request, id);
 		} else {
-			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onpatch", "No valid PK provided.");
+			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.onpatch", "No valid ID provided.");
 		}
 	}
 
-	protected <T extends Item> HttpResponse partiallyUpdateModel(final Request request, final long pk) {
+	protected <T extends Item> HttpResponse partiallyUpdateModel(final Request request, final long id) {
 		// get type
 		final String typeCode = request.params(":typecode");
 		final Class<T> type;
@@ -457,10 +457,10 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		try {
 
 			// search old item
-			T oldItem = modelService.get(type, pk);
+			T oldItem = modelService.get(type, id);
 
 			if (oldItem == null) {
-				throw new ModelNotFoundException(String.format("Item with PK=%s not found", pk));
+				throw new ModelNotFoundException(String.format("Item with ID=%s not found", id));
 			}
 
 			// get body as json object
@@ -476,7 +476,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.conflict().withError("error.onpartialupdate", e.getMessage());
 		} catch (final ModelNotFoundException e) {
 			return DataResponse.notFound().withError("error.onpartialupdate",
-					"No item with the given PK found to update.");
+					"No item with the given ID found to update.");
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
 					"Could not deserialize body json content.");
@@ -552,12 +552,12 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			.withError("error.ongetall", "Unknown item type.");
 
 	private static class ModelInfoData {
-		private long pk;
+		private long id;
 		private int version;
 		private Date lastModifiedAt;
 
-		public long getPk() {
-			return pk;
+		public long getId() {
+			return id;
 		}
 
 		public int getVersion() {

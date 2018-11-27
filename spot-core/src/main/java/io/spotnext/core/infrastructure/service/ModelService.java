@@ -70,27 +70,27 @@ public interface ModelService {
 			throws ModelSaveException, ModelNotUniqueException, ModelValidationException;
 
 	/**
-	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its PK.
+	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its ID.
 	 *
 	 * @param      <T> the item type
 	 * @param type a {@link java.lang.Class} object.
-	 * @param pk   a long.
+	 * @param id   a long.
 	 * @return a T object.
 	 * @throws ModelNotFoundException if any.
 	 */
-	<T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException;
+	<T extends Item> T get(Class<T> type, long id) throws ModelNotFoundException;
 
 	/**
-	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its PK.
+	 * Returns an {@link io.spotnext.infrastructure.type.Item} based on its ID.
 	 *
 	 * @param             <T> the item type
 	 * @param type        a {@link java.lang.Class} object.
-	 * @param pk          a long.
+	 * @param id          a long.
 	 * @param returnProxy specifies if the returned item should be a proxy (hence no database access is performed) or fetched from the database
 	 * @return a T object.
 	 * @throws ModelNotFoundException if any.
 	 */
-	<T extends Item> T get(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException;
+	<T extends Item> T get(Class<T> type, long id, boolean returnProxy) throws ModelNotFoundException;
 
 	/**
 	 * Returns the first {@link io.spotnext.infrastructure.type.Item} based on the given search parameters (key = property name, value = property value).
@@ -169,10 +169,10 @@ public interface ModelService {
 	 *
 	 * @param      <T> the item type
 	 * @param type a {@link java.lang.Class} object.
-	 * @param pk   a long.
+	 * @param id   a long.
 	 * @throws ModelNotFoundException if any.
 	 */
-	<T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException;
+	<T extends Item> void remove(Class<T> type, long id) throws ModelNotFoundException;
 
 	/**
 	 * Removes the given items.

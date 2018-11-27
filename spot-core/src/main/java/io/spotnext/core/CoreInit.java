@@ -1,17 +1,19 @@
 package io.spotnext.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableLoadTimeWeaving;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
+import io.spotnext.core.persistence.service.QueryService;
 
 /**
  * This is the main entry point for the application. After the application has been initialized, {@link io.spotnext.core.CoreInit#initialize()},
@@ -29,6 +31,9 @@ import io.spotnext.core.infrastructure.support.init.ModuleInit;
 @PropertySource(value = "classpath:/local.properties", ignoreResourceNotFound = true)
 @SpringBootApplication
 public class CoreInit extends ModuleInit {
+
+	@Autowired
+	QueryService queryService;
 
 	/*
 	 * STARTUP FUNCTIONALITY
@@ -55,7 +60,7 @@ public class CoreInit extends ModuleInit {
 		}
 	}
 
-	@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
+	//@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
 	@Log(message = "Importing sample data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {

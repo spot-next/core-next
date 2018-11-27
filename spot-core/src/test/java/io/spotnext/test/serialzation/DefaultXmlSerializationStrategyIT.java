@@ -2,7 +2,7 @@ package io.spotnext.test.serialzation;
 
 import java.util.Collections;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import io.spotnext.itemtype.core.user.User;
 
 public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	DefaultXmlSerializationStrategy xmlSerializationStrategy;
 
 	@Override
@@ -29,14 +29,14 @@ public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 
 	@Test
 	public void test_itemWithRelations() throws DeserializationException {
-		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
 
 		String xml = xmlSerializationStrategy.serialize(user);
 
 		User deserializedUser = xmlSerializationStrategy.deserialize(xml, User.class);
 
-		Assert.assertEquals(user.getPk(), deserializedUser.getPk());
 		Assert.assertEquals(user.getId(), deserializedUser.getId());
+		Assert.assertEquals(user.getUid(), deserializedUser.getUid());
 		Assert.assertEquals(user.getShortName(), deserializedUser.getShortName());
 		Assert.assertEquals(user.getPassword(), deserializedUser.getPassword());
 		Assert.assertEquals(user.getEmailAddress(), deserializedUser.getEmailAddress());

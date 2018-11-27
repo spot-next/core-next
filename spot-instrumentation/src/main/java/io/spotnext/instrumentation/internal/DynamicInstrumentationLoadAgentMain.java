@@ -5,10 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// @Immutable
 /**
  * <p>
  * DynamicInstrumentationLoadAgentMain class.
@@ -17,8 +13,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public final class DynamicInstrumentationLoadAgentMain {
-
-	private static final Logger LOG = LoggerFactory.getLogger(DynamicInstrumentationLoadAgentMain.class);
 
 	private DynamicInstrumentationLoadAgentMain() {
 	}
@@ -31,7 +25,7 @@ public final class DynamicInstrumentationLoadAgentMain {
 	 * @param args an array of {@link java.lang.String} objects.
 	 */
 	public static void main(final String[] args) {
-		if (args.length != 2) {
+		if (args.length < 2 || args.length > 3) {
 			throw new IllegalArgumentException("Usage: " + DynamicInstrumentationLoadAgentMain.class.getSimpleName()
 					+ " <pid> <agentJarAbsolutePath>");
 		}
@@ -64,8 +58,6 @@ public final class DynamicInstrumentationLoadAgentMain {
 				virtualMachineClass = Class.forName("com.sun.tools.attach.VirtualMachine");
 				virtualMachine = virtualMachineClass.getMethod("attach", String.class).invoke(null, pid);
 			}
-
-			LOG.debug("Agent path: " + agentJarAbsolutePath);
 
 			virtualMachineClass.getMethod("loadAgent", String.class).invoke(virtualMachine, agentJarAbsolutePath);
 			virtualMachineClass.getMethod("detach").invoke(virtualMachine);

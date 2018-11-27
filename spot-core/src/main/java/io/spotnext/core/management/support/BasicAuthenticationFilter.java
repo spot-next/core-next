@@ -3,9 +3,8 @@ package io.spotnext.core.management.support;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.AuthenticationException;
@@ -26,10 +25,10 @@ import spark.Response;
  */
 @Service
 public class BasicAuthenticationFilter implements AuthenticationFilter {
-	@Resource
+	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Resource
+	@Autowired
 	private UserService<User, UserGroup> userService;
 
 	/** {@inheritDoc} */
@@ -46,7 +45,7 @@ public class BasicAuthenticationFilter implements AuthenticationFilter {
 	}
 	
 	protected boolean checkPermissions(final Request request, User user) {
-		return user != null && userService.isUserInGroup(user.getId(), "rest-access");
+		return user != null && userService.isUserInGroup(user.getUid(), "rest-access");
 	}
 
 	/**

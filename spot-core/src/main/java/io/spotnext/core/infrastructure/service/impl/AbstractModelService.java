@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,34 +57,34 @@ import io.spotnext.support.util.ClassUtil;
 @Service
 public abstract class AbstractModelService extends AbstractService implements ModelService {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
 
-	@Resource
+	@Autowired
 	protected UserService<User, UserGroup> userService;
 
-	@Resource
+	@Autowired
 	protected EventService eventService;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected ValidationService validationService;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemCreateInterceptor<Item>> itemCreateInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemValidateInterceptor<Item>> itemValidateInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemPrepareInterceptor<Item>> itemPrepareInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemLoadInterceptor<Item>> itemLoadInterceptorRegistry;
 
-	@Resource
+	@Autowired
 	protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
 
 	/** {@inheritDoc} */
@@ -225,8 +225,8 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		final UserData currentUser = userService.getCurrentUser();
 
 		for (final T model : models) {
-			ClassUtil.setField(model, "createdBy", currentUser.getId());
-			ClassUtil.setField(model, "lastModifiedBy", currentUser.getId());
+			ClassUtil.setField(model, "createdBy", currentUser.getUid());
+			ClassUtil.setField(model, "lastModifiedBy", currentUser.getUid());
 		}
 	}
 

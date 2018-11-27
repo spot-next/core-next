@@ -68,9 +68,13 @@ public class HierarchyAwareEventListenerMethodProcessor extends EventListenerMet
 		this.eventListenerFactories = factories;
 	}
 
-	@SuppressFBWarnings({ "NP_NULL_PARAM_DEREF", "NP_NULL_ON_SOME_PATH" })
+	@SuppressFBWarnings({ "NP_NULL_PARAM_DEREF" })
 	@Override
 	public void afterSingletonsInstantiated() {
+		if (beanFactory == null) {
+			throw new BeanInitializationException("Could not register event handlers, beanFactory is null");
+		}
+
 		String[] beanNames = beanFactory.getBeanNamesForType(Object.class);
 
 		for (String beanName : beanNames) {

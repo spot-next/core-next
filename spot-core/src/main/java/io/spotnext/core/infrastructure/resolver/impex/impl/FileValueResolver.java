@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,17 +31,17 @@ import io.spotnext.core.persistence.service.QueryService;
  * @since 1.0
  */
 @Service
-public class FileValueResolver extends AbstractService implements ImpexValueResolver {
+public class FileValueResolver extends AbstractService implements ImpexValueResolver<Object> {
 
-	@Resource
+	@Autowired
 	private TypeService typeService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+	public Object resolve(final String value, final Class<Object> targetType, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		if (StringUtils.isBlank(value)) {
@@ -70,12 +70,12 @@ public class FileValueResolver extends AbstractService implements ImpexValueReso
 			} else if (byte[].class.isAssignableFrom(targetType)) {
 				fileContent = fileByteContent;
 			} else {
-				throw new ValueResolverException(String.format("Cannot load file into object of type '%s'", targetType.getClass()));
+				throw new ValueResolverException(String.format("Cannot load file into object of type '%s'", targetType));
 			}
 		} catch (IOException e) {
 			throw new ValueResolverException(String.format("Could not read file: %s", value), e);
 		}
 
-		return (T) fileContent;
+		return fileContent;
 	}
 }

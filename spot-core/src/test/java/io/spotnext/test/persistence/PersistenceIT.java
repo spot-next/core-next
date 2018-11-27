@@ -9,7 +9,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -17,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.support.Logger;
@@ -33,7 +33,7 @@ import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
 
-	@Resource
+	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
 	@Rule
@@ -50,11 +50,11 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Ignore
 	@Test
 	public void testDuplicateEntityAttachedToPersistenceContext() {
-		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
 		loaded.setShortName("loaded");
 
 		final User duplicate = new User();
-		ClassUtil.setField(duplicate, "pk", loaded.getPk());
+		ClassUtil.setField(duplicate, "id", loaded.getId());
 		modelService.refresh(duplicate);
 		duplicate.setShortName("loaded");
 
@@ -73,18 +73,18 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	 */
 	@Test(expected = ModelSaveException.class)
 	public void testUniqueConstraintOfSubclass() {
-		final Catalog catalog = modelService.get(Catalog.class, Collections.singletonMap(Catalog.PROPERTY_ID, "Default"));
+		final Catalog catalog = modelService.get(Catalog.class, Collections.singletonMap(Catalog.PROPERTY_UID, "Default"));
 
 		final CatalogVersion version = modelService.create(CatalogVersion.class);
 		version.setCatalog(catalog);
-		version.setId("Online");
+		version.setUid("Online");
 
 		modelService.save(version);
 	}
 
 	private User createUser(final String id, final String shortName) {
 		final User user = modelService.create(User.class);
-		user.setId(id);
+		user.setUid(id);
 		user.setShortName(shortName);
 		modelService.save(user);
 
@@ -99,10 +99,10 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// we don't care what the id values are, important is that those values
 		// were generated!
 
-		assertNotNull(user1.getId());
+		assertNotNull(user1.getUid());
 		assertEquals("user-1", user1.getShortName());
 
-		assertNotNull(user2.getId());
+		assertNotNull(user2.getUid());
 		assertEquals("user-2", user2.getShortName());
 	}
 
@@ -119,7 +119,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(currency);
 
-		final Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
+		final Currency loadedCurrency = modelService.get(Currency.class, currency.getId());
 
 		// these locales are not the same as the locales with country codes!
 		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
@@ -130,7 +130,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSideWithLoadedUser() throws Exception {
-		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
 
 		final UserAddress address = modelService.create(UserAddress.class);
 		address.setStreetName("Test street");
@@ -138,42 +138,42 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
 	public void testBidirectionalOne2ManyRelationUpdateReferenceOnChildSide() throws Exception {
 		final User user = modelService.create(User.class);
-		user.setId("testUser1");
+		user.setUid("testUser1");
 
 		final UserAddress address = modelService.create(UserAddress.class);
 		address.setStreetName("Test");
 		user.getAddresses().add(address);
 
 		Logger.debug("Addresses before save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
 		Logger.debug("Addresses after save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
 		Logger.debug("Addresses after load: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
 	public void testBidirectionalOne2ManyRelation() throws Exception {
 		final User user = modelService.create(User.class);
-		user.setId("testUser2");
+		user.setUid("testUser2");
 
 		final UserAddress address = modelService.create(UserAddress.class);
 		address.setStreetName("Test2");
@@ -181,35 +181,35 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(address);
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
 	public void testBidirectionalMany2ManyRelations() throws Exception {
 		final UserGroup group1 = modelService.create(UserGroup.class);
-		group1.setId("testGroup 1");
+		group1.setUid("testGroup 1");
 
 		final UserGroup group2 = modelService.create(UserGroup.class);
-		group2.setId("testGroup 2");
+		group2.setUid("testGroup 2");
 
 		final User user1 = modelService.create(User.class);
-		user1.setId("testUser 1");
+		user1.setUid("testUser 1");
 		user1.getGroups().add(group1);
 		user1.getGroups().add(group2);
 
 		final User user2 = modelService.create(User.class);
-		user2.setId("testUser 2");
+		user2.setUid("testUser 2");
 		user2.getGroups().add(group2);
 
 		modelService.saveAll(user1, user2);
 
-		final User loadedUser1 = modelService.get(User.class, user1.getPk());
-		final User loadedUser2 = modelService.get(User.class, user2.getPk());
+		final User loadedUser1 = modelService.get(User.class, user1.getId());
+		final User loadedUser2 = modelService.get(User.class, user2.getId());
 
-		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getPk());
-		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getPk());
+		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getId());
+		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getId());
 
 		Assert.assertEquals(2, loadedUser1.getGroups().size());
 		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup1));
@@ -222,25 +222,25 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Test
 	public void testQueryByExample() throws Exception {
 		final LocalizationValue localization = modelService.create(LocalizationValue.class);
-		localization.setId("test.key");
+		localization.setUid("test.key");
 		localization.setLocale(Locale.ENGLISH);
 
 		modelService.save(localization);
 
 		// test using item
 		final LocalizationValue example = new LocalizationValue();
-		example.setId("test.key");
+		example.setUid("test.key");
 		example.setLocale(Locale.ENGLISH);
 
 		final LocalizationValue loaded = modelService.getByExample(example);
 
-		Assert.assertEquals(localization.getId(), loaded.getId());
+		Assert.assertEquals(localization.getUid(), loaded.getUid());
 
 		// test using map
-		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_ID, "test.key");
+		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
 		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
 
-		Assert.assertEquals(localization.getId(), resultFromMap.getId());
+		Assert.assertEquals(localization.getUid(), resultFromMap.getUid());
 	}
 
 	@Test
@@ -250,16 +250,16 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		Assert.assertNotNull(user.getId());
+		Assert.assertNotNull(user.getUid());
 	}
 
 	@Test
 	public void testDetachedItemIsNotSaved() {
-		final User admin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
+		final User admin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "admin"));
 		admin.setShortName("detached");
 		modelService.detach(admin);
 
-		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "admin"));
+		final User loadedAdmin = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "admin"));
 
 		assertEquals("Administrator", loadedAdmin.getShortName());
 	}
@@ -272,7 +272,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		// expectedExeption.expectMessage("User.id must not be null");
 
 		final UserGroup group = modelService.create(UserGroup.class);
-		group.setId("test");
+		group.setUid("test");
 
 		final User user = modelService.create(User.class);
 		group.getMembers().add(user);
@@ -299,6 +299,6 @@ public class PersistenceIT extends AbstractIntegrationTest {
 			lastUsedId--;
 		}
 
-		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getId());
+		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
 	}
 }

@@ -265,8 +265,8 @@ public class ToJpqlQueryVisitor implements ExpressionVisitor<PredicateTranslatio
 			final String table = getTableAlias(e);
 
 			final String typeCode = instance.getResultType().getSimpleName();
-			final String join = "LEFT JOIN " + typeCode + " as " + table + " on " + parentTable + "." + columnName
-					+ " = " + table + ".PK ";
+			final String join = "LEFT JOIN " + typeCode + " AS " + table + " ON " + parentTable + "." + columnName
+					+ " = " + table + ".ID ";
 			sb.getJoins().add(join);
 		}
 		columnBlock = oldColumnBlock;

@@ -1,10 +1,10 @@
-INSERT UserGroup ; id[unique=true]   ;
-                 ; employee-group    ;
-                 ; customer-group    ;
-                 ; guest-group       ;
+INSERT UserGroup ; uid[unique=true]   ;
+                 ; employee-group     ;
+                 ; customer-group     ;
+                 ; guest-group        ;
 
 # password = test1234
-INSERT User ; id[unique=true] ; password                             ; groups(id)     
+INSERT User ; uid[unique=true]; password                             ; groups(uid)     
             ; anonymous       ;                                      ; customer-group
             
             ;tester1          ; MD5:16d7a4fca7442dda3ad93c9a726597e4 ; customer-group,guest-group

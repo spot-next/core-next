@@ -8,7 +8,7 @@ import org.hibernate.boot.model.relational.Database;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>MetadataExtractorIntegrator class.</p>
@@ -17,7 +17,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
+//@SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR")
 public class MetadataExtractorIntegrator implements org.hibernate.integrator.spi.Integrator {
 	/** Constant <code>INSTANCE</code> */
 	public static final MetadataExtractorIntegrator INSTANCE = new MetadataExtractorIntegrator();

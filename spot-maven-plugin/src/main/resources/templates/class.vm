@@ -63,13 +63,12 @@
  */
 package $packagePath;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 #foreach($i in $imports)
 	import $i;
 #end
 
 #javadoc($javadoc)
-@SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 #annotations($annotations)
 $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #end #if($interfaces) implements #interfaces($interfaces) #end  {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */

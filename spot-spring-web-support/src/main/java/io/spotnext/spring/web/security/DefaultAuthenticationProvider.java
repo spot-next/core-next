@@ -83,7 +83,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 			final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(name, password,
 					grantedAuths);
 
-			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getId(),
+			final UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUid(),
 					user.getPassword(), grantedAuths);
 			auth.setDetails(userDetails);
 
@@ -94,7 +94,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	/**
-	 * Compares the given {@link User#getId()} against the
+	 * Compares the given {@link User#getUid()} against the
 	 * {@link DefaultAuthenticationProvider#ADMIN_USER_NAME_KEY} using
 	 * {@link DefaultAuthenticationProvider#DEFAULT_ADMIN_USER_NAME} as fallback. If
 	 * the username matches, then the user will be given the admin role.
@@ -105,7 +105,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 	protected boolean isAdminUser(final User user) {
 		final String adminUserName = configurationService.getString(ADMIN_USER_NAME_KEY, DEFAULT_ADMIN_USER_NAME);
 
-		return StringUtils.equals(user.getId(), adminUserName);
+		return StringUtils.equals(user.getUid(), adminUserName);
 	}
 
 	/** {@inheritDoc} */

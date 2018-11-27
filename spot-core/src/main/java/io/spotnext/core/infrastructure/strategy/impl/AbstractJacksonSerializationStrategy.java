@@ -1,9 +1,7 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.SerializationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,12 +24,13 @@ import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
 import io.spotnext.core.infrastructure.support.LogLevel;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.infrastructure.type.Item;
 import spark.ModelAndView;
 
-public abstract class AbstractJacksonSerializationStrategy extends AbstractService implements SerializationStrategy {
+public abstract class AbstractJacksonSerializationStrategy extends AbstractService implements SerializationStrategy, PostConstructor {
 
-	@Resource
+	@Autowired
 	protected TypeService typeService;
 
 	private ObjectMapper jacksonMapper;
@@ -46,8 +45,8 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 	 *
 	 * @throws java.lang.ClassNotFoundException if any.
 	 */
-	@PostConstruct
-	public void init() throws ClassNotFoundException {
+	@Override
+	public void setup() {
 		jacksonMapper = createMapper();
 
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);

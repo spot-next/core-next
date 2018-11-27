@@ -3,8 +3,6 @@
 	<name>spot-maven-plugin</name>
 	<comment></comment>
 	<projects>
-		<project>spot-core-model-infrastructure</project>
-		<project>spot-core-support</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

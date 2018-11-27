@@ -1,11 +1,14 @@
 <!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 
-	<!-- -debug -->
-    <weaver options=" -showWeaveInfo -Xlint:ignore -Xset:weaveJavaxPackages=true"> 
+	<!-- -debug -showWeaveInfo -->
+    <weaver options=" -Xlint:ignore -Xset:weaveJavaxPackages=true"> 
         <!-- only weave classes in our application-specific packages -->
-        <include  within="io.spotnext.*"/>
+        <include  within="*"/>
         <exclude within="org.springframework.data.jpa.domain.support.AuditingEntityListener"/>
+        <exclude within="org.springframework.cache.aspectj.AbstractCacheAspect"/>
+        <exclude within="org.springframework.cache.aspectj.AnnotationCacheAspect"/>
+        <exclude within="org.springframework.beans.factory.aspectj.ConfigurableObject"/>
     </weaver>
 
     <aspects>

@@ -11,11 +11,16 @@
 		<version>${revision}</version>
 	</parent>
 
+	<properties>
+		<jar.mainclass>io.spotnext.sample.SampleInit</jar.mainclass>
+	</properties>
+
 	<build>
 		<plugins>
+			<!-- COMPILING -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 
 			<!-- RESOURCE GENERTATION -->
@@ -30,8 +35,8 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -58,7 +63,29 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>io.spotnext.sample</Automatic-Module-Name>
+							<Main-Class>${jar.mainclass}</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- RELEASE -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${jar.mainclass}</mainClass>
+				</configuration>
+			</plugin>
+
 			<!-- skip the deployment for this project, it's just a sample -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -73,8 +100,7 @@
 		<pluginManagement>
 			<plugins>
 				<!-- ECLIPSE FIX -->
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
+				<!-- This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -111,10 +137,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -130,10 +156,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -196,6 +222,18 @@
 			<groupId>org.simplejavamail</groupId>
 			<artifactId>simple-java-mail</artifactId>
 			<version>5.0.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

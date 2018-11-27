@@ -8,17 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.AuthenticationException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.ExceptionResponse;
@@ -69,25 +68,25 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	private boolean isStarted = false;
 
-	@Resource
+	@Autowired
 	protected SerializationService serializationService;
 
-	@Resource
+	@Autowired
 	protected I18nService i18nService;
 
-	@Resource
+	@Autowired
 	protected AuthenticationService authenticationService;
 
-	@Resource
+	@Autowired
 	protected SessionService sessionService;
 
-	@Resource
+	@Autowired
 	protected UserService<User, UserGroup> userService;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected ResponseTransformer jsonResponseTransformer;
 
 	@Value("${service.typesystem.rest.keystore.file:}")
@@ -150,7 +149,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		} else {
 			// TODO: maybe restart the service?
-			loggingService.debug("Ignoring context refresh event, as remote endpoints have already been started.");
+			Logger.debug("Ignoring context refresh event, as remote endpoints have already been started.");
 		}
 	}
 
@@ -181,7 +180,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
+	//@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
 //		Security.addProvider(new OpenSSLProvider());
 //		sslContextFactory.setProvider("Conscrypt");
@@ -441,7 +440,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			this.authenticationFilter = authenticationFilter;
 		}
 
-		@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+		//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);

@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.service.I18nService;
+import io.spotnext.core.infrastructure.support.Logger;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 
 /**
  * <p>DefaultI18nService class.</p>
@@ -23,7 +23,7 @@ import io.spotnext.core.infrastructure.service.I18nService;
  * @since 1.0
  */
 @Service
-public class DefaultI18nService extends AbstractService implements I18nService {
+public class DefaultI18nService extends AbstractService implements I18nService, PostConstructor {
 
 	/** Constant <code>DEFAULT_LOCALE_KEY="i18n.default.locale"</code> */
 	public static final String DEFAULT_LOCALE_KEY = "i18n.default.locale";
@@ -38,8 +38,8 @@ public class DefaultI18nService extends AbstractService implements I18nService {
 	/**
 	 * <p>init.</p>
 	 */
-	@PostConstruct
-	public void init() {
+	@Override
+	public void setup() {
 		final String loc = configurationService.getString(DEFAULT_LOCALE_KEY);
 
 		Locale defaultLocale = Locale.ENGLISH;
@@ -58,7 +58,7 @@ public class DefaultI18nService extends AbstractService implements I18nService {
 			try {
 				defaultCurrency = Currency.getInstance(currencyIso);
 			} catch (final IllegalArgumentException e) {
-				loggingService.error(String.format("Could not set default locale %s", currencyIso));
+				Logger.error(String.format("Could not set default locale %s", currencyIso));
 			}
 		}
 

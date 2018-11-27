@@ -190,7 +190,7 @@
 			</property>
 			<property name="lastName" type="String">
 			</property>
-			<property name="birthDay" type="Date">
+			<property name="birthDay" type="LocalDate">
 			</property>
 		</properties>
 	</type>

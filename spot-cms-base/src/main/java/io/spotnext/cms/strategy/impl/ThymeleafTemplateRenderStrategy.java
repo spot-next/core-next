@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
@@ -19,12 +17,13 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.cms.annotations.Renderable;
 import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.service.impl.CmsMessageResolver;
 import io.spotnext.cms.strategy.TemplateRenderStrategy;
 import io.spotnext.core.infrastructure.http.ModelAndView;
+import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.itemtype.cms.CmsPage;
 import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
 
@@ -34,8 +33,8 @@ import io.spotnext.itemtype.cms.enumeration.TemplateRenderEngine;
  * </p>
  */
 @Service
-@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "initialized by spring")
-public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
+//@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "initialized by spring")
+public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy, PostConstructor {
 
 	private static final String DEFAULT_TEMPLATE_FOLDER = "templates/";
 	private static final String DEFAULT_TEMPLATE_EXCENTIONS = ".html";
@@ -52,16 +51,16 @@ public class ThymeleafTemplateRenderStrategy implements TemplateRenderStrategy {
 	@Value("${service.templaterenderer.thymeleaf.cache:false}")
 	private boolean cacheEnabled;
 
-	@Resource
+	@Autowired
 	private SpringTemplateEngine templateEngine;
 
-	@Resource
+	@Autowired
 	private CmsMessageResolver cmsMessageResolver;
 
 	/**
 	 * Constructs a thymeleaf template engine.
 	 */
-	@PostConstruct
+	@Override
 	public void setup() {
 		final ITemplateResolver templateResolver = createDefaultTemplateResolver(templateFolder, templateExtension);
 		templateEngine = new SpringTemplateEngine();

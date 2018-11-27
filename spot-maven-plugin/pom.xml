@@ -15,14 +15,14 @@
 		<plugins>
 			<!-- COMPILING -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.5.2</version>
+				<version>3.6.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -32,8 +32,8 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -52,6 +52,19 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>io.spotnext.maven</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- RELEASE -->
 
 		</plugins>
@@ -62,20 +75,20 @@
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-infrastructure</artifactId>
 			<version>${revision}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.aspectj</groupId>
-					<artifactId>aspectjtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-				</exclusion>
-			</exclusions>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.aspectj</groupId> -->
+<!-- 					<artifactId>aspectjtools</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
+<!-- 					<artifactId>log4j-core</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
+<!-- 					<artifactId>log4j-api</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 		</dependency>
 
 		<!-- The dependency to the maven API -->
@@ -93,42 +106,45 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>2.2.1</version>
-			<!-- <version>3.0-alpha-2</version> -->
-			<!-- <exclusions> -->
-			<!-- <exclusion> -->
-			<!-- <groupId>org.codehaus.plexus</groupId> -->
-			<!-- <artifactId>plexus-component-annotations</artifactId> -->
-			<!-- </exclusion> -->
-			<!-- </exclusions> -->
+			<artifactId>maven-core</artifactId>
+			<version>3.6.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
+			<artifactId>maven-artifact</artifactId>
 			<version>3.6.0</version>
-			<!-- <scope>provided</scope> -->
+			<scope>provided</scope>
 		</dependency>
-
+		
+		<!-- java code generation and formatting -->
 		<dependency>
-			<groupId>com.github.rotty3000</groupId>
-			<artifactId>jalopy</artifactId>
-			<version>3000.0.0</version>
+			<groupId>org.jboss.forge.roaster</groupId>
+			<artifactId>roaster-api</artifactId>
+			<version>2.20.1.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jboss.forge.roaster</groupId>
+			<artifactId>roaster-jdt</artifactId>
+			<version>2.20.1.Final</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-engine-core</artifactId>
+			<version>2.0</version>
+		</dependency>
+		
+		<!-- general stuff -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.8.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity-engine-core</artifactId>
-			<version>2.0</version>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.3.1</version>
 		</dependency>
 
 		<!-- Eclipse integration -->

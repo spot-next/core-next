@@ -17,6 +17,9 @@
 	<properties>
 		<spot.version>\${project.parent.version}</spot.version>
 		<jar.mainclass>${package}.Init</jar.mainclass>
+		<maven.compiler.source>10</maven.compiler.source>
+		<maven.compiler.target>10</maven.compiler.target>
+		<java.version>10</java.version>
 	</properties>
 
 	<repositories>
@@ -55,6 +58,17 @@
 
 	<build>
 		<plugins>
+			<!-- COMPILING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>\${java.version}</source>
+					<target>\${java.version}</target>
+					<useIncrementalCompilation>true</useIncrementalCompilation>
+				</configuration>
+			</plugin>
+
 			<!-- resolves variables and slims down POM -->
 			<!-- fixes CI-friendly \${revision} variables -->
 			<plugin>
@@ -103,8 +117,8 @@
 
 			<!-- CODE ANALYSIS -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 
 			<plugin>
@@ -131,6 +145,20 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 			</plugin>
 
+			<!-- PACKAGING -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>$package</Automatic-Module-Name>
+							<Main-Class>${jar.mainclass}</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<!-- RELEASE -->
 			<plugin>
 				<groupId>pl.project13.maven</groupId>
@@ -140,6 +168,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${jar.mainclass}</mainClass>
+				</configuration>
 			</plugin>
 
 			<!-- skip the deployment for this project, it's just a sample -->
@@ -192,10 +223,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -211,10 +242,10 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-<!-- 										<execute> -->
-<!-- 											<runOnIncremental>true</runOnIncremental> -->
-<!-- 											<runOnConfiguration>true</runOnConfiguration> -->
-<!-- 										</execute> -->
+										<!-- <execute> -->
+										<!-- <runOnIncremental>true</runOnIncremental> -->
+										<!-- <runOnConfiguration>true</runOnConfiguration> -->
+										<!-- </execute> -->
 										<ignore />
 									</action>
 								</pluginExecution>
@@ -267,5 +298,16 @@
 			<version>${spot.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
+		</dependency>
 	</dependencies>
 </project>

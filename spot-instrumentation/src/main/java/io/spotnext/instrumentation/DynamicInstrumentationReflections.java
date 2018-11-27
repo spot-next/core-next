@@ -11,13 +11,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
-
-import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.instrument.InstrumentationSavingAgent;
@@ -31,7 +30,6 @@ import io.spotnext.instrumentation.util.Assert;
  *
  * @since 1.0
  */
-@Immutable
 public final class DynamicInstrumentationReflections {
 
 	private static final Set<String> pathsAddedToSystemClassLoader = Collections.synchronizedSet(new HashSet<String>());
@@ -87,6 +85,10 @@ public final class DynamicInstrumentationReflections {
 		return getSystemClassLoader() instanceof URLClassLoader;
 	}
 
+	public static boolean isAfterJava10() {
+		return System.getProperty("java.version").startsWith("11");
+	}
+
 	private static void addUrlToURLClassLoader(final URL url)
 			throws NoSuchMethodException, MalformedURLException, IllegalAccessException, InvocationTargetException {
 		final ClassLoader systemClassLoader = getSystemClassLoader();
@@ -111,14 +113,27 @@ public final class DynamicInstrumentationReflections {
 		synchronized (ucp) {
 			final Field pathField = ucp.getClass().getDeclaredField("path");
 			final ArrayList<URL> path = (ArrayList<URL>) unsafe.getObject(ucp, unsafe.objectFieldOffset(pathField));
-			final Field urlsField = ucp.getClass().getDeclaredField("urls");
-			final Stack<URL> urls = (Stack<URL>) unsafe.getObject(ucp, unsafe.objectFieldOffset(urlsField));
-			synchronized (urls) {
-				if (url == null || path.contains(url)) {
-					return;
+
+			if (isAfterJava10()) {
+				final Field urlsField = ucp.getClass().getDeclaredField("unopenedUrls");
+				final ArrayDeque<URL> urls = (ArrayDeque<URL>) unsafe.getObject(ucp, unsafe.objectFieldOffset(urlsField));
+				synchronized (urls) {
+					if (url == null || path.contains(url)) {
+						return;
+					}
+					urls.addFirst(url);
+					path.add(url);
 				}
-				urls.add(0, url);
-				path.add(url);
+			} else {
+				final Field urlsField = ucp.getClass().getDeclaredField("urls");
+				final Stack<URL> urls = (Stack<URL>) unsafe.getObject(ucp, unsafe.objectFieldOffset(urlsField));
+				synchronized (urls) {
+					if (url == null || path.contains(url)) {
+						return;
+					}
+					urls.add(0, url);
+					path.add(url);
+				}
 			}
 		}
 	}

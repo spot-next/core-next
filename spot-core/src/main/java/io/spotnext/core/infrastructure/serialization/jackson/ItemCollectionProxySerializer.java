@@ -42,7 +42,7 @@ public class ItemCollectionProxySerializer extends JsonSerializer<Collection<Ite
 				}
 				
 				// see ItemSerializationMixIn
-				gen.writeObjectField("pk", item.getPk() + "");
+				gen.writeObjectField("id", item.getId() + "");
 				
 				gen.writeEndObject();
 			}

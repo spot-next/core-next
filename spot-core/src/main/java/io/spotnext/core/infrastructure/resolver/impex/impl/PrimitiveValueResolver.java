@@ -2,6 +2,9 @@ package io.spotnext.core.infrastructure.resolver.impex.impl;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -11,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,13 +34,22 @@ import io.spotnext.infrastructure.type.Localizable;
  * @since 1.0
  */
 @Service
-public class PrimitiveValueResolver implements ImpexValueResolver {
+public class PrimitiveValueResolver<T extends Object> implements ImpexValueResolver<T> {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
+	@Autowired
+	private LocalDateValueResolver localDateValueResolver;
+
+	@Autowired
+	private LocalTimeValueResolver localTimeValueResolver;
+
+	@Autowired
+	private LocalDateTimeValueResolver localDateTimeValueResolver;
+
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition)
+	public T resolve(final String value, final Class<T> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition)
 			throws ValueResolverException {
 
 		if (StringUtils.isBlank(value)) {
@@ -61,7 +74,7 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 							String.format("Cannot resolve generic value of localizable for %s.%s", type.getSimpleName(), columnDefinition.getPropertyName()));
 				}
 
-				return (T) resolve(value, genericType, genericArguments, columnDefinition);
+				return resolve(value, (Class<T>) genericType, genericArguments, columnDefinition);
 			}
 			if (type.isAssignableFrom(value.getClass())) {
 				return (T) value;
@@ -71,6 +84,12 @@ public class PrimitiveValueResolver implements ImpexValueResolver {
 				return (T) toNumber(value);
 			} else if (Enum.class.isAssignableFrom(type)) {
 				return (T) Enum.valueOf((Class<? extends Enum>) type, value);
+			} else if (LocalDate.class.isAssignableFrom(type)) {
+				return (T) localDateValueResolver.resolve(value, (Class<LocalDate>) type, genericArguments, columnDefinition);
+			} else if (LocalTime.class.isAssignableFrom(type)) {
+				return (T) localTimeValueResolver.resolve(value, (Class<LocalTime>) type, genericArguments, columnDefinition);
+			} else if (LocalDateTime.class.isAssignableFrom(type)) {
+				return (T) localDateTimeValueResolver.resolve(value, (Class<LocalDateTime>) type, genericArguments, columnDefinition);
 			} else {
 
 				// shortcut for locales

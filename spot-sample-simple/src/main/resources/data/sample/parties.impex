@@ -1,2 +1,2 @@
-INSERT_UPDATE Party;title      ;
-                   ;test-party ;
+INSERT_UPDATE Party;title [ unique = true ] ; date[format=dd.MM.yyyy]
+                   ;test-party              ; 01.09.2019

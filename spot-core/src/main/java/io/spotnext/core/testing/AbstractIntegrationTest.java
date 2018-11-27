@@ -3,7 +3,7 @@ package io.spotnext.core.testing;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,7 +20,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.TransactionStatus;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.support.Logger;
@@ -44,7 +44,7 @@ import io.spotnext.support.util.ClassUtil;
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
 @SpringBootTest(classes = CoreInit.class)
-@SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
+//@SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
 public abstract class AbstractIntegrationTest implements ApplicationContextAware {
 
 	static {
@@ -56,13 +56,13 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	private int maxMillisToWaitForModuleInitialization = 10 * 60 * 60 * 1000;
 	private ApplicationContext applicationContext;
 
-	@Resource
+	@Autowired
 	protected PersistenceService persistenceService;
 
-	@Resource
+	@Autowired
 	protected TransactionService transactionService;
 
-	@Resource
+	@Autowired
 	protected ModelService modelService;
 
 	@Rule
@@ -94,7 +94,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	 * @throws InterruptedException if the thead wait was interrupted
 	 * @throw IllegalStateException if module initialization didn't finish within the max allowed time.
 	 */
-	@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
+	//@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
 	@Before
 	public void beforeTest() throws InterruptedException {
 		MockitoAnnotations.initMocks(this);

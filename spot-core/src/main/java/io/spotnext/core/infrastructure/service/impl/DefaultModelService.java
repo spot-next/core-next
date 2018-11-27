@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent.ModificationType;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -29,7 +29,7 @@ import io.spotnext.support.util.ValidationUtil;
  * @version 1.0
  * @since 1.0
  */
-@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
+//@SuppressFBWarnings("SIC_INNER_SHOULD_BE_STATIC_ANON")
 @Service
 public class DefaultModelService extends AbstractModelService {
 
@@ -66,14 +66,14 @@ public class DefaultModelService extends AbstractModelService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> T get(final Class<T> type, final long pk) throws ModelNotFoundException {
-		return get(type, pk, false);
+	public <T extends Item> T get(final Class<T> type, final long id) throws ModelNotFoundException {
+		return get(type, id, false);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> T get(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
-		final T item = persistenceService.load(type, pk, returnProxy);
+	public <T extends Item> T get(final Class<T> type, final long id, boolean returnProxy) throws ModelNotFoundException {
+		final T item = persistenceService.load(type, id, returnProxy);
 
 		if (item != null) {
 			applyLoadInterceptors(Collections.singletonList(item));
@@ -165,7 +165,7 @@ public class DefaultModelService extends AbstractModelService {
 	/** {@inheritDoc} */
 	@Override
 	public <T extends Item> void refresh(final T item) throws ModelNotFoundException {
-		if (item == null || item.getPk() == null) {
+		if (item == null || item.getId() == null) {
 			throw new ModelNotFoundException("Given item is null");
 		}
 
@@ -176,11 +176,11 @@ public class DefaultModelService extends AbstractModelService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> void remove(final Class<T> type, final long pk) {
-		final T itemToRemove = get(type, pk);
+	public <T extends Item> void remove(final Class<T> type, final long id) {
+		final T itemToRemove = get(type, id);
 
 		if (itemToRemove == null) {
-			throw new ModelNotFoundException(String.format("The item of type %s with PK=%s is no found.", type.getSimpleName(), pk));
+			throw new ModelNotFoundException(String.format("The item of type %s with ID=%s is no found.", type.getSimpleName(), id));
 		}
 
 		removeAll(Arrays.asList(itemToRemove));

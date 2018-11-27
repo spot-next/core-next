@@ -33,7 +33,7 @@
 			<property name="title" type="String" />
 			<property name="motto" type="String" />
 			<property name="location" type="AddressData" />
-			<property name="date" type="Date" />
+			<property name="date" type="LocalDate" />
 			<property name="guests" type="UserDataList" />
 		</properties>
 	</bean>
@@ -67,7 +67,7 @@
 			<property name="location" type="Address">
 				<description>The location the party will take place</description>
 			</property>
-			<property name="date" type="Date">
+			<property name="date" type="LocalDate">
 				<description>The date the party will take place</description>
 			</property>
 			<property name="fixed" type="boolean">

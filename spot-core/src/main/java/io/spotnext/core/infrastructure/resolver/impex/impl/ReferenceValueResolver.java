@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -31,17 +31,17 @@ import io.spotnext.support.util.ClassUtil;
  * @since 1.0
  */
 @Service
-public class ReferenceValueResolver extends AbstractService implements ImpexValueResolver {
+public class ReferenceValueResolver<T extends Item> extends AbstractService implements ImpexValueResolver<T> {
 
-	@Resource
+	@Autowired
 	private TypeService typeService;
 
-	@Resource
+	@Autowired
 	private QueryService queryService;
 
 	/** {@inheritDoc} */
 	@Override
-	public <T> T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
+	public T resolve(final String value, final Class<T> targetType, final List<Class<?>> genericArguments,
 			final ColumnDefinition columnDefinition) throws ValueResolverException {
 
 		return resolve(value, targetType, genericArguments, columnDefinition.getValueResolutionDescriptor(), 0);
@@ -93,7 +93,7 @@ public class ReferenceValueResolver extends AbstractService implements ImpexValu
 				final String fieldTypeName = fieldType.getSimpleName();
 
 				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeName + " ON "
-						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".pk ");
+						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".id ");
 
 				fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
 
