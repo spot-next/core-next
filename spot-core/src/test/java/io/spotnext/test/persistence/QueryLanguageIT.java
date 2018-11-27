@@ -23,13 +23,13 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 	@Override
 	protected void prepareTest() {
 		user = modelService.create(User.class);
-		user.setId("testUser");
+		user.setUid("testUser");
 		user.setEmailAddress("test@test.at");
 		user.setPassword("test1234");
 		user.setShortName("tester");
 
 		UserGroup group = modelService.create(UserGroup.class);
-		group.setId("testGroup");
+		group.setUid("testGroup");
 		group.setShortName("test-group");
 
 		group.getMembers().add(user);
@@ -53,30 +53,30 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testSimpleItemTypeQuery() throws Exception {
-		final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
-		query.addParam("id", "testUser");
+		final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE uid = :uid", User.class);
+		query.addParam("uid", "testUser");
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
+		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
 	}
 
 	@Test
 	public void testSimpleTypeQuery() throws Exception {
-		final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id = :id", String.class);
-		query.addParam("id", "testUser");
+		final JpqlQuery<String> query = new JpqlQuery<>("SELECT uid FROM User u WHERE uid = :uid", String.class);
+		query.addParam("uid", "testUser");
 		final QueryResult<String> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0), user.getId());
+		Assert.assertEquals(result.getResultList().get(0), user.getUid());
 	}
 
 	@Test
 	public void testDtoQuery() throws Exception {
 		final JpqlQuery<UserData> query = new JpqlQuery<>(
-				"SELECT id as id, shortName as shortName FROM User u WHERE id = :id", UserData.class);
-		query.addParam("id", "testUser");
+				"SELECT uid as uid, shortName as shortName FROM User u WHERE uid = :uid", UserData.class);
+		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
+		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
 		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
 	}
 
@@ -84,34 +84,34 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 	@Ignore
 	@Test
 	public void testDtoQueryWithoutAlias() throws Exception {
-		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id, shortName FROM User u WHERE id = :id",
+		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT uid, shortName FROM User u WHERE uid = :uid",
 				UserData.class);
-		query.addParam("id", "testUser");
+		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
+		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
 		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
 	}
 
 	@Test
 	public void testLamdbaQuery() throws Exception {
-		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testUser"));
+		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("testUser"));
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getId(), user.getId());
+		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
 		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
 	}
 
 	protected static class UserData {
-		private String id;
+		private String uid;
 		private String shortName;
 
-		public String getId() {
-			return id;
+		public String getUid() {
+			return uid;
 		}
 
-		public void setId(String id) {
-			this.id = id;
+		public void getUid(String uid) {
+			this.uid = uid;
 		}
 
 		public String getShortName() {

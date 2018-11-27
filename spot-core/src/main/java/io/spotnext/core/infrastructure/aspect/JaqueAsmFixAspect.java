@@ -2,9 +2,6 @@ package io.spotnext.core.infrastructure.aspect;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Service;
 
 import aj.org.objectweb.asm.Opcodes;
 import io.spotnext.core.infrastructure.support.Logger;
@@ -17,8 +14,8 @@ import io.spotnext.core.infrastructure.support.spring.PostConstructor;
  * @version 1.0
  * @since 1.0
  */
-@Aspect
-@Service
+//@Aspect
+//@Service
 public class JaqueAsmFixAspect extends AbstractBaseAspect implements PostConstructor {
 
 	static final FastDateFormat DATEFORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
@@ -37,7 +34,8 @@ public class JaqueAsmFixAspect extends AbstractBaseAspect implements PostConstru
 	 * @return the return value of the intercepted method
 	 * @throws java.lang.Throwable in case there is any error
 	 */
-	@Around("call(com.trigersoft.jaque.expression.ExpressionClassVisitor.new(..))")
+//	initialization(void org.springframework.beans.factory.aspectj.ConfigurableObject.<init>())
+//	@Around("execution(com.trigersoft.jaque.expression.ExpressionClassVisitor.new(..))")
 	public Object interceptConstructorCall(final ProceedingJoinPoint joinPoint) throws Throwable {
 		Object[] args = joinPoint.getArgs();
 

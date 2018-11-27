@@ -43,7 +43,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	public static final UserData DEFAULT_USER = new UserData();
 	static {
-		DEFAULT_USER.setId("<notset>");
+		DEFAULT_USER.setUid("<notset>");
 	}
 	
 	@Autowired
@@ -64,7 +64,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 			throws CannotCreateUserException {
 
 		final U user = modelService.create(type);
-		user.setId(userId);
+		user.setUid(userId);
 
 		try {
 			if (StringUtils.isNotBlank(password)) {
@@ -83,7 +83,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public U getUser(final String uid) {
 		final Map<String, Object> params = new HashMap<>();
-		params.put(Principal.PROPERTY_ID, uid);
+		params.put(Principal.PROPERTY_UID, uid);
 
 		return modelService.get(getUserType(), params);
 	}
@@ -109,7 +109,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 			final PrincipalGroup currentGroup = groupsToCheck.get(x);
 
 			// check if groups match
-			if (StringUtils.equals(groupUid, currentGroup.getId())) {
+			if (StringUtils.equals(groupUid, currentGroup.getUid())) {
 				return true;
 			}
 
@@ -166,7 +166,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 		
 		final UserData userData = new UserData();
-		user.setId(user.getId());
+		user.setUid(user.getUid());
 		
 		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, userData);
 	}

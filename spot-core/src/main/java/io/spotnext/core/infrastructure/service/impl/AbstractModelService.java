@@ -225,8 +225,8 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 		final UserData currentUser = userService.getCurrentUser();
 
 		for (final T model : models) {
-			ClassUtil.setField(model, "createdBy", currentUser.getId());
-			ClassUtil.setField(model, "lastModifiedBy", currentUser.getId());
+			ClassUtil.setField(model, "createdBy", currentUser.getUid());
+			ClassUtil.setField(model, "lastModifiedBy", currentUser.getUid());
 		}
 	}
 

@@ -24,7 +24,7 @@ public class PartyModificationListener {
 
 		// build email for every guest
 		for (final User guest : fixedParty.getInvitedGuests()) {
-			final Email email = EmailBuilder.startingBlank().to(guest.getShortName(), guest.getId())
+			final Email email = EmailBuilder.startingBlank().to(guest.getShortName(), guest.getUid())
 					.from("Party Service", "service@party.at")
 					.withSubject(fixedParty.getTitle() + " is on " + fixedParty.getDate())
 					.withHTMLText("Let's get this party started!").buildEmail();

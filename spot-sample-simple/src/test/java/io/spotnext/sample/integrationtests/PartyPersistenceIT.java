@@ -34,7 +34,7 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 	protected void prepareTest() {
 		final User guest = modelService.create(User.class);
 		guest.setShortName("test user");
-		guest.setId("guest-01@gmail.com");
+		guest.getUid("guest-01@gmail.com");
 
 		final Party party = modelService.create(Party.class);
 		party.setTitle(PARTY_TITLE);

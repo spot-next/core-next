@@ -175,7 +175,7 @@ public class DefaultSmtpServiceEndpoint extends AbstractService implements SmtpS
 		}
 
 		@Override
-		public Object getIdentity() {
+		public Object getUidentity() {
 			return "User";
 		}
 	}

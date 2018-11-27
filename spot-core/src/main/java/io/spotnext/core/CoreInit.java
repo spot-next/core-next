@@ -13,10 +13,7 @@ import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
-import io.spotnext.core.persistence.query.LambdaQuery;
-import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
-import io.spotnext.itemtype.core.user.User;
 
 /**
  * This is the main entry point for the application. After the application has been initialized, {@link io.spotnext.core.CoreInit#initialize()},
@@ -51,9 +48,6 @@ public class CoreInit extends ModuleInit {
 	@Override
 	protected void importInitialData() throws ModuleInitializationException {
 		super.importInitialData();
-
-		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getId().equals("testUser"));
-		final QueryResult<User> result = queryService.query(query);
 
 		try {
 			importScript("/data/initial/countries.impex", "Importing countries");

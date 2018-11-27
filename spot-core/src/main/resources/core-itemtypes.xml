@@ -94,7 +94,7 @@
 	<bean name="UserData" package="io.spotnext.itemtype.core.beans">
 		<description>Holds user information.</description>
 		<properties>
-			<property name="id" type="String">
+			<property name="uid" type="String">
 				<description>The users id.</description>
 			</property>
 		</properties>
@@ -106,7 +106,7 @@
 		persistable="false">
 		<description>The base type of all types that have a unique id property.</description>
 		<properties>
-			<property name="id" type="String">
+			<property name="uid" type="String">
 				<description>The unique id of the object.</description>
 				<modifiers unique="true" />
 				<annotations>

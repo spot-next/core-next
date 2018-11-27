@@ -82,7 +82,7 @@ public class DefaultL10nService extends AbstractService implements L10nService {
 			final Object... messageParams) throws NoSuchMessageException {
 
 		LocalizationValue locResult = new LocalizationValue();
-		locResult.setId(key);
+		locResult.setUid(key);
 		locResult.setLocale(locale);
 
 		locResult = modelService.getByExample(locResult);

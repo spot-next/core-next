@@ -81,7 +81,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	@Transactionless
 	public void get_model() {
 		final User user = modelService.create(User.class);
-		user.setId("test-user-for-rest");
+		user.setUid("test-user-for-rest");
 		modelService.save(user);
 
 		sleep(1);
@@ -100,24 +100,24 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Test
 	public void queryModel() {
-		get("/user/query/?q=id like '%test%'").then() //
+		get("/user/query/?q=uid like '%test%'").then() //
 				.statusCode(HttpStatus.OK.value()) //
 				.body("payload.results.size()", Matchers.greaterThan(0));
 	}
 
 	@Test
 	public void queryModelByExample() throws JSONException {
-		final JSONObject example = new JSONObject().put("id", "tester51");
+		final JSONObject example = new JSONObject().put("uid", "tester51");
 
 		given().body(example.toString())
 				.post("/user/query/").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload[0].id", Matchers.equalTo("tester51"));
+				.body("payload[0].uid", Matchers.equalTo("tester51"));
 	}
 
 	@Test
 	public void createModel() throws JSONException {
-		User tester1 = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester1"));
+		User tester1 = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
 
 		JSONArray groups = new JSONArray();
 
@@ -129,7 +129,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		}
 
 		final JSONObject newUser = new JSONObject() //
-				.put("id", "user@integrationtest") //
+				.put("uid", "user@integrationtest") //
 				.put("groups", groups);
 
 		final Long pk = Long.valueOf(given().body(newUser.toString())
@@ -142,7 +142,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		final User user = modelService.get(User.class, pk);
 
 		assertEquals(tester1.getGroups().size(), user.getGroups().size());
-		assertEquals(tester1.getGroups().iterator().next().getId(), user.getGroups().iterator().next().getId());
+		assertEquals(tester1.getGroups().iterator().next().getUid(), user.getGroups().iterator().next().getUid());
 
 		assertNotNull(user);
 	}
@@ -150,8 +150,8 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	@Test
 	public void createOrUpdateModel_WithPK() throws JSONException {
 		// updates existing user
-		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester51"));
-		final UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_ID, "employee-group"));
+		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester51"));
+		final UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_UID, "employee-group"));
 
 		final JSONObject group = new JSONObject();
 		group.put("pk", usergroup.getPk() + "");
@@ -193,7 +193,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Test
 	public void partiallyUpdateModel() throws JSONException {
-		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_ID, "tester51"));
+		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester51"));
 
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
 

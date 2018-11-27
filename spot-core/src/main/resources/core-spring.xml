@@ -39,9 +39,9 @@
 	<context:component-scan base-package="io.spotnext.itemtype" />
 
 
-	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true" />
+<!-- 	<bean id="abstractBaseAspect" class="io.spotnext.core.infrastructure.aspect.AbstractBaseAspect" abstract="true" /> -->
 
-	<bean class="io.spotnext.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" />
+<!-- 	<bean class="io.spotnext.core.infrastructure.aspect.LogAspect" factory-method="aspectOf" parent="abstractBaseAspect" /> -->
 	<!-- <bean class="io.spotnext.infrastructure.aspect.ItemPropertyAccessAspect" factory-method="aspectOf" parent="abstractBaseAspect"> -->
 	<!-- <property name="modelService" ref="modelService" /> -->
 	<!-- <property name="queryService" ref="queryService" /> -->

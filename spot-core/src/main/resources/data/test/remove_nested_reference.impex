@@ -1,3 +1,3 @@
-REMOVE Media ; id[unique=true] ; catalogVersion(catalog(id),id)[unique=true] ;
-             ; testMedia       ; Media:Staged                                ;
+REMOVE Media ; uid[unique=true] ; catalogVersion(catalog(uid),uid)[unique=true] ;
+             ; testMedia        ; Media:Staged                                  ;
                    

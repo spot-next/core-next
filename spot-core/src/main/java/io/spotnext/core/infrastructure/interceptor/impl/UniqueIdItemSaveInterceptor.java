@@ -1,7 +1,6 @@
 package io.spotnext.core.infrastructure.interceptor.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
@@ -11,7 +10,7 @@ import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.itemtype.core.UniqueIdItem;
 
 /**
- * Generates a unique value for the {@link io.spotnext.itemtype.core.UniqueIdItem#getId()} property if it
+ * Generates a unique value for the {@link io.spotnext.itemtype.core.UniqueIdItem#getUid()} property if it
  * is not already set.
  *
  * @author mojo2012
@@ -37,11 +36,11 @@ public class UniqueIdItemSaveInterceptor extends AbstractItemInterceptor<UniqueI
 		try {
 			// only get a new sequence id if the id property is empty to save
 			// some ids
-			if (item.getId() == null) {
+			if (item.getUid() == null) {
 				final String typeCode = typeService.getTypeCodeForClass(item.getClass());
 				final long nextVal = sequenceGenerator.getNextSequenceValue(typeCode + "_" + "id");
 
-				item.setId(typeCode + "-" + nextVal);
+				item.setUid(typeCode + "-" + nextVal);
 			}
 		} catch (final SequenceAccessException e) {
 			throw new ItemInterceptorException("Could not generate unique id for item.", e);

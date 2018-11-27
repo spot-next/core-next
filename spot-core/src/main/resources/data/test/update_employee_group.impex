@@ -1,2 +1,2 @@
-UPDATE UserGroup ; id[unique=true]   ; shortName
-                 ; employee-group    ; Employee Group
+UPDATE UserGroup ; uid[unique=true]   ; shortName
+                 ; employee-group     ; Employee Group

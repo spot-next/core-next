@@ -26,7 +26,7 @@ public class IsAdminFilter implements AuthenticationFilter {
 	public void handle(final Request request, final Response response) throws AuthenticationException {
 		final UserData currentUser = userService.getCurrentUser();
 
-		if (currentUser != null && userService.isUserInGroup(currentUser.getId(), "admin")) {
+		if (currentUser != null && userService.isUserInGroup(currentUser.getUid(), "admin")) {
 			request.attribute("isLoggedIn", false);
 			response.redirect("/");
 		}
