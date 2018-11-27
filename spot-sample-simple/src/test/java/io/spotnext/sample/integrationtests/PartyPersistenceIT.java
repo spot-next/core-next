@@ -3,10 +3,9 @@ package io.spotnext.sample.integrationtests;
 import java.time.LocalDate;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import io.spotnext.core.CoreInit;
@@ -34,7 +33,7 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 	protected void prepareTest() {
 		final User guest = modelService.create(User.class);
 		guest.setShortName("test user");
-		guest.getUid("guest-01@gmail.com");
+		guest.setUid("guest-01@gmail.com");
 
 		final Party party = modelService.create(Party.class);
 		party.setTitle(PARTY_TITLE);

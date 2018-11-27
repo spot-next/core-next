@@ -1,8 +1,7 @@
 package io.spotnext.sample.interceptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
@@ -27,7 +26,7 @@ public class UserPrepareInterceptor extends AbstractItemInterceptor<User> implem
 	public void onPrepare(final User user) throws ItemInterceptorException {
 		try {
 			if (StringUtils.isBlank(user.getUid())) {
-				user.getUid("user-" + sequenceGenerator.getNextSequenceValue("user-sequence"));
+				user.setUid("user-" + sequenceGenerator.getNextSequenceValue("user-sequence"));
 			}
 		} catch (final SequenceAccessException e) {
 			throw new ItemInterceptorException(e.getMessage(), e);

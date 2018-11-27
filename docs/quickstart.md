@@ -40,16 +40,16 @@ mvn -Psonatype-staging-archetypes archetype:generate -B \
 
 The project does not yet define any custom types, nor does it contain any special functionality. But after `mvn clean install` you can already boot it with (cd into the project directory first:
 ```bash
-mvn spring-boot:run -Drun.arguments="--core.setup.typesystem.initialize=true,--core.setup.import.initialdata=true,--core.setup.import.sampledata=true"
+mvn spring-boot:run -Dspring-boot.run.arguments="--core.setup.typesystem.initialize=true,--core.setup.import.initialdata=true,--core.setup.import.sampledata=true"
 ```
 
 or
 
 ```bash
-java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true
+java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true --add-opens java.base/java.lang=ALL-UNNAMED
 ``
 
-> Use the main class `io.spotnext.core.CoreInit` when launching from and IDE and add the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` to bypass Java "Illegal reflective access" logs.
+> Use the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` to bypass Java "Illegal reflective access" warnings, when starting spot with `java -jar` or from an IDE.
 
 > If you changed the variables above you also have to adapt the JAR-filename!
 

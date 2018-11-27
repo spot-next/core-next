@@ -11,29 +11,9 @@
 		<version>${revision}</version>
 	</parent>
 
-	<profiles>
-		<profile>
-			<id>jdk9</id>
-			<activation>
-				<jdk>[1.9,)</jdk>
-			</activation>
-			<build>
-				<plugins>
-					<!-- COMPILING -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<configuration>
-							<compilerArgs>
-								<compilerArg>--add-exports</compilerArg>
-								<compilerArg>java.xml/com.sun.xml.internal.bind.v2.ContextFactory=ALL-UNNAMED</compilerArg>
-							</compilerArgs>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+	<properties>
+		<jar.mainclass>io.spotnext.sample.SampleInit</jar.mainclass>
+	</properties>
 
 	<build>
 		<plugins>
@@ -91,12 +71,21 @@
 					<archive>
 						<manifestEntries>
 							<Automatic-Module-Name>io.spotnext.sample</Automatic-Module-Name>
+							<Main-Class>${jar.mainclass}</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
 
 			<!-- RELEASE -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${jar.mainclass}</mainClass>
+				</configuration>
+			</plugin>
+
 			<!-- skip the deployment for this project, it's just a sample -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

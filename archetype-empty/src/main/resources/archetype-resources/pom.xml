@@ -153,6 +153,7 @@
 					<archive>
 						<manifestEntries>
 							<Automatic-Module-Name>$package</Automatic-Module-Name>
+							<Main-Class>${jar.mainclass}</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -167,6 +168,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>${jar.mainclass}</mainClass>
+				</configuration>
 			</plugin>
 
 			<!-- skip the deployment for this project, it's just a sample -->
