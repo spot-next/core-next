@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -146,8 +147,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			}
 
 			// looks for commands
-			final Optional<ImpexCommand> command = Stream.of(ImpexCommand.values()).filter(c -> StringUtils.startsWithIgnoreCase(trimmedLine, c.toString()))
-					.findFirst();
+			final String stringCommand = StringUtils.trimToEmpty(trimmedLine.substring(0, trimmedLine.indexOf(" ")));
+			final Optional<ImpexCommand> command = parseImpexCommand(stringCommand);
 
 			if (command.isPresent()) {
 				// start of a new import workunit
@@ -169,6 +170,17 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 
 		return workUnits;
+	}
+
+	private Optional<ImpexCommand> parseImpexCommand(String stringCommand) {
+		ImpexCommand command = null;
+		try {
+			command = ImpexCommand.valueOf(stringCommand.toUpperCase(Locale.getDefault()));
+		} catch (IllegalArgumentException e) {
+			// ignore not found
+		}
+
+		return Optional.ofNullable(command);
 	}
 
 	protected Class<? extends Item> getItemType(final String line) throws UnknownTypeException {
@@ -408,18 +420,18 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		final Map<String, Object> ret = new HashMap<>();
 
 		for (final ColumnDefinition col : headerColumns) {
-			if (isCollectionType(col) || isMapType(col)) {
-				final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
-
-				if (config.getIgnoreErrors()) {
-					Logger.warn(message);
-				} else {
-					throw new ImpexImportException(message);
-				}
-			}
-
 			// only look at the unique properties
-			if (col.getModifiers().containsKey("unique")) {
+			if (BooleanUtils.toBoolean((String) col.getModifiers().get("unique"))) {
+				if (isCollectionType(col) || isMapType(col)) {
+					final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
+
+					if (config.getIgnoreErrors()) {
+						Logger.warn(message);
+					} else {
+						throw new ImpexImportException(message);
+					}
+				}
+
 				ret.put(col.getPropertyName(), rawItem.get(col));
 			}
 		}

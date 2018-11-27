@@ -2,11 +2,10 @@ package io.spotnext.core.infrastructure.strategy.impl;
 
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
 import io.spotnext.core.infrastructure.strategy.ImpexImportStrategy;
@@ -118,7 +117,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 	@Test
 	public void testUpdateByUid() throws ImpexImportException {
 		final String groupId = "employee-group";
-		final String groupShortName = "Employee Group";
+		final String groupShortName = "Employee Group (fixed)";
 
 		// check if group has no shortName
 		LambdaQuery<UserGroup> query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getUid().equals(groupId));

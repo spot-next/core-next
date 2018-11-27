@@ -1,2 +1,8 @@
+INSERT_UPDATE UserGroup ; uid[unique=true]   ; shortName
+                        ; employee-group     ; Employee Group
+
+INSERT_UPDATE UserGroup ; uid[unique=true]   ; shortName
+                        ; employee-group     ; Employee Group (updated)
+
 UPDATE UserGroup ; uid[unique=true]   ; shortName
-                 ; employee-group     ; Employee Group
+                 ; employee-group     ; Employee Group (fixed)
