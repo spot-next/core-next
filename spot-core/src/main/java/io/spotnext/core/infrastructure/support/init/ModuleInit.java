@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Priority;
@@ -193,11 +194,40 @@ public abstract class ModuleInit implements ApplicationContextAware, PostConstru
 		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();
 	}
 
+	/**
+	 * Builds and runs a spring application using the given configuration.
+	 * 
+	 * @param init            the main spring context configuration
+	 * @param commandLineArgs the command line arguments to be processed by spring
+	 */
 	public static void bootstrap(Class<? extends ModuleInit> init, String... commandLineArgs) {
-		bootstrap(init, null, commandLineArgs);
+		bootstrap(init, null, null, commandLineArgs);
 	}
 
-	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit, String... commandLineArgs) {
+	/**
+	 * Builds and runs a spring application using the given configurations.
+	 * 
+	 * @param parentInit      the parent context configuration
+	 * @param childInit       the actual child configuration
+	 * @param commandLineArgs the command line arguments to process by spring
+	 */
+	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit,
+			String... commandLineArgs) {
+
+		bootstrap(parentInit, childInit, null, commandLineArgs);
+	}
+
+	/**
+	 * Builds and runs a spring application using the given configurations.
+	 * 
+	 * @param parentInit      the parent context configuration
+	 * @param childInit       the actual child configuration
+	 * @param postProcessor   the way to manipulate the spring builder before launch, eg. to add enable a web context.
+	 * @param commandLineArgs the command line arguments to process by spring
+	 */
+	public static void bootstrap(Class<? extends ModuleInit> parentInit, Class<? extends ModuleInit> childInit,
+			Function<SpringApplicationBuilder, SpringApplicationBuilder> postProcessor, String... commandLineArgs) {
+
 		initializeWeavingSupport();
 		Registry.setMainClass(childInit != null ? childInit : parentInit);
 
@@ -205,6 +235,10 @@ public abstract class ModuleInit implements ApplicationContextAware, PostConstru
 
 		if (childInit != null) {
 			builder = builder.child(childInit).addCommandLineProperties(true);
+		}
+
+		if (postProcessor != null) {
+			builder = postProcessor.apply(builder);
 		}
 
 		builder.build(prepareCommandLineArguments(commandLineArgs)).run(prepareCommandLineArguments(commandLineArgs));
