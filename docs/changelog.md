@@ -7,6 +7,8 @@
 - Support building with Java 10 (releases from now on will be java 10 only)
 - Fixed "total count" in REST responses
 - Added support for impex value resolver "format" parameter
+- Renamed `Item.pk` to `Item.id`, and `UniqueIdItem.id` to `UniqueIdItem.uid`
+- Fixed Impex command `INSERT_UPDATE` parsed as `INSERT`
 
 ## **1.0.18-BETA** `2018-11-15`
 - Fixed item type bean registration issue

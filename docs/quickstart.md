@@ -118,7 +118,7 @@ It's easy to guess what this does: list all user objects:
     "data": {
         "objects": [
             {
-                "pk": "22207630153109145",
+                "id": "22207630153109145",
                 "createdAt": 1534017556159,
                 "createdBy": "<system>",
                 "lastModifiedAt": 1534017556159,
@@ -126,11 +126,11 @@ It's easy to guess what this does: list all user objects:
                 "version": 0,
                 "deleted": false,
                 "uniquenessHash": -1146271689,
-                "id": "tester92",
+                "uid": "tester92",
                 "shortName": null,
                 "groups": [
                     {
-                        "pk": "2672514096731801604",
+                        "id": "2672514096731801604",
                         "typeCode": "usergroup"
                     }
                 ],
@@ -254,7 +254,7 @@ Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
     "invitedGuests": [
 	    	{
 	    		"typeCode": "user",
-	    		"id": "guest-01@test.at",
+	    		"uid": "guest-01@test.at",
 	    		"shortName": "Guest user #1"
 	    	}
     ]
@@ -267,7 +267,7 @@ Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
     "errors": [
         {
             "code": "error.internal",
-            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"id\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.types.itemtypes.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
+            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"uid\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.types.itemtypes.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
         }
     ],
     "warnings": []
@@ -292,7 +292,7 @@ This results in something like this:
     "data": {
         "results": [
             {
-                "pk": "4003256542000269317",
+                "id": "4003256542000269317",
                 "createdAt": 1534017553477,
                 "createdBy": "<system>",
                 "lastModifiedAt": 1534017553477,
@@ -303,11 +303,11 @@ This results in something like this:
                 "isoCode": "AT",
                 "iso3Code": "AUT",
                 "shortName": {
-                    "pk": "8617539322739705278",
+                    "id": "8617539322739705278",
                     "typeCode": "localizedstring"
                 },
                 "longName": {
-                    "pk": "5123398329302468367",
+                    "id": "5123398329302468367",
                     "typeCode": "localizedstring"
                 },
                 "phoneCountryCode": "43",
@@ -337,13 +337,13 @@ After fixing our POST request the creation of a `Party` item succeeds:
 	    	"postalCode": "1030",
 	    	"country": {
 	    		"typeCode": "country",
-	    		"pk": "4003256542000269317"
+	    		"id": "4003256542000269317"
 	    	}
     },
     "invitedGuests": [
 	    	{
 	    		"typeCode": "User",
-	    		"id": "guest-01@test.at",
+	    		"uid": "guest-01@test.at",
 	    		"shortName": "Guest user #1"
 	    	}
     ]
@@ -358,12 +358,12 @@ The REST interface returns the following JSON:
     "errors": [],
     "warnings": [],
     "data": {
-        "pk": "5653851201092010438"
-    }
+        "id": "5653851201092010438"
+    }"
 } 
 ```
 
-Only the `PK` and errors or warnings (if any) are returned. Go ahead and try to inspect the [newly created Party item](http://localhost:19000/v1/models/party).
+Only the `ID` and errors or warnings (if any) are returned. Go ahead and try to inspect the [newly created Party item](http://localhost:19000/v1/models/party).
 
 So now that we can create new items, let's head over to the next chapter.
 
@@ -526,7 +526,7 @@ Content-Type: application/javascript
 }
 ```
 
-> The `PK` part of the URL has to be adapted! Use the same as from above or run another `GET` request.
+> The `ID` part of the URL has to be adapted! Use the same as from above or run another `GET` request.
 
 The listener will execute and you should see a new email in your input:
 ![fakeSMTTP shows the received email](resources/fakeSMTP_email_in_inbox.png "fakeSMTTP shows the received email")
@@ -589,7 +589,7 @@ Content-Type: application/javascript
     "fixed": true
 }
 ```
-> The `PK` has to be adapted!
+> The `ID` has to be adapted!
 
 This time the REST-interface responds with an error:
 ```json

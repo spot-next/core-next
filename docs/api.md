@@ -173,7 +173,7 @@ Map<String, Object> example = Collections.singletonMap(LocalizationValue.PROPERT
 final LocalizationValue result = modelService.get(LocalizationValue.class, example);
 ```
 
-> When `ModelQuery`s are configured to use pagination (`ModelQuery.pageSize > 0`), the query results will be ordered by `createdAt` and `pk` (both ascending) when there is not custom ordering specified using `Query.addOrderBy(SortOrder)`. This is necessary to ensure consistent ordering.
+> When `ModelQuery`s are configured to use pagination (`ModelQuery.pageSize > 0`), the query results will be ordered by `createdAt` and `id` (both ascending) when there is not custom ordering specified using `Query.addOrderBy(SortOrder)`. This is necessary to ensure consistent ordering.
 
 Another possible way of making type-safe queries is using so called `LambdaQuery`s:
 ```java
@@ -185,13 +185,13 @@ final QueryResult<User> result = queryService.query(query);
 The most flexible way to query data is to write those JPQL queries by yourself using `JpqlQuery`:
 ```java
 final JpqlQuery<User> query = new JpqlQuery<>("SELECT u FROM User u WHERE id = :id", User.class);
-query.addParam("id", "testUser");
+query.addParam("uid", "testUser");
 final QueryResult<UserGroup> result = queryService.query(query);
 ```
 To execute a JPQL query the `QueryService` is used instead of the `ModelService`. The reason is that using JPQL not only domain models can be retrieved, but also arbitrary java types, most likely Data Transfer Object (DTOs):
 ```java
 final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT id as id, shortName as shortName FROM User u WHERE id = :id", UserData.class);
-query.addParam("id", "testUser");
+query.addParam("uid", "testUser");
 final QueryResult<UserData> result = queryService.query(query);
 ```
 > The properties `UserData.id` and `UserData.shortName` are automatically populated - either by using a suitable constructor or by directly accessing the setters.
@@ -200,7 +200,7 @@ final QueryResult<UserData> result = queryService.query(query);
 Of course, it's also possible to query for primitive types:
 ```java
 final JpqlQuery<String> query = new JpqlQuery<>("SELECT id FROM User u WHERE id = :id", String.class);
-query.addParam("id", "testUser");
+query.addParam("uid", "testUser");
 final QueryResult<String> result = queryService.query(query);
 ```
 
@@ -224,14 +224,14 @@ config.setFormat(DataFormat.JSON);
 User user = serializationService.deserialize(config, jsonString, User.class);
 ```
 
-Relations can be setup by just using a JSON object that contains both a `pk` and a `typeCode` property - **nothing else**:
+Relations can be setup by just using a JSON object that contains both a `id` and a `typeCode` property - **nothing else**:
 ```json
 {
-	"id":"testerUser",
+	"uid":"testerUser",
 	"groups": [
 		{
 			"typeCode": "usergroup",
-			"pk": "4513155367448757049"
+			"id": "4513155367448757049"
 		}	
 	]
 }
@@ -248,20 +248,20 @@ User user = serializationService.deserialize(config, jsonString, userToUpdate);
 
 **Deserialized** `Item`s are automatically attached to the persistence context and can be used as if they were loaded using `ModelService` or `QueryService`.
 
-When **serializing** `Item`s, their sub-items (relation properties) are only partially serialized - only the `pk` and a `typeCode` JSON properties are included:
+When **serializing** `Item`s, their sub-items (relation properties) are only partially serialized - only the `id` and a `typeCode` JSON properties are included:
 
 ```java
 {
-	"pk": "4003256542000269317",
+	"id": "4003256542000269317",
 	
 	...
 
 	"shortName": {
-		"pk": "8617539322739705278",
+		"id": "8617539322739705278",
 		"typeCode": "localizedstring"
 	},
 	"longName": {
-		"pk": "5123398329302468367",
+		"id": "5123398329302468367",
 		"typeCode": "localizedstring"
 	},
 	"phoneCountryCode": "43",
