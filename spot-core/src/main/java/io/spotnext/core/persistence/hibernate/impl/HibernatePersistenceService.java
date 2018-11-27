@@ -430,12 +430,12 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> T load(final Class<T> type, final long pk, boolean returnProxy) throws ModelNotFoundException {
+	public <T extends Item> T load(final Class<T> type, final long id, boolean returnProxy) throws ModelNotFoundException {
 		bindSession();
 
 		try {
 			return transactionService.execute(() -> {
-				T item = returnProxy ? getSession().load(type, pk) : getSession().get(type, pk);
+				T item = returnProxy ? getSession().load(type, id) : getSession().get(type, id);
 				return item;
 			});
 		} catch (final TransactionException e) {
@@ -462,7 +462,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					} catch (DataIntegrityViolationException | HibernateException | TransactionRequiredException | IllegalArgumentException
 							| EntityNotFoundException e) {
 						throw new ModelNotFoundException(
-								String.format("Could not refresh item with pk=%s.", item.getPk()), e);
+								String.format("Could not refresh item with id=%s.", item.getId()), e);
 					}
 				}
 
@@ -488,11 +488,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				return true;
 			}
 
-			getSession().load(item, item.getPk());
+			getSession().load(item, item.getId());
 		} catch (HibernateException | TransactionRequiredException | IllegalArgumentException
 				| EntityNotFoundException e) {
 			throw new ModelNotFoundException(
-					String.format("Could not attach item with pk=%s to the current session.", item.getPk()), e);
+					String.format("Could not attach item with id=%s to the current session.", item.getId()), e);
 		}
 
 		return false;
@@ -515,7 +515,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 			// check if we have to perform a separate query for pagination
 			// hibernate can't handle pagination together with FETCH JOINs!
-			boolean isPkQueryForPaginationNeeded = sourceQuery.getPageSize() > 0
+			boolean isIdQueryForPaginationNeeded = sourceQuery.getPageSize() > 0
 					&& (sourceQuery.getEagerFetchRelationProperties().size() > 0 || sourceQuery.isEagerFetchRelations());
 			boolean isSearchParametersDefined = MapUtils.isNotEmpty(sourceQuery.getSearchParameters());
 
@@ -534,33 +534,33 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				}
 			}
 
-			// always order by last created date and THEN PK, so we have a consistent ordering, even if new items are created
-			// PKs are random, so they don't increment!
+			// always order by last created date and THEN ID, so we have a consistent ordering, even if new items are created
+			// IDs are random, so they don't increment!
 			boolean orderByNeeded = false;
 
-			// make additional query to fetch the pks, applied the "maxResults" correctly
-			if (isPkQueryForPaginationNeeded) {
-				// we always have to order in case of a PK subquery for both queries!
+			// make additional query to fetch the ids, applied the "maxResults" correctly
+			if (isIdQueryForPaginationNeeded) {
+				// we always have to order in case of a ID subquery for both queries!
 				orderByNeeded = true;
 
-				CriteriaQuery<Long> pkCriteriaQuery = builder.createQuery(Long.class);
-				final Root<T> pkRoot = pkCriteriaQuery.from(sourceQuery.getResultClass());
-				pkCriteriaQuery = pkCriteriaQuery.select(pkRoot.get(Item.PROPERTY_PK));
+				CriteriaQuery<Long> idCriteriaQuery = builder.createQuery(Long.class);
+				final Root<T> idRoot = idCriteriaQuery.from(sourceQuery.getResultClass());
+				idCriteriaQuery = idCriteriaQuery.select(idRoot.get(Item.PROPERTY_ID));
 
-				// apply original where clause here, it will be indirectly applied to the original query using the fetched PKs
+				// apply original where clause here, it will be indirectly applied to the original query using the fetched IDs
 				if (whereClause != null) {
-					pkCriteriaQuery = pkCriteriaQuery.where(whereClause);
+					idCriteriaQuery = idCriteriaQuery.where(whereClause);
 				}
 
 				// always apply the same order for all queries
-				final TypedQuery<Long> pkQuery = session.createQuery(pkCriteriaQuery.orderBy(applyOrderBy(sourceQuery, builder, pkRoot)));
-				setPagination(pkQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
+				final TypedQuery<Long> idQuery = session.createQuery(idCriteriaQuery.orderBy(applyOrderBy(sourceQuery, builder, idRoot)));
+				setPagination(idQuery, sourceQuery.getPage(), sourceQuery.getPageSize());
 
-				final List<Long> pksToSelect = pkQuery.getResultList();
+				final List<Long> idsToSelect = idQuery.getResultList();
 
-				// only add where clause when there are actual PKs to select
-				if (pksToSelect.size() > 0) {
-					itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_PK).in(pksToSelect));
+				// only add where clause when there are actual IDs to select
+				if (idsToSelect.size() > 0) {
+					itemSelect = itemSelect.where(queryResultType.get(Item.PROPERTY_ID).in(idsToSelect));
 				}
 			} else {
 				if (whereClause != null) {
@@ -574,15 +574,15 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			}
 
 			if (orderByNeeded) {
-				// always apply the order here again, even if using pk sub-query!
+				// always apply the order here again, even if using id sub-query!
 				itemSelect = itemSelect.orderBy(applyOrderBy(sourceQuery, builder, queryResultType));
 			}
 
 			final TypedQuery<T> query = session.createQuery(itemSelect);
 
 			// only set these values if no fetch joins are used!
-			// if we have fetch joins we just select by the pks that are fetched before using firstResult and maxResults
-			if (!isPkQueryForPaginationNeeded) {
+			// if we have fetch joins we just select by the ids that are fetched before using firstResult and maxResults
+			if (!isIdQueryForPaginationNeeded) {
 				setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 			}
 
@@ -597,7 +597,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	/**
 	 * Generates the ORDER BY clause either for the {@link ModelQuery#getOrderBy()} or if empty for the default properties ({@link Item#PROPERTY_CREATED_AT} and
-	 * {@link Item#PROPERTY_PK}).
+	 * {@link Item#PROPERTY_ID}).
 	 * 
 	 * @param sourceQuery
 	 * @param builder
@@ -617,7 +617,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			}
 		} else {
 			orderBys.add(builder.asc(root.get(Item.PROPERTY_CREATED_AT)));
-			orderBys.add(builder.asc(root.get(Item.PROPERTY_PK)));
+			orderBys.add(builder.asc(root.get(Item.PROPERTY_ID)));
 		}
 
 		return orderBys.toArray(new Order[orderBys.size()]);
@@ -638,16 +638,16 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	/** {@inheritDoc} */
 	@Override
-	public <T extends Item> void remove(final Class<T> type, final long pk) {
+	public <T extends Item> void remove(final Class<T> type, final long id) {
 		bindSession();
 
 		transactionService.execute(() -> {
 			// TODO: improve
-			// final String query = String.format("DELETE FROM %s WHERE pk IN
-			// (?pk)", type.getSimpleName());
+			// final String query = String.format("DELETE FROM %s WHERE id IN
+			// (?id)", type.getSimpleName());
 
-			// em.createQuery(query, type).setParameter("pk", pk);
-			final T item = getSession().find(type, pk);
+			// em.createQuery(query, type).setParameter("id", id);
+			final T item = getSession().find(type, id);
 			getSession().remove(item);
 
 			return null;

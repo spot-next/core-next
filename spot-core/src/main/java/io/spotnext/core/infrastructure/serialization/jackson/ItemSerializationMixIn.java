@@ -20,17 +20,17 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
-@JsonPropertyOrder({ "typeCode", "pk", "version", "createdAt", "createdBy", "lastModifiedAt", "lastModifiedBy" })
+@JsonPropertyOrder({ "typeCode", "id", "version", "createdAt", "createdBy", "lastModifiedAt", "lastModifiedBy" })
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "pk")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class ItemSerializationMixIn {
 
 	@JsonSerialize
 	public abstract String getTypeCode();
 
-	// render PKs as string in JSON, because otherwise it would cause an overflow, javascript can't interpret it correctly
+	// render IDs as string in JSON, because otherwise it would cause an overflow, javascript can't interpret it correctly
 	// see also ItemProxySerializer and ItemCollectionProxySerializer
 	@JsonSerialize(using = ToStringSerializer.class)
-	public abstract long getPk();
+	public abstract long getId();
 
 }

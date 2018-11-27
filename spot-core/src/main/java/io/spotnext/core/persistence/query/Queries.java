@@ -6,6 +6,6 @@ public class Queries {
 	}
 
 	public static <T> JpqlQuery<Long> countAll(Class<T> resultType) {
-		return new JpqlQuery<Long>("SELECT count(x.pk) FROM " + resultType.getSimpleName() + " x", Long.class);
+		return new JpqlQuery<Long>("SELECT count(x.id) FROM " + resultType.getSimpleName() + " x", Long.class);
 	}
 }

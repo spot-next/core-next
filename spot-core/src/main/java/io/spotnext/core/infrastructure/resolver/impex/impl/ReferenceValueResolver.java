@@ -93,7 +93,7 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 				final String fieldTypeName = fieldType.getSimpleName();
 
 				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeName + " ON "
-						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".pk ");
+						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".id ");
 
 				fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
 

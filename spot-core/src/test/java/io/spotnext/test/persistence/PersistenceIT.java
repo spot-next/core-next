@@ -54,7 +54,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		loaded.setShortName("loaded");
 
 		final User duplicate = new User();
-		ClassUtil.setField(duplicate, "pk", loaded.getPk());
+		ClassUtil.setField(duplicate, "id", loaded.getId());
 		modelService.refresh(duplicate);
 		duplicate.setShortName("loaded");
 
@@ -119,7 +119,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(currency);
 
-		final Currency loadedCurrency = modelService.get(Currency.class, currency.getPk());
+		final Currency loadedCurrency = modelService.get(Currency.class, currency.getId());
 
 		// these locales are not the same as the locales with country codes!
 		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
@@ -138,10 +138,10 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -154,20 +154,20 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		user.getAddresses().add(address);
 
 		Logger.debug("Addresses before save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		modelService.save(user);
 
 		Logger.debug("Addresses after save: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
 		Logger.debug("Addresses after load: "
-				+ user.getAddresses().stream().map(a -> "PK = " + a.getPk() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
+				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
 		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -181,9 +181,9 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(address);
 
-		final User loadedUser = modelService.get(User.class, user.getPk());
+		final User loadedUser = modelService.get(User.class, user.getId());
 
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getPk(), address.getPk());
+		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -205,11 +205,11 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.saveAll(user1, user2);
 
-		final User loadedUser1 = modelService.get(User.class, user1.getPk());
-		final User loadedUser2 = modelService.get(User.class, user2.getPk());
+		final User loadedUser1 = modelService.get(User.class, user1.getId());
+		final User loadedUser2 = modelService.get(User.class, user2.getId());
 
-		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getPk());
-		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getPk());
+		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getId());
+		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getId());
 
 		Assert.assertEquals(2, loadedUser1.getGroups().size());
 		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup1));

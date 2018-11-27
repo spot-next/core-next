@@ -86,9 +86,9 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		sleep(1);
 
-		get("/user/" + user.getPk()).then()//
+		get("/user/" + user.getId()).then()//
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload.pk", Matchers.equalTo(user.getPk() + ""));
+				.body("payload.id", Matchers.equalTo(user.getId() + ""));
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		for (PrincipalGroup g : tester1.getGroups()) {
 			JSONObject gr = new JSONObject();
-			gr.put("pk", g.getPk());
+			gr.put("id", g.getId());
 			gr.put("typeCode", g.getTypeCode());
 			groups.put(gr);
 		}
@@ -132,14 +132,14 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 				.put("uid", "user@integrationtest") //
 				.put("groups", groups);
 
-		final Long pk = Long.valueOf(given().body(newUser.toString())
+		final Long id = Long.valueOf(given().body(newUser.toString())
 				.post("/user").then() //
 				.statusCode(HttpStatus.CREATED.value()) //
-				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk"));
+				.body("payload.id", Matchers.notNullValue()).extract().jsonPath().get("payload.id"));
 
-		assertNotNull(pk);
+		assertNotNull(id);
 
-		final User user = modelService.get(User.class, pk);
+		final User user = modelService.get(User.class, id);
 
 		assertEquals(tester1.getGroups().size(), user.getGroups().size());
 		assertEquals(tester1.getGroups().iterator().next().getUid(), user.getGroups().iterator().next().getUid());
@@ -148,13 +148,13 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void createOrUpdateModel_WithPK() throws JSONException {
+	public void createOrUpdateModel_WithID() throws JSONException {
 		// updates existing user
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester51"));
 		final UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_UID, "employee-group"));
 
 		final JSONObject group = new JSONObject();
-		group.put("pk", usergroup.getPk() + "");
+		group.put("id", usergroup.getId() + "");
 		group.put("typeCode", usergroup.getTypeCode());
 
 		final JSONArray groups = new JSONArray();
@@ -162,7 +162,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		final JSONObject shortNameUpdate = new JSONObject() //
 				.put("shortName", "integrationtester")//
-				.put("pk", user.getPk() + "")
+				.put("id", user.getId() + "")
 				.put("groups", groups);
 
 		given().body(shortNameUpdate.toString())
@@ -172,20 +172,20 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		modelService.refresh(user);
 
 		assertEquals("integrationtester", user.getShortName());
-		assertEquals(usergroup.getPk(), user.getGroups().iterator().next().getPk());
+		assertEquals(usergroup.getId(), user.getGroups().iterator().next().getId());
 		assertEquals("MD5:16d7a4fca7442dda3ad93c9a726597e4", user.getPassword());
 	}
 
 	@Test
-	public void createOrUpdateModel_WithoutPK() throws JSONException {
+	public void createOrUpdateModel_WithoutID() throws JSONException {
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
 
-		final Long pk = Long.valueOf(given().body(shortNameUpdate.toString())
+		final Long id = Long.valueOf(given().body(shortNameUpdate.toString())
 				.put("/user").then() //
 				.statusCode(HttpStatus.CREATED.value())
-				.body("payload.pk", Matchers.notNullValue()).extract().jsonPath().get("payload.pk"));
+				.body("payload.id", Matchers.notNullValue()).extract().jsonPath().get("payload.id"));
 
-		final User user = modelService.get(User.class, pk);
+		final User user = modelService.get(User.class, id);
 
 		assertEquals("integrationtester", user.getShortName());
 		assertEquals(0, user.getGroups().size());
@@ -198,7 +198,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
 
 		given().body(shortNameUpdate.toString())
-				.patch("/user/" + user.getPk()).then() //
+				.patch("/user/" + user.getId()).then() //
 				.statusCode(HttpStatus.ACCEPTED.value());
 
 		modelService.refresh(user);

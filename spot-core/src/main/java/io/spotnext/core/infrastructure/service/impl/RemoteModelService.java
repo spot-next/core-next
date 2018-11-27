@@ -40,13 +40,13 @@ public class RemoteModelService implements ModelService {
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, long pk) throws ModelNotFoundException {
+	public <T extends Item> T get(Class<T> type, long id) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <T extends Item> T get(Class<T> type, long pk, boolean returnProxy) throws ModelNotFoundException {
+	public <T extends Item> T get(Class<T> type, long id, boolean returnProxy) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -88,7 +88,7 @@ public class RemoteModelService implements ModelService {
 	}
 
 	@Override
-	public <T extends Item> void remove(Class<T> type, long pk) throws ModelNotFoundException {
+	public <T extends Item> void remove(Class<T> type, long id) throws ModelNotFoundException {
 		// TODO Auto-generated method stub
 
 	}

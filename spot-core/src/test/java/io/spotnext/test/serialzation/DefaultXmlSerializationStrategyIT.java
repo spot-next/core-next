@@ -35,7 +35,7 @@ public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 
 		User deserializedUser = xmlSerializationStrategy.deserialize(xml, User.class);
 
-		Assert.assertEquals(user.getPk(), deserializedUser.getPk());
+		Assert.assertEquals(user.getId(), deserializedUser.getId());
 		Assert.assertEquals(user.getUid(), deserializedUser.getUid());
 		Assert.assertEquals(user.getShortName(), deserializedUser.getShortName());
 		Assert.assertEquals(user.getPassword(), deserializedUser.getPassword());

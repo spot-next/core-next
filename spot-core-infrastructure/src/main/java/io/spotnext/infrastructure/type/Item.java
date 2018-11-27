@@ -51,7 +51,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String TYPECODE = "item";
-	public static final String PROPERTY_PK = "pk";
+	public static final String PROPERTY_ID = "id";
 	public static final String PROPERTY_LAST_MODIFIED_AT = "lastModifiedAt";
 	public static final String PROPERTY_CREATED_AT = "createdAt";
 
@@ -60,8 +60,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	// JPA
 	@Id
-	@Column(name = "pk")
-	final protected Long pk = IdGenerator.createLongId();
+	@Column(name = "id")
+	final protected Long id = IdGenerator.createLongId();
 
 //	@Index(name = "idx_createdAt")
 	@CreationTimestamp
@@ -107,8 +107,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		return version;
 	}
 
-	public Long getPk() {
-		return pk;
+	public Long getId() {
+		return id;
 	}
 
 	@PrePersist
@@ -144,8 +144,8 @@ public abstract class Item implements Serializable, Comparable<Item> {
 			// create a hashcode
 			this.uniquenessHash = Objects.hash(uniquePropertyValues.toArray());
 		} else {
-			// use the PK as fallback, if no unique properties exist or all are null
-			this.uniquenessHash = Objects.hash(this.pk);
+			// use the ID as fallback, if no unique properties exist or all are null
+			this.uniquenessHash = Objects.hash(this.id);
 		}
 	}
 
@@ -180,11 +180,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * @return true if the item has a PK. It is assumed that it has been saved before. If you set a PK manually and save the item, an existing item with the
-	 *         same PK will be overwritten.
+	 * @return true if the item has a ID. It is assumed that it has been saved before. If you set a ID manually and save the item, an existing item with the
+	 *         same ID will be overwritten.
 	 */
 	public boolean isPersisted() {
-		return pk != null;
+		return id != null;
 	}
 
 	/**
@@ -266,7 +266,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	}
 
 	/**
-	 * If the type and the pk of the given object is the same as the current object, both are equal.
+	 * If the type and the id of the given object is the same as the current object, both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */
@@ -280,17 +280,17 @@ public abstract class Item implements Serializable, Comparable<Item> {
 			return false;
 		}
 
-		if (pk == null) {
+		if (id == null) {
 			return false;
 		}
 
-		return this.pk.equals(((Item) obj).pk);
+		return this.id.equals(((Item) obj).id);
 	}
 
 	@Override
 	public int hashCode() {
-		if (pk != null) {
-			return pk.hashCode();
+		if (id != null) {
+			return id.hashCode();
 		} else {
 			return super.hashCode();
 		}
@@ -303,7 +303,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 		}
 
 		if (obj != null) {
-			return Objects.compare(this.pk, obj.pk, new NullComparator<Long>());
+			return Objects.compare(this.id, obj.id, new NullComparator<Long>());
 		} else {
 			return 1;
 		}

@@ -96,7 +96,7 @@ public class JacksonXmlSerializationTest {
 
 	void assertUser(User expected, User deserializedUser) {
 		Assert.assertEquals(expected.getGroups().size(), deserializedUser.getGroups().size());
-		Assert.assertEquals(expected.getPk(), deserializedUser.getPk());
+		Assert.assertEquals(expected.getId(), deserializedUser.getId());
 		Assert.assertEquals(expected.getUid(), deserializedUser.getUid());
 		Assert.assertEquals(expected.getEmailAddress(), deserializedUser.getEmailAddress());
 		Assert.assertEquals(expected.getShortName(), deserializedUser.getShortName());

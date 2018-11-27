@@ -70,7 +70,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_CASCADE = "cascade";
 	protected static final String MV_NODE_TYPE = "nodeType";
 	protected static final String MV_REFERENCED_COLUMN_NAME = "referencedColumnName";
-	protected static final String MV_PK = "pk";
+	protected static final String MV_ID = "id";
 	protected static final String MV_INVERSE_JOIN_COLUMNS = "inverseJoinColumns";
 	protected static final String MV_JOIN_COLUMNS = "joinColumns";
 	protected static final String MV_NAME = "name";
@@ -88,8 +88,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String MV_COLUMN_NAMES = "columnNames";
 	protected static final String MV_UNIQUE_CONSTRAINTS = "uniqueConstraints";
 	protected static final String MV_COLUMN_TYPE = "columnType";
-	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
-	protected static final String RELATION_TARGET_COLUMN = "target_pk";
+	protected static final String RELATION_SOURCE_COLUMN = "source_id";
+	protected static final String RELATION_TARGET_COLUMN = "target_id";
 
 	@SuppressFBWarnings({ "REC_CATCH_EXCEPTION" })
 	@Override
@@ -479,7 +479,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		// final StringMemberValue val = new
 		// StringMemberValue(field.getFieldInfo2().getConstPool());
-		// val.setValue("pk ASC");
+		// val.setValue("id ASC");
 		// orderColumnAnn.addMemberValue("value", val);
 
 		// final Annotation listIndexAnn = createAnnotation(entityClass,
@@ -702,7 +702,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		// column name
 		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
-		columnName.setValue(field.getName() + "_pk");
+		columnName.setValue(field.getName() + "_id");
 
 		ann.addMemberValue(MV_NAME, columnName);
 
@@ -745,7 +745,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final Annotation joinColumnAnn = createAnnotation(field.getFieldInfo2().getConstPool(), JoinColumn.class);
 
 		final StringMemberValue column = new StringMemberValue(field.getFieldInfo2().getConstPool());
-		column.setValue(MV_PK);
+		column.setValue(MV_ID);
 		joinColumnAnn.addMemberValue(MV_REFERENCED_COLUMN_NAME, column);
 
 		final StringMemberValue name = new StringMemberValue(field.getFieldInfo2().getConstPool());

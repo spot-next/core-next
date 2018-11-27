@@ -42,7 +42,7 @@ public class PersistenceCachingIT extends AbstractIntegrationTest {
 		long fetchCount = persistenceService.getStatistics().getEntityFetchCount();
 		persistenceService.getSession().evict(austria);
 		
-		modelService.get(Country.class, austria.getPk());
+		modelService.get(Country.class, austria.getId());
 		
 		long cacheHit = persistenceService.getStatistics().getSecondLevelCacheHitCount();
 		

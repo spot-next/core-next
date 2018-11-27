@@ -382,9 +382,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final String whereClause = whereClauses.stream().collect(Collectors.joining(" AND "));
 
-		params.put("pk", item.getPk());
+		params.put("id", item.getId());
 
-		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("UPDATE %s AS %s SET %s WHERE %s.pk = :pk", typeName, typeName, whereClause, typeName),
+		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("UPDATE %s AS %s SET %s WHERE %s.id = :id", typeName, typeName, whereClause, typeName),
 				params, Void.class);
 		query.setClearCaches(true);
 

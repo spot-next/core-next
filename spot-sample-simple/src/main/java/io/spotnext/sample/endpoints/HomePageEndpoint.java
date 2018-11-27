@@ -91,10 +91,10 @@ public class HomePageEndpoint {
 	@SuppressFBWarnings("DM_BOXED_PRIMITIVE_FOR_PARSING")
 	@Handler(responseTransformer = ThymeleafRendererResponseTransformer.class, pathMapping = "/cancel", mimeType = MimeType.HTML, method = HttpMethod.post, authenticationFilter = IsAdminFilter.class)
 	public ModelAndView postCancelParty(final Request request, final Response response) {
-		String partyPk = request.queryParams("partyPk");
+		String partyId = request.queryParams("partyId");
 
-		if (partyPk != null) {
-			modelService.remove(Party.class, Long.valueOf(partyPk));
+		if (partyId != null) {
+			modelService.remove(Party.class, Long.valueOf(partyId));
 		}
 
 		response.redirect("/manage");

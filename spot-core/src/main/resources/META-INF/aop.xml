@@ -6,6 +6,9 @@
         <!-- only weave classes in our application-specific packages -->
         <include  within="*"/>
         <exclude within="org.springframework.data.jpa.domain.support.AuditingEntityListener"/>
+        <exclude within="org.springframework.cache.aspectj.AbstractCacheAspect"/>
+        <exclude within="org.springframework.cache.aspectj.AnnotationCacheAspect"/>
+        <exclude within="org.springframework.beans.factory.aspectj.ConfigurableObject"/>
     </weaver>
 
     <aspects>
