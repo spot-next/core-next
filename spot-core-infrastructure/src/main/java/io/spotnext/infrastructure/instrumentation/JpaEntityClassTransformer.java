@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.infrastructure.annotation.Relation;
@@ -90,7 +91,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String RELATION_SOURCE_COLUMN = "source_pk";
 	protected static final String RELATION_TARGET_COLUMN = "target_pk";
 
-	// //@SuppressFBWarnings({"RV_RETURN_VALUE_IGNORED_BAD_PRACTICE", "REC_CATCH_EXCEPTION"})
+	@SuppressFBWarnings({ "REC_CATCH_EXCEPTION" })
 	@Override
 	protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
