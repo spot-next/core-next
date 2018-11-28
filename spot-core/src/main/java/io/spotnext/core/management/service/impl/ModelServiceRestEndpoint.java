@@ -83,8 +83,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -103,7 +103,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.ok();
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -111,8 +111,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -142,7 +142,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			}
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -150,8 +150,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -164,7 +164,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 		try {
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
-			final JpqlQuery<T> query = Queries.selectAll(type);
+			final JpqlQuery<T> query = Queries.selectAll(type, getOrderByClause(request));
 			query.setPage(page);
 			query.setPageSize(pageSize);
 
@@ -178,7 +178,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -186,8 +186,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the ID.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -201,7 +201,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		try {
 			if (id > 0) {
 				final Class<T> type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-				ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("id", id));
+				final ModelQuery<T> query = new ModelQuery<>(type, Collections.singletonMap("id", id));
 				query.setEagerFetchRelations(true);
 				final T model = modelService.get(query);
 
@@ -221,7 +221,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.ongetall", "Item not found.");
 		} catch (final UnknownTypeException e) {
 			return RESPONSE_UNKNOWN_TYPE;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -230,8 +230,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -272,7 +272,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			} catch (final QueryException e) {
 				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
 						"Cannot execute given query: " + e.getMessage());
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				return handleGenericException(e);
 			}
 		} else {
@@ -287,8 +287,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -311,7 +311,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("query.unknowntype",
 					"Could not deserialize request body into valid example item.");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -319,8 +319,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -353,7 +353,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			return DataResponse.withStatus(HttpStatus.CONFLICT).withError("error.model.validation",
 					String.join("\n", messages));
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
@@ -361,8 +361,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The ID or a search criteria has to be set.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -386,7 +386,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 				return DataResponse.withStatus(HttpStatus.ACCEPTED);
 			} catch (final ModelNotFoundException e) {
 				return DataResponse.notFound().withError("error.ondelete", "Item with given ID not found.");
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				return handleGenericException(e);
 			}
 		} else {
@@ -399,8 +399,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The ID must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -426,8 +426,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given ID doesn't not exist, an exception is thrown.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -480,29 +480,29 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final DeserializationException e) {
 			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("error.onpartialupdate",
 					"Could not deserialize body json content.");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
 	}
 
-	private HttpResponse handleGenericException(Exception e) {
+	private HttpResponse handleGenericException(final Exception e) {
 		final Throwable cause = (e instanceof TransactionException && e.getCause() != null) ? e.getCause() : e;
 
 		return ExceptionResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.general", cause.getMessage());
 	}
 
-	private String getOrderByClause(Request request) {
-		return request.queryParams("sort");
+	private String getOrderByClause(final Request request) {
+		return StringUtils.defaultString(request.queryParams("sort"), "".intern());
 	}
 
-	private void setOrderBy(Request request, ModelQuery<?> query) {
-		String orderBy = getOrderByClause(request);
+	private void setOrderBy(final Request request, final ModelQuery<?> query) {
+		final String orderBy = getOrderByClause(request);
 
 		if (StringUtils.isNotBlank(orderBy)) {
-			String[] parts = StringUtils.split(orderBy, ",");
+			final String[] parts = StringUtils.split(orderBy, ",");
 
 			if (parts.length > 0) {
-				for (String part : parts) {
+				for (final String part : parts) {
 					query.addOrderBy(SortOrder.of(part));
 				}
 			}
@@ -542,7 +542,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		return serializationService.deserialize(SERIALIZATION_CONFIG, content, JsonNode.class);
 	}
 
-	private void setCachingHeaderFields(int version, Date lastModifiedDate, Response response) {
+	private void setCachingHeaderFields(final int version, final Date lastModifiedDate, final Response response) {
 		// uses the entity version as ETag (for caching)
 		response.header(HttpHeader.ETag.toString(), version + "");
 		response.header(HttpHeader.LastModified.toString(), DATE_FORMAT.format(lastModifiedDate));
