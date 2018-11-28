@@ -163,4 +163,24 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 		Assert.assertTrue(result.getTotalCount() == 0);
 	}
+
+	@Test
+	public void testInsertWithVirtualReference() {
+		// import test media
+		ImportConfiguration conf = new ImportConfiguration();
+		conf.setScriptIdentifier("/data/test/virtual_reference.impex");
+		impexImportStrategy.importImpex(conf, getClass().getResourceAsStream(conf.getScriptIdentifier()));
+
+		// check if the created user has the correct group, which was referencing it using a virtual reference
+		LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("refUser"));
+		QueryResult<User> result = queryService.query(query);
+
+		Assert.assertTrue(result.getTotalCount() == 1);
+
+		User refUser = result.getResultList().get(0);
+		UserGroup refGroup = (UserGroup) refUser.getGroups().iterator().next();
+
+		Assert.assertEquals("refGroup", refGroup.getUid());
+
+	}
 }
