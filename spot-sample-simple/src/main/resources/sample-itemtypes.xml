@@ -67,8 +67,8 @@
 			<property name="location" type="Address">
 				<description>The location the party will take place</description>
 			</property>
-			<property name="date" type="LocalDate">
-				<description>The date the party will take place</description>
+			<property name="date" type="LocalDateTime">
+				<description>The date and time the party will take place</description>
 			</property>
 			<property name="fixed" type="boolean">
 				<description>Defines that the party has been fixed and should not be changed anymore.</description>

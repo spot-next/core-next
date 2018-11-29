@@ -47,7 +47,7 @@ or
 
 ```bash
 java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true --add-opens java.base/java.lang=ALL-UNNAMED
-``
+```
 
 > Use the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` to bypass Java "Illegal reflective access" warnings, when starting spot with `java -jar` or from an IDE.
 

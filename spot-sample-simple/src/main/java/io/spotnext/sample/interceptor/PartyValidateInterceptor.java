@@ -1,6 +1,6 @@
 package io.spotnext.sample.interceptor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class PartyValidateInterceptor extends AbstractItemInterceptor<Party> imp
 	@Override
 	public void onValidate(final Party item) throws ModelValidationException {
 		if (item.isFixed()
-				&& (item.getLocation() == null || (item.getDate() == null || item.getDate().isBefore(LocalDate.now()))
+				&& (item.getLocation() == null || (item.getDate() == null || item.getDate().isBefore(LocalDateTime.now()))
 						|| item.getInvitedGuests().size() == 0)) {
 			throw new ModelValidationException(
 					"Party cannot be fixed as not all necessary properties (date, location, invitedGuests) are defined yet.");

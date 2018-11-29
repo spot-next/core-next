@@ -1,6 +1,7 @@
 package io.spotnext.sample.integrationtests;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -37,7 +38,7 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final Party party = modelService.create(Party.class);
 		party.setTitle(PARTY_TITLE);
-		party.setDate(LocalDate.of(2019, 1, 1));
+		party.setDate(LocalDateTime.of(2019, 1, 1, 18, 0));
 
 		// collections are never null!
 		party.getInvitedGuests().add(guest);
