@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.interceptor.ItemValidateInterceptor;
 import io.spotnext.core.infrastructure.interceptor.impl.AbstractItemInterceptor;
-import io.spotnext.sample.types.itemtypes.Party;
+import io.spotnext.sample.types.party.Party;
 
 @Service
 public class PartyValidateInterceptor extends AbstractItemInterceptor<Party> implements ItemValidateInterceptor<Party> {

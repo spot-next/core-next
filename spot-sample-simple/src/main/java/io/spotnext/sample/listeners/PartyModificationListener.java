@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.event.ItemModificationEvent;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.sample.service.EmailService;
-import io.spotnext.sample.types.itemtypes.Party;
+import io.spotnext.sample.types.party.Party;
 
 @Service
 public class PartyModificationListener {

@@ -19,7 +19,7 @@ import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.IntegrationTest;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.sample.SampleInit;
-import io.spotnext.sample.types.itemtypes.Party;
+import io.spotnext.sample.types.party.Party;
 
 @IntegrationTest(initClass = SampleInit.class)
 @SpringBootTest(classes = { SampleInit.class, CoreInit.class })

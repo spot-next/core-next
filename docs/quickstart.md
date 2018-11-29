@@ -942,8 +942,8 @@ Now that we have an endpoint we just need a template for our page (/resources/te
 <title th:text="${pageTitle}">Party sample page</title>
 <link rel="canonical" th:href="${canonicalUrl}">
 
-<link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
-<link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+<link rel="stylesheet" href="////necolas.github.io/normalize.css/latest/normalize.css">
+<link rel="stylesheet" href="//raw.githubusercontent.com/milligram/milligram/master/dist/milligram.min.css">
 
 <style>
 	body {

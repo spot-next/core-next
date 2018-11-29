@@ -76,9 +76,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/** Constant <code>COLLECTION_VALUE_SEPARATOR=","</code> */
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,._\-\=]{0,}\]{0,1})
-	protected static final Pattern PATTERN_COLUMN_DEFINITION = Pattern
-			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9&,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,.\\s_\\-\\=]{0,}\\]{0,1})");
+	protected static final Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
+			"^[\\s]{0,}([a-zA-Z0-9]{2,})\\s{0,}(\\({0,1}\\s{0,}[a-zA-Z0-9&,\\(\\)\\s]{0,}\\s{0,}\\){0,1})\\s{0,}(\\s{0,}\\[{0,1}[a-zA-Z0-9,.:;+\\*'#&%$§!\\/\\s_\\-\\=]{0,}\\s{0,}\\]{0,1})");
 
 	protected static final String ITEM_REFERENCE_MARKER = "&ref";
 	protected static final Pattern PATTERN_ITEM_REFERENCE_COLUMN_DEFINITION = Pattern.compile("\\s{0,}\\([\\s]{0,}" + ITEM_REFERENCE_MARKER + "[\\s]{0,}\\)");
@@ -648,7 +647,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				continue;
 			}
 
-			final String trimmedCol = col.replace(" ", "");
+			final String trimmedCol = col.trim();
 
 			if (StringUtils.isBlank(trimmedCol)) {
 				continue;
@@ -659,9 +658,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			final Matcher columnMatcher = PATTERN_COLUMN_DEFINITION.matcher(trimmedCol);
 
 			if (columnMatcher.matches()) {
-				final String propertyName = columnMatcher.group(1);
-				final String valueResolutionDescriptor = columnMatcher.group(2);
-				final String modifiers = columnMatcher.group(3);
+				final String propertyName = columnMatcher.group(1).trim();
+				final String valueResolutionDescriptor = columnMatcher.group(2).trim();
+				final String modifiers = columnMatcher.group(3).trim();
 
 				colDef.setPropertyName(propertyName);
 				colDef.setValueResolutionDescriptor(valueResolutionDescriptor);
@@ -684,17 +683,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		if (StringUtils.isNotBlank(modifiers)) {
 			final Map<String, String> parsedModifiers = new HashMap<>();
 
-			// remove all spaces
-			final String trimmedModifiers = modifiers.replace(" ", "");
-
-			final String[] kvPairs = StringUtils.removeAll(trimmedModifiers, "[\\[\\]]").split(COLLECTION_VALUE_SEPARATOR);
+			final String trimmedModifiers = StringUtils.trimToEmpty(modifiers).replace("[", "").replace("]", "");
+			final String[] kvPairs = trimmedModifiers.split(COLLECTION_VALUE_SEPARATOR);
 
 			if (kvPairs.length > 0) {
 				Stream.of(kvPairs).forEach(kv -> {
 					final String[] kvSplit = StringUtils.split(kv, '=');
 
 					if (kvSplit.length == 2) {
-						parsedModifiers.put(StringUtils.trim(kvSplit[0]), StringUtils.trim(kvSplit[1]));
+						parsedModifiers.put(StringUtils.trim(kvSplit[0]), StringUtils.trimToEmpty(kvSplit[1]));
 					}
 				});
 			}

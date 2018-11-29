@@ -52,7 +52,7 @@
 		</properties>
 	</type>
 	
-	<type name="Party" package="io.spotnext.sample.types.itemtypes">
+	<type name="Party" package="io.spotnext.sample.types.party">
 		<properties>
 			<property name="title" type="String">
 				<description>The unique title of the party</description>
