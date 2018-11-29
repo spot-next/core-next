@@ -1,0 +1,5 @@
+INSERT USER ; uid[unique=true] ; &ref 
+            ; refUser          ; ref-user
+                   
+INSERT UserGroup ; uid[unique=true] ; members(&ref)
+                 ; refGroup         ; ref-user
