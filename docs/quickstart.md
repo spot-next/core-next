@@ -47,7 +47,7 @@ or
 
 ```bash
 java -jar target/<jar-with-dependencies.jar> --core.setup.typesystem.initialize=true --core.setup.import.initialdata=true --core.setup.import.sampledata=true --add-opens java.base/java.lang=ALL-UNNAMED
-``
+```
 
 > Use the JVM parameter `--add-opens java.base/java.lang=ALL-UNNAMED` to bypass Java "Illegal reflective access" warnings, when starting spot with `java -jar` or from an IDE.
 
@@ -942,8 +942,8 @@ Now that we have an endpoint we just need a template for our page (/resources/te
 <title th:text="${pageTitle}">Party sample page</title>
 <link rel="canonical" th:href="${canonicalUrl}">
 
-<link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
-<link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+<link rel="stylesheet" href="////necolas.github.io/normalize.css/latest/normalize.css">
+<link rel="stylesheet" href="//raw.githubusercontent.com/milligram/milligram/master/dist/milligram.min.css">
 
 <style>
 	body {

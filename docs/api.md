@@ -322,7 +322,8 @@ The supported modifiers are:
 * `lang=<iso code>`: the `Locale` used for localized properties
 * `PrimitiveValueResolver` and `Local*Resolver` support the `format` modifier to set a custom date format.
 
-> (Custom) resolvers have access to both the selector and the modifers!
+> (Custom) resolvers have access to both the selector and the modifiers!
+> Allowed characters in the modifiers part are: letters, numbers and `,.:;+*'#&%$§!/ _-=`
 
 Here is a quick demonstration of references and default values:
 

@@ -21,7 +21,7 @@ import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.sample.filters.IsAdminFilter;
-import io.spotnext.sample.types.itemtypes.Party;
+import io.spotnext.sample.types.party.Party;
 import spark.Request;
 import spark.Response;
 import spark.route.HttpMethod;

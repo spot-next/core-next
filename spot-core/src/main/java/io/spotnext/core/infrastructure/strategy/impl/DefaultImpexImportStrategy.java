@@ -76,9 +76,8 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	/** Constant <code>COLLECTION_VALUE_SEPARATOR=","</code> */
 	public static final String COLLECTION_VALUE_SEPARATOR = ",";
 
-	// ^[\s]{0,}([a-zA-Z0-9]{2,})(\({0,1}[a-zA-Z0-9,\(\)]{0,}\){0,1})(\[{0,1}[a-zA-Z0-9,._\-\=]{0,}\]{0,1})
-	protected static final Pattern PATTERN_COLUMN_DEFINITION = Pattern
-			.compile("^[\\s]{0,}([a-zA-Z0-9]{2,})(\\({0,1}[a-zA-Z0-9&,\\(\\)]{0,}\\){0,1})(\\[{0,1}[a-zA-Z0-9,._\\-\\=]{0,}\\]{0,1})");
+	protected static final Pattern PATTERN_COLUMN_DEFINITION = Pattern.compile(
+			"^[\\s]{0,}([a-zA-Z0-9]{2,})\\s{0,}(\\({0,1}\\s{0,}[a-zA-Z0-9&,\\(\\)\\s]{0,}\\s{0,}\\){0,1})\\s{0,}(\\s{0,}\\[{0,1}[a-zA-Z0-9,.:;+\\*'#&%$§!\\/\\s_\\-\\=]{0,}\\s{0,}\\]{0,1})");
 
 	protected static final String ITEM_REFERENCE_MARKER = "&ref";
 	protected static final Pattern PATTERN_ITEM_REFERENCE_COLUMN_DEFINITION = Pattern.compile("\\s{0,}\\([\\s]{0,}" + ITEM_REFERENCE_MARKER + "[\\s]{0,}\\)");
@@ -171,11 +170,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return workUnits;
 	}
 
-	private Optional<ImpexCommand> parseImpexCommand(String stringCommand) {
+	private Optional<ImpexCommand> parseImpexCommand(final String stringCommand) {
 		ImpexCommand command = null;
 		try {
 			command = ImpexCommand.valueOf(stringCommand.toUpperCase(Locale.getDefault()));
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			// ignore not found
 		}
 
@@ -222,7 +221,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final List<JpqlQuery<Void>> itemsToRemove = new ArrayList<>();
 
-		var itemReferences = new HashMap<String, Item>();
+		final var itemReferences = new HashMap<String, Item>();
 
 		for (final WorkUnit unit : workUnits) {
 			List<String> currentRow = null;
@@ -440,7 +439,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		for (final ColumnDefinition col : headerColumns) {
 			// only look at the unique properties
-			if (BooleanUtils.toBoolean((String) col.getModifiers().get("unique"))) {
+			if (BooleanUtils.toBoolean(col.getModifiers().get("unique"))) {
 				if (isCollectionType(col) || isMapType(col)) {
 					final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
 
@@ -573,7 +572,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 	}
 
 	private Object resolveValue(final String value, final Class<?> type, final List<Class<?>> genericArguments, final ColumnDefinition columnDefinition,
-			HashMap<String, Item> itemReferences) {
+			final HashMap<String, Item> itemReferences) {
 
 		Object ret = null;
 
@@ -612,11 +611,12 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		return ret;
 	}
 
-	private Object resolveSingleValue(final String value, final Class<?> type, final ColumnDefinition columnDefinition, HashMap<String, Item> itemReferences) {
+	private Object resolveSingleValue(final String value, final Class<?> type, final ColumnDefinition columnDefinition,
+			final HashMap<String, Item> itemReferences) {
 
 		if (StringUtils.isNotBlank(columnDefinition.getValueResolutionDescriptor())) {
 
-			var desc = columnDefinition.getValueResolutionDescriptor();
+			final var desc = columnDefinition.getValueResolutionDescriptor();
 
 			// this is not a item refenrence path but a virtual reference
 			if (PATTERN_ITEM_REFERENCE_COLUMN_DEFINITION.matcher(desc).matches()) {
@@ -625,7 +625,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				return referenceValueResolver.resolve(value, type, null, columnDefinition);
 			}
 		} else {
-			String resolverClass = columnDefinition.getModifiers().get("resolver");
+			final String resolverClass = columnDefinition.getModifiers().get("resolver");
 			if (StringUtils.isNotBlank(resolverClass)) {
 				final ImpexValueResolver resolver = impexValueResolvers.get(resolverClass);
 
@@ -636,7 +636,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected List<ColumnDefinition> parseHeaderColumns(final List<String> columns, WorkUnit unit) {
+	protected List<ColumnDefinition> parseHeaderColumns(final List<String> columns, final WorkUnit unit) {
 		final List<ColumnDefinition> parsedColumns = new ArrayList<>();
 
 		boolean isFirst = true;
@@ -647,7 +647,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				continue;
 			}
 
-			String trimmedCol = col.replace(" ", "");
+			final String trimmedCol = col.trim();
 
 			if (StringUtils.isBlank(trimmedCol)) {
 				continue;
@@ -658,9 +658,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			final Matcher columnMatcher = PATTERN_COLUMN_DEFINITION.matcher(trimmedCol);
 
 			if (columnMatcher.matches()) {
-				final String propertyName = columnMatcher.group(1);
-				final String valueResolutionDescriptor = columnMatcher.group(2);
-				final String modifiers = columnMatcher.group(3);
+				final String propertyName = columnMatcher.group(1).trim();
+				final String valueResolutionDescriptor = columnMatcher.group(2).trim();
+				final String modifiers = columnMatcher.group(3).trim();
 
 				colDef.setPropertyName(propertyName);
 				colDef.setValueResolutionDescriptor(valueResolutionDescriptor);
@@ -683,17 +683,15 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		if (StringUtils.isNotBlank(modifiers)) {
 			final Map<String, String> parsedModifiers = new HashMap<>();
 
-			// remove all spaces
-			String trimmedModifiers = modifiers.replace(" ", "");
-
-			final String[] kvPairs = StringUtils.removeAll(trimmedModifiers, "[\\[\\]]").split(COLLECTION_VALUE_SEPARATOR);
+			final String trimmedModifiers = StringUtils.trimToEmpty(modifiers).replace("[", "").replace("]", "");
+			final String[] kvPairs = trimmedModifiers.split(COLLECTION_VALUE_SEPARATOR);
 
 			if (kvPairs.length > 0) {
 				Stream.of(kvPairs).forEach(kv -> {
 					final String[] kvSplit = StringUtils.split(kv, '=');
 
 					if (kvSplit.length == 2) {
-						parsedModifiers.put(StringUtils.trim(kvSplit[0]), StringUtils.trim(kvSplit[1]));
+						parsedModifiers.put(StringUtils.trim(kvSplit[0]), StringUtils.trimToEmpty(kvSplit[1]));
 					}
 				});
 			}
