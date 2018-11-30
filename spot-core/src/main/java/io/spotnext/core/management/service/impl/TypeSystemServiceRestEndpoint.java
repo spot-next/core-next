@@ -1,11 +1,15 @@
 package io.spotnext.core.management.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.spotnext.core.constant.CoreConstants;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.support.MimeType;
@@ -14,8 +18,10 @@ import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.converter.Converter;
 import io.spotnext.core.management.support.BasicAuthenticationFilter;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
+import io.spotnext.core.management.support.data.PageablePayload;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
 
@@ -50,14 +56,26 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 
 		final List<GenericItemDefinitionData> types = new ArrayList<>();
 
-		for (final String typeCode : typeService.getItemTypeDefinitions().keySet()) {
+		final int page = MiscUtil.positiveIntOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
+		final int pageSize = MiscUtil.positiveIntOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
+
+		final Set<String> typeCodes = typeService.getItemTypeDefinitions().keySet();
+		final List<String> pagedTypeCodes = typeCodes.stream() //
+				.sorted(Comparator.naturalOrder()) //
+				.skip((page - 1) * pageSize) //
+				.limit(pageSize) //
+				.collect(Collectors.toList());
+
+		for (final String typeCode : pagedTypeCodes) {
 			final ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
 
 			final GenericItemDefinitionData d = itemTypeConverter.convert(def);
 			types.add(d);
 		}
 
-		return DataResponse.ok().withPayload(types);
+		final var pageableData = new PageablePayload<GenericItemDefinitionData>(types, page, pageSize, Long.valueOf(typeCodes.size()));
+
+		return DataResponse.ok().withPayload(pageableData);
 	}
 
 	/**

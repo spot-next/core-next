@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.spotnext.core.constant.CoreConstants;
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
@@ -66,9 +67,6 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 	private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("ddd, dd MM yy hh:mm:ss z");
 
-	private static final int DEFAULT_PAGE = 1;
-	private static final int DEFAULT_PAGE_SIZE = 100;
-
 	@Autowired
 	protected ModelService modelService;
 
@@ -83,8 +81,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -111,8 +109,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -150,8 +148,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -159,8 +157,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModels(final Request request, final Response response) {
 
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
 
 		try {
 			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
@@ -186,8 +184,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the ID.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -230,8 +228,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
 	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -248,8 +246,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		}
 
 		final String[] queryParamValues = request.queryParamsValues("q");
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), DEFAULT_PAGE);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), DEFAULT_PAGE_SIZE);
+		final int page = MiscUtil.intOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
+		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
 
 		if (ArrayUtils.isNotEmpty(queryParamValues)) {
 			String orderByClause = getOrderByClause(request);
@@ -287,8 +285,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -319,8 +317,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -361,8 +359,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The ID or a search criteria has to be set.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -399,8 +397,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The ID must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -426,8 +424,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given ID doesn't not exist, an exception is thrown.
 	 *
-	 * @param <T> a T object.
-	 * @param request a {@link spark.Request} object.
+	 * @param          <T> a T object.
+	 * @param request  a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
