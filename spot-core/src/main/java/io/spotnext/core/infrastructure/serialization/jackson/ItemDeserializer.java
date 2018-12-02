@@ -106,7 +106,7 @@ public class ItemDeserializer<I extends Item> extends JsonDeserializer<I> {
 			deserializedItem = (I) defaultDeserializer.deserialize(treeParser, context);
 		}
 
-		// only try to attach nested items, as the might be references, and not new items
+		// only try to attach nested items, as they might be references, and not new items
 		if (nestingLevel > 0) {
 			try {
 				getModelService().attach(deserializedItem);

@@ -3,6 +3,7 @@ package io.spotnext.core.testing;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunListener;
 
+import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.support.util.ClassUtil;
 
@@ -15,6 +16,10 @@ import io.spotnext.support.util.ClassUtil;
  */
 public class SpotJunitRunListener extends RunListener {
 
+	static {
+		ModuleInit.initializeWeavingSupport();
+	}
+
 	protected IntegrationTest testAnnotation;
 
 	/** {@inheritDoc} */
@@ -23,7 +28,9 @@ public class SpotJunitRunListener extends RunListener {
 		if (description != null && description.getTestClass() != null) {
 			testAnnotation = ClassUtil.getAnnotation(description.getTestClass(), IntegrationTest.class);
 
-			Registry.setMainClass(this.testAnnotation.initClass());
+			if (testAnnotation != null) {
+				Registry.setMainClass(this.testAnnotation.initClass());
+			}
 		}
 	}
 

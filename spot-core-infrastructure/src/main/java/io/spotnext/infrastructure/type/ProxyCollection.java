@@ -1,12 +1,16 @@
 package io.spotnext.infrastructure.type;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+
+import io.spotnext.support.util.ClassUtil;
 
 /**
  * <p>
@@ -29,13 +33,28 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	 * Constructor for ProxyCollection.
 	 * </p>
 	 *
-	 * @param proxiedColletion a {@link java.util.Collection} object.
-	 * @param beforeAdd        a {@link java.util.function.Consumer} object.
-	 * @param beforeRemove     a {@link java.util.function.Consumer} object.
+	 * @param proxiedCollection a {@link java.util.Collection} object.
+	 * @param beforeAdd         a {@link java.util.function.Consumer} object.
+	 * @param beforeRemove      a {@link java.util.function.Consumer} object.
 	 */
-	public ProxyCollection(final Collection<E> proxiedColletion, final Consumer<E> beforeAdd,
+	public ProxyCollection(final Collection<E> proxiedCollection, Class<? extends Collection> collecionType, final Consumer<E> beforeAdd,
 			final Consumer<E> beforeRemove) {
-		this.proxiedCollection = proxiedColletion;
+
+		if (proxiedCollection != null) {
+			this.proxiedCollection = proxiedCollection;
+		} else {
+			final Class<?> colType;
+
+			// this is just a fallback, it could lead to unwanted side effects
+			if (Set.class.equals(collecionType)) {
+				colType = HashSet.class;
+			} else {
+				colType = ArrayList.class;
+			}
+
+			this.proxiedCollection = (Collection<E>) ClassUtil.instantiate(colType).get();
+		}
+
 		this.beforeAdd = beforeAdd;
 		this.beforeRemove = beforeRemove;
 	}
@@ -135,13 +154,17 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	/** {@inheritDoc} */
 	@Override
 	public boolean addAll(final Collection<? extends E> c) {
-		if (beforeAdd != null) {
-			for (E e : c) {
-				beforeAdd.accept(e);
+		if (c != null) {
+			if (beforeAdd != null) {
+				for (E e : c) {
+					beforeAdd.accept(e);
+				}
 			}
+
+			return proxiedCollection.addAll(c);
 		}
 
-		return proxiedCollection.addAll(c);
+		return false;
 	}
 
 	/** {@inheritDoc} */
@@ -199,13 +222,15 @@ public class ProxyCollection<E> implements List<E>, Set<E> {
 	/** {@inheritDoc} */
 	@Override
 	public void clear() {
-		if (beforeRemove != null) {
-			for (E e : this) {
-				beforeRemove.accept(e);
+		if (proxiedCollection != null) {
+			if (beforeRemove != null) {
+				for (E e : proxiedCollection) {
+					beforeRemove.accept(e);
+				}
 			}
-		}
 
-		proxiedCollection.clear();
+			proxiedCollection.clear();
+		}
 	}
 
 	/** {@inheritDoc} */

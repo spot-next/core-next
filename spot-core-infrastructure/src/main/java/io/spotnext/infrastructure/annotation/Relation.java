@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.RelationCollectionType;
 import io.spotnext.infrastructure.type.RelationNodeType;
 import io.spotnext.infrastructure.type.RelationType;
@@ -26,7 +27,7 @@ public @interface Relation {
 	 * end. {@link ManyToOneRelation} basically means the same, just that the
 	 * referencing property is a collection.
 	 */
-	// Class<? extends Item> referencedType();
+	Class<? extends Item> referencedType();
 
 	/**
 	 * The name of the relation. Depending on the underlying persistence

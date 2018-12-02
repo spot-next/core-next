@@ -328,8 +328,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 					bean.addField(field);
 					populatePropertyAnnotations(prop.getAnnotations(), field);
 
-					addGetter(field, bean);
-					addSetter(field, bean);
+					addGetter(field, bean, true);
+					addSetter(field, bean, true);
 				}
 			}
 
@@ -414,6 +414,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 					}
 				}
 
+//				final BaseType complexType = typeDefinitions.getType(prop.getType());
+//
+//				if (complexType instanceof CollectionType) {
+//					if (CollectionsType.SET.equals(((CollectionType) complexType).getCollectionType())) {
+//						field.setAssignement(new JavaExpression("new java.util.HashSet<>()", JavaValueType.LITERAL));
+//					} else {
+//						field.setAssignement(new JavaExpression("new java.util.ArrayList<>()", JavaValueType.LITERAL));
+//					}
+//				} else if (complexType instanceof MapType) {
+//					field.setAssignement(new JavaExpression("new java.util.HashMap<>()", JavaValueType.LITERAL));
+//				}
+
 				populatePropertyAnnotation(prop, field);
 				populatePropertyAnnotations(prop.getAnnotations(), field);
 
@@ -427,20 +439,16 @@ public class GenerateTypesMojo extends AbstractMojo {
 					isWritable = prop.getModifiers().isWritable();
 				}
 
-				if (isReadable) {
-					if (prop.isLocalized()) {
-						addLocalizedGetters(prop, field, javaClass);
-					} else {
-						addGetter(field, javaClass);
-					}
+				if (prop.isLocalized()) {
+					addLocalizedGetters(prop, field, javaClass, isReadable);
+				} else {
+					addGetter(field, javaClass, isReadable);
 				}
 
-				if (isWritable) {
-					if (prop.isLocalized()) {
-						addLocalizedSetters(prop, field, javaClass);
-					} else {
-						addSetter(field, javaClass);
-					}
+				if (prop.isLocalized()) {
+					addLocalizedSetters(prop, field, javaClass, isWritable);
+				} else {
+					addSetter(field, javaClass, isWritable);
 				}
 
 				// add constant for each property
@@ -510,7 +518,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @MojoExecutionException in there is no localized type found
 	 */
-	protected void addLocalizedGetters(final Property prop, final JavaField field, final JavaClass javaClass)
+	protected void addLocalizedGetters(final Property prop, final JavaField field, final JavaClass javaClass, boolean isPublic)
 			throws MojoExecutionException {
 
 		// TODO: needs refactoring
@@ -522,11 +530,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		final JavaMethod getter = addGetter(field, javaClass,
-				String.format(getNullInitializationString(prop) + "return this.%s.get();", field.getName()));
+				String.format(getNullInitializationString(prop) + "return this.%s.get();", field.getName()), isPublic);
 		getter.setType(new JavaMemberType(localizedType.get()));
 
 		final JavaMethod locGetter = addGetter(field, javaClass,
-				String.format(getNullInitializationString(prop) + "return this.%s.get(locale);", field.getName()));
+				String.format(getNullInitializationString(prop) + "return this.%s.get(locale);", field.getName()), isPublic);
 		locGetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locGetter.setType(getter.getType());
 	}
@@ -548,8 +556,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass) {
-		return addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, boolean isPublic) {
+		return addGetter(field, javaClass, String.format("return this.%s;", field.getName()), isPublic);
 	}
 
 	/**
@@ -562,7 +570,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param codeBlock a {@link java.lang.String} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock, boolean isPublic) {
 		final JavaMethod getter = new JavaMethod();
 
 		if ("boolean".equals(field.getType().getFullyQualifiedName())) {
@@ -572,7 +580,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 		getter.setType(field.getType());
 		getter.setDescription(field.getDescription());
-		getter.setVisibility(Visibility.PUBLIC);
+		getter.setVisibility(isPublic ? Visibility.PUBLIC : Visibility.PROTECTED);
 		getter.setCodeBlock(codeBlock);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
@@ -595,7 +603,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param field     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 */
-	protected void addLocalizedSetters(final Property prop, final JavaField field, final JavaClass javaClass)
+	protected void addLocalizedSetters(final Property prop, final JavaField field, final JavaClass javaClass, boolean isPublic)
 			throws MojoExecutionException {
 		// TODO: needs refactoring
 		final Optional<String> localizedType = getLocalizedType(prop.getType());
@@ -606,11 +614,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		final JavaMethod setter = addSetter(field, javaClass, String
-				.format(getNullInitializationString(prop) + "this.%s.set(%s);", field.getName(), field.getName()));
+				.format(getNullInitializationString(prop) + "this.%s.set(%s);", field.getName(), field.getName()), isPublic);
 		setter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 
 		final JavaMethod locSetter = addSetter(field, javaClass, String.format(
-				getNullInitializationString(prop) + "this.%s.set(locale, %s);", field.getName(), field.getName()));
+				getNullInitializationString(prop) + "this.%s.set(locale, %s);", field.getName(), field.getName()), isPublic);
 		locSetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locSetter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 	}
@@ -624,8 +632,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass) {
-		return addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()));
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, boolean isPublic) {
+		return addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()), isPublic);
 	}
 
 	/**
@@ -638,14 +646,14 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param codeBlock a {@link java.lang.String} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock, boolean isPublic) {
 		final JavaMethod setter = new JavaMethod();
 		setter.setName(generateMethodName("set", field.getName()));
 		setter.setType(JavaMemberType.VOID);
 		setter.setDescription(field.getDescription());
 		setter.addArgument(field.getName(), field.getType());
 		setter.setCodeBlock(codeBlock);
-		setter.setVisibility(Visibility.PUBLIC);
+		setter.setVisibility(isPublic ? Visibility.PUBLIC : Visibility.PROTECTED);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
 		accessorAnnotation.addParameter("propertyName", field.getName(), JavaValueType.STRING);
@@ -1114,6 +1122,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final io.spotnext.infrastructure.type.RelationType relationType = getRelationType(from, to);
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 
+			ItemType toType = typeDefinitions.getItemTypes().get(to.getItemType());
+
+			relationAnn.addParameter("referencedType", toType.getPackage() + "." + toType.getName(), JavaValueType.CLASS);
+
 			if (StringUtils.isNotBlank(from.getMappedBy())) {
 				relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
 			}
@@ -1157,26 +1169,25 @@ public class GenerateTypesMojo extends AbstractMojo {
 				addSetter = to.getModifiers().isWritable();
 			}
 
-			if (addGetter) {
-				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
+			propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 
-				if (io.spotnext.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
-					// wrap the collection into proxy collection that allows us to intercept mutating calls
-					// (like add, remove) -> needed to update relation infos
-					javaClass.getImports().add(ItemCollectionFactory.class.getName());
-					addGetter(property, javaClass,
-							String.format("return %s.wrap(this, \"%s\", this.%s);", ItemCollectionFactory.class.getSimpleName(), property.getName(),
-									property.getName()));
+			if (io.spotnext.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
+				// wrap the collection into proxy collection that allows us to intercept mutating calls
+				// (like add, remove) -> needed to update relation infos
+				javaClass.getImports().add(ItemCollectionFactory.class.getName());
+				JavaMethod getter = addGetter(property, javaClass,
+						String.format("return %s.wrap(this, \"%s\", this.%s, %s.class);", ItemCollectionFactory.class.getSimpleName(), property.getName(),
+								property.getName(), property.getType().getName()),
+						addGetter);
 
-				} else {
-					addGetter(property, javaClass);
-				}
+				addSetter(property, javaClass, String.format("%s().clear();%s().addAll(%s);", getter.getName(), getter.getName(), property.getName()),
+						addSetter);
+			} else {
+				addGetter(property, javaClass, addGetter);
+				addSetter(property, javaClass, addSetter);
 			}
 
-			if (addSetter) {
-				propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
-				addSetter(property, javaClass);
-			}
+			propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
 
 			// add constant for each property
 			final JavaField constant = new JavaField();
