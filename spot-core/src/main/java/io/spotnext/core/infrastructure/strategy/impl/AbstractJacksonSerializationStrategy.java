@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -56,9 +57,9 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		jacksonMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
 
-		// jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd
-		// hh:mm:ss"));
+		// jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
 
 		final TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
 		typeResolver.init(JsonTypeInfo.Id.CUSTOM, new ItemTypeResolver());

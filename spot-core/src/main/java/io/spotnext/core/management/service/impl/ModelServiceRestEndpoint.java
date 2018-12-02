@@ -453,7 +453,6 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		}
 
 		try {
-
 			// search old item
 			T oldItem = modelService.get(type, id);
 
@@ -486,7 +485,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	private HttpResponse handleGenericException(final Exception e) {
 		final Throwable cause = (e instanceof TransactionException && e.getCause() != null) ? e.getCause() : e;
 
-		return ExceptionResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.general", cause.getMessage());
+		return ExceptionResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.general", cause.getClass().getSimpleName() + ": " + cause.getMessage());
 	}
 
 	private String getOrderByClause(final Request request) {

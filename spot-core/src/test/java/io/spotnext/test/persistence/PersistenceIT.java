@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.OneToMany;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.SequenceGenerator;
@@ -300,5 +302,41 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		}
 
 		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
+	}
+
+	/**
+	 * If the many side of a {@link OneToMany} relation has set its property to unique=true, it has to be removed when it is removed from the one-side's
+	 * collection property.
+	 */
+	@Test(expected = ModelNotFoundException.class)
+	public void testOneToManyWithUniqueConstraint() {
+		final Catalog catalog = modelService.create(Catalog.class);
+		catalog.setUid("testCatalog");
+
+		final CatalogVersion catalogVersionStaged = modelService.create(CatalogVersion.class);
+		catalogVersionStaged.setCatalog(catalog);
+		catalogVersionStaged.setUid("Staged");
+
+		final CatalogVersion catalogVersionOnline = modelService.create(CatalogVersion.class);
+		catalogVersionOnline.setCatalog(catalog);
+		catalogVersionOnline.setUid("Online");
+
+		modelService.save(catalogVersionStaged);
+		modelService.save(catalogVersionOnline);
+		modelService.refresh(catalog);
+
+		// this must trigger a cascade-remove on the many-side
+		catalog.getVersions().remove(catalog.getVersions().iterator().next());
+
+		// should delete catalogversion, as the catalog is part of its unique key constraint
+		modelService.save(catalog);
+
+		modelService.refresh(catalog);
+
+		Assert.assertEquals(1, catalog.getVersions().size());
+
+		// check if it has been deleted
+		modelService.refresh(catalogVersionOnline);
+		modelService.refresh(catalogVersionStaged);
 	}
 }

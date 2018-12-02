@@ -402,7 +402,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						message = e.getMessage();
 					}
 
-					throw new ModelSaveException(message);
+					throw new ModelSaveException(message, e);
 				} catch (final DataIntegrityViolationException | TransactionRequiredException
 						| IllegalArgumentException e) {
 

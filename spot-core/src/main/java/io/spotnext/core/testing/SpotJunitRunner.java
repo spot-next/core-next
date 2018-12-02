@@ -4,6 +4,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
 import io.spotnext.support.util.ClassUtil;
 
@@ -15,6 +16,10 @@ import io.spotnext.support.util.ClassUtil;
  * @since 1.0
  */
 public class SpotJunitRunner extends SpringJUnit4ClassRunner {
+
+	static {
+		ModuleInit.initializeWeavingSupport();
+	}
 
 	protected IntegrationTest testAnnotation;
 
@@ -29,7 +34,9 @@ public class SpotJunitRunner extends SpringJUnit4ClassRunner {
 
 		testAnnotation = ClassUtil.getAnnotation(clazz, IntegrationTest.class);
 
-		Registry.setMainClass(this.testAnnotation.initClass());
+		if (testAnnotation != null) {
+			Registry.setMainClass(this.testAnnotation.initClass());
+		}
 	}
 
 	/** {@inheritDoc} */

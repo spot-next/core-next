@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matchers;
@@ -13,17 +15,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import io.restassured.RestAssured;
+import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.http.HttpStatus;
+import io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.Transactionless;
+import io.spotnext.itemtype.core.catalog.Catalog;
+import io.spotnext.itemtype.core.catalog.CatalogVersion;
 import io.spotnext.itemtype.core.user.PrincipalGroup;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
 public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
+	@Autowired
+	DefaultJsonSerializationStrategy serializer;
 
 	@Value("${service.typesystem.rest.keystore.file:}")
 	private String keystoreFilePath;
@@ -53,21 +62,21 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void test_without_authentication_fail() {
+	public void testWithoutAuthenticationFail() {
 		given().auth().none() //
 				.get("/country").then() //
 				.statusCode(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	@Test
-	public void get_all_models() {
+	public void testGetAllModels() {
 		given().relaxedHTTPSValidation().get("/country").then() //
 				.statusCode(HttpStatus.OK.value()) //
 				.body("payload.data.size()", Matchers.greaterThan(0));
 	}
 
 	@Test
-	public void get_model_of_unknown_type() {
+	public void testGetModelOfUnknownType() {
 		get("/house").then() //
 				.statusCode(HttpStatus.BAD_REQUEST.value()) //
 				.body("httpStatus", Matchers.equalTo("BAD_REQUEST"));
@@ -79,7 +88,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	 */
 	@Test
 	@Transactionless
-	public void get_model() {
+	public void testGetModel() {
 		final User user = modelService.create(User.class);
 		user.setUid("test-user-for-rest");
 		modelService.save(user);
@@ -92,21 +101,21 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void get_unknown_model() {
+	public void testGetUnknownModel() {
 		get("/user/" + "200000000").then() //
 				.statusCode(HttpStatus.NOT_FOUND.value()) //
 				.body("httpStatus", Matchers.equalTo("NOT_FOUND"));
 	}
 
 	@Test
-	public void queryModel() {
+	public void testQueryModel() {
 		get("/user/query/?q=uid like '%test%'").then() //
 				.statusCode(HttpStatus.OK.value()) //
 				.body("payload.results.size()", Matchers.greaterThan(0));
 	}
 
 	@Test
-	public void queryModelByExample() throws JSONException {
+	public void testQueryModelByExample() throws JSONException {
 		final JSONObject example = new JSONObject().put("uid", "tester51");
 
 		given().body(example.toString())
@@ -116,7 +125,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void createModel() throws JSONException {
+	public void testCreateModel() throws JSONException {
 		User tester1 = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
 
 		JSONArray groups = new JSONArray();
@@ -148,7 +157,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void createOrUpdateModel_WithID() throws JSONException {
+	public void testCreateOrUpdateModel_WithID() throws JSONException {
 		// updates existing user
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester51"));
 		final UserGroup usergroup = modelService.get(UserGroup.class, Collections.singletonMap(User.PROPERTY_UID, "employee-group"));
@@ -177,7 +186,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void createOrUpdateModel_WithoutID() throws JSONException {
+	public void testCreateOrUpdateModel_WithoutID() throws JSONException {
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
 
 		final Long id = Long.valueOf(given().body(shortNameUpdate.toString())
@@ -192,7 +201,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void partiallyUpdateModel() throws JSONException {
+	public void testartiallyUpdateModel() throws JSONException {
 		final User user = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester51"));
 
 		final JSONObject shortNameUpdate = new JSONObject().put("shortName", "integrationtester");
@@ -206,4 +215,38 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		assertEquals(user.getShortName(), "integrationtester");
 	}
 
+	@Test
+	public void testUpdateOneToManySideWithUniqueConstraint() {
+		Catalog mediaCatalog = modelService.get(Catalog.class, Collections.singletonMap("uid", "Media"));
+
+		List<Long> catalogVersionIds = mediaCatalog.getVersions().stream().map(cv -> cv.getId()).collect(Collectors.toList());
+
+		// detach and remove one catalog version
+		modelService.detach(mediaCatalog);
+		mediaCatalog.getVersions().remove(mediaCatalog.getVersions().iterator().next());
+
+		String json = serializer.serialize(mediaCatalog);
+
+		given().body(json)
+				.put("/catalog").then() //
+				.statusCode(HttpStatus.ACCEPTED.value());
+
+		byte exceptionCount = 0;
+
+		// one of the catalog versions cannot be refreshed, as it should have been cascade-removed when removed from the catalog's versions collection.
+		for (long id : catalogVersionIds) {
+			try {
+				modelService.get(CatalogVersion.class, id);
+			} catch (ModelNotFoundException e) {
+				exceptionCount++;
+			}
+		}
+
+		modelService.refresh(mediaCatalog);
+
+		assertEquals(1, mediaCatalog.getVersions().size());
+
+		// check that only one exception is thrown because of the removed catalogVersion
+//		assertEquals(1, exceptionCount);
+	}
 }

@@ -50,6 +50,7 @@ import io.spotnext.support.weaving.AbstractBaseClassTransformer;
 import io.spotnext.support.weaving.IllegalClassTransformationException;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
@@ -79,6 +80,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	protected static final String CLASS_FILE_SUFFIX = ".class";
 	protected static final String MV_MAPPED_BY = "mappedBy";
 	protected static final String MV_MAPPED_TO = "mappedTo";
+	protected static final String MV_REFERENCED_TYPE = "referencedType";
 	protected static final String MV_TYPE = "type";
 	protected static final String MV_TYPE_CODE = "typeCode";
 	protected static final String MV_VALUE = "value";
@@ -386,7 +388,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			// JPA Relation annotations
 			if (StringUtils.equals(relType.getValue(), RelationType.ManyToMany.toString())) {
-				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToMany.class, null));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToMany.class, null, propertyAnnotation));
 
 				// necessary for serialization
 				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field, true));
@@ -400,7 +402,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.OneToMany.toString())) {
 				final List<Annotation> o2mAnn = createCascadeAnnotations(entityClass, field, OneToMany.class,
-						relAnnotation.get());
+						relAnnotation.get(), propertyAnnotation);
 				jpaAnnotations.addAll(o2mAnn);
 
 				// necessary for serialization
@@ -411,19 +413,19 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.addAll(createOrderedListAnnotation(entityClass, field));
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
-				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null, propertyAnnotation));
 				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 				// necessary for serialization
 				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field, false));
 			} else {
 				// one to one in case the field type is a subtype of Item
-				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, null));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, null, propertyAnnotation));
 			}
 
 		} else if (isItemType(field.getType())) {
 			// one to one in case the field type is a subtype of Item
-			jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null));
+			jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null, propertyAnnotation));
 			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
 
 			// necessary for serialization
@@ -473,20 +475,34 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final List<Annotation> annotations = new ArrayList<>();
 
-		// final Annotation orderColumnAnn = createAnnotation(entityClass,
-		// OrderColumn.class);
-		// annotations.add(orderColumnAnn);
-
-		// final StringMemberValue val = new
-		// StringMemberValue(field.getFieldInfo2().getConstPool());
-		// val.setValue("id ASC");
-		// orderColumnAnn.addMemberValue("value", val);
-
-		// final Annotation listIndexAnn = createAnnotation(entityClass,
-		// ListIndexBase.class);
-		// annotations.add(listIndexAnn);
-
 		return annotations;
+	}
+
+	private Optional<CtMethod> getGetter(CtClass entityClass, CtField field) {
+		return getMethod(entityClass, "get" + StringUtils.capitalize(field.getName()));
+	}
+
+	private Optional<CtMethod> getSetter(CtClass entityClass, CtField field) {
+		return getMethod(entityClass, "set" + StringUtils.capitalize(field.getName()));
+	}
+
+	/**
+	 * Finds the method with the given name, ignoring any method parameters.
+	 * 
+	 * @param entityClass the class to inspect
+	 * @param methodName
+	 * @return the method or null
+	 */
+	protected Optional<CtMethod> getMethod(CtClass entityClass, String methodName) {
+		CtMethod method = null;
+
+		try {
+			method = entityClass.getDeclaredMethod(methodName);
+		} catch (NotFoundException e) {
+			// ignore
+		}
+
+		return Optional.ofNullable(method);
 	}
 
 	/**
@@ -497,44 +513,50 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * @param isCollection defines if the collection de/serializer annotation should be applied, or not
 	 * @return the created annotation, never null
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
+	 * @throws NotFoundException
 	 */
 	protected List<Annotation> createSerializationAnnotation(final CtClass entityClass, final CtField field,
-			final boolean isCollection) throws IllegalClassTransformationException {
+			final boolean isCollection) throws IllegalClassTransformationException, NotFoundException {
 
 		List<Annotation> ret = new ArrayList<>();
 
 		final Annotation jsonSerializeAnn = createAnnotation(entityClass, JsonSerialize.class);
 
+		// serializer
 		final ClassMemberValue serVal = new ClassMemberValue(field.getFieldInfo2().getConstPool());
-		serVal.setValue(isCollection ? "io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer"
+		serVal.setValue(isCollection //
+				? "io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionProxySerializer" //
 				: "io.spotnext.core.infrastructure.serialization.jackson.ItemProxySerializer");
 		jsonSerializeAnn.addMemberValue("using", serVal);
 		ret.add(jsonSerializeAnn);
 
 		if (isCollection) {
-//            final Annotation jsonDeserializeAnn = createAnnotation(entityClass, JsonDeserialize.class);
+//			// ignore field as we have to put the deserializer annotation for collections on the getter
+//			final Annotation jsonPropertyAnn = createAnnotation(entityClass, JsonProperty.class);
+//			EnumMemberValue accessVal = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+//			accessVal.setType(JsonProperty.Access.class.getName());
+//			accessVal.setValue("READ_ONLY");
+//			jsonPropertyAnn.addMemberValue("access", accessVal);
+//			ret.add(jsonPropertyAnn);
 //
-//            final ClassMemberValue deserVal = new ClassMemberValue(field.getFieldInfo2().getConstPool());
-//            deserVal.setValue("io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionDeserializer");
-//            jsonDeserializeAnn.addMemberValue("using", deserVal);
+//			// add actual deserializer annotation to getter
+//			final Optional<CtMethod> getter = getGetter(entityClass, field);
+//			if (getter.isPresent()) {
+//				final Annotation jsonDeserializeAnn = createAnnotation(entityClass, JsonDeserialize.class);
+//				final ClassMemberValue deserVal = new ClassMemberValue(field.getFieldInfo2().getConstPool());
+//				deserVal.setValue("io.spotnext.core.infrastructure.serialization.jackson.ItemCollectionDeserializer");
+//				jsonDeserializeAnn.addMemberValue("using", deserVal);
 //
-//            ret.add(jsonDeserializeAnn);
-
-			// // configure the Jackson XML collection name
-			// final Annotation xmlCollectionAnn = createAnnotation(getConstPool(entityClass),
-			// "com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper");
-			//
-			// final StringMemberValue collectionName = new StringMemberValue(field.getFieldInfo2().getConstPool());
-			// collectionName.setValue(field.getName());
-			// xmlCollectionAnn.addMemberValue("localName", collectionName);
-			//
-			// // configure the Jackson XML collection element name
-			// final Annotation xmlCollectionElementAnn = createAnnotation(getConstPool(entityClass),
-			// "com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty");
-			//
-			// final StringMemberValue elementName = new StringMemberValue(field.getFieldInfo2().getConstPool());
-			// elementName.setValue(field.getName() + "Entry");
-			// xmlCollectionElementAnn.addMemberValue("localName", elementName);
+//				final Annotation getterJsonProperty = createAnnotation(entityClass, JsonProperty.class);
+//
+//				addAnnotations(getter.get(), Arrays.asList(jsonDeserializeAnn, getterJsonProperty));
+//			}
+//
+//			final Optional<CtMethod> setter = getSetter(entityClass, field);
+//			if (setter.isPresent()) {
+//				final Annotation jsonIgnoreAnn = createAnnotation(entityClass, JsonIgnore.class);
+//				addAnnotations(setter.get(), Arrays.asList(jsonIgnoreAnn));
+//			}
 
 			// configure the Jackson XML collection name
 			final Annotation xmlCollectionAnn = createAnnotation(getConstPool(entityClass),
@@ -616,15 +638,38 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected List<Annotation> createCascadeAnnotations(final CtClass clazz, final CtField field,
-			final Class<? extends java.lang.annotation.Annotation> annotationType, Annotation relationAnnotation)
-			throws IllegalClassTransformationException {
+			final Class<? extends java.lang.annotation.Annotation> annotationType, Annotation relationAnnotation, Annotation propertyAnnotation)
+			throws IllegalClassTransformationException, NotFoundException {
 
-		List<Annotation> annotations = new ArrayList<>();
+		final List<Annotation> annotations = new ArrayList<>();
 
-		Annotation x2xAnn = addJpaCascadeAnnotation(field, annotationType);
+		boolean addRemoveCascadeType = false;
+
+		if (OneToMany.class.equals(annotationType)) {
+			final StringMemberValue mappedToVal = (StringMemberValue) relationAnnotation.getMemberValue(MV_MAPPED_TO);
+			final ClassMemberValue referencedTypeVal = (ClassMemberValue) relationAnnotation.getMemberValue(MV_REFERENCED_TYPE);
+
+			if (mappedToVal != null && StringUtils.isNotBlank(mappedToVal.getValue()) && referencedTypeVal != null) {
+				CtClass referencedType = classPool.get(referencedTypeVal.getValue());
+				final CtField otherField = referencedType.getField(mappedToVal.getValue());
+				final Optional<Annotation> otherPropertyAnnotation = getAnnotation(otherField, Property.class);
+
+				if (otherPropertyAnnotation.isPresent()) {
+					boolean isUnique = otherPropertyAnnotation //
+							.map(a -> a.getMemberValue(MV_UNIQUE)) //
+							.filter(m -> m instanceof BooleanMemberValue) //
+							.map(v -> ((BooleanMemberValue) v).getValue()) //
+							.orElse(false);
+
+					addRemoveCascadeType = isUnique;
+				}
+			}
+		}
+
+		final Annotation x2xAnn = addJpaCascadeAnnotation(field, annotationType, addRemoveCascadeType);
 
 		annotations.add(x2xAnn);
-		annotations.add(addHibernateCascadeAnnotation(field));
+		annotations.add(addHibernateCascadeAnnotation(field, addRemoveCascadeType));
 
 		if (relationAnnotation != null) {
 			addMappedByAnnotationValue(field, x2xAnn, clazz, relationAnnotation);
@@ -764,7 +809,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected Annotation addJpaCascadeAnnotation(final CtField field,
-			Class<? extends java.lang.annotation.Annotation> annotationType) {
+			Class<? extends java.lang.annotation.Annotation> annotationType, boolean addRemoveCascadeType) {
 
 		final Annotation annotation = createAnnotation(field.getFieldInfo2().getConstPool(), annotationType);
 		// add fetch type
@@ -775,12 +820,15 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		final List<EnumMemberValue> vals = new ArrayList<>();
 
-		// TODO: implement a way to set the remove cascade type via itemtypes.xml
-		// exclude ALL, as this would remove every part of a relation!
-		final CascadeType[] allowedJpaTypes = new CascadeType[] { CascadeType.DETACH, CascadeType.MERGE,
-				CascadeType.PERSIST, CascadeType.REFRESH };
+		final List<CascadeType> allowedCascadeTypes = new ArrayList<>();
+		allowedCascadeTypes.addAll(Arrays.asList(CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH));
 
-		for (CascadeType type : allowedJpaTypes) {
+		if (addRemoveCascadeType) {
+			allowedCascadeTypes.add(CascadeType.REMOVE);
+			annotation.addMemberValue("orphanRemoval", new BooleanMemberValue(true, field.getFieldInfo2().getConstPool()));
+		}
+
+		for (CascadeType type : allowedCascadeTypes) {
 			final EnumMemberValue val = new EnumMemberValue(field.getFieldInfo2().getConstPool());
 			val.setType(CascadeType.class.getName());
 			val.setValue(type.toString());
@@ -789,20 +837,25 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		annotation.addMemberValue(MV_CASCADE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(),
-				vals.toArray(new EnumMemberValue[allowedJpaTypes.length])));
+				vals.toArray(new EnumMemberValue[allowedCascadeTypes.size()])));
 
 		return annotation;
 	}
 
-	protected Annotation addHibernateCascadeAnnotation(final CtField field) {
+	protected Annotation addHibernateCascadeAnnotation(final CtField field, boolean addRemoveCascadeType) {
 		Annotation annotation = createAnnotation(field.getFieldInfo2().getConstPool(), Cascade.class);
 		final List<EnumMemberValue> vals = new ArrayList<>();
 
-		final org.hibernate.annotations.CascadeType[] allowedHibernateCascadeTypes = new org.hibernate.annotations.CascadeType[] {
+		final List<org.hibernate.annotations.CascadeType> allowedHibernateCascadeTypes = new ArrayList<>();
+		allowedHibernateCascadeTypes.addAll(Arrays.asList(
 				org.hibernate.annotations.CascadeType.DETACH, org.hibernate.annotations.CascadeType.SAVE_UPDATE,
 				org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.REPLICATE,
 				org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.PERSIST,
-				org.hibernate.annotations.CascadeType.REFRESH };
+				org.hibernate.annotations.CascadeType.REFRESH));
+
+		if (addRemoveCascadeType) {
+			allowedHibernateCascadeTypes.add(org.hibernate.annotations.CascadeType.REMOVE);
+		}
 
 		for (org.hibernate.annotations.CascadeType type : allowedHibernateCascadeTypes) {
 			final EnumMemberValue val = new EnumMemberValue(field.getFieldInfo2().getConstPool());
@@ -813,7 +866,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		}
 
 		annotation.addMemberValue(MV_VALUE, createAnnotationArrayValue(field.getFieldInfo2().getConstPool(),
-				vals.toArray(new EnumMemberValue[allowedHibernateCascadeTypes.length])));
+				vals.toArray(new EnumMemberValue[allowedHibernateCascadeTypes.size()])));
 
 		return annotation;
 	}
