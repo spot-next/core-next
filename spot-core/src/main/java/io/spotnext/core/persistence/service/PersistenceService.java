@@ -158,4 +158,9 @@ public interface PersistenceService {
 	 * uncaught exception is thrown in a thread.
 	 */
 	void unbindSession();
+
+	/**
+	 * Clears all internal persistence-related caches.
+	 */
+	void evictCaches();
 }

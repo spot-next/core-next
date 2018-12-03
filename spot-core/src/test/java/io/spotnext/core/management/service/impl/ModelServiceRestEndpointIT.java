@@ -19,9 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import io.restassured.RestAssured;
-import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy;
+import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.testing.AbstractIntegrationTest;
 import io.spotnext.core.testing.Transactionless;
 import io.spotnext.itemtype.core.catalog.Catalog;
@@ -33,6 +33,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	@Autowired
 	DefaultJsonSerializationStrategy serializer;
+
+	@Autowired
+	PersistenceService persistenceService;
 
 	@Value("${service.typesystem.rest.keystore.file:}")
 	private String keystoreFilePath;
@@ -216,37 +219,39 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	}
 
 	@Test
-	public void testUpdateOneToManySideWithUniqueConstraint() {
+	@Transactionless
+	public void testUpdateOneToManySideWithUniqueConstraint() throws JSONException {
 		Catalog mediaCatalog = modelService.get(Catalog.class, Collections.singletonMap("uid", "Media"));
 
 		List<Long> catalogVersionIds = mediaCatalog.getVersions().stream().map(cv -> cv.getId()).collect(Collectors.toList());
 
 		// detach and remove one catalog version
 		modelService.detach(mediaCatalog);
-		mediaCatalog.getVersions().remove(mediaCatalog.getVersions().iterator().next());
+
+		mediaCatalog.getVersions().removeAll(mediaCatalog.getVersions().stream().filter(v -> v.getUid().equals("Staged")).collect(Collectors.toList()));
 
 		String json = serializer.serialize(mediaCatalog);
+		JSONObject payload = new JSONObject(json);
 
-		given().body(json)
+		given().body(payload.toString())
 				.put("/catalog").then() //
 				.statusCode(HttpStatus.ACCEPTED.value());
 
-		byte exceptionCount = 0;
+		byte notfound = 0;
 
 		// one of the catalog versions cannot be refreshed, as it should have been cascade-removed when removed from the catalog's versions collection.
 		for (long id : catalogVersionIds) {
-			try {
-				modelService.get(CatalogVersion.class, id);
-			} catch (ModelNotFoundException e) {
-				exceptionCount++;
+			CatalogVersion cv = modelService.get(CatalogVersion.class, id);
+
+			if (cv == null) {
+				notfound++;
 			}
 		}
 
-		modelService.refresh(mediaCatalog);
-
-		assertEquals(1, mediaCatalog.getVersions().size());
-
 		// check that only one exception is thrown because of the removed catalogVersion
-//		assertEquals(1, exceptionCount);
+		assertEquals(1, notfound);
+
+		mediaCatalog = modelService.get(Catalog.class, Collections.singletonMap("uid", "Media"));
+		assertEquals(1, mediaCatalog.getVersions().size());
 	}
 }

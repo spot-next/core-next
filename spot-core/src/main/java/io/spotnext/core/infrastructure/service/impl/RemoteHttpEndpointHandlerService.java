@@ -338,6 +338,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	protected void cleanup() {
 		HttpRequestHolder.clear();
+		persistenceService.evictCaches();
 		persistenceService.unbindSession();
 	}
 

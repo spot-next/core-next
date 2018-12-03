@@ -665,9 +665,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	/** {@inheritDoc} */
 	@Override
 	public void clearDataStorage() {
+		Logger.warn("Clearing database not supported yet");
+	}
+
+	@Override
+	public void evictCaches() {
 		bindSession();
 
-		// em.clear();
 		getSession().clear();
 	}
 
@@ -741,6 +745,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
 					.unbindResource(entityManagerFactory);
 			EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+		} else {
+			throw new IllegalStateException("No entitiy manager factory found");
 		}
 	}
 

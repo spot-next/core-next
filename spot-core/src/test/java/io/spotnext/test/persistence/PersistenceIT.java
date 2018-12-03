@@ -304,39 +304,67 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
 	}
 
+	Catalog mockCatalog() {
+		final Catalog catalog = modelService.create(Catalog.class);
+		catalog.setUid("testCatalog");
+
+		final CatalogVersion catalogVersionOnline = modelService.create(CatalogVersion.class);
+		catalogVersionOnline.setCatalog(catalog);
+		catalogVersionOnline.setUid("Online");
+
+		final CatalogVersion catalogVersionStaged = modelService.create(CatalogVersion.class);
+		catalogVersionStaged.setCatalog(catalog);
+		catalogVersionStaged.setUid("Staged");
+		catalogVersionStaged.setSynchronizationTarget(catalogVersionOnline);
+
+		modelService.save(catalogVersionOnline);
+		modelService.save(catalogVersionStaged);
+		modelService.refresh(catalog);
+
+		Assert.assertEquals(2, catalog.getVersions().size());
+
+		return catalog;
+	}
+
 	/**
 	 * If the many side of a {@link OneToMany} relation has set its property to unique=true, it has to be removed when it is removed from the one-side's
 	 * collection property.
 	 */
 	@Test(expected = ModelNotFoundException.class)
 	public void testOneToManyWithUniqueConstraint() {
-		final Catalog catalog = modelService.create(Catalog.class);
-		catalog.setUid("testCatalog");
-
-		final CatalogVersion catalogVersionStaged = modelService.create(CatalogVersion.class);
-		catalogVersionStaged.setCatalog(catalog);
-		catalogVersionStaged.setUid("Staged");
-
-		final CatalogVersion catalogVersionOnline = modelService.create(CatalogVersion.class);
-		catalogVersionOnline.setCatalog(catalog);
-		catalogVersionOnline.setUid("Online");
-
-		modelService.save(catalogVersionStaged);
-		modelService.save(catalogVersionOnline);
-		modelService.refresh(catalog);
+		final Catalog catalog = mockCatalog();
 
 		// this must trigger a cascade-remove on the many-side
-		catalog.getVersions().remove(catalog.getVersions().iterator().next());
+		CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Staged".equals(v.getUid())).findFirst().get();
+		catalog.getVersions().remove(cvToDelete);
 
 		// should delete catalogversion, as the catalog is part of its unique key constraint
 		modelService.save(catalog);
-
 		modelService.refresh(catalog);
 
 		Assert.assertEquals(1, catalog.getVersions().size());
 
-		// check if it has been deleted
-		modelService.refresh(catalogVersionOnline);
-		modelService.refresh(catalogVersionStaged);
+		// throws an exception if already deleted
+		modelService.refresh(cvToDelete);
+	}
+
+	@Ignore
+	@Test(expected = ModelNotFoundException.class)
+	public void testOneToManyWithUniqueConstraint_WithReference() {
+		final Catalog catalog = mockCatalog();
+
+		// this must trigger a cascade-remove on the many-side
+		// difference here is that the online catalog is referenced by the staged catalog from
+		CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
+		catalog.getVersions().remove(cvToDelete);
+
+		// should delete catalogversion, as the catalog is part of its unique key constraint
+		modelService.save(catalog);
+		modelService.refresh(catalog);
+
+		Assert.assertEquals(1, catalog.getVersions().size());
+
+		// throws an exception if already deleted
+		modelService.refresh(cvToDelete);
 	}
 }

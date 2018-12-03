@@ -28,9 +28,13 @@ public class ItemCollectionFactory {
 			Collection<I> collectionToWrap, Class<? extends Collection> collectionType) {
 
 		final Field properyField = ClassUtil.getFieldDefinition(owner.getClass(), propertyName, true);
+//		Relation relAnnotation = ClassUtil.getAnnotation(properyField, Relation.class);
+
+		boolean updateOtherReference = true; // relAnnotation != null && RelationType.ManyToMany.equals(relAnnotation.type());
+
 		final ProxyCollection<?> proxyCol = new ProxyCollection<I>(collectionToWrap, collectionType,
-				(e) -> updateOwnerReference(properyField, owner, e),
-				(e) -> updateOwnerReference(properyField, null, e));
+				updateOtherReference ? (e) -> updateOwnerReference(properyField, owner, e) : null,
+				updateOtherReference ? (e) -> updateOwnerReference(properyField, null, e) : null);
 
 		return (ProxyCollection<I>) proxyCol;
 	}
