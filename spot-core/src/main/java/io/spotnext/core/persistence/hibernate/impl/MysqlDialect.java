@@ -1,5 +1,7 @@
 package io.spotnext.core.persistence.hibernate.impl;
 
+import org.hibernate.dialect.InnoDBStorageEngine;
+import org.hibernate.dialect.MySQLStorageEngine;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.tool.schema.spi.Exporter;
 
@@ -27,5 +29,10 @@ public class MysqlDialect extends org.hibernate.dialect.MySQL5Dialect {
 			final boolean referencesPrimaryKey) {
 
 		return super.getAddForeignKeyConstraintString(constraintName, foreignKey, referencedTable, primaryKey, referencesPrimaryKey);
+	}
+
+	@Override
+	protected MySQLStorageEngine getDefaultMySQLStorageEngine() {
+		return InnoDBStorageEngine.INSTANCE;
 	}
 }

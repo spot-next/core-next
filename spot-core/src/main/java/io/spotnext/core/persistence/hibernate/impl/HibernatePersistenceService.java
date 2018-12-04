@@ -408,7 +408,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 					throw new ModelSaveException("Could not save given items: " + e.getMessage(), e);
 
-				} catch (final PersistenceException e) {
+				} catch (final Exception e) {
 					final Throwable rootCause = ExceptionUtils.getRootCause(e);
 					final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
 
