@@ -3,8 +3,6 @@ package io.spotnext.core.testing;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,9 +12,11 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.TransactionStatus;
 
@@ -40,6 +40,7 @@ import io.spotnext.support.util.ClassUtil;
  * @version 1.0
  * @since 1.0
  */
+@Import(TestConfiguration.class)
 @TestPropertySource(locations = "classpath:/core-testing.properties", properties = { "spring.main.allow-bean-definition-overriding=true" })
 @RunWith(SpotJunitRunner.class)
 @IntegrationTest
@@ -86,7 +87,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	public static void shutdown() {
 	}
 
-	private ThreadLocal<TransactionStatus> transactionStatus = new ThreadLocal<>();
+	private final ThreadLocal<TransactionStatus> transactionStatus = new ThreadLocal<>();
 
 	/**
 	 * Called before each test is executed.
@@ -94,7 +95,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	 * @throws InterruptedException if the thead wait was interrupted
 	 * @throw IllegalStateException if module initialization didn't finish within the max allowed time.
 	 */
-	//@SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
+	// @SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
 	@Before
 	public void beforeTest() throws InterruptedException {
 		MockitoAnnotations.initMocks(this);

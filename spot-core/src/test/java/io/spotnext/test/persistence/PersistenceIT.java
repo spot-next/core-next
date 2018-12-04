@@ -24,6 +24,7 @@ import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
+import io.spotnext.core.testing.TestMocker;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
 import io.spotnext.itemtype.core.internationalization.Currency;
@@ -34,6 +35,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
+
+	@Autowired
+	protected TestMocker testMocker;
 
 	@Autowired
 	protected SequenceGenerator sequenceGenerator;
@@ -239,7 +243,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(localization.getUid(), loaded.getUid());
 
 		// test using map
-		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
+		final Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
 		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
 
 		Assert.assertEquals(localization.getUid(), resultFromMap.getUid());
@@ -304,38 +308,16 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
 	}
 
-	Catalog mockCatalog() {
-		final Catalog catalog = modelService.create(Catalog.class);
-		catalog.setUid("testCatalog");
-
-		final CatalogVersion catalogVersionOnline = modelService.create(CatalogVersion.class);
-		catalogVersionOnline.setCatalog(catalog);
-		catalogVersionOnline.setUid("Online");
-
-		final CatalogVersion catalogVersionStaged = modelService.create(CatalogVersion.class);
-		catalogVersionStaged.setCatalog(catalog);
-		catalogVersionStaged.setUid("Staged");
-		catalogVersionStaged.setSynchronizationTarget(catalogVersionOnline);
-
-		modelService.save(catalogVersionOnline);
-		modelService.save(catalogVersionStaged);
-		modelService.refresh(catalog);
-
-		Assert.assertEquals(2, catalog.getVersions().size());
-
-		return catalog;
-	}
-
 	/**
 	 * If the many side of a {@link OneToMany} relation has set its property to unique=true, it has to be removed when it is removed from the one-side's
 	 * collection property.
 	 */
 	@Test(expected = ModelNotFoundException.class)
 	public void testOneToManyWithUniqueConstraint() {
-		final Catalog catalog = mockCatalog();
+		final Catalog catalog = testMocker.mockCatalog();
 
 		// this must trigger a cascade-remove on the many-side
-		CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Staged".equals(v.getUid())).findFirst().get();
+		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Staged".equals(v.getUid())).findFirst().get();
 		catalog.getVersions().remove(cvToDelete);
 
 		// should delete catalogversion, as the catalog is part of its unique key constraint
@@ -351,11 +333,11 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Ignore
 	@Test(expected = ModelNotFoundException.class)
 	public void testOneToManyWithUniqueConstraint_WithReference() {
-		final Catalog catalog = mockCatalog();
+		final Catalog catalog = testMocker.mockCatalog();
 
 		// this must trigger a cascade-remove on the many-side
 		// difference here is that the online catalog is referenced by the staged catalog from
-		CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
+		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
 		catalog.getVersions().remove(cvToDelete);
 
 		// should delete catalogversion, as the catalog is part of its unique key constraint
