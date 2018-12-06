@@ -191,6 +191,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				List<T> results = null;
 
 				final Session session = getSession();
+				session.setDefaultReadOnly(sourceQuery.isReadOnly());
 
 				// if this is an item type, we just load the entities
 				// if it is a "primitive" natively supported type we can also
@@ -206,9 +207,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						throw new QueryException("Could not parse query", e);
 					}
 
-					// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
-					// true);
-
+					setAccessLevel(sourceQuery, query);
 					setCacheSettings(session, sourceQuery, query);
 					setFetchSubGraphsHint(session, sourceQuery, query);
 					setParameters(sourceQuery.getParams(), query);
@@ -231,9 +230,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
 					}
 
-					// optimize query query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
-					// true);
-
+					setAccessLevel(sourceQuery, (Query<T>) query);
 					setParameters(sourceQuery.getParams(), query);
 					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 
@@ -304,6 +301,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		} catch (final Exception e) {
 			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
 		}
+	}
+
+	private <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setAccessLevel(Q sourceQuery, Query<T> query) {
+		query.setReadOnly(sourceQuery.isReadOnly());
 	}
 
 	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
@@ -604,7 +605,12 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			setFetchSubGraphsHint(session, sourceQuery, query);
 			setCacheSettings(session, sourceQuery, query);
 
-			final List<T> results = ((Query<T>) query).getResultList();
+			final Query<T> queryObj = ((Query<T>) query);
+			
+			// set proper access level
+			setAccessLevel(sourceQuery, queryObj);
+			
+			final List<T> results = queryObj.getResultList();
 
 			return results;
 		});

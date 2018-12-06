@@ -87,6 +87,9 @@ public class QueryRestEndpoint extends AbstractRestEndpoint {
 			final JpqlQuery<T> query = new JpqlQuery<T>(queryString, resultType);
 			query.setPage(page);
 			query.setPageSize(pageSize);
+			
+			// allow only queries, not inserts or updates to protect from SQL injections
+			query.setReadOnly(true);
 
 			// important to avoid the N+1 problem
 			query.setEagerFetchRelations(true);

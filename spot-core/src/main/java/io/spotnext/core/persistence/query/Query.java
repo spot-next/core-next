@@ -21,6 +21,7 @@ public abstract class Query<T> {
 	protected boolean ignoreCache = false;
 	protected boolean clearCaches = false;
 	protected boolean cachable = true;
+	protected boolean readOnly = false;
 
 	/**
 	 * <p>Constructor for Query.</p>
@@ -78,7 +79,7 @@ public abstract class Query<T> {
 	}
 
 	/**
-	 * Sets the page size for pagination  (similar to the LIMIT SQL keyword).
+	 * Sets the page size for pagination (similar to the LIMIT SQL keyword).
 	 *
 	 * @param pageSize a int.
 	 */
@@ -198,6 +199,22 @@ public abstract class Query<T> {
 	 */
 	public void setCachable(boolean cachable) {
 		this.cachable = cachable;
+	}
+
+	/**
+	 * @return true if the query should be executed in a read-only manner (INSERT and UPDATEs won't work)
+	 */
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	/**
+	 * Specifies that the query should not be able to alter data.
+	 * 
+	 * @param readOnly
+	 */
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
 	}
 
 }
