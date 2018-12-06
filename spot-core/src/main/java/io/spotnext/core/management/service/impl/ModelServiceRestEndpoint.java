@@ -14,7 +14,6 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,7 +26,6 @@ import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.exception.ModelValidationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.http.DataResponse;
-import io.spotnext.core.infrastructure.http.ExceptionResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.http.HttpStatus;
 import io.spotnext.core.infrastructure.service.ModelService;
@@ -480,12 +478,6 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
-	}
-
-	private HttpResponse handleGenericException(final Exception e) {
-		final Throwable cause = (e instanceof TransactionException && e.getCause() != null) ? e.getCause() : e;
-
-		return ExceptionResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.general", cause.getClass().getSimpleName() + ": " + cause.getMessage());
 	}
 
 	private String getOrderByClause(final Request request) {

@@ -48,6 +48,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementException;
 import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
@@ -109,9 +110,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * </p>
 	 *
 	 * @param entityManagerFactory a {@link javax.persistence.EntityManagerFactory} object.
-	 * @param transactionService   a {@link io.spotnext.core.persistence.service.TransactionService} object.
+	 * @param transactionService a {@link io.spotnext.core.persistence.service.TransactionService} object.
 	 * @param configurationService a {@link io.spotnext.infrastructure.service.ConfigurationService} object.
-	 * @param loggingService       a {@link io.spotnext.infrastructure.service.LoggingService} object.
+	 * @param loggingService a {@link io.spotnext.infrastructure.service.LoggingService} object.
 	 */
 	@Autowired
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
@@ -243,6 +244,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						if (sourceQuery.isClearCaches()) {
 							session.clear();
 						}
+					} else if (Map.class.isAssignableFrom(sourceQuery.getResultClass())) {
+						// all selected columns must specify an alias, otherwise the column value would not appear in the map!
+						query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+						results = (List<T>) query.list();
 					} else {
 						final List<Tuple> resultList = query.list();
 						results = new ArrayList<>();
@@ -253,30 +258,40 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 							final List<Object> values = t.getElements().stream().map(e -> t.get(e))
 									.collect(Collectors.toList());
-							Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-							// if the POJO can't be instantiated, we try to
-							// create it manually and inject the data using
-							// reflection for this to work, each selected column
-							// has to have the same alias as the pojo's
-							// property!
-							if (!pojo.isPresent()) {
-								final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+							if (Tuple.class.isAssignableFrom(sourceQuery.getResultClass())) {
+								// if the only object in the tuple is an item, we can directly return it, otherwise we just return a list of values
+								if (values != null && values.size() == 1 && values.get(0) instanceof Item) {
+									results.add((T) values.get(0));
+								} else {
+									results.add((T) values);
+								}
+							} else {
+								Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-								if (obj.isPresent()) {
-									final Object o = obj.get();
-									t.getElements().stream()
-											.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+								// if the POJO can't be instantiated, we try to
+								// create it manually and inject the data using
+								// reflection for this to work, each selected column
+								// has to have the same alias as the pojo's
+								// property!
+								if (!pojo.isPresent()) {
+									final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+
+									if (obj.isPresent()) {
+										final Object o = obj.get();
+										t.getElements().stream()
+												.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+									}
+
+									pojo = obj;
 								}
 
-								pojo = obj;
-							}
-
-							if (pojo.isPresent()) {
-								results.add(pojo.get());
-							} else {
-								throw new InstantiationException(String.format("Could not instantiate result type '%s'",
-										sourceQuery.getResultClass()));
+								if (pojo.isPresent()) {
+									results.add(pojo.get());
+								} else {
+									throw new InstantiationException(String.format("Could not instantiate result type '%s'",
+											sourceQuery.getResultClass()));
+								}
 							}
 						}
 					}

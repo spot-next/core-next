@@ -3,6 +3,9 @@ package io.spotnext.core.management.support.data;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * <p>PageablePayload class.</p>
  *
@@ -10,11 +13,12 @@ import java.util.List;
  * @version 1.0
  * @since 1.0
  */
+@JsonInclude(Include.NON_NULL)
 public class PageablePayload<T> {
 	private final List<T> data;
 	private final int page;
 	private final int pageSize;
-	private final long totalCount;
+	private final Long totalCount;
 
 	/**
 	 * <p>Constructor for PageablePayload.</p>
@@ -23,7 +27,7 @@ public class PageablePayload<T> {
 	 * @param page a int.
 	 * @param pageSize a int.
 	 */
-	public PageablePayload(final List<T> objects, final int page, final int pageSize, long totalCount) {
+	public PageablePayload(final List<T> objects, final int page, final int pageSize, Long totalCount) {
 		this.data = Collections.unmodifiableList(objects);
 		this.page = page;
 		this.pageSize = pageSize;
@@ -62,7 +66,7 @@ public class PageablePayload<T> {
 	 *
 	 * @return a int.
 	 */
-	public long getTotalCount() {
+	public Long getTotalCount() {
 		return totalCount;
 	}
 
