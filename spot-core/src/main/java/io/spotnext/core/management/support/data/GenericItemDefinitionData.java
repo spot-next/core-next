@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.MappedSuperclass;
+
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 
@@ -22,6 +24,7 @@ public class GenericItemDefinitionData {
 	protected String typeClass;
 	protected String packageName;
 	protected boolean isAbstract;
+	protected boolean isPersistable;
 
 	protected List<Annotation> typeAnnotations = new ArrayList<>();
 
@@ -211,6 +214,22 @@ public class GenericItemDefinitionData {
 	 */
 	public void setAbstract(boolean isAbstract) {
 		this.isAbstract = isAbstract;
+	}
+
+	/**
+	 * Specifies if the item type is a JPA entity and hence persistable, or if it is just a {@link MappedSuperclass} (not persistable)
+	 * @return true if the type is persistable
+	 */
+	public boolean isPersistable() {
+		return isPersistable;
+	}
+
+	/**
+	 * @see GenericItemDefinitionData#isPersistable
+	 * @param isPersistable
+	 */
+	public void setPersistable(boolean isPersistable) {
+		this.isPersistable = isPersistable;
 	}
 
 }

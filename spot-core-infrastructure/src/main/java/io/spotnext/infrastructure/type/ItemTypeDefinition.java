@@ -2,6 +2,8 @@ package io.spotnext.infrastructure.type;
 
 import java.util.Map;
 
+import javax.persistence.MappedSuperclass;
+
 import org.apache.commons.collections4.MapUtils;
 
 /**
@@ -18,6 +20,7 @@ public class ItemTypeDefinition {
 	protected final String typeName;
 	protected final String packageName;
 	protected final boolean isAbstract;
+	protected final boolean isPersistable;
 	protected final Map<String, ItemTypePropertyDefinition> properties;
 
 	/**
@@ -31,7 +34,7 @@ public class ItemTypeDefinition {
 	 * @param packageName a {@link java.lang.String} object.
 	 * @param properties  a {@link java.util.Map} object.
 	 */
-	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName, boolean isAbstract,
+	public ItemTypeDefinition(String typeCode, String typeClass, String typeName, String packageName, boolean isAbstract, boolean isPersistable,
 			Map<String, ItemTypePropertyDefinition> properties) {
 
 		this.typeCode = typeCode;
@@ -39,6 +42,7 @@ public class ItemTypeDefinition {
 		this.typeName = typeName;
 		this.packageName = packageName;
 		this.isAbstract = isAbstract;
+		this.isPersistable = isPersistable;
 		this.properties = properties;
 	}
 
@@ -92,6 +96,14 @@ public class ItemTypeDefinition {
 	 */
 	public boolean isAbstract() {
 		return isAbstract;
+	}
+	
+	/**
+	 * Specifies if the item type is a JPA entity and hence persistable, or if it is just a {@link MappedSuperclass} (not persistable)
+	 * @return true if the type is persistable
+	 */
+	public boolean isPersistable() {
+		return isPersistable;
 	}
 
 	/**

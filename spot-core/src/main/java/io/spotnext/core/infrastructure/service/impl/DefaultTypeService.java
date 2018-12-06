@@ -140,7 +140,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 				applicationContext.registerAlias(itemTypeClass.getName(), t.getTypeCode());
 
 				itemTypeDefinitions.put(t.getTypeCode(), createItemTypeDefinition(t.getTypeCode(), t.getName(),
-						t.getPackage(), t.isAbstract(), getItemTypeProperties(itemTypeClass)));
+						t.getPackage(), t.isAbstract(), t.isPersistable(), getItemTypeProperties(itemTypeClass)));
 			} catch (ClassNotFoundException e) {
 				throw new BeanCreationException(
 						String.format("Cannot instantiate class object for item type %s.", t.getTypeCode()), e);
@@ -214,9 +214,10 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	}
 
 	protected ItemTypeDefinition createItemTypeDefinition(final String typeCode, String className, String packageName, Boolean isAbstract,
-			Map<String, ItemTypePropertyDefinition> properties) {
+			Boolean isPersistable, Map<String, ItemTypePropertyDefinition> properties) {
 
-		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, BooleanUtils.toBoolean(isAbstract), properties);
+		return new ItemTypeDefinition(typeCode, packageName + "." + className, className, packageName, BooleanUtils.toBoolean(isAbstract),
+				BooleanUtils.toBoolean(isPersistable), properties);
 	}
 
 	/**
