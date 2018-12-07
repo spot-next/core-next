@@ -3,6 +3,10 @@
 ## **1.0.x-RELEASE** `~2019-01-XX`
 - Final release
 
+## **1.0.20-BETA** `2018-12-10`
+- JPQL Query REST interface
+- Fixed pagination for REST endpoints
+
 ## **1.0.19-BETA** `2018-11-23`
 - Support building with Java 10 (releases from now on will be java 10 only)
 - Fixed "total count" in REST responses

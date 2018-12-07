@@ -15,7 +15,7 @@ public class QueryResult<T> {
 	private final List<T> results;
 	private final int pageSize;
 	private final int page;
-	private final long totalCount;
+	private final Long totalCount;
 
 	/**
 	 * @param results
@@ -25,7 +25,7 @@ public class QueryResult<T> {
 	 * @param pageSize
 	 *            the page size
 	 */
-	public QueryResult(final List<T> results, final int page, final int pageSize, final long totalCount) {
+	public QueryResult(final List<T> results, final int page, final int pageSize, final Long totalCount) {
 		if (results != null) {
 			this.results = results;
 		} else {
@@ -75,7 +75,7 @@ public class QueryResult<T> {
 	/**
 	 * @return the amount of result objects.
 	 */
-	public long getTotalCount() {
+	public Long getTotalCount() {
 		return totalCount;
 	}
 

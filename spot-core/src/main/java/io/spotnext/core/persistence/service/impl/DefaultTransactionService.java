@@ -41,7 +41,7 @@ public class DefaultTransactionService extends AbstractService implements Transa
 
 	private final static NumberFormat NF = new DecimalFormat("0.0###");
 
-	@Value("${service.persistene.transaction.timeout}")
+	@Value("${service.persistence.transaction.timeout}")
 	protected int transactionTimeoutInSec = 60;
 
 	@Autowired

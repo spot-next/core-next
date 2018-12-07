@@ -18,6 +18,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.infrastructure.type.Item;
 
 /**
@@ -58,10 +59,10 @@ public interface PersistenceService {
 	 * Returns the paginated results for the given query.
 	 *
 	 * @param query a {@link io.spotnext.core.persistence.query.JpqlQuery} object.
-	 * @return a {@link java.util.List} object.
+	 * @return the query result, never null
 	 * @throws io.spotnext.core.persistence.exception.QueryException if any.
 	 */
-	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
+	<T> QueryResult<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
 	 * Returns an entity with the given.

@@ -2,6 +2,7 @@ package io.spotnext.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -69,7 +71,9 @@ import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
+import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.query.SortOrder;
 import io.spotnext.core.persistence.query.SortOrder.OrderDirection;
 import io.spotnext.core.persistence.service.TransactionService;
@@ -180,15 +184,46 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		Logger.info(String.format("Persistence service initialized"));
 	}
 
+	private QueryResult executeQuery(JpqlQuery sourceQuery, Query query) {
+		List values = new ArrayList<>();
+		final int totalCount;
+
+		if (sourceQuery.getPageSize() > 0) {
+			int start = (sourceQuery.getPage() > 0 ? sourceQuery.getPage() - 1 : 0) * sourceQuery.getPageSize();
+			ScrollableResults scrollResult = query.scroll();
+
+			if (start > 0) {
+				scrollResult.scroll(start);
+			}
+
+			for (int s = 0; s < sourceQuery.getPageSize(); s++) {
+				Object value = scrollResult.get();
+				values.add(value);
+				if (!scrollResult.scroll(1)) {
+					break;
+				}
+			}
+
+			scrollResult.last();
+			totalCount = scrollResult.getRowNumber();
+		} else {
+			values = query.list();
+			totalCount = values.size();
+		}
+
+		QueryResult result = new QueryResult(values, sourceQuery.getPage(), sourceQuery.getPageSize(), Long.valueOf(totalCount));
+		return result;
+	}
+
 	/** {@inheritDoc} */
 	// @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
-	public <T> List<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
+	public <T> QueryResult<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 		bindSession();
 
 		try {
 			return transactionService.execute(() -> {
-				List<T> results = null;
+				QueryResult<T> results = null;
 
 				final Session session = getSession();
 				session.setDefaultReadOnly(sourceQuery.isReadOnly());
@@ -211,89 +246,94 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					setCacheSettings(session, sourceQuery, query);
 					setFetchSubGraphsHint(session, sourceQuery, query);
 					setParameters(sourceQuery.getParams(), query);
-					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
-					results = query.getResultList();
+//					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 
+					results = executeQuery(sourceQuery, query);
 				} else {
 					// otherwise we load each value into a list of tuples
 					// in that case the selected columns need to be aliased in
-					// case
-					// the given result
-					// type has no constructor that exactly matches the returned
-					// columns' types, as
-					// otherwise we cannot map the row values to properties.
-
-					final Query<Tuple> query;
-					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
-						query = session.createQuery(sourceQuery.getQuery());
-					} else {
-						query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
-					}
-
-					setAccessLevel(sourceQuery, (Query<T>) query);
-					setParameters(sourceQuery.getParams(), query);
-					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
+					// case the given result type has no constructor that exactly matches the returned
+					// columns' types, as otherwise we cannot map the row values to properties.
 
 					// only try to load results if the result type is not Void
-					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
-						query.executeUpdate();
+					if (sourceQuery.isExecuteUpdate()) {
+						final Query<Integer> query = session.createQuery(sourceQuery.getQuery());
+
+						setAccessLevel(sourceQuery, (Query<T>) query);
+						setParameters(sourceQuery.getParams(), query);
+
+						int resultCode = query.executeUpdate();
 						session.flush();
 						if (sourceQuery.isClearCaches()) {
 							session.clear();
 						}
-					} else if (Map.class.isAssignableFrom(sourceQuery.getResultClass())) {
-						// all selected columns must specify an alias, otherwise the column value would not appear in the map!
-						query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-						results = (List<T>) query.list();
+
+						boolean returnTypeSpecified = !Void.class.isAssignableFrom(sourceQuery.getResultClass());
+
+						results = (QueryResult<T>) new QueryResult<Integer>(returnTypeSpecified ? Arrays.asList(resultCode) : null, 0, 0, null);
 					} else {
-						final List<Tuple> resultList = query.list();
-						results = new ArrayList<>();
+						// fetch the temporary Tuple (!) result and convert it into the target type manually
+						final Query<Tuple> query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
 
-						for (final Tuple t : resultList) {
-							// first try to create the pojo using a constructor
-							// that matches the result's column types
+						setAccessLevel(sourceQuery, (Query<T>) query);
+						setParameters(sourceQuery.getParams(), query);
 
-							final List<Object> values = t.getElements().stream().map(e -> t.get(e))
-									.collect(Collectors.toList());
+						if (Map.class.isAssignableFrom(sourceQuery.getResultClass())) {
+							// all selected columns must specify an alias, otherwise the column value would not appear in the map!
+							query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+							// results = (List<T>) query.list();
+							results = executeQuery(sourceQuery, query);
+						} else {
+							final QueryResult<Tuple> tempResults = (QueryResult<Tuple>) executeQuery(sourceQuery, query);
+							List<T> finalResults = new ArrayList<>();
+							
+							for (final Tuple t : tempResults.getResultList()) {
+								// first try to create the pojo using a constructor
+								// that matches the result's column types
 
-							if (Tuple.class.isAssignableFrom(sourceQuery.getResultClass())) {
-								// if the only object in the tuple is an item, we can directly return it, otherwise we just return a list of values
-								if (values != null && values.size() == 1 && values.get(0) instanceof Item) {
-									results.add((T) values.get(0));
+								final List<Object> values = t.getElements().stream().map(e -> t.get(e))
+										.collect(Collectors.toList());
+
+								if (Tuple.class.isAssignableFrom(sourceQuery.getResultClass())) {
+									// if the only object in the tuple is an item, we can directly return it, otherwise we just return a list of values
+									if (values != null && values.size() == 1 && values.get(0) instanceof Item) {
+										finalResults.add((T) values.get(0));
+									} else {
+										finalResults.add((T) values);
+									}
 								} else {
-									results.add((T) values);
-								}
-							} else {
-								Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
+									Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
 
-								// if the POJO can't be instantiated, we try to
-								// create it manually and inject the data using
-								// reflection for this to work, each selected column
-								// has to have the same alias as the pojo's
-								// property!
-								if (!pojo.isPresent()) {
-									final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+									// if the POJO can't be instantiated, we try to
+									// create it manually and inject the data using
+									// reflection for this to work, each selected column
+									// has to have the same alias as the pojo's
+									// property!
+									if (!pojo.isPresent()) {
+										final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
 
-									if (obj.isPresent()) {
-										final Object o = obj.get();
-										t.getElements().stream()
-												.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+										if (obj.isPresent()) {
+											final Object o = obj.get();
+											t.getElements().stream()
+													.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+										}
+
+										pojo = obj;
 									}
 
-									pojo = obj;
-								}
-
-								if (pojo.isPresent()) {
-									results.add(pojo.get());
-								} else {
-									throw new InstantiationException(String.format("Could not instantiate result type '%s'",
-											sourceQuery.getResultClass()));
+									if (pojo.isPresent()) {
+										finalResults.add(pojo.get());
+									} else {
+										throw new InstantiationException(String.format("Could not instantiate result type '%s'",
+												sourceQuery.getResultClass()));
+									}
 								}
 							}
+							
+							results = new QueryResult<>(finalResults, sourceQuery.getPage(), sourceQuery.getPageSize(), tempResults.getTotalCount());
 						}
 					}
 				}
-
 				return results;
 			});
 		} catch (final QueryException e) {
@@ -606,10 +646,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			setCacheSettings(session, sourceQuery, query);
 
 			final Query<T> queryObj = ((Query<T>) query);
-			
+
 			// set proper access level
 			setAccessLevel(sourceQuery, queryObj);
-			
+
 			final List<T> results = queryObj.getResultList();
 
 			return results;
