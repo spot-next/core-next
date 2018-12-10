@@ -40,6 +40,7 @@ import org.hibernate.LockMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.internal.FetchingScrollableResultsImpl;
 import org.hibernate.query.Query;
 import org.hibernate.stat.Statistics;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -82,6 +83,7 @@ import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 import io.spotnext.support.util.ClassUtil;
+import io.spotnext.support.util.MiscUtil;
 
 /**
  * <p>
@@ -186,32 +188,46 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	private QueryResult executeQuery(JpqlQuery sourceQuery, Query query) {
 		List values = new ArrayList<>();
-		final int totalCount;
+		Integer totalCount = null;
 
 		if (sourceQuery.getPageSize() > 0) {
 			int start = (sourceQuery.getPage() > 0 ? sourceQuery.getPage() - 1 : 0) * sourceQuery.getPageSize();
-			ScrollableResults scrollResult = query.scroll();
 
-			if (start > 0) {
-				scrollResult.scroll(start);
-			}
+			ScrollableResults scrollResult = null;
 
-			for (int s = 0; s < sourceQuery.getPageSize(); s++) {
-				Object value = scrollResult.get();
-				values.add(value);
-				if (!scrollResult.scroll(1)) {
-					break;
+			try {
+				scrollResult = query.scroll();
+
+				if (start > 0) {
+					scrollResult.scroll(start);
 				}
-			}
 
-			scrollResult.last();
-			totalCount = scrollResult.getRowNumber();
+				do {
+					Object value = scrollResult.get();
+
+					// this should actually not happen, but it does ...
+					// TODO: check and fix null result objects
+					if (value != null) {
+						values.add(value);
+					}
+				} while (values.size() < sourceQuery.getPageSize() && scrollResult.next());
+
+				if (scrollResult.last()) {
+					// different implementations handle this either with a start index of 0 or 1 ...
+					totalCount = scrollResult.getRowNumber();
+					if (!(scrollResult instanceof FetchingScrollableResultsImpl)) {
+						totalCount++;
+					}
+				}
+			} finally {
+				MiscUtil.closeQuietly(scrollResult);
+			}
 		} else {
 			values = query.list();
 			totalCount = values.size();
 		}
 
-		QueryResult result = new QueryResult(values, sourceQuery.getPage(), sourceQuery.getPageSize(), Long.valueOf(totalCount));
+		QueryResult result = new QueryResult(values, sourceQuery.getPage(), sourceQuery.getPageSize(), totalCount != null ? Long.valueOf(totalCount) : null);
 		return result;
 	}
 
@@ -281,17 +297,37 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						if (Map.class.isAssignableFrom(sourceQuery.getResultClass())) {
 							// all selected columns must specify an alias, otherwise the column value would not appear in the map!
 							query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-							// results = (List<T>) query.list();
 							results = executeQuery(sourceQuery, query);
 						} else {
 							final QueryResult<Tuple> tempResults = (QueryResult<Tuple>) executeQuery(sourceQuery, query);
 							List<T> finalResults = new ArrayList<>();
-							
-							for (final Tuple t : tempResults.getResultList()) {
+
+							// if the return type is Tuple, a tuple array is returned
+							// therefore we have to extract the first tuple first and use that as a base object
+							// if no return type is set, it is only a Tuple
+							for (final Object entry : tempResults.getResults()) {
 								// first try to create the pojo using a constructor
 								// that matches the result's column types
 
-								final List<Object> values = t.getElements().stream().map(e -> t.get(e))
+								Tuple t = null;
+
+								if (entry != null && entry.getClass().isArray()) {
+									Object[] entryArray = ((Object[]) entry);
+
+									if (entryArray.length > 0) {
+										t = (Tuple) entryArray[0];
+									}
+								} else if (entry instanceof Tuple) {
+									t = (Tuple) entry;
+								}
+
+								if (t == null) {
+									continue;
+								}
+
+								final Tuple tupleEntry = t;
+
+								final List<Object> values = t.getElements().stream().map(e -> tupleEntry.get(e))
 										.collect(Collectors.toList());
 
 								if (Tuple.class.isAssignableFrom(sourceQuery.getResultClass())) {
@@ -315,7 +351,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 										if (obj.isPresent()) {
 											final Object o = obj.get();
 											t.getElements().stream()
-													.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+													.forEach(el -> ClassUtil.setField(o, el.getAlias(), tupleEntry.get(el.getAlias())));
 										}
 
 										pojo = obj;
@@ -329,7 +365,7 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 									}
 								}
 							}
-							
+
 							results = new QueryResult<>(finalResults, sourceQuery.getPage(), sourceQuery.getPageSize(), tempResults.getTotalCount());
 						}
 					}

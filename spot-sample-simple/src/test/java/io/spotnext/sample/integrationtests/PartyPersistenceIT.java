@@ -61,8 +61,8 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<Party> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResultList().size());
-		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getTitle());
+		Assert.assertEquals(1, result.getResults().size());
+		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
 	}
 
 	@Test
@@ -72,8 +72,8 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<Party> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResultList().size());
-		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getTitle());
+		Assert.assertEquals(1, result.getResults().size());
+		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
 	}
 
 	@Test
@@ -96,9 +96,9 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<PartyData> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResultList().size());
-		Assert.assertEquals(PartyData.class, result.getResultList().get(0).getClass());
-		Assert.assertEquals(PARTY_TITLE, result.getResultList().get(0).getPartyTitle());
+		Assert.assertEquals(1, result.getResults().size());
+		Assert.assertEquals(PartyData.class, result.getResults().get(0).getClass());
+		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getPartyTitle());
 	}
 
 	public static class PartyData {

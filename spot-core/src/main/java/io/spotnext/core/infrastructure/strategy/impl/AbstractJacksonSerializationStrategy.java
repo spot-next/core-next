@@ -26,6 +26,7 @@ import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.strategy.SerializationStrategy;
 import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.spring.PostConstructor;
+import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.infrastructure.type.Item;
 import spark.ModelAndView;
 
@@ -52,7 +53,7 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
 		jacksonMapper.addMixIn(ModelAndView.class, ModelAndViewMixIn.class);
-		jacksonMapper.addMixIn(ModelAndView.class, QueryResultMixIn.class);
+		jacksonMapper.addMixIn(QueryResult.class, QueryResultMixIn.class);
 
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
