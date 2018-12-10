@@ -1,8 +1,8 @@
-INSERT Catalog ; uid[unique=true] ; name
+INSERT Catalog ; uid              ; name
                ; Default          ; Default catalog
                ; Media            ; Media catalog
 
-INSERT CatalogVersion ; uid[unique=true] ; catalog(uid)[unique=true] ; name                           ; synchronizationTarget(catalog(uid),uid) ; synchronizedLanguages(iso3Code)[default=eng] ;
+INSERT CatalogVersion ; uid              ; catalog(uid)              ; name                           ; synchronizationTarget(catalog(uid),uid) ; synchronizedLanguages(iso3Code)[default=eng] ;
                       ; Online           ; Default                   ; Default Online catalog version ;                                         ;                                              ;
                       ; Online           ; Media                     ; Media Online catalog version   ;                                         ;                                              ;
                       ; Staged           ; Default                   ; Default Staged catalog version ; Default:Online                          ;                                              ;

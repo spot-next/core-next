@@ -186,7 +186,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final Pageable<T> pageableData = new PageablePayload<>(result.getResults(), result.getPage(), result.getPageSize(),
 					result.getTotalCount());
 
-			if (pageableData.getTotalCount() > 0) {
+			if (pageableData.getTotalCount() != null && pageableData.getTotalCount() > 0) {
 				return DataResponse.ok().withPayload(pageableData);
 			} else {
 				return DataResponse.notFound().withPayload(pageableData);
