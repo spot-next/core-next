@@ -26,9 +26,27 @@ import io.spotnext.support.exception.UnsupportedLocale;
 public class MiscUtil {
 
 	/**
-	 * Calls close() on all given objects that implement the {@link java.io.Closeable} interface. Doesn't throw any exceptions at all.
+	 * Calls close() on all given objects that implement the {@link AutoCloseable} interface. Doesn't throw any exceptions at all.
 	 *
-	 * @param closableObjects a {@link java.io.Closeable} object.
+	 * @param closableObjects a {@link AutoCloseable} object.
+	 */
+	public static void closeQuietly(final AutoCloseable... closableObjects) {
+		for (final AutoCloseable c : closableObjects) {
+			try {
+				if (c != null) {
+					c.close();
+				}
+			} catch (final Exception e) {
+				// LOG.log(Level.WARN, String.format("An error occured while closing %s",
+				// e.get));
+			}
+		}
+	}
+
+	/**
+	 * Calls close() on all given objects that implement the {@link Closeable} interface. Doesn't throw any exceptions at all.
+	 *
+	 * @param closableObjects a {@link Closeable} object.
 	 */
 	public static void closeQuietly(final Closeable... closableObjects) {
 		for (final Closeable c : closableObjects) {
@@ -48,7 +66,7 @@ public class MiscUtil {
 	 * intOrDefault.
 	 * </p>
 	 *
-	 * @param value        a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.String} object.
 	 * @param defaultValue a int.
 	 * @return the parsed int value, otherwise return the defaultValue.
 	 */
@@ -61,7 +79,7 @@ public class MiscUtil {
 	}
 
 	/**
-	 * @param value        the input value
+	 * @param value the input value
 	 * @param defaultValue the default value
 	 * @return the prased value if it is positive, otherwise return the defaultValue.
 	 */
@@ -81,7 +99,7 @@ public class MiscUtil {
 	 * longOrDefault.
 	 * </p>
 	 *
-	 * @param value        a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.String} object.
 	 * @param defaultValue a long.
 	 * @return a long.
 	 */
@@ -98,7 +116,7 @@ public class MiscUtil {
 	 * doubleOrDefault.
 	 * </p>
 	 *
-	 * @param value        a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.String} object.
 	 * @param defaultValue a double.
 	 * @return a double.
 	 */
@@ -115,7 +133,7 @@ public class MiscUtil {
 	 * floatOrDefault.
 	 * </p>
 	 *
-	 * @param value        a {@link java.lang.String} object.
+	 * @param value a {@link java.lang.String} object.
 	 * @param defaultValue a float.
 	 * @return a float.
 	 */
@@ -145,8 +163,8 @@ public class MiscUtil {
 	 * </p>
 	 *
 	 * @param collection a {@link java.util.Collection} object.
-	 * @param arrayType  a {@link java.lang.Class} object.
-	 * @param            <T> a T object.
+	 * @param arrayType a {@link java.lang.Class} object.
+	 * @param <T> a T object.
 	 * @return an array of T[] objects.
 	 */
 	public static <T> T[] toArray(final Collection<T> collection, final Class<T> arrayType) {
@@ -245,7 +263,7 @@ public class MiscUtil {
 	/**
 	 * Basically the same as {@link #$(Supplier)} but instead of an empty {@link java.util.Optional} it returns the given default value.
 	 *
-	 * @param expression   the java expression to evaluate
+	 * @param expression the java expression to evaluate
 	 * @param defaultValue the default value to return in case of null (or an {@link java.lang.NullPointerException}
 	 * @return returns the evaluated result or the default value in case it's null
 	 * @param <T> a T object.

@@ -25,6 +25,7 @@ import io.spotnext.core.management.support.BasicAuthenticationFilter;
 import io.spotnext.core.management.support.data.PageablePayload;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import io.spotnext.core.persistence.query.JpqlQuery;
+import io.spotnext.core.persistence.query.Pageable;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.itemtype.core.beans.SerializationConfiguration;
@@ -95,8 +96,8 @@ public class QueryRestEndpoint extends AbstractRestEndpoint {
 			query.setEagerFetchRelations(true);
 			final QueryResult<T> results = queryService.query(query);
 
-			final PageablePayload<T> pageableData = new PageablePayload<>(results.getResultList(), results.getPage(), results.getPageSize(),
-					null);
+			final Pageable<T> pageableData = new PageablePayload<>(results.getResults(), results.getPage(), results.getPageSize(),
+					results.getTotalCount());
 
 			return DataResponse.ok().withPayload(pageableData);
 		} catch (final Exception e) {

@@ -17,7 +17,7 @@ import io.spotnext.core.infrastructure.http.ModelAndView;
  */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
 @JsonIgnoreProperties({ "model", "viewName" })
-@JsonPropertyOrder(value = { "httpStatus", "warnings", "errors", "payload" })
+@JsonPropertyOrder(value = { "httpStatus", "warnings", "errors", "payload", "data" })
 public abstract class ModelAndViewMixIn {
 
 	@JsonIgnore

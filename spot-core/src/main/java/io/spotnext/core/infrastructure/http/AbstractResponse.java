@@ -13,7 +13,7 @@ import spark.ModelAndView;
  */
 public abstract class AbstractResponse extends ModelAndView implements HttpResponse {
 
-	private Object payload;
+	private Object data;
 	private HttpStatus httpStatus;
 
 	protected AbstractResponse(HttpStatus httpStatus) {
@@ -29,7 +29,7 @@ public abstract class AbstractResponse extends ModelAndView implements HttpRespo
 	/** {@inheritDoc} */
 	@Override
 	public Object getPayload() {
-		return payload;
+		return data;
 	}
 	
 	/** {@inheritDoc} */
@@ -41,7 +41,7 @@ public abstract class AbstractResponse extends ModelAndView implements HttpRespo
 	/** {@inheritDoc} */
 	@Override
 	public <R extends HttpResponse> R withPayload(Object payload) {
-		this.payload = payload;
+		this.data = payload;
 		return (R) this;
 	}
 

@@ -48,7 +48,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.setEagerFetchRelations(true);
 		final QueryResult<UserGroup> result = queryService.query(query);
 
-		Assert.assertTrue(result.getResultList().size() > 0);
+		Assert.assertTrue(result.getResults().size() > 0);
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
+		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<String> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0), user.getUid());
+		Assert.assertEquals(result.getResults().get(0), user.getUid());
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
+		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	// not yet working as the column name is not automatically used as alias.
@@ -89,8 +89,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
+		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	@Test
@@ -98,8 +98,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("testUser"));
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResultList().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResultList().get(0).getShortName(), user.getShortName());
+		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	protected static class UserData {

@@ -80,7 +80,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	public void testGetAllModels() {
 		given().relaxedHTTPSValidation().get("/country").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload.data.size()", Matchers.greaterThan(0));
+				.body("data.results.size()", Matchers.greaterThan(0));
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 		get("/user/" + user.getId()).then()//
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload.id", Matchers.equalTo(user.getId() + ""));
+				.body("data.id", Matchers.equalTo(user.getId() + ""));
 	}
 
 	@Test
@@ -117,9 +117,9 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testQueryModel() {
-		get("/user/query/?q=uid like '%test%'").then() //
+		get("/user?q=uid like '%test%'").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload.results.size()", Matchers.greaterThan(0));
+				.body("data.results.size()", Matchers.greaterThan(0));
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		given().body(example.toString())
 				.post("/user/query/").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("payload[0].uid", Matchers.equalTo("tester51"));
+				.body("data[0].uid", Matchers.equalTo("tester51"));
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		final Long id = Long.valueOf(given().body(newUser.toString())
 				.post("/user").then() //
 				.statusCode(HttpStatus.CREATED.value()) //
-				.body("payload.id", Matchers.notNullValue()).extract().jsonPath().get("payload.id"));
+				.body("data.id", Matchers.notNullValue()).extract().jsonPath().get("data.id"));
 
 		assertNotNull(id);
 
@@ -200,7 +200,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		final Long id = Long.valueOf(given().body(shortNameUpdate.toString())
 				.put("/user").then() //
 				.statusCode(HttpStatus.CREATED.value())
-				.body("payload.id", Matchers.notNullValue()).extract().jsonPath().get("payload.id"));
+				.body("data.id", Matchers.notNullValue()).extract().jsonPath().get("data.id"));
 
 		final User user = modelService.get(User.class, id);
 

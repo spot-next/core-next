@@ -20,6 +20,7 @@ import io.spotnext.core.management.support.BasicAuthenticationFilter;
 import io.spotnext.core.management.support.data.GenericItemDefinitionData;
 import io.spotnext.core.management.support.data.PageablePayload;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
+import io.spotnext.core.persistence.query.Pageable;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
 import io.spotnext.support.util.MiscUtil;
 import spark.Request;
@@ -73,7 +74,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 			types.add(d);
 		}
 
-		final var pageableData = new PageablePayload<GenericItemDefinitionData>(types, page, pageSize, Long.valueOf(typeCodes.size()));
+		final Pageable<GenericItemDefinitionData> pageableData = new PageablePayload<GenericItemDefinitionData>(types, page, pageSize, Long.valueOf(typeCodes.size()));
 
 		return DataResponse.ok().withPayload(pageableData);
 	}

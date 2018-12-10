@@ -41,6 +41,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.Pageable;
 import io.spotnext.core.persistence.query.Queries;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.query.SortOrder;
@@ -79,8 +80,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -94,7 +95,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 
 			final QueryResult<Long> modelCount = queryService.query(Queries.countAll(type));
 
-			response.header("Item-Count", modelCount.getResultList().get(0) + "");
+			response.header("Item-Count", modelCount.getResults().get(0) + "");
 
 			return DataResponse.ok();
 		} catch (final UnknownTypeException e) {
@@ -107,8 +108,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -129,7 +130,7 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 			final QueryResult<ModelInfoData> model = queryService.query(query);
 
 			if (model.getTotalCount() > 0) {
-				final ModelInfoData info = model.getResultList().get(0);
+				final ModelInfoData info = model.getResults().get(0);
 
 				setCachingHeaderFields(info.getVersion(), info.getLastModifiedAt(), response);
 				return DataResponse.ok();
@@ -146,8 +147,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets all items of the given item type. The page index starts at 1.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -155,25 +156,44 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	@Handler(method = HttpMethod.get, pathMapping = "/:typecode", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public <T extends Item> HttpResponse getModels(final Request request, final Response response) {
 
+		final String typeCode = request.params(":typecode");
+		final Class<T> type;
+		try {
+			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
+		} catch (final UnknownTypeException e) {
+			return RESPONSE_UNKNOWN_TYPE;
+		}
+
+		final String[] queryParamValues = request.queryParamsValues("q");
 		final int page = MiscUtil.intOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
 		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
 
+		String orderByClause = getOrderByClause(request);
+		orderByClause = StringUtils.isNotBlank(orderByClause) ? "ORDER BY " + orderByClause : "";
+
+		final JpqlQuery<T> query = ArrayUtils.isNotEmpty(queryParamValues) ? //
+				new JpqlQuery<>(String.format("SELECT x FROM %s x WHERE %s %s", type.getSimpleName(), queryParamValues[0], orderByClause), type) : //
+				Queries.selectAll(type, getOrderByClause(request));
+		query.setEagerFetchRelations(true);
+		query.setPage(page);
+		query.setPageSize(pageSize);
+		// important to avoid the N+1 problem
+		query.setEagerFetchRelations(true);
+
 		try {
-			final Class<T> type = (Class<T>) typeService.getClassForTypeCode(request.params(":typecode"));
-			final JpqlQuery<T> query = Queries.selectAll(type, getOrderByClause(request));
-			query.setPage(page);
-			query.setPageSize(pageSize);
+			final QueryResult<T> result = queryService.query(query);
 
-			// important to avoid the N+1 problem
-			query.setEagerFetchRelations(true);
-			final QueryResult<T> models = queryService.query(query);
+			final Pageable<T> pageableData = new PageablePayload<>(result.getResults(), result.getPage(), result.getPageSize(),
+					result.getTotalCount());
 
-			final PageablePayload<T> pageableData = new PageablePayload<>(models.getResultList(), models.getPage(), models.getPageSize(),
-					models.getTotalCount());
-
-			return DataResponse.ok().withPayload(pageableData);
-		} catch (final UnknownTypeException e) {
-			return RESPONSE_UNKNOWN_TYPE;
+			if (pageableData.getTotalCount() > 0) {
+				return DataResponse.ok().withPayload(pageableData);
+			} else {
+				return DataResponse.notFound().withPayload(pageableData);
+			}
+		} catch (final QueryException e) {
+			return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
+					"Cannot execute given query: " + e.getMessage());
 		} catch (final Exception e) {
 			return handleGenericException(e);
 		}
@@ -182,8 +202,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Gets an item based on the ID.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -223,68 +243,13 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Gets an item based on the search query. The query is a JPQL WHERE clause.<br />
-	 * Example: .../country/query?q=isoCode = 'CZ' AND isoCode NOT LIKE 'A%' <br/>
-	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
-	 * @param response a {@link spark.Response} object.
-	 * @return the response object
-	 */
-	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.get, pathMapping = "/:typecode/query/", mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
-	public <T extends Item> HttpResponse queryModel(final Request request, final Response response) {
-
-		final String typeCode = request.params(":typecode");
-		final Class<T> type;
-		try {
-			type = (Class<T>) typeService.getClassForTypeCode(typeCode);
-		} catch (final UnknownTypeException e) {
-			return RESPONSE_UNKNOWN_TYPE;
-		}
-
-		final String[] queryParamValues = request.queryParamsValues("q");
-		final int page = MiscUtil.intOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
-		final int pageSize = MiscUtil.intOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
-
-		if (ArrayUtils.isNotEmpty(queryParamValues)) {
-			String orderByClause = getOrderByClause(request);
-			orderByClause = StringUtils.isNotBlank(orderByClause) ? "ORDER BY " + orderByClause : "";
-
-			final JpqlQuery<T> query = new JpqlQuery<>(
-					String.format("SELECT x FROM %s x WHERE %s %s", type.getSimpleName(), queryParamValues[0], orderByClause), type);
-			query.setEagerFetchRelations(true);
-			query.setPage(page);
-			query.setPageSize(pageSize);
-
-			try {
-				final QueryResult<T> result = queryService.query(query);
-
-				if (result.getTotalCount() > 0) {
-					return DataResponse.ok().withPayload(result);
-				} else {
-					return DataResponse.notFound().withPayload(result);
-				}
-			} catch (final QueryException e) {
-				return DataResponse.withStatus(HttpStatus.BAD_REQUEST).withError("error.query.execution",
-						"Cannot execute given query: " + e.getMessage());
-			} catch (final Exception e) {
-				return handleGenericException(e);
-			}
-		} else {
-			return DataResponse.withStatus(HttpStatus.PRECONDITION_FAILED).withError("query.error",
-					"Query could not be parsed.");
-		}
-	}
-
-	/**
 	 * <p>
 	 * Gets item based on an example.
 	 * </p>
 	 * {@link ModelService#get(Class, Map)} is called (= search by example).
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -315,8 +280,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Creates a new item. If the item is not unique (based on its unique properties), an error is returned.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -357,8 +322,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Removes the given item. The ID or a search criteria has to be set.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -395,8 +360,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	 * Updates an existing or creates the item with the given values. The ID must be provided. If the new item is not unique, an error is returned.<br/>
 	 * Attention: fields that are omitted will be treated as @null. If you just want to update a few fields, use the PATCH Method.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
@@ -422,8 +387,8 @@ public class ModelServiceRestEndpoint extends AbstractRestEndpoint {
 	/**
 	 * Update an existing model with the given values. If the item with the given ID doesn't not exist, an exception is thrown.
 	 *
-	 * @param          <T> a T object.
-	 * @param request  a {@link spark.Request} object.
+	 * @param <T> a T object.
+	 * @param request a {@link spark.Request} object.
 	 * @param response a {@link spark.Response} object.
 	 * @return the response object
 	 */
