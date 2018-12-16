@@ -1,5 +1,6 @@
 package io.spotnext.core.management.support.data;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,9 @@ import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
  * @since 1.0
  */
 //@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
-public class GenericItemDefinitionData {
+public class GenericItemDefinitionData implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	protected String typeCode;
 	protected String typeName;
@@ -218,6 +221,7 @@ public class GenericItemDefinitionData {
 
 	/**
 	 * Specifies if the item type is a JPA entity and hence persistable, or if it is just a {@link MappedSuperclass} (not persistable)
+	 * 
 	 * @return true if the type is persistable
 	 */
 	public boolean isPersistable() {

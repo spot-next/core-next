@@ -1,9 +1,7 @@
 package io.spotnext.core.management.service.impl;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +20,7 @@ import io.spotnext.core.management.support.data.PageablePayload;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import io.spotnext.core.persistence.query.Pageable;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.support.util.ClassUtil;
 import io.spotnext.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
@@ -55,28 +54,43 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 	public DataResponse getTypes(final Request request, final Response response)
 			throws UnknownTypeException {
 
-		final List<GenericItemDefinitionData> types = new ArrayList<>();
-
 		final int page = MiscUtil.positiveIntOrDefault(request.queryParams("page"), CoreConstants.REQUEST_DEFAULT_PAGE);
 		final int pageSize = MiscUtil.positiveIntOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
+		final String sortField = request.queryParams("sort");
 
-		final Set<String> typeCodes = typeService.getItemTypeDefinitions().keySet();
-		final List<String> pagedTypeCodes = typeCodes.stream() //
-				.sorted(Comparator.naturalOrder()) //
+		final List<GenericItemDefinitionData> types = typeService.getItemTypeDefinitions().values().stream() //
 				.skip((page - 1) * pageSize) //
 				.limit(pageSize) //
+				.map(itemTypeConverter::convert) //
+				.sorted(getComparator(sortField)) //
 				.collect(Collectors.toList());
 
-		for (final String typeCode : pagedTypeCodes) {
-			final ItemTypeDefinition def = typeService.getItemTypeDefinition(typeCode);
-
-			final GenericItemDefinitionData d = itemTypeConverter.convert(def);
-			types.add(d);
-		}
-
-		final Pageable<GenericItemDefinitionData> pageableData = new PageablePayload<GenericItemDefinitionData>(types, page, pageSize, Long.valueOf(typeCodes.size()));
+		final Pageable<GenericItemDefinitionData> pageableData = new PageablePayload<GenericItemDefinitionData>(types, page,
+				pageSize, Long.valueOf(types.size()));
 
 		return DataResponse.ok().withPayload(pageableData);
+	}
+
+	private Comparator<GenericItemDefinitionData> getComparator(String sortField) {
+		String[] sort = StringUtils.trimToEmpty(sortField).split(" ");
+
+		final String field = sort.length > 0 ? StringUtils.defaultIfBlank(sort[0], "typeCode") : "typeCode";
+		final boolean descending = sort.length > 1 ? "DESC".equals(StringUtils.trimToEmpty(sort[1])) : false;
+
+		Comparator<GenericItemDefinitionData> comparator = new Comparator<>() {
+			public int compare(GenericItemDefinitionData o1, GenericItemDefinitionData o2) {
+				Object fieldValue1 = ClassUtil.getField(o1, field, true);
+				Object fieldValue2 = ClassUtil.getField(o2, field, true);
+
+				if (fieldValue1 instanceof Comparable && fieldValue2 instanceof Comparable) {
+					return (descending ? -1 : 1) * ((Comparable) fieldValue1).compareTo(fieldValue2);
+				}
+
+				return 0;
+			};
+		};
+
+		return comparator;
 	}
 
 	/**
