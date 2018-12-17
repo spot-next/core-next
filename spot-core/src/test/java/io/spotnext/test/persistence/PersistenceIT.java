@@ -351,7 +351,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	}
 
 	@Ignore
-	@Test(expected = ModelNotFoundException.class)
+	@Test(expected = ModelSaveException.class)
 	public void testOneToManyWithUniqueConstraint_WithReference() {
 		final Catalog catalog = testMocker.mockCatalog();
 

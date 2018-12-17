@@ -11,9 +11,11 @@ import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -414,7 +416,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 			} else if (StringUtils.equals(relType.getValue(), RelationType.ManyToOne.toString())) {
 				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null, propertyAnnotation));
-				jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
+				jpaAnnotations.addAll(createJoinColumnAnnotation(entityClass, field));
 
 				// necessary for serialization
 				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field, false));
@@ -426,7 +428,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		} else if (isItemType(field.getType())) {
 			// one to one in case the field type is a subtype of Item
 			jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, ManyToOne.class, null, propertyAnnotation));
-			jpaAnnotations.add(createJoinColumnAnnotation(entityClass, field));
+			jpaAnnotations.addAll(createJoinColumnAnnotation(entityClass, field));
 
 			// necessary for serialization
 			jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field, false));
@@ -719,10 +721,10 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * @return the created annotation
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
-	protected Annotation createJoinColumnAnnotation(final CtClass clazz, final CtField field)
+	protected List<Annotation> createJoinColumnAnnotation(final CtClass clazz, final CtField field)
 			throws IllegalClassTransformationException {
 
-		final Annotation ann = createAnnotation(clazz, JoinColumn.class);
+		final Annotation joinColumnAnnotation = createAnnotation(clazz, JoinColumn.class);
 
 		final Optional<Annotation> propAnnotation = getAnnotation(field, Property.class);
 
@@ -741,7 +743,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				final BooleanMemberValue nullable = new BooleanMemberValue(field.getFieldInfo2().getConstPool());
 				nullable.setValue(false);
 
-				ann.addMemberValue(MV_NULLABLE, nullable);
+				joinColumnAnnotation.addMemberValue(MV_NULLABLE, nullable);
 			}
 		}
 
@@ -749,9 +751,20 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final StringMemberValue columnName = new StringMemberValue(field.getFieldInfo2().getConstPool());
 		columnName.setValue(field.getName() + "_id");
 
-		ann.addMemberValue(MV_NAME, columnName);
+		joinColumnAnnotation.addMemberValue(MV_NAME, columnName);
 
-		return ann;
+		// don't add constraint to foreign key
+		EnumMemberValue foreignKeyConstraint = new EnumMemberValue(field.getFieldInfo2().getConstPool());
+		foreignKeyConstraint.setType(ConstraintMode.class.getName());
+		foreignKeyConstraint.setValue(ConstraintMode.NO_CONSTRAINT.name());
+
+		Annotation foreignKeyAnnotation = createAnnotation(field.getFieldInfo2().getConstPool(), ForeignKey.class);
+		foreignKeyAnnotation.addMemberValue("value", foreignKeyConstraint);
+
+		final AnnotationMemberValue foreignKey = new AnnotationMemberValue(field.getFieldInfo2().getConstPool());
+		foreignKey.setValue(foreignKeyAnnotation);
+
+		return Arrays.asList(joinColumnAnnotation, foreignKeyAnnotation);
 	}
 
 	protected Annotation createJoinTableAnnotation(final CtClass clazz, final CtField field,
