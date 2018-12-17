@@ -182,6 +182,17 @@
 
 		<!-- persistence -->
 		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean</artifactId>
+			<version>11.29.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean-agent</artifactId>
+			<version>11.26.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 			<version>5.3.7.Final</version>
