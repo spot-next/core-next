@@ -16,6 +16,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -45,9 +47,9 @@ import io.spotnext.support.util.ClassUtil;
 // JPA
 @Cacheable
 @MappedSuperclass
-// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
-public abstract class Item implements Serializable, Comparable<Item> {
+public class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String TYPECODE = "item";

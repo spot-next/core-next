@@ -3,26 +3,59 @@ package io.spotnext.core.persistence.ebean.impl;
 import java.util.List;
 import java.util.Map;
 
-import io.ebean.Ebean;
+import org.springframework.stereotype.Service;
+
 import io.ebean.EbeanServer;
+import io.ebean.EbeanServerFactory;
+import io.ebean.config.ServerConfig;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
+import io.spotnext.core.infrastructure.exception.UnknownTypeException;
+import io.spotnext.core.infrastructure.service.ConfigurationService;
+import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
-import io.spotnext.core.infrastructure.support.spring.PostConstructor;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.PersistenceService;
+import io.spotnext.core.persistence.service.TransactionService;
 import io.spotnext.infrastructure.type.Item;
+import io.spotnext.infrastructure.type.ItemTypeDefinition;
+import io.spotnext.itemtype.core.UniqueIdItem;
 
-public class EbeanPersistenceService extends AbstractService implements PersistenceService, PostConstructor {
+@Service
+public class EbeanPersistenceService extends AbstractService implements PersistenceService {
 
-	private EbeanServer ebeanService = Ebean.getDefaultServer();
+	private final EbeanServer ebeanService;
+	private final ConfigurationService configurationService;
+	private final TransactionService transactionService;
+	private final TypeService typeService;
 
-	@Override
-	public void setup() {
+	public EbeanPersistenceService(TransactionService transactionService, ConfigurationService configurationService, TypeService typeService)
+			throws UnknownTypeException {
+
+		Logger.info("Initializing persistence service");
+
+		this.transactionService = transactionService;
+		this.configurationService = configurationService;
+		this.typeService = typeService;
+
+		ServerConfig config = new ServerConfig();
+		config.loadFromProperties();
+		config.setName("spot");
+		config.setDefaultServer(true);
+		config.getClasses().add(Item.class);
+		config.getClasses().add(UniqueIdItem.class);
+
+		for (ItemTypeDefinition typeDef : typeService.getItemTypeDefinitions().values()) {
+			Class<? extends Item> itemType = typeService.getClassForTypeCode(typeDef.getTypeCode());
+			config.getClasses().add(itemType);
+		}
+
+		this.ebeanService = EbeanServerFactory.create(config);
 	}
 
 	@Override
@@ -49,7 +82,7 @@ public class EbeanPersistenceService extends AbstractService implements Persiste
 	@Override
 	public <T extends Item> List<T> load(ModelQuery<T> query) {
 //		ebeanService.
-		
+
 		return null;
 	}
 

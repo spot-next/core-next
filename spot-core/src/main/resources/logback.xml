@@ -38,15 +38,14 @@
 	<logger name="org.hibernate" level="WARN" />
 	<logger name="org.hibernate.SQL" level="INFO" />
 	<logger name="org.hibernate.cache" level="INFO" />
-	<logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="ERROR" />
-	<logger name="org.hibernate.stat" level="DEBUG" />
-	<logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" />
-	<logger name="org.hibernate.event.internal.DefaultPersistEventListener" level="DEBUG" />
-	<logger name="org.hibernate.SQL" level="DEBUG" />
-	<logger name="org.hibernate.type" level="TRACE" />
-	<logger name="org.hibernate.engine.internal.Cascade" level="TRACE" />
-	<logger name="org.hibernate.engine.spi.CascadingAction" level="TRACE" />
-	<logger name="org.hibernate.event.internal.AbstractSaveEventListener" level="TRACE" />
+<!-- 	<logger name="org.hibernate.hql.internal.ast.QueryTranslatorImpl" level="ERROR" /> -->
+<!-- 	<logger name="org.hibernate.stat" level="DEBUG" /> -->
+<!-- 	<logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" /> -->
+<!-- 	<logger name="org.hibernate.event.internal.DefaultPersistEventListener" level="DEBUG" /> -->
+<!-- 	<logger name="org.hibernate.type" level="TRACE" /> -->
+<!-- 	<logger name="org.hibernate.engine.internal.Cascade" level="TRACE" /> -->
+<!-- 	<logger name="org.hibernate.engine.spi.CascadingAction" level="TRACE" /> -->
+<!-- 	<logger name="org.hibernate.event.internal.AbstractSaveEventListener" level="TRACE" /> -->
 
 	<logger name="org.ehcache" level="INFO" />
 
