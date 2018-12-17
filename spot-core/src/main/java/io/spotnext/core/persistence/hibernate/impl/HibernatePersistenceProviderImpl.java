@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.hibernate.boot.internal.MetadataBuilderImpl;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
@@ -16,9 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.persistenceunit.SmartPersistenceUnitInfo;
 
+import io.spotnext.support.util.ClassUtil;
+
 /**
- * Copy of
- * org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.
+ * Copy of org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.
  *
  * @author mojo2012
  * @version 1.0
@@ -48,6 +51,14 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 		builder = new EntityManagerFactoryBuilderImpl(
 				new SpotPersistenceUnitInfoDescriptor(info, mergedClassesAndPackages), properties);
 
+		// this is a hacky way to use JPA bootstrap but then set it back to "native"
+		// this is currently necessary as it is not possible to subclass the factory builder and inject other settings
+		// the purpose of this is to bypass a misbehaviour of the JPA implementation during deletion of still-referenced instances
+		// native hibernate will fail with an "re-saved by cascade" exception, JPA will just silently fail and not delete anything ...
+		MetadataBuilderImpl metamodelBuilder = (MetadataBuilderImpl) ClassUtil.getField(builder, "metamodelBuilder", true);
+		BootstrapContext context = metamodelBuilder.getBootstrapContext();
+		ClassUtil.setField(context, "isJpaBootstrap", Boolean.FALSE);
+
 		return builder.build();
 	}
 
@@ -66,4 +77,5 @@ public class HibernatePersistenceProviderImpl extends HibernatePersistenceProvid
 			return mergedClassesAndPackages;
 		}
 	}
+
 }

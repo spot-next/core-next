@@ -113,7 +113,6 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@PrePersist
 	public void prePersist() {
-		this.createdAt = new Date();
 		updateUniquenessHash();
 	}
 
@@ -151,8 +150,9 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	@PreUpdate
 	protected void preUpdate() {
-		setLastModifiedAt();
-		updateUniquenessHash();
+		if (!deleted) {
+			updateUniquenessHash();
+		}
 	}
 
 	protected void setLastModifiedAt() {
@@ -181,7 +181,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	/**
 	 * @return true if the item has a ID. It is assumed that it has been saved before. If you set a ID manually and save the item, an existing item with the
-	 *         same ID will be overwritten.
+	 * same ID will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return id != null;
@@ -229,7 +229,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 		return props;
 	}
-	
+
 	/**
 	 * Returns all fields annotated with the {@link Property} annotation.
 	 * 
@@ -253,7 +253,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * Sets the given property value. Unknown properties are ignored.
 	 * 
 	 * @param propertyName the name of the property to write to
-	 * @param value        the property value
+	 * @param value the property value
 	 */
 	public void set(String propertyName, Object value) {
 		ClassUtil.setProperty(this, propertyName, value);

@@ -35,8 +35,7 @@ public class TestMocker {
 		catalogVersionStaged.setUid("Staged");
 		catalogVersionStaged.setSynchronizationTarget(catalogVersionOnline);
 
-		modelService.save(catalogVersionOnline);
-		modelService.save(catalogVersionStaged);
+		modelService.saveAll(catalogVersionOnline, catalogVersionStaged);
 		modelService.refresh(catalog);
 
 		Assert.assertEquals(2, catalog.getVersions().size());

@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import javax.persistence.OptimisticLockException;
 
@@ -330,9 +331,9 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		modelService.refresh(cvToDelete);
 	}
 
-	@Ignore
-	@Test(expected = ModelNotFoundException.class)
-	public void testOneToManyWithUniqueConstraint_WithReference() {
+//	@Ignore
+	@Test(expected = EntityNotFoundException.class)
+	public void testOneToManyWithUniqueConstraint_WithOtherReference() throws Throwable {
 		final Catalog catalog = testMocker.mockCatalog();
 
 		// this must trigger a cascade-remove on the many-side
@@ -340,7 +341,30 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
 		catalog.getVersions().remove(cvToDelete);
 
+		// deletion of catalogVersion not possible because still referenced by "staged"
+		try {
+			modelService.save(catalog);
+		} catch (ModelSaveException e) {
+			// check original cause
+			throw e.getCause();
+		}
+	}
+
+	@Ignore
+	@Test(expected = ModelSaveException.class)
+	public void testOneToManyWithUniqueConstraint_WithReference() {
+		final Catalog catalog = testMocker.mockCatalog();
+
+		// this must trigger a cascade-remove on the many-side
+		// difference here is that the online catalog is referenced by the staged catalog from
+		final CatalogVersion stagedVersion = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
+		stagedVersion.setSynchronizationTarget(null);
+
+		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
+		catalog.getVersions().remove(cvToDelete);
+
 		// should delete catalogversion, as the catalog is part of its unique key constraint
+		modelService.save(stagedVersion);
 		modelService.save(catalog);
 		modelService.refresh(catalog);
 
