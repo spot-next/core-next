@@ -3,7 +3,9 @@ package io.spotnext.instrumentation.internal;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,14 +40,15 @@ public final class DynamicInstrumentationAgent {
 					Instrumentation.class);
 
 			String transformers = System.getProperty("transformers");
-
+			List<String> registeredTransformers = null;
+			
 			// if null we try to parse the string args (java 9+)
 			if (transformers == null) {
-				transformers = parseArguments(args).get("transformers");
+				registeredTransformers = (List<String>) parseArguments(args).get("transformers");
 			}
 
-			if (transformers != null && transformers.trim().length() > 0) {
-				loadClassTransformers(transformers, agentClassLoader, inst);
+			if (registeredTransformers != null && registeredTransformers.size() > 0) {
+				loadClassTransformers(registeredTransformers, agentClassLoader, inst);
 			}
 			initializeMethod.invoke(null, args, inst);
 		} catch (Exception e) {
@@ -59,18 +62,20 @@ public final class DynamicInstrumentationAgent {
 	 * @param args the command line argument string, can be null.
 	 * @return the map of key-value pairs, can be empty but never null.
 	 */
-	protected static Map<String, String> parseArguments(String args) {
-		final Map<String, String> parsedArgs = new HashMap<>();
+	protected static Map<String, Object> parseArguments(String args) {
+		final Map<String, Object> parsedArgs = new HashMap<>();
 
 		if (args != null) {
-			String[] splitArgs = args.trim().split(",");
+			String[] splitArgs = args.trim().split("=");
 
-			for (String s : splitArgs) {
-				if (s != null && s.trim().length() > 0) {
-					String[] i = s.trim().split("=");
+			if (splitArgs != null && splitArgs.length == 2) {
+				String valuesString = splitArgs[1];
 
-					if (i.length > 0) {
-						parsedArgs.put(i[0], i.length > 1 ? i[1] : null);
+				if (valuesString != null && valuesString.length() > 0) {
+					String[] values = valuesString.split(",");
+
+					if (values.length > 0) {
+						parsedArgs.put(splitArgs[0], Arrays.asList(values));
 					}
 				}
 			}
@@ -97,13 +102,13 @@ public final class DynamicInstrumentationAgent {
 	/**
 	 * Parses the comma-separated list of transformers and instantiate them. Then they are added to the instrumentation.
 	 * 
-	 * @param transformersProperty the command separated list of transformers
-	 * @param instrumentation      instance
+	 * @param transformers the command separated list of transformers
+	 * @param instrumentation instance
 	 * @throws Exception
 	 */
-	protected static void loadClassTransformers(String transformersProperty, ClassLoader classLoader, Instrumentation instrumentation) throws Exception {
-		if (transformersProperty != null) {
-			for (String t : transformersProperty.split(",")) {
+	protected static void loadClassTransformers(List<String> transformers, ClassLoader classLoader, Instrumentation instrumentation) throws Exception {
+		if (transformers != null) {
+			for (String t : transformers) {
 				t = t.trim();
 				final ClassFileTransformer trans = (ClassFileTransformer) classLoader.loadClass(t).getDeclaredConstructor().newInstance();
 
