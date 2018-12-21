@@ -38,7 +38,7 @@ import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.HierarchyAwareEventListenerMethodProcessor;
 import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer;
+import io.spotnext.infrastructure.instrumentation.JdoEntityClassTransformer;
 import io.spotnext.instrumentation.DynamicInstrumentationLoader;
 import io.spotnext.itemtype.core.beans.ImportConfiguration;
 import io.spotnext.itemtype.core.enumeration.DataFormat;
@@ -188,7 +188,7 @@ public abstract class ModuleInit implements ApplicationContextAware, PostConstru
 		Logger.debug("Initializing weaving support");
 
 		// AspectJ transformer: ClassPreProcessorAgentAdapter.class
-		DynamicInstrumentationLoader.initialize(JpaEntityClassTransformer.class);
+		DynamicInstrumentationLoader.initialize(JdoEntityClassTransformer.class);
 
 		// enable spring LTW
 		DynamicInstrumentationLoader.initLoadTimeWeavingSpringContext();

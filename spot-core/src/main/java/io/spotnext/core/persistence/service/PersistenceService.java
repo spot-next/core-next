@@ -44,7 +44,7 @@ public interface PersistenceService {
 	 * @throws io.spotnext.infrastructure.exception.ModelSaveException if any.
 	 * @throws io.spotnext.core.persistence.exception.ModelNotUniqueException if any.
 	 */
-	<T extends Item> void save(List<T> models) throws ModelSaveException, ModelNotUniqueException;
+	<T extends Item> void save(List<T> items) throws ModelSaveException, ModelNotUniqueException;
 
 	/**
 	 * Refreshes the given model's properties.
@@ -53,7 +53,7 @@ public interface PersistenceService {
 	 * @param item a {@link java.util.List} object.
 	 * @param      <T> a T object.
 	 */
-	<T extends Item> void refresh(List<T> item) throws ModelNotFoundException;
+	<T extends Item> void refresh(List<T> items) throws ModelNotFoundException;
 
 	/**
 	 * Returns the paginated results for the given query.

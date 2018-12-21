@@ -411,8 +411,11 @@
 					<version>${revision}</version>
 					<configuration>
 						<classFileTransformers>
+<!-- 							<classFileTransformer> -->
+<!-- 								io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer -->
+<!-- 							</classFileTransformer> -->
 							<classFileTransformer>
-								io.spotnext.infrastructure.instrumentation.JpaEntityClassTransformer
+								io.spotnext.infrastructure.instrumentation.JdoEntityClassTransformer
 							</classFileTransformer>
 						</classFileTransformers>
 						<includeJars>false</includeJars>

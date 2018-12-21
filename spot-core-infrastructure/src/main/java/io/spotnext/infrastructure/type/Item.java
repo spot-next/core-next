@@ -12,6 +12,14 @@ import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import javax.jdo.annotations.Discriminator;
+import javax.jdo.annotations.DiscriminatorStrategy;
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.IdentityType;
+import javax.jdo.annotations.InheritanceStrategy;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.VersionStrategy;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -22,6 +30,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 import org.apache.commons.collections4.comparators.NullComparator;
+import org.datanucleus.api.jdo.annotations.CreateTimestamp;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -39,6 +48,13 @@ import io.spotnext.infrastructure.IdGenerator;
 import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.support.util.ClassUtil;
+
+// JDO
+
+@javax.jdo.annotations.Inheritance(strategy = InheritanceStrategy.SUBCLASS_TABLE)
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Discriminator(strategy = DiscriminatorStrategy.CLASS_NAME)
+@javax.jdo.annotations.Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version", extensions = @Extension(vendorName = "datanucleus", key = "field-name", value = "version"))
 
 // Hibernate
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE, region = "items")
@@ -60,9 +76,11 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 	// JPA
 	@Id
+	@PrimaryKey
 	@Column(name = "id")
 	final protected Long id = IdGenerator.createLongId();
 
+	@CreateTimestamp
 //	@Index(name = "idx_createdAt")
 	@CreationTimestamp
 	@CreatedDate
@@ -72,6 +90,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	protected String createdBy;
 
 //	@Index(name = "idx_lastModifiedAt")
+	@org.datanucleus.api.jdo.annotations.UpdateTimestamp
 	@UpdateTimestamp
 	@LastModifiedDate
 	// the index is needed for ORDER BY in combination with FETCH JOINS and pagination!
@@ -229,7 +248,7 @@ public abstract class Item implements Serializable, Comparable<Item> {
 
 		return props;
 	}
-	
+
 	/**
 	 * Returns all fields annotated with the {@link Property} annotation.
 	 * 

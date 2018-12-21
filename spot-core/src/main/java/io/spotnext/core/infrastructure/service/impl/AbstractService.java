@@ -1,5 +1,6 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import io.spotnext.core.infrastructure.service.ModelService;
  * @since 1.0
  */
 @Service
-public abstract class AbstractService extends BeanAware {
+public abstract class AbstractService extends BeanAware implements DisposableBean {
 
 	@Autowired
 	protected ConfigurationService configurationService;
@@ -38,4 +39,7 @@ public abstract class AbstractService extends BeanAware {
 		return modelService;
 	}
 
+	@Override
+	public void destroy() throws Exception {
+	}
 }

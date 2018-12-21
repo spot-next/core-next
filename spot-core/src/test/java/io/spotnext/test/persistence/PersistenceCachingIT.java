@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService;
 import io.spotnext.core.testing.AbstractIntegrationTest;
@@ -36,16 +35,16 @@ public class PersistenceCachingIT extends AbstractIntegrationTest {
 	@Test
 	public void testSingleItemLoad() {
 		persistenceService.getSession().clear();
-		
+
 		Country austria = modelService.get(Country.class, Collections.singletonMap("isoCode", "AT"));
-		
+
 		long fetchCount = persistenceService.getStatistics().getEntityFetchCount();
 		persistenceService.getSession().evict(austria);
-		
+
 		modelService.get(Country.class, austria.getId());
-		
+
 		long cacheHit = persistenceService.getStatistics().getSecondLevelCacheHitCount();
-		
+
 		assertEquals(1, itemCache.getSize());
 		
 	}

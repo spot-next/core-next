@@ -66,6 +66,17 @@
 			<version>${revision}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.datanucleus</groupId>
+			<artifactId>datanucleus-api-jdo</artifactId>
+			<version>[5.0.0-m1, 5.9)</version>
+		</dependency>
+		<dependency>
+			<groupId>org.datanucleus</groupId>
+			<artifactId>javax.jdo</artifactId>
+			<version>[3.2.0-m6, )</version>
+		</dependency>
+
 		<!-- dynamic load time weaving support -->
 		<dependency>
 			<groupId>io.spot-next</groupId>

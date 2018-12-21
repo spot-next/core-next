@@ -106,7 +106,8 @@
 	</bean>
 
 	<!-- SERVICES -->
-	<bean id="hibernatePersistenceService" class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" />
+<!-- 	<bean id="hibernatePersistenceService" class="io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService" /> -->
+	<bean id="dataNucleusPersistenceService" class="io.spotnext.core.persistence.datanucleus.impl.DataNucleusPersistenceService" />
 
 	<bean id="abstractService" class="io.spotnext.core.infrastructure.service.impl.AbstractService" abstract="true" />
 
@@ -114,7 +115,7 @@
 
 	<!-- services -->
 	<alias name="defaultTransactionService" alias="transactionService" />
-	<alias name="hibernatePersistenceService" alias="persistenceService" />
+	<alias name="dataNucleusPersistenceService" alias="persistenceService" />
 	<alias name="defaultTypeService" alias="typeService" />
 	<alias name="defaultModelService" alias="modelService" />
 	<alias name="defaultQueryService" alias="queryService" />

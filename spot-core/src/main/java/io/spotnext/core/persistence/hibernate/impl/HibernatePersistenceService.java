@@ -95,7 +95,6 @@ import io.spotnext.support.util.MiscUtil;
  * @since 1.0
  */
 @DependsOn("typeService")
-//@SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
 public class HibernatePersistenceService extends AbstractPersistenceService {
 
 	@Value("${hibernate.jdbc.batch_size:}")
