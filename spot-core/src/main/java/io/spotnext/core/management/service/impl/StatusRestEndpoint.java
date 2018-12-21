@@ -1,6 +1,8 @@
 package io.spotnext.core.management.service.impl;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,6 @@ import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
 import io.spotnext.core.infrastructure.service.ImportService;
-import io.spotnext.core.infrastructure.service.SerializationService;
 import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.annotation.Handler;
@@ -28,20 +29,17 @@ import spark.Response;
 import spark.route.HttpMethod;
 
 /**
- * The /model REST endpoint.
+ * The /import REST endpoint.
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/import", authenticationFilter = BasicAuthenticationFilter.class)
-public class ImpexRestEndpoint extends AbstractRestEndpoint {
+public class StatusRestEndpoint extends AbstractRestEndpoint {
 
 	@Autowired
 	protected ImportService importService;
-
-	@Autowired
-	protected SerializationService serializationService;
 
 	private static final SerializationConfiguration SERIALIZATION_CONFIG = new SerializationConfiguration();
 	static {
@@ -62,7 +60,6 @@ public class ImpexRestEndpoint extends AbstractRestEndpoint {
 		final String script = request.body();
 
 		if (StringUtils.isNotBlank(script)) {
-
 			try {
 				final ImportRequest importRequest = serializationService.deserialize(SERIALIZATION_CONFIG, script, ImportRequest.class);
 
@@ -73,7 +70,7 @@ public class ImpexRestEndpoint extends AbstractRestEndpoint {
 					importRequest.getConfig().setScriptIdentifier("HTTP request from " + request.ip());
 				}
 
-				importService.importItems(importRequest.getConfig(), new ByteArrayInputStream(importRequest.getScript().getBytes()));
+				importService.importItems(importRequest.getConfig(), new ByteArrayInputStream(importRequest.getScript().getBytes(StandardCharsets.UTF_8)));
 
 				return DataResponse.accepted();
 			} catch (final Exception e) {
@@ -86,17 +83,17 @@ public class ImpexRestEndpoint extends AbstractRestEndpoint {
 
 	public static class ImportRequest {
 		@JsonProperty
-		ImportConfiguration config;
+		private ImportConfiguration config;
 		@JsonProperty
-		String[] script;
+		private String[] script;
 
 		public ImportRequest() {
-			// for deserialization
+			// necessary for deserialization
 		}
 
 		public ImportRequest(ImportConfiguration config, String[] script) {
 			this.config = config;
-			this.script = script;
+			this.script = Arrays.copyOf(script, script.length);
 		}
 
 		public ImportConfiguration getConfig() {
