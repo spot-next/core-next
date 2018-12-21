@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.sun.management.OperatingSystemMXBean;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.http.DataResponse;
 import io.spotnext.core.infrastructure.http.HttpResponse;
@@ -28,6 +29,7 @@ import spark.route.HttpMethod;
  * @version 1.0
  * @since 1.0
  */
+@SuppressFBWarnings("URF_UNREAD_FIELD")
 @RemoteEndpoint(portConfigKey = "service.typesystem.rest.port", port = 19000, pathMapping = "/v1/status/", authenticationFilter = BasicAuthenticationFilter.class)
 public class StatusRestEndpoint extends AbstractRestEndpoint {
 
