@@ -69,6 +69,10 @@ public class DataResponse extends AbstractResponse {
 		return new DataResponse(HttpStatus.CONFLICT);
 	}
 
+	public static DataResponse badRequest() {
+		return new DataResponse(HttpStatus.BAD_REQUEST);
+	}
+
 	/**
 	 * <p>internalServerError.</p>
 	 *
