@@ -1,6 +1,5 @@
 package io.spotnext.core.management.support.data;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +16,7 @@ import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
  * @version 1.0
  * @since 1.0
  */
-//@SuppressFBWarnings("URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
-public class GenericItemDefinitionData implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class GenericItemDefinitionData {
 
 	protected String typeCode;
 	protected String typeName;
