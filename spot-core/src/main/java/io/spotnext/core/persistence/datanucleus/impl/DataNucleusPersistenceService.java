@@ -40,11 +40,16 @@ public class DataNucleusPersistenceService extends AbstractPersistenceService {
 		this.typeService = typeService;
 		this.userService = userService;
 
-		persistenceUnitMetaData = new PersistenceUnitMetaData("dynamic-unit", "RESOURCE_LOCAL", null);
+//		JDOEnhancer enhancer = JDOHelper.getEnhancer();
+//		enhancer.setVerbose(true);
+//		enhancer.addPersistenceUnit("spot");
+
+		persistenceUnitMetaData = new PersistenceUnitMetaData("spot", "RESOURCE_LOCAL", null);
 
 		for (ItemTypeDefinition def : typeService.getItemTypeDefinitions().values()) {
 			Class<?> type = Class.forName(def.getTypeClass());
 			persistenceUnitMetaData.addClassName(type.getName());
+//			enhancer.addClasses(type.getName());
 		}
 
 		persistenceUnitMetaData.setExcludeUnlistedClasses(false);
@@ -58,6 +63,8 @@ public class DataNucleusPersistenceService extends AbstractPersistenceService {
 		persistenceUnitMetaData.addProperty("datanucleus.persistenceByReachabilityAtCommit", "true");
 		persistenceUnitMetaData.addProperty("datanucleus.CurrentUserProvider",
 				"io.spotnext.core.persistence.datanucleus.impl.DataNucleusPersistenceService.UserProvider");
+
+//		enhancer.enhance();
 
 		persistenceManagerFactory = new JDOPersistenceManagerFactory(persistenceUnitMetaData, null);
 	}

@@ -72,6 +72,44 @@ public final class DynamicInstrumentationLoader {
 			registeredTranformers.addAll(Arrays.asList(transformers));
 		}
 
+		if (!isInstrumentationAvailable()) {
+			try {
+				final File tempAgentJar = createTempAgentJar();
+				setAgentClassLoaderReference();
+				final String pid = DynamicInstrumentationProperties.getProcessId();
+				final Thread loadAgentThread = new Thread(LOAD_AGENT_THREAD_NAME) {
+
+					@Override
+					public void run() {
+						try {
+							loadAgent(tempAgentJar, pid);
+						} catch (final Throwable e) {
+							threadFailed = e;
+							throw new RuntimeException(e);
+						}
+					}
+				};
+
+				DynamicInstrumentationReflections.addPathToSystemClassLoader(tempAgentJar);
+
+				final JdkFilesFinder jdkFilesFinder = new JdkFilesFinder();
+
+				if (DynamicInstrumentationReflections.isBeforeJava9()) {
+					final File toolsJar = jdkFilesFinder.findToolsJar();
+					DynamicInstrumentationReflections.addPathToSystemClassLoader(toolsJar);
+					DynamicInstrumentationLoader.toolsJarPath = toolsJar.getAbsolutePath();
+
+					final File attachLib = jdkFilesFinder.findAttachLib();
+					DynamicInstrumentationReflections.addPathToJavaLibraryPath(attachLib.getParentFile());
+					DynamicInstrumentationLoader.attachLibPath = attachLib.getAbsolutePath();
+				}
+
+				loadAgentThread.start();
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		try {
 			while (!isInstrumentationAvailable() && threadFailed == null) {
 				TimeUnit.MILLISECONDS.sleep(1);
@@ -115,46 +153,46 @@ public final class DynamicInstrumentationLoader {
 		return ltwCtx;
 	}
 
-	static {
-		if (!isInstrumentationAvailable()) {
-			try {
-				final File tempAgentJar = createTempAgentJar();
-				setAgentClassLoaderReference();
-				final String pid = DynamicInstrumentationProperties.getProcessId();
-				final Thread loadAgentThread = new Thread(LOAD_AGENT_THREAD_NAME) {
-
-					@Override
-					public void run() {
-						try {
-							loadAgent(tempAgentJar, pid);
-						} catch (final Throwable e) {
-							threadFailed = e;
-							throw new RuntimeException(e);
-						}
-					}
-				};
-
-				DynamicInstrumentationReflections.addPathToSystemClassLoader(tempAgentJar);
-
-				final JdkFilesFinder jdkFilesFinder = new JdkFilesFinder();
-
-				if (DynamicInstrumentationReflections.isBeforeJava9()) {
-					final File toolsJar = jdkFilesFinder.findToolsJar();
-					DynamicInstrumentationReflections.addPathToSystemClassLoader(toolsJar);
-					DynamicInstrumentationLoader.toolsJarPath = toolsJar.getAbsolutePath();
-
-					final File attachLib = jdkFilesFinder.findAttachLib();
-					DynamicInstrumentationReflections.addPathToJavaLibraryPath(attachLib.getParentFile());
-					DynamicInstrumentationLoader.attachLibPath = attachLib.getAbsolutePath();
-				}
-
-				loadAgentThread.start();
-			} catch (final Exception e) {
-				throw new RuntimeException(e);
-			}
-
-		}
-	}
+//	static {
+//		if (!isInstrumentationAvailable()) {
+//			try {
+//				final File tempAgentJar = createTempAgentJar();
+//				setAgentClassLoaderReference();
+//				final String pid = DynamicInstrumentationProperties.getProcessId();
+//				final Thread loadAgentThread = new Thread(LOAD_AGENT_THREAD_NAME) {
+//
+//					@Override
+//					public void run() {
+//						try {
+//							loadAgent(tempAgentJar, pid);
+//						} catch (final Throwable e) {
+//							threadFailed = e;
+//							throw new RuntimeException(e);
+//						}
+//					}
+//				};
+//
+//				DynamicInstrumentationReflections.addPathToSystemClassLoader(tempAgentJar);
+//
+//				final JdkFilesFinder jdkFilesFinder = new JdkFilesFinder();
+//
+//				if (DynamicInstrumentationReflections.isBeforeJava9()) {
+//					final File toolsJar = jdkFilesFinder.findToolsJar();
+//					DynamicInstrumentationReflections.addPathToSystemClassLoader(toolsJar);
+//					DynamicInstrumentationLoader.toolsJarPath = toolsJar.getAbsolutePath();
+//
+//					final File attachLib = jdkFilesFinder.findAttachLib();
+//					DynamicInstrumentationReflections.addPathToJavaLibraryPath(attachLib.getParentFile());
+//					DynamicInstrumentationLoader.attachLibPath = attachLib.getAbsolutePath();
+//				}
+//
+//				loadAgentThread.start();
+//			} catch (final Exception e) {
+//				throw new RuntimeException(e);
+//			}
+//
+//		}
+//	}
 
 	/**
 	 * <p>

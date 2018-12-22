@@ -92,7 +92,7 @@ public class JdoEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	@SuppressFBWarnings({ "REC_CATCH_EXCEPTION" })
 	@Override
-	protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
+	protected Optional<CtClass> transform(final ClassLoader loader, String className, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
 			throws IllegalClassTransformationException {
 
@@ -102,43 +102,44 @@ public class JdoEntityClassTransformer extends AbstractBaseClassTransformer {
 
 		try {
 			// we only want to transform item types only ...
-			if (isItemType(clazz) && !alreadyTransformed(clazz)) {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("Injecting JDO annotations: " + clazz.getName());
-				}
-
-				if (clazz.isFrozen()) {
-					try {
-						clazz.defrost();
-					} catch (final Exception e) {
-						throw new IllegalClassTransformationException(
-								String.format("Type %s was frozen and could not be defrosted", clazz.getName()), e);
-					}
-				}
-
-				// add JDO entity annotation
-				addEntityAnnotation(clazz);
-
-				// process item properties
-				for (final CtField field : getDeclaredFields(clazz)) {
-					if (!clazz.equals(field.getDeclaringClass())) {
-						continue;
+			if (isItemType(clazz)) {
+				if (!isAlreadyTransformed(clazz)) {
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Injecting JDO annotations: " + clazz.getName());
 					}
 
-					final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
+					if (clazz.isFrozen()) {
+						try {
+							clazz.defrost();
+						} catch (final Exception e) {
+							throw new IllegalClassTransformationException(
+									String.format("Type %s was frozen and could not be defrosted", clazz.getName()), e);
+						}
+					}
 
-					// process item type property annotation
-					if (propertyAnn.isPresent()) {
-						// create the necessary JDO annotations based on
-						// Relation and Property annotations
+					// add JDO entity annotation
+					addEntityAnnotation(clazz);
 
-						final List<Annotation> fieldAnnotations = new ArrayList<>();
+					// process item properties
+					for (final CtField field : getDeclaredFields(clazz)) {
+						if (!clazz.equals(field.getDeclaringClass())) {
+							continue;
+						}
 
-						// JDO has one main annotation, that is needed for almost everything
-						Annotation persistentAnnotation = createAnnotation(field.getFieldInfo2().getConstPool(), Persistent.class);
-						fieldAnnotations.add(persistentAnnotation);
+						final Optional<Annotation> propertyAnn = getAnnotation(field, Property.class);
 
-						fieldAnnotations.addAll(createJdoRelationAnnotations(clazz, field, propertyAnn.get(), persistentAnnotation));
+						// process item type property annotation
+						if (propertyAnn.isPresent()) {
+							// create the necessary JDO annotations based on
+							// Relation and Property annotations
+
+							final List<Annotation> fieldAnnotations = new ArrayList<>();
+
+							// JDO has one main annotation, that is needed for almost everything
+							Annotation persistentAnnotation = createAnnotation(field.getFieldInfo2().getConstPool(), Persistent.class);
+							fieldAnnotations.add(persistentAnnotation);
+
+							fieldAnnotations.addAll(createJdoRelationAnnotations(clazz, field, propertyAnn.get(), persistentAnnotation));
 
 //						{ // mark property as unique and add indexes
 //							final Optional<Annotation> uniqueAnn = createUniqueConstraintAnnotation(field,
@@ -154,19 +155,20 @@ public class JdoEntityClassTransformer extends AbstractBaseClassTransformer {
 //							}
 //						}
 
-						// only add column annotation if there is no relation
-						// annotation, as this is not allowed
+							// only add column annotation if there is no relation
+							// annotation, as this is not allowed
 //						if (CollectionUtils.isEmpty(fieldAnnotations)) {
 //							final List<Annotation> columnAnn = createColumnAnnotation(clazz, field, propertyAnn.get());
 //							fieldAnnotations.addAll(columnAnn);
 //						}
 
-						// and add them to the clazz
-						addAnnotations(clazz, field, fieldAnnotations);
+							// and add them to the clazz
+							addAnnotations(clazz, field, fieldAnnotations);
+						}
 					}
-				}
 
 //				addIndexAnnotation(clazz);
+				}
 
 				return Optional.of(clazz);
 			} else {
@@ -184,7 +186,29 @@ public class JdoEntityClassTransformer extends AbstractBaseClassTransformer {
 		return Optional.empty();
 	}
 
-	protected boolean alreadyTransformed(final CtClass clazz) throws IllegalClassTransformationException {
+	/**
+	 * Use the datanucleus enhancer to post process the byte code.
+	 */
+	@Override
+	protected byte[] postProcessByteCode(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
+			final ProtectionDomain protectionDomain, final CtClass clazz) throws IllegalClassTransformationException {
+
+		if (isItemType(clazz) && isAlreadyTransformed(clazz)) {
+			try {
+//				JDOEnhancer enhancer = JDOHelper.getEnhancer().addClass(className, clazz.toBytecode());
+//				enhancer.enhance();
+//				return enhancer.getEnhancedBytes(className);
+
+//				new datanucleus
+			} catch (Exception e) {
+				throw new IllegalClassTransformationException(String.format("DataNucleus enhancer failed", className), e);
+			}
+		}
+
+		return super.postProcessByteCode(loader, className, classBeingRedefined, protectionDomain, clazz);
+	}
+
+	protected boolean isAlreadyTransformed(final CtClass clazz) throws IllegalClassTransformationException {
 		final Optional<Annotation> entityAnnotation = getAnnotation(clazz, PersistenceCapable.class);
 
 		return entityAnnotation.isPresent();

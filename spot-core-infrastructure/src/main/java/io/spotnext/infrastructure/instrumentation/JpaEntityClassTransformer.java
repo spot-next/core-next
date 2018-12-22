@@ -95,7 +95,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 
 	@SuppressFBWarnings({ "REC_CATCH_EXCEPTION" })
 	@Override
-	protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
+	protected Optional<CtClass> transform(final ClassLoader loader, String className, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
 			throws IllegalClassTransformationException {
 

@@ -37,6 +37,7 @@ public final class DynamicInstrumentationAgent {
 			final Method initializeMethod = agentInstrumentationInitializer.getDeclaredMethod("initialize", String.class,
 					Instrumentation.class);
 
+			// this returns a comma separated list of values
 			String transformers = System.getProperty("transformers");
 
 			// if null we try to parse the string args (java 9+)
@@ -63,14 +64,14 @@ public final class DynamicInstrumentationAgent {
 		final Map<String, String> parsedArgs = new HashMap<>();
 
 		if (args != null) {
-			String[] splitArgs = args.trim().split(",");
+			String[] splitArgs = args.trim().split(" ");
 
-			for (String s : splitArgs) {
-				if (s != null && s.trim().length() > 0) {
-					String[] i = s.trim().split("=");
+			for (String arg : splitArgs) {
+				if (arg != null && arg.trim().length() > 0) {
+					String[] splitArg = arg.trim().split("=");
 
-					if (i.length > 0) {
-						parsedArgs.put(i[0], i.length > 1 ? i[1] : null);
+					if (splitArg.length == 2) {
+						parsedArgs.put(splitArg[0], splitArg[1]);
 					}
 				}
 			}

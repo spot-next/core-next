@@ -63,6 +63,7 @@ import io.spotnext.support.util.ClassUtil;
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
+@ItemType(persistable = false, typeCode = "item")
 public abstract class Item implements Serializable, Comparable<Item> {
 
 	private static final long serialVersionUID = 1L;

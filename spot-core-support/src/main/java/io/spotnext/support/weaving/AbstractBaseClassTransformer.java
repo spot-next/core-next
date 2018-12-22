@@ -100,12 +100,11 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(String.format("Processing class '%s'", clazz.getName()));
 					}
-					final Optional<CtClass> transformedClass = transform(loader, clazz, classBeingRedefined,
-							protectionDomain);
+					final Optional<CtClass> transformedClass = transform(loader, className, clazz, classBeingRedefined, protectionDomain);
 
 					if (transformedClass.isPresent()) {
 						try {
-							return transformedClass.get().toBytecode();
+							return postProcessByteCode(loader, className, classBeingRedefined, protectionDomain, transformedClass.get());
 						} catch (final Exception e) {
 							final String message = String.format("Could not compile transformed class %s", classId);
 							LOG.error(message, e);
@@ -146,9 +145,30 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @return the transformed class object. If the class was not changed, return null instead.
 	 * @throws IllegalClassTransformationException in case there is an error
 	 */
-	abstract protected Optional<CtClass> transform(final ClassLoader loader, final CtClass clazz,
+	abstract protected Optional<CtClass> transform(final ClassLoader loader, String className, final CtClass clazz,
 			final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain)
 			throws IllegalClassTransformationException;
+
+	/**
+	 * Allows the concrete implementation to further post process the class byte code. By default this method does nothing.
+	 * 
+	 * @param loader              the defining loader of the class to be transformed, may be null if the bootstrap loader
+	 * @param clazz               the class in the internal form of the JVM.
+	 * @param classBeingRedefined if this is triggered by a redefine or retransform, the class being redefined or retransformed; if this is a class load, null
+	 * @param protectionDomain    the protection domain of the class being defined or redefined
+	 * @return the transformed class object. If the class was not changed, return null instead.
+	 * @throws CannotCompileException
+	 * @throws IOException
+	 * @throws IllegalClassTransformationException in case there is an error
+	 */
+	protected byte[] postProcessByteCode(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
+			final ProtectionDomain protectionDomain, final CtClass clazz) throws IllegalClassTransformationException {
+		try {
+			return clazz.toBytecode();
+		} catch (IOException | CannotCompileException e) {
+			throw new IllegalClassTransformationException(String.format("Could not post-process class %s", className), e);
+		}
+	}
 
 	/**
 	 * Returns the annotation for the given class.
