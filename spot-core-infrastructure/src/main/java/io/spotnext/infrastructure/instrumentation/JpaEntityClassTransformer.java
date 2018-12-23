@@ -35,6 +35,12 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CollectionType;
 import org.hibernate.annotations.Type;
+import org.hibernate.bytecode.enhance.spi.DefaultEnhancementContext;
+import org.hibernate.bytecode.enhance.spi.EnhancementContext;
+import org.hibernate.bytecode.enhance.spi.Enhancer;
+import org.hibernate.bytecode.enhance.spi.UnloadedClass;
+import org.hibernate.bytecode.enhance.spi.UnloadedField;
+import org.hibernate.cfg.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -288,7 +294,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Checks if the field has the {@link Property#unique()} annotation value set. If yes, then a {@link NotNull} is added. The real uniqueness constraint is
 	 * checked using {@link Item#uniquenessHash()}.
 	 *
-	 * @param field              for which the annotation will be created
+	 * @param field for which the annotation will be created
 	 * @param propertyAnnotation the property annotation that holds information about the item type property.
 	 * @return the created annotation
 	 */
@@ -362,7 +368,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	/**
 	 * Checks if {@link Property#unique()} = true.
 	 *
-	 * @param field              the field which should be checked for a uniqueness constraint
+	 * @param field the field which should be checked for a uniqueness constraint
 	 * @param propertyAnnotation annotation containing item type property information
 	 * @return true if the property has a unique constraint
 	 */
@@ -468,7 +474,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	 * Annotates relation collections with an {@link OrderBy} annotation to make FETCH JOINS work correctly.
 	 *
 	 * @param entityClass for which the annotations are created
-	 * @param field       for which the annotations are created
+	 * @param field for which the annotations are created
 	 * @return list of created annotations, never null
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
 	 */
@@ -510,8 +516,8 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	/**
 	 * Necessary to prohibit infinite loops when serializing using Jackson
 	 *
-	 * @param entityClass  the class of the field
-	 * @param field        the field which will be annotated with a JsonSerialize annotation.
+	 * @param entityClass the class of the field
+	 * @param field the field which will be annotated with a JsonSerialize annotation.
 	 * @param isCollection defines if the collection de/serializer annotation should be applied, or not
 	 * @return the created annotation, never null
 	 * @throws IllegalClassTransformationException in case there is an error accessing class or field internals
