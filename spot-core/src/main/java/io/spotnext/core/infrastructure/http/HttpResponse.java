@@ -1,7 +1,5 @@
 package io.spotnext.core.infrastructure.http;
 
-import spark.ResponseTransformer;
-
 /**
  * <p>HttpResponse interface.</p>
  *
