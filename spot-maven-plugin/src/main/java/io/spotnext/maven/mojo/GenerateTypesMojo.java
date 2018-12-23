@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -315,7 +316,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			if (beanType.getProperties() != null) {
 				for (final Property prop : beanType.getProperties().getProperty()) {
-					final JavaMemberType propType = createMemberType(prop.getType());
+					final JavaMemberType propType = createMemberType(prop.getType(), false);
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
@@ -755,6 +756,20 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @MojoExecutionException if any.
 	 */
 	protected JavaMemberType createMemberType(final String typeName) throws MojoExecutionException {
+		return createMemberType(typeName, true);
+	}
+
+	/**
+	 * <p>
+	 * createMemberType.
+	 * </p>
+	 *
+	 * @param typeName           a {@link java.lang.String} object.
+	 * @param collectionOverride if true {@link Set} is used for all collection properties
+	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
+	 * @MojoExecutionException if any.
+	 */
+	protected JavaMemberType createMemberType(final String typeName, boolean collectionOverride) throws MojoExecutionException {
 		final BaseType propType = typeDefinitions.getType(typeName);
 
 		JavaMemberType ret = null;
@@ -779,7 +794,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 						String.format("Type '%s' is not supported as collection element type", t.getElementType()));
 			}
 
-			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType());
+			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType(), collectionOverride);
 
 		} else if (propType instanceof MapType) {
 			final MapType t = (MapType) propType;
@@ -828,27 +843,30 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * createCollectionMemberType.
 	 * </p>
 	 *
-	 * @param collectionType a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
-	 * @param elementType    a {@link java.lang.String} object.
+	 * @param collectionType     a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
+	 * @param elementType        a {@link java.lang.String} object.
+	 * @param collectionOverride
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
 	 * @MojoExecutionException if any.
 	 */
-	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType)
+	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType, boolean collectionOverride)
 			throws MojoExecutionException {
 
 		JavaMemberType ret = null;
 
-		// TODO: temporarily disabled, this would not work with hibernate FETCH
-		// JOINS!
-		// if (CollectionsType.COLLECTION.equals(collectionType)) {
-		// ret = new JavaMemberType(Collection.class);
-		// } else if (CollectionsType.SET.equals(collectionType)) {
-		// ret = new JavaMemberType(Set.class);
-		// } else {
-		// ret = new JavaMemberType(List.class);
-		// }
-
-		ret = new JavaMemberType(Set.class);
+		if (!collectionOverride) {
+			// TODO: temporarily disabled, this would not work with hibernate FETCH
+			// JOINS!
+			if (CollectionsType.COLLECTION.equals(collectionType)) {
+				ret = new JavaMemberType(Collection.class);
+			} else if (CollectionsType.SET.equals(collectionType)) {
+				ret = new JavaMemberType(Set.class);
+			} else {
+				ret = new JavaMemberType(List.class);
+			}
+		} else {
+			ret = new JavaMemberType(Set.class);
+		}
 
 		// add generic collection type
 		final JavaMemberType genType = createMemberType(elementType);
@@ -1269,7 +1287,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final CollectionsType colType = RelationCollectionType.List.equals(collectionType) ? CollectionsType.LIST
 					: CollectionsType.SET;
 
-			type = createCollectionMemberType(colType, elementType);
+			type = createCollectionMemberType(colType, elementType, true);
 		} else {
 			type = createMemberType(elementType);
 		}
