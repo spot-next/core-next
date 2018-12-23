@@ -80,7 +80,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	public void testGetAllModels() {
 		given().relaxedHTTPSValidation().get("/country").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("data.results.size()", Matchers.greaterThan(0));
+				.body("data.results[0].id", Matchers.notNullValue());
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 	public void testQueryModel() {
 		get("/user?q=uid like '%test%'").then() //
 				.statusCode(HttpStatus.OK.value()) //
-				.body("data.results.size()", Matchers.greaterThan(0));
+				.body("data.results[0].id", Matchers.notNullValue());
 	}
 
 	@Test

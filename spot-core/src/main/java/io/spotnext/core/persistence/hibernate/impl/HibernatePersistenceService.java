@@ -116,9 +116,9 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	 * </p>
 	 *
 	 * @param entityManagerFactory a {@link javax.persistence.EntityManagerFactory} object.
-	 * @param transactionService a {@link io.spotnext.core.persistence.service.TransactionService} object.
+	 * @param transactionService   a {@link io.spotnext.core.persistence.service.TransactionService} object.
 	 * @param configurationService a {@link io.spotnext.infrastructure.service.ConfigurationService} object.
-	 * @param loggingService a {@link io.spotnext.infrastructure.service.LoggingService} object.
+	 * @param loggingService       a {@link io.spotnext.infrastructure.service.LoggingService} object.
 	 */
 	@Autowired
 	public HibernatePersistenceService(EntityManagerFactory entityManagerFactory, TransactionService transactionService,
@@ -208,7 +208,14 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					// this should actually not happen, but it does ...
 					// TODO: check and fix null result objects
 					if (value != null) {
-						values.add(value);
+						if (value.getClass().isArray()) {
+							Object[] valueArray = (Object[]) value;
+							if (valueArray.length > 0) {
+								values.add(valueArray[0]);
+							}
+						} else {
+							values.add(value);
+						}
 					}
 				} while (values.size() < sourceQuery.getPageSize() && scrollResult.next());
 
