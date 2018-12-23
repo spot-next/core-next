@@ -1,7 +1,6 @@
 package io.spotnext.core.security.service;
 
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
-import io.spotnext.core.security.strategy.PasswordEncryptionStrategy;
 import io.spotnext.itemtype.core.user.User;
 
 /**
@@ -25,7 +24,7 @@ public interface AuthenticationService {
 	 * @param uid a {@link java.lang.String} object.
 	 * @param password a {@link java.lang.String} object.
 	 * @param isEncrypted a boolean.
-	 * @return a {@link io.spotnext.itemtype.core.user.User} object.
+	 * @return the authenticated user instance of null if authentication failed
 	 */
 	User getAuthenticatedUser(final String uid, final String password, boolean isEncrypted);
 

@@ -17,9 +17,9 @@
 	<properties>
 		<spot.version>\${project.parent.version}</spot.version>
 		<jar.mainclass>${package}.Init</jar.mainclass>
-		<maven.compiler.source>10</maven.compiler.source>
-		<maven.compiler.target>10</maven.compiler.target>
-		<java.version>10</java.version>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<java.version>11</java.version>
 	</properties>
 
 	<repositories>
