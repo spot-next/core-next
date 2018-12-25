@@ -24,8 +24,5 @@ public class Bean implements Serializable {
 		}
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return Objects.equals(this, obj);
-	}
+	// TODO implement generic equals and hashcode implementation
 }

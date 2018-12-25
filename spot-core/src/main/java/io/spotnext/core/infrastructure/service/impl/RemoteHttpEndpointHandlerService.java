@@ -180,7 +180,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	//@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
+	// @SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
 //		Security.addProvider(new OpenSSLProvider());
 //		sslContextFactory.setProvider("Conscrypt");
@@ -441,7 +441,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			this.authenticationFilter = authenticationFilter;
 		}
 
-		//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+		// @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);
@@ -490,13 +490,17 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		 * @param responseBody
 		 */
 		protected Object processResponse(final Response response, final Object responseBody) {
-			if (responseBody instanceof HttpResponse) {
-				final HttpResponse body = (HttpResponse) responseBody;
-				response.status(body.getHttpStatus().value());
-				return body;
-			}
+			if (!response.raw().isCommitted()) {
+				if (responseBody instanceof HttpResponse) {
+					final HttpResponse body = (HttpResponse) responseBody;
+					response.status(body.getHttpStatus().value());
+					return body;
+				}
 
-			return responseBody;
+				return responseBody;
+			} else {
+				return null;
+			}
 		}
 	}
 

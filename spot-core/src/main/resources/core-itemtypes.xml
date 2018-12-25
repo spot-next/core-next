@@ -5,7 +5,12 @@
 	<!-- atomic java types -->
 	<!-- primitive types -->
 	<atomic name="boolean" className="boolean" />
+	<atomic name="byte" className="byte" />
+	<atomic name="short" className="short" />
 	<atomic name="int" className="int" />
+	<atomic name="long" className="long" />
+	<atomic name="float" className="float" />
+	<atomic name="double" className="double" />
 	
 	<!-- complex types -->
 	<atomic name="String" className="java.lang.String" />

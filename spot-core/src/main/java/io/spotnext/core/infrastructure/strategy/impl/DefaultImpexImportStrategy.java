@@ -240,7 +240,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		try {
 			return typeService.getClassForTypeCode(typeName);
 		} catch (final UnknownTypeException e) {
-			throw new ImpexImportException(String.format("Cannot process ImpEx header for type %s: %s", typeName, line));
+			throw new ImpexImportException(String.format("Unknown type '%s' for impex header: %s", typeName, line));
 		}
 	}
 
