@@ -6,6 +6,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -27,9 +28,8 @@ import io.spotnext.core.infrastructure.support.Logger;
 @Service
 public class DefaultConfigurationService extends BeanAware implements ConfigurationService, EnvironmentAware {
 
-
 	@Autowired
-	protected StandardEnvironment environment;
+	protected ConfigurableEnvironment environment;
 
 	/** {@inheritDoc} */
 	@Override
@@ -112,9 +112,14 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		return value;
 	}
 
+	@Override
+	public Properties getProperties() {
+		return getProperties(null);
+	}
+
 	/** {@inheritDoc} */
 	@Override
-	public Properties getPropertiesForPrefix(final String prefix) {
+	public Properties getProperties(final String prefix) {
 		final Properties ret = new Properties();
 
 		final String sanitizedPrefix = StringUtils.trimToEmpty(prefix);
@@ -122,7 +127,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		for (final PropertySource<?> s : environment.getPropertySources()) {
 			if (s instanceof EnumerablePropertySource) {
 				for (final String propertyKey : ((EnumerablePropertySource<?>) s).getPropertyNames()) {
-					if (propertyKey.startsWith(sanitizedPrefix) && sanitizedPrefix.length() > 0) {
+					if (sanitizedPrefix.isBlank() || propertyKey.startsWith(sanitizedPrefix)) {
 						final Object value = environment.getProperty(propertyKey);
 
 						if (value != null) {
@@ -131,7 +136,7 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 					}
 				}
 			} else {
-				Logger.warn(String.format("Ignoring property source of type %s", s.getClass().getName()));
+				Logger.debug(() -> String.format("Ignoring property source of type %s", s.getClass().getName()));
 			}
 		}
 
@@ -167,6 +172,11 @@ public class DefaultConfigurationService extends BeanAware implements Configurat
 		}
 
 		return b;
+	}
+
+	@Override
+	public void setProperty(String key, Object value) {
+		System.setProperty(key, value instanceof String ? (String) value : value.toString());
 	}
 
 	/** {@inheritDoc} */

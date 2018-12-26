@@ -248,42 +248,50 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 							transformer = jsonResponseTransformer;
 						}
 
-						final String pathMapping = StringUtils.join(remoteEndpoint.pathMapping(), handler.pathMapping()).replace("//", "/");
+						final List<String> pathMappings = new ArrayList<>();
 
-						if (handler.method() == HttpMethod.trace) {
-							service.trace(pathMapping, mimeType, route, transformer);
+						for (String basePath : remoteEndpoint.pathMapping()) {
+							for (String path : handler.pathMapping()) {
+								pathMappings.add(StringUtils.join(basePath, path).replace("//", "/"));
+							}
 						}
 
-						if (handler.method() == HttpMethod.connect) {
-							service.connect(pathMapping, mimeType, route, transformer);
-						}
+						for (String pathMapping : pathMappings) {
+							if (handler.method() == HttpMethod.trace) {
+								service.trace(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.options) {
-							service.options(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.connect) {
+								service.connect(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.get) {
-							service.get(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.options) {
+								service.options(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.post) {
-							service.post(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.get) {
+								service.get(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.put) {
-							service.put(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.post) {
+								service.post(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.delete) {
-							service.delete(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.put) {
+								service.put(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.head) {
-							service.head(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.delete) {
+								service.delete(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.patch) {
-							service.patch(pathMapping, mimeType, route, transformer);
+							if (handler.method() == HttpMethod.head) {
+								service.head(pathMapping, mimeType, route, transformer);
+							}
+
+							if (handler.method() == HttpMethod.patch) {
+								service.patch(pathMapping, mimeType, route, transformer);
+							}
 						}
 					}
 				}

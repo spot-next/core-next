@@ -320,6 +320,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
+					
+					populatePropertyAnnotation(prop, field);
 
 					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), JavaValueType.LITERAL));
@@ -1314,7 +1316,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 							ann.addParameter(a.getName(), a.getStringValue(), JavaValueType.STRING);
 						} else {
 							getLog().warn(String.format(
-									"Validator for property %s misconfigured, all attribute values are empty",
+									"Annotation for property %s misconfigured, all attribute values are empty",
 									field.getName()));
 						}
 					}

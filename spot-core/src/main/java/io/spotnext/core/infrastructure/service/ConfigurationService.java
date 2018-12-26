@@ -3,7 +3,9 @@ package io.spotnext.core.infrastructure.service;
 import java.util.Properties;
 
 /**
- * <p>ConfigurationService interface.</p>
+ * <p>
+ * ConfigurationService interface.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -34,7 +36,13 @@ public interface ConfigurationService {
 	 * @param prefix that is used to find properties.
 	 * @return the properties matching the given prefix (empty if nothing is found)
 	 */
-	Properties getPropertiesForPrefix(String prefix);
+	Properties getProperties(String prefix);
+
+	/**
+	 * @see #getProperties(String)
+	 * @return all named properties
+	 */
+	Properties getProperties();
 
 	/**
 	 * Returns a Integer value for the given key or null, if the key doesn't exist.
@@ -88,8 +96,13 @@ public interface ConfigurationService {
 	boolean getBoolean(String key, boolean defaultValue);
 
 	/**
-	 * Registers a properties file configuration, possibly overwriting already
-	 * defined properties.
+	 * @param key
+	 * @param value
+	 */
+	void setProperty(String key, Object value);
+
+	/**
+	 * Registers a properties file configuration, possibly overwriting already defined properties.
 	 * 
 	 * @param propertiesFile the properties filename.
 	 * @throws ConfigurationException

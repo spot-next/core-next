@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.LocaleUtils;
@@ -66,7 +67,7 @@ public class MiscUtil {
 	 * intOrDefault.
 	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a int.
 	 * @return the parsed int value, otherwise return the defaultValue.
 	 */
@@ -79,16 +80,29 @@ public class MiscUtil {
 	}
 
 	/**
-	 * @param value the input value
+	 * @param value        the input value
 	 * @param defaultValue the default value
 	 * @return the prased value if it is positive, otherwise return the defaultValue.
 	 */
 	public static int positiveIntOrDefault(final String value, final int defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			int val = Integer.parseInt(value);
-			if (val > 0) {
+			if (val >= 0) {
 				return val;
 			}
+		}
+
+		return defaultValue;
+	}
+
+	/**
+	 * @param value        the input value
+	 * @param defaultValue the default value
+	 * @return the original value if it is positive, otherwise return the defaultValue.
+	 */
+	public static int positiveIntOrDefault(final int value, final int defaultValue) {
+		if (value >= 0) {
+			return value;
 		}
 
 		return defaultValue;
@@ -99,7 +113,7 @@ public class MiscUtil {
 	 * longOrDefault.
 	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a long.
 	 * @return a long.
 	 */
@@ -116,7 +130,7 @@ public class MiscUtil {
 	 * doubleOrDefault.
 	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a double.
 	 * @return a double.
 	 */
@@ -133,7 +147,7 @@ public class MiscUtil {
 	 * floatOrDefault.
 	 * </p>
 	 *
-	 * @param value a {@link java.lang.String} object.
+	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a float.
 	 * @return a float.
 	 */
@@ -163,8 +177,8 @@ public class MiscUtil {
 	 * </p>
 	 *
 	 * @param collection a {@link java.util.Collection} object.
-	 * @param arrayType a {@link java.lang.Class} object.
-	 * @param <T> a T object.
+	 * @param arrayType  a {@link java.lang.Class} object.
+	 * @param            <T> a T object.
 	 * @return an array of T[] objects.
 	 */
 	public static <T> T[] toArray(final Collection<T> collection, final Class<T> arrayType) {
@@ -263,7 +277,7 @@ public class MiscUtil {
 	/**
 	 * Basically the same as {@link #$(Supplier)} but instead of an empty {@link java.util.Optional} it returns the given default value.
 	 *
-	 * @param expression the java expression to evaluate
+	 * @param expression   the java expression to evaluate
 	 * @param defaultValue the default value to return in case of null (or an {@link java.lang.NullPointerException}
 	 * @return returns the evaluated result or the default value in case it's null
 	 * @param <T> a T object.
@@ -278,5 +292,25 @@ public class MiscUtil {
 		}
 
 		return ret != null ? ret : defaultValue;
+	}
+
+	/**
+	 * Returns the given object if it is valid or the given default value if not.
+	 * 
+	 * @param object       to check
+	 * @param check        expression
+	 * @param defaultValue value to return in case the given object is not valid
+	 * @return either the original object or the fallback, depending on the check
+	 */
+	public static <T> T validOr(T object, Function<T, Boolean> check, Supplier<T> defaultValue) {
+		return check.apply(object) ? object : defaultValue.get();
+	}
+
+	public static boolean greaterThan(Number number, Number operand) {
+		if (number instanceof Comparable && operand instanceof Comparable) {
+			return ((Comparable<Number>) number).compareTo(operand) > 0;
+		}
+
+		throw new IllegalArgumentException("Arguments must be of type 'Comparable'");
 	}
 }

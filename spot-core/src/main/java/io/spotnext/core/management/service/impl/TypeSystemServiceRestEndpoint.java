@@ -59,7 +59,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 		final String sortField = request.queryParams("sort");
 
 		final List<GenericItemDefinitionData> types = typeService.getItemTypeDefinitions().values().stream() //
-				.skip((page - 1) * pageSize) //
+				.skip(MiscUtil.positiveIntOrDefault(page - 1, 1) * pageSize) //
 				.limit(pageSize) //
 				.map(itemTypeConverter::convert) //
 				.sorted(getComparator(sortField)) //

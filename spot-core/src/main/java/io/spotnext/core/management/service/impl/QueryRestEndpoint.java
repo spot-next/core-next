@@ -43,7 +43,7 @@ public class QueryRestEndpoint extends AbstractRestEndpoint {
 	protected QueryService queryService;
 
 	/**
-	 * Gets all items of the given item type. The page index starts at 1.
+	 * Executes the given query and returns the results.
 	 *
 	 * @param          <T> a T object.
 	 * @param request  a {@link spark.Request} object.

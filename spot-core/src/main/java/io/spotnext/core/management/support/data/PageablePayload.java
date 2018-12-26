@@ -1,6 +1,7 @@
 package io.spotnext.core.management.support.data;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -17,8 +18,8 @@ import io.spotnext.core.persistence.query.QueryResult;
 @JsonInclude(Include.NON_NULL)
 public class PageablePayload<T> extends QueryResult<T> {
 
-	public PageablePayload(List<T> results, int page, int pageSize, Long totalCount) {
-		super(results, page, pageSize, totalCount);
+	public PageablePayload(Collection<T> results, int page, int pageSize, Long totalCount) {
+		super(results.stream().collect(Collectors.toList()), page, pageSize, totalCount);
 	}
 
 }

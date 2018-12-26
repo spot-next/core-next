@@ -1,28 +1,29 @@
 package io.spotnext.infrastructure.type;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Objects;
 
-import io.spotnext.support.util.ClassUtil;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.infrastructure.IndirectPropertyAccess;
 
-public class Bean implements Serializable {
+@SuppressFBWarnings("EQ_DOESNT_OVERRIDE_EQUALS")
+public class Bean implements Serializable, IndirectPropertyAccess {
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public int hashCode() {
-		Object[] fieldValues = ClassUtil.getAllFields(this.getClass()).stream().map(f -> getFieldValue(f)).toArray();
+		final Object[] properties = getProperties().values().stream().toArray();
 
-		return Objects.hash(fieldValues);
+		return Objects.hash(properties);
 	}
 
-	protected Object getFieldValue(Field field) {
-		try {
-			return field.get(this);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new IllegalStateException(String.format("Could not read field %s of type %s", field.getName(), this.getClass().getName()), e);
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !this.getClass().equals(obj.getClass())) {
+			return false;
 		}
+
+		return getProperties().equals(((IndirectPropertyAccess) obj).getProperties());
 	}
 
-	// TODO implement generic equals and hashcode implementation
 }
