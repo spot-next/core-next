@@ -68,7 +68,7 @@ package $packagePath;
 #end
 
 #javadoc($javadoc)
-@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({ "MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2", "HE_EQUALS_NO_HASHCODE" })
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({ "MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2", "HE_EQUALS_NO_HASHCODE", "EQ_DOESNT_OVERRIDE_EQUALS" })
 #annotations($annotations)
 $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #end #if($interfaces) implements #interfaces($interfaces) #end  {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
