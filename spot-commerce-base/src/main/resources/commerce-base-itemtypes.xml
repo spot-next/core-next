@@ -98,11 +98,11 @@
 	<type name="Tax" package="io.spotnext.itemtype.commerce.store"
 		extends="UniqueIdItem">
 		<properties>
-			<property name="value" type="BigDecimal">
-			</property>
-			<property name="description" type="LocalizedString">
-			</property>
-			<property name="country" type="Country">
+			<property name="value" type="BigDecimal" />
+			<property name="description" type="LocalizedString" />
+			<property name="country" type="Country" />
+			<property name="relative" type="boolean">
+				<defaultValue>true</defaultValue>
 			</property>
 		</properties>
 	</type>
@@ -194,9 +194,9 @@
 			</property>
 		</properties>
 	</type>
-	
+
 	<!-- CMS components -->
-	
+
 	<type name="CategoryMenuComponent" extends="AbstractMenuComponent" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="category" type="Category">
@@ -213,7 +213,7 @@
 			</property>
 		</properties>
 	</type>
-	
+
 	<!-- relations -->
 
 	<relation name="Category2Product">
@@ -223,7 +223,7 @@
 			<description>The products in this catalog.</description>
 		</target>
 	</relation>
-	
+
 	<relation name="Category2Category">
 		<description>The categories that are included as sub categories.</description>
 		<source cardinality="many" itemType="Category" mappedBy="superCategories" />

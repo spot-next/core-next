@@ -1,5 +1,7 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,7 +62,7 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		jacksonMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
 
-		// jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+		jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
 
 		final TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
 		typeResolver.init(JsonTypeInfo.Id.CUSTOM, new ItemTypeResolver());
