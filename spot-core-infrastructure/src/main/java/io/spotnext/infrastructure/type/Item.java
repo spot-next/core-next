@@ -61,7 +61,7 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	// JPA
 	@Id
 	@Column(name = "id")
-	final protected Long id = IdGenerator.createLongId();
+	final protected Long id = IdGenerator.createLongIdFromRandomUUID();
 
 //	@Index(name = "idx_createdAt")
 	@CreationTimestamp
