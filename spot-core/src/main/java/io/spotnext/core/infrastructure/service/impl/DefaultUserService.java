@@ -43,7 +43,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 
 	public static final UserData DEFAULT_USER = new UserData();
 	static {
-		DEFAULT_USER.setUid("<notset>");
+		DEFAULT_USER.setUid(CoreConstants.ANONYMOUS_USER_UID);
 	}
 	
 	@Autowired

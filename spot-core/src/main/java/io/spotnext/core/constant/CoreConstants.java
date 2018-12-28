@@ -23,6 +23,8 @@ public class CoreConstants {
 	/** Constant <code>SESSION_KEY_CURRENT_USER="currentUser"</code> */
 	public static final String SESSION_KEY_CURRENT_USER = "currentUser";
 
+	public static final String ANONYMOUS_USER_UID = "anonymous";
+
 	public static final int REQUEST_DEFAULT_PAGE = 1;
 	public static final int REQUEST_DEFAULT_PAGE_SIZE = 100;
 }
