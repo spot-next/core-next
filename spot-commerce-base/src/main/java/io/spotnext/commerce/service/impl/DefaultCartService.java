@@ -32,8 +32,6 @@ public class DefaultCartService extends AbstractService implements CartService {
 	@Autowired
 	protected SessionService sessionService;
 
-	@Autowired
-
 	@Override
 	public Optional<Cart> getCart(String uid) {
 		final ModelQuery<Cart> query = new ModelQuery<>(Cart.class, Collections.singletonMap("uid", uid));

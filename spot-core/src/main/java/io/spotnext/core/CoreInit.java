@@ -9,9 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
-import io.spotnext.core.infrastructure.exception.ImportException;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
-import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.persistence.service.QueryService;
 
@@ -49,29 +47,21 @@ public class CoreInit extends ModuleInit {
 	protected void importInitialData() throws ModuleInitializationException {
 		super.importInitialData();
 
-		try {
-			importScript("/data/initial/countries.impex", "Importing countries");
-			importScript("/data/initial/languages.impex", "Importing languages");
-			importScript("/data/initial/currencies.impex", "Importing currencies");
-			importScript("/data/initial/users.impex", "Importing users");
-			importScript("/data/initial/catalogs.impex", "Importing catalogs");
-		} catch (final ImportException e) {
-			Logger.warn("Could not import initial data: " + e.getMessage());
-		}
+		importScript("/data/initial/countries.impex", "Importing countries");
+		importScript("/data/initial/languages.impex", "Importing languages");
+		importScript("/data/initial/currencies.impex", "Importing currencies");
+		importScript("/data/initial/users.impex", "Importing users");
+		importScript("/data/initial/catalogs.impex", "Importing catalogs");
 	}
 
-	//@SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
+	// @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
 	@Log(message = "Importing sample data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {
 		super.importSampleData();
 
-		try {
-			importScript("/data/sample/users.impex", "Importing sample users");
-			importScript("/data/sample/medias.impex", "Importing sample medias");
-		} catch (final ImportException e) {
-			Logger.warn("Could not import initial data: " + e.getMessage());
-		}
+		importScript("/data/sample/users.impex", "Importing sample users");
+		importScript("/data/sample/medias.impex", "Importing sample medias");
 	}
 
 	public static void main(String... args) {
