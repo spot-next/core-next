@@ -837,7 +837,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	protected boolean isSupportedCollectionType(final String typeName) {
 		return typeDefinitions.getAtomicTypes().containsKey(typeName)
 				|| typeDefinitions.getEnumTypes().containsKey(typeName)
-				|| typeDefinitions.getBeanTypes().containsKey(typeName);
+				|| typeDefinitions.getBeanTypes().containsKey(typeName)
+				|| typeDefinitions.getItemTypes().containsKey(typeName);
 	}
 
 	/**

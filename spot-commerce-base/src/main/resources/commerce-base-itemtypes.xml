@@ -4,11 +4,12 @@
 	<collection elementType="AbstractOrderEntryData" name="AbstractOrderEntryDataList" collectionType="List" />
 	<collection elementType="DiscountData" name="DiscountDataList" collectionType="List" />
 	<collection elementType="TaxData" name="TaxDataList" collectionType="List" />
+	<collection elementType="CartEntry" name="CartEntryList" collectionType="List" />
 
 	<!-- enums -->
 
 	<enum name="OrderStatus" package="io.spotnext.itemtype.commerce.enumeration">
-		<description>The render engine used to render cms items.</description>
+		<description>The render engine used to render CMS items.</description>
 		<value code="OPEN" />
 		<value code="APPROVAL_PENDING" />
 		<value code="APPROVED" />
@@ -16,7 +17,34 @@
 		<value code="CANCELLED" />
 		<value code="UNKNOWN" />
 	</enum>
+	
+	<enum name="CartModificationOperation" package="io.spotnext.itemtype.commerce.enumeration">
+		<description>The operation that should be applied to a cart.</description>
+		<value code="ADD_ENTRY" />
+		<value code="REMOVE_ENTRY" />
+		<value code="UPDATE_ENTRY" />
+		<value code="CALCULATE_TOTALS" />
+		<value code="CALCULATE_ALL" />
+	</enum>
+	
+	<!-- beans -->
 
+	<bean name="CartModification" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="cartId" type="String" />
+			<property name="cartEntryNumber" type="Integer" />
+			<property name="productId" type="String" />
+			<property name="quantity" type="int" />
+			<property name="operation" type="CartModificationOperation" />
+		</properties>
+	</bean>
+	
+	<bean name="CartModificationResult" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="modifiedCartEntries" type="CartEntryList" />
+		</properties>
+	</bean>
+	
 	<bean name="CartData" package="io.spotnext.itemtype.commerce.order">
 		<properties>
 			<property name="uid" type="String" />
@@ -187,6 +215,15 @@
 	<type name="AbstractOrder" abstract="true" package="io.spotnext.itemtype.commerce.order" extends="UniqueIdItem">
 		<description>The abstract base type for orders and carts.</description>
 		<properties>
+			<property name="totalPrice" type="BigDecimal" >
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="subTotalPrice" type="BigDecimal" >
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="taxValue" type="BigDecimal" >
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
 			<property name="customer" type="User">
 				<modifiers unique="true" />
 				<annotations>
@@ -198,6 +235,14 @@
 
 	<type name="AbstractOrderEntry" abstract="true" package="io.spotnext.itemtype.commerce.order">
 		<properties>
+			<property name="entryNumber" type="int" />
+			<property name="basePrice" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="totalPrice" type="BigDecimal" >
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="quantity" type="int" />
 			<property name="product" type="Product">
 				<modifiers unique="true" />
 				<annotations>

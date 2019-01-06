@@ -36,7 +36,7 @@ public class DefaultAuthenticationService extends AbstractService implements Aut
 	@Cacheable("misc")
 	@Override
 	public User getAuthenticatedUser(final String name, final String password, final boolean isEncrypted) {
-		ValidationUtil.validateNotEmpty("Password cannot be blank", password);
+		ValidationUtil.validateNotBlankOrEmpty("Password cannot be blank", password);
 
 		String encryptedPassword = password;
 

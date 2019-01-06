@@ -69,7 +69,7 @@ public class QueryRestEndpoint extends AbstractRestEndpoint {
 		}
 
 		try {
-			ValidationUtil.validateNotEmpty("Query string must be provided using ?q=", queryString);
+			ValidationUtil.validateNotBlankOrEmpty("Query string must be provided using ?q=", queryString);
 
 			final JpqlQuery<T> query = new JpqlQuery<T>(queryString, resultType);
 			query.setPage(page);
