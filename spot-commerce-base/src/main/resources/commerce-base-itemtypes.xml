@@ -279,6 +279,20 @@
 		</properties>
 	</type>
 
+	<type name="PaymentMethode" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.checkout">
+		<properties>
+			<property name="name" type="LocalizedString" />
+			<property name="description" type="LocalizedString" />
+		</properties>
+	</type>
+	
+	<type name="ShippingMethode" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.checkout">
+		<properties>
+			<property name="name" type="LocalizedString" />
+			<property name="description" type="LocalizedString" />
+		</properties>
+	</type>
+
 	<!-- CMS components -->
 
 	<type name="CategoryMenuComponent" extends="AbstractMenuComponent" package="io.spotnext.itemtype.cms">
