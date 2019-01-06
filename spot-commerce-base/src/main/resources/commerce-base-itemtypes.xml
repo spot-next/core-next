@@ -62,7 +62,7 @@
 		<properties>
 			<property name="entryNumber" type="int" />
 			<property name="quantity" type="int" />
-			<property name="Product" type="ProductData" />
+			<property name="product" type="ProductData" />
 			<property name="basePrice" type="BigDecimal" />
 			<property name="totalPrice" type="BigDecimal" />
 			<property name="discounts" type="DiscountDataList" />

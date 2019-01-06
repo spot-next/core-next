@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.commerce.exception.NoSuchCartException;
 import io.spotnext.commerce.service.CartService;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -114,6 +115,7 @@ public class DefaultCartService extends AbstractService implements CartService {
 	}
 
 	@Override
+	@SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
 	public CartModificationResult updateCart(CartModification modificationData) throws NoSuchCartException {
 		Cart cart = getCart(modificationData.getCartId()).orElseThrow(() -> new NoSuchCartException(modificationData.getCartId()));
 		Optional<CartEntry> entry = getCartEntryToModify(cart, modificationData.getCartEntryNumber());
@@ -139,7 +141,7 @@ public class DefaultCartService extends AbstractService implements CartService {
 			break;
 		}
 
-		return null;
+		return result;
 	}
 
 	private Optional<CartEntry> getCartEntryToModify(Cart cart, Integer entryNnmber) {
