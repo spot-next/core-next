@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -187,11 +188,9 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			final UserData user = (UserData) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+			final Optional<UserData> user = session.<UserData>attribute(CoreConstants.SESSION_KEY_CURRENT_USER);
 
-			if (user != null) {
-				return user;
-			}
+			user.orElse(DEFAULT_USER);
 		} else {
 			Logger.warn("No session is set up.");
 		}

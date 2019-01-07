@@ -52,6 +52,7 @@
 		<description>The approval status, eg. of products or CMS items.</description>
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
+		<value code="CHECK" />
 	</enum>
 
 	<enum name="DataFormat" package="io.spotnext.itemtype.core.enumeration">

@@ -82,9 +82,9 @@ public interface CartService {
 	 *
 	 * @param cart        a {@link io.spotnext.itemtype.commerce.order.Cart} object.
 	 * @param entryNumber a int.
-	 * @param product     a {@link io.spotnext.itemtype.commerce.catalog.Product} object.
+	 * @param productId   of the product to add
 	 * @param quantity    a int.
 	 * @return a {@link io.spotnext.itemtype.commerce.order.CartEntry} object.
 	 */
-	CartEntry updateCart(Cart cart, int entryNumber, Product product, int quantity);
+	CartEntry updateCart(Cart cart, int entryNumber, String productId, int quantity);
 }

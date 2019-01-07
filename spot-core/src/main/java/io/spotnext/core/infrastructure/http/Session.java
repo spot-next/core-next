@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.collections4.iterators.IteratorEnumeration;
 
 /**
- * <p>Session class.</p>
+ * <p>
+ * Session class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -26,7 +29,9 @@ public class Session {
 	protected int maxInactiveInterval;
 
 	/**
-	 * <p>Constructor for Session.</p>
+	 * <p>
+	 * Constructor for Session.
+	 * </p>
 	 *
 	 * @param id a {@link java.lang.String} object.
 	 */
@@ -35,7 +40,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>Getter for the field <code>id</code>.</p>
+	 * <p>
+	 * Getter for the field <code>id</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -44,19 +51,31 @@ public class Session {
 	}
 
 	/**
-	 * <p>getAttribute.</p>
-	 *
-	 * @param name a {@link java.lang.String} object.
-	 * @return a {@link java.lang.Object} object.
+	 * Returns the session attribute with the given name
+	 * 
+	 * @param name of the session attribute
+	 * @return the found attribute value
 	 */
-	public Object getAttribute(final String name) {
+	public <T> Optional<T> attribute(final String name) {
+		return (Optional<T>) Optional.ofNullable(attributes.get(name));
+	}
+
+	/**
+	 * Returns the session attribute with the given name or null
+	 * 
+	 * @param name of the session attribute
+	 * @return the found attribute value or null
+	 */
+	public Object getAttribute(String name) {
 		return attributes.get(name);
 	}
 
 	/**
-	 * <p>setAttribute.</p>
+	 * <p>
+	 * setAttribute.
+	 * </p>
 	 *
-	 * @param name a {@link java.lang.String} object.
+	 * @param name  a {@link java.lang.String} object.
 	 * @param value a {@link java.lang.Object} object.
 	 */
 	public void setAttribute(final String name, final Object value) {
@@ -64,7 +83,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>isValid.</p>
+	 * <p>
+	 * isValid.
+	 * </p>
 	 *
 	 * @return a boolean.
 	 */
@@ -73,14 +94,18 @@ public class Session {
 	}
 
 	/**
-	 * <p>invalidate.</p>
+	 * <p>
+	 * invalidate.
+	 * </p>
 	 */
 	public void invalidate() {
 		this.isValid = false;
 	}
 
 	/**
-	 * <p>getAttributeNames.</p>
+	 * <p>
+	 * getAttributeNames.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Enumeration} object.
 	 */
@@ -89,7 +114,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>Getter for the field <code>creationTime</code>.</p>
+	 * <p>
+	 * Getter for the field <code>creationTime</code>.
+	 * </p>
 	 *
 	 * @return a long.
 	 */
@@ -98,7 +125,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>Getter for the field <code>lastAccessedTime</code>.</p>
+	 * <p>
+	 * Getter for the field <code>lastAccessedTime</code>.
+	 * </p>
 	 *
 	 * @return a long.
 	 */
@@ -107,7 +136,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>Getter for the field <code>maxInactiveInterval</code>.</p>
+	 * <p>
+	 * Getter for the field <code>maxInactiveInterval</code>.
+	 * </p>
 	 *
 	 * @return a int.
 	 */
@@ -116,7 +147,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>removeAttribute.</p>
+	 * <p>
+	 * removeAttribute.
+	 * </p>
 	 *
 	 * @param attributeName a {@link java.lang.String} object.
 	 */
@@ -125,7 +158,9 @@ public class Session {
 	}
 
 	/**
-	 * <p>Setter for the field <code>maxInactiveInterval</code>.</p>
+	 * <p>
+	 * Setter for the field <code>maxInactiveInterval</code>.
+	 * </p>
 	 *
 	 * @param maxInactiveInterval a int.
 	 */

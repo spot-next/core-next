@@ -150,7 +150,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		} else {
 			// TODO: maybe restart the service?
-			Logger.debug("Ignoring context refresh event, as remote endpoints have already been started.");
+			Logger.debug(() -> "Ignoring context refresh event, as remote endpoints have already been started.");
 		}
 	}
 
@@ -471,7 +471,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				throw e;
 			} catch (final Exception e) {
 				if (!(e instanceof AuthenticationException)) {
-					Logger.exception(e.getMessage(), e);
+					Logger.exception(StringUtils.defaultString(e.getMessage(), e.getClass().getName()), e);
 				}
 
 				Throwable realException = e;
