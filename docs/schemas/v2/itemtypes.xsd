@@ -140,6 +140,7 @@
 					<xs:element name="value" type="EnumValue" minOccurs="0"
 						maxOccurs="unbounded" />
 				</xs:sequence>
+				<xs:attribute name="dynamic" type="xs:boolean" default="false" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
