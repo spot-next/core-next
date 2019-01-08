@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 import io.spotnext.maven.velocity.JavaMethodModifier;
 
 /**
- * <p>JavaMethod class.</p>
- *
- * @since 1.0
+ * The method type both handles regular (static and instance) methods. But it also provides a way to add constructors, just don't add a return type.
  */
 public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;

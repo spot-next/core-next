@@ -69,6 +69,8 @@ import io.spotnext.infrastructure.maven.xml.RelationType;
 import io.spotnext.infrastructure.maven.xml.RelationshipCardinality;
 import io.spotnext.infrastructure.type.AccessorType;
 import io.spotnext.infrastructure.type.Bean;
+import io.spotnext.infrastructure.type.DynamicEnum;
+import io.spotnext.infrastructure.type.Enumeration;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemCollectionFactory;
 import io.spotnext.infrastructure.type.Localizable;
@@ -245,24 +247,66 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	protected List<JavaEnum> generateEnums() {
-		final List<JavaEnum> ret = new ArrayList<>();
+	protected List<AbstractComplexJavaType> generateEnums() {
+		final List<AbstractComplexJavaType> ret = new ArrayList<>();
 
 		for (final EnumType enumType : typeDefinitions.getEnumTypes().values()) {
-			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
-			enumeration.setDescription(enumType.getDescription());
+			AbstractComplexJavaType newEnum;
 
-			populateInterfaces(enumType.getInterfaces(), enumeration);
+			if (enumType.isDynamic()) {
+				JavaClass enumeration = new JavaClass(enumType.getName(), enumType.getPackage());
+				enumeration.setSuperClass(DynamicEnum.class);
 
-			for (final EnumValue value : enumType.getValue()) {
-				final JavaEnumValue v = new JavaEnumValue();
-				v.setName(value.getCode());
-				v.setInternalName(value.getValue());
+				JavaMethod constructor = new JavaMethod();
+				constructor.setName(enumeration.getName());
+				constructor.addArgument("internalName", new JavaMemberType(String.class));
+				constructor.setVisibility(Visibility.PRIVATE);
+				constructor.setCodeBlock("super(internalName);");
+				// we just leave the return type empty, to make it a constructor
 
-				enumeration.addValue(v);
+				enumeration.addMethod(constructor);
+
+				for (final EnumValue value : enumType.getValue()) {
+					final String internalName = StringUtils.isNotBlank(value.getValue()) ? value.getValue() : value.getCode();
+
+					// add constant for each property
+					final JavaField enumValueField = new JavaField();
+					enumValueField.setVisibility(Visibility.PUBLIC);
+					enumValueField.addModifier(JavaMemberModifier.STATIC);
+					enumValueField.addModifier(JavaMemberModifier.FINAL);
+					enumValueField.setAssignement(new JavaExpression("new " + enumeration.getName() + "(\"" + internalName + "\")", JavaValueType.LITERAL));
+					enumValueField.setType(new JavaMemberType(enumeration.getName()));
+					enumValueField.setName(value.getCode());
+					enumValueField.setDescription(value.getDescription());
+
+					enumeration.addField(enumValueField);
+				}
+
+				newEnum = enumeration;
+			} else {
+				final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
+
+				// add this marker interface to make generated enums distinguishable from regular ones
+				// this might be interesting serialization
+				final JavaInterface enumerationInterface = new JavaInterface(Enumeration.class);
+				enumeration.addInterface(enumerationInterface);
+
+				for (final EnumValue value : enumType.getValue()) {
+					final JavaEnumValue v = new JavaEnumValue();
+					v.setName(value.getCode());
+					v.setInternalName(value.getValue());
+					v.setDescription(value.getDescription());
+
+					enumeration.addValue(v);
+				}
+
+				newEnum = enumeration;
 			}
 
-			ret.add(enumeration);
+			populateInterfaces(enumType.getInterfaces(), newEnum);
+
+			newEnum.setDescription(enumType.getDescription());
+			ret.add(newEnum);
 		}
 
 		return ret;
@@ -320,7 +364,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
-					
+
 					populatePropertyAnnotation(prop, field);
 
 					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {

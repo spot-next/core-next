@@ -12,7 +12,9 @@ import io.spotnext.maven.velocity.type.parts.JavaMethod;
 import io.spotnext.maven.velocity.type.parts.JavaMethodArgument;
 
 /**
- * <p>Abstract AbstractComplexJavaType class.</p>
+ * <p>
+ * Abstract AbstractComplexJavaType class.
+ * </p>
  *
  * @since 1.0
  */
@@ -27,15 +29,19 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	protected JavaInterface superClass;
 
 	/**
-	 * <p>Constructor for AbstractComplexJavaType.</p>
+	 * <p>
+	 * Constructor for AbstractComplexJavaType.
+	 * </p>
 	 */
 	public AbstractComplexJavaType() {
 	}
 
 	/**
-	 * <p>Constructor for AbstractComplexJavaType.</p>
+	 * <p>
+	 * Constructor for AbstractComplexJavaType.
+	 * </p>
 	 *
-	 * @param name a {@link java.lang.String} object.
+	 * @param name        a {@link java.lang.String} object.
 	 * @param packagePath a {@link java.lang.String} object.
 	 */
 	public AbstractComplexJavaType(String name, String packagePath) {
@@ -44,7 +50,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Constructor for AbstractComplexJavaType.</p>
+	 * <p>
+	 * Constructor for AbstractComplexJavaType.
+	 * </p>
 	 *
 	 * @param clazz a {@link java.lang.Class} object.
 	 */
@@ -53,7 +61,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Getter for the field <code>packagePath</code>.</p>
+	 * <p>
+	 * Getter for the field <code>packagePath</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -62,7 +72,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Setter for the field <code>packagePath</code>.</p>
+	 * <p>
+	 * Setter for the field <code>packagePath</code>.
+	 * </p>
 	 *
 	 * @param packagePath a {@link java.lang.String} object.
 	 */
@@ -71,7 +83,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Getter for the field <code>superClass</code>.</p>
+	 * <p>
+	 * Getter for the field <code>superClass</code>.
+	 * </p>
 	 *
 	 * @return a {@link io.spotnext.maven.velocity.type.AbstractComplexJavaType} object.
 	 */
@@ -80,7 +94,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Setter for the field <code>superClass</code>.</p>
+	 * <p>
+	 * Setter for the field <code>superClass</code>.
+	 * </p>
 	 *
 	 * @param superClass a {@link io.spotnext.maven.velocity.type.base.JavaInterface} object.
 	 */
@@ -90,16 +106,20 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Setter for the field <code>superClass</code>.</p>
+	 * <p>
+	 * Setter for the field <code>superClass</code>.
+	 * </p>
 	 *
 	 * @param superClass a {@link java.lang.Class} object.
 	 */
 	public void setSuperClass(Class<?> superClass) {
-		setSuperClass(new JavaInterface(superClass.getPackage().getName(), superClass.getSimpleName()));
+		setSuperClass(new JavaInterface(superClass.getSimpleName(), superClass.getPackage().getName()));
 	}
 
 	/**
-	 * <p>Getter for the field <code>interfaces</code>.</p>
+	 * <p>
+	 * Getter for the field <code>interfaces</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
@@ -108,7 +128,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>Getter for the field <code>methods</code>.</p>
+	 * <p>
+	 * Getter for the field <code>methods</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
@@ -117,7 +139,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>addInterface.</p>
+	 * <p>
+	 * addInterface.
+	 * </p>
 	 *
 	 * @param iface a {@link io.spotnext.maven.velocity.type.base.JavaInterface} object.
 	 */
@@ -127,26 +151,32 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>addMethod.</p>
+	 * <p>
+	 * addMethod.
+	 * </p>
 	 *
 	 * @param method a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
 	public void addMethod(JavaMethod method) {
 		this.methods.add(method);
 
-		for (JavaMethodArgument arg : method.getArguments()) {
-			if (arg.getType().isComplexType()) {
-				this.imports.add(arg.getType().getFullyQualifiedName());
+		if (method.getType() != null) {
+			for (JavaMethodArgument arg : method.getArguments()) {
+				if (arg.getType().isComplexType()) {
+					this.imports.add(arg.getType().getFullyQualifiedName());
+				}
 			}
-		}
 
-		if (method.getType().isComplexType()) {
-			this.imports.add(method.getType().getFullyQualifiedName());
+			if (method.getType().isComplexType()) {
+				this.imports.add(method.getType().getFullyQualifiedName());
+			}
 		}
 	}
 
 	/**
-	 * <p>Getter for the field <code>genericArguments</code>.</p>
+	 * <p>
+	 * Getter for the field <code>genericArguments</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
@@ -155,7 +185,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>addGenericArgument.</p>
+	 * <p>
+	 * addGenericArgument.
+	 * </p>
 	 *
 	 * @param argument a {@link io.spotnext.maven.velocity.type.parts.JavaGenericTypeArgument} object.
 	 */
@@ -171,7 +203,9 @@ public abstract class AbstractComplexJavaType extends AbstractJavaObject {
 	}
 
 	/**
-	 * <p>getFullyQualifiedName.</p>
+	 * <p>
+	 * getFullyQualifiedName.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */

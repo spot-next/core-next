@@ -140,12 +140,22 @@
 					<xs:element name="value" type="EnumValue" minOccurs="0"
 						maxOccurs="unbounded" />
 				</xs:sequence>
-				<xs:attribute name="dynamic" type="xs:boolean" default="false" />
+				<xs:attribute name="dynamic" type="xs:boolean" default="false">
+					<xs:annotation>
+						<xs:documentation>
+							The generated enumeration will look and behave very similar to a real java enum, but will actually be a regular class.
+							It can be sub-classed and therefore it's possible to add additional values in code.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="EnumValue">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
 		<xs:attribute name="code" type="xs:string" use="required" />
 		<xs:attribute name="value" type="xs:string" use="optional" />
 	</xs:complexType>

@@ -88,7 +88,7 @@ $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superCla
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
 		#annotations($method.annotations)
-		$method.visibility.toLowerCase() #modifiers($method.methodModifiers) #modifiers($method.modifiers) $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
+		$method.visibility.toLowerCase() #modifiers($method.methodModifiers) #modifiers($method.modifiers) #if($method.type) $method.type.name #if($method.type.array) []#end #end #genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
 				$arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
 				#if( $foreach.hasNext ), #end

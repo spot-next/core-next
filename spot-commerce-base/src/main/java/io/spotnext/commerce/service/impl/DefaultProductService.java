@@ -103,8 +103,10 @@ public class DefaultProductService extends AbstractService implements ProductSer
 		return getAllProducts(catalogService.getSessionCatalogVersions());
 	}
 
-	@Override
-	public List<Product>> getAllVariantProducts(Set<CatalogVersion> catalogVersions) {
+//	@Override
+//	public List<Product>> getProducts(Set<CatalogVersion> catalogVersions) {
+//		
+//	}
 
 	@Override
 	public Map<Product, List<VariantProduct>> getAllVariantProducts(Set<CatalogVersion> catalogVersions) {
