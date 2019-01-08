@@ -6,10 +6,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import io.spotnext.commerce.service.CatalogService;
 import io.spotnext.core.infrastructure.http.Session;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.persistence.query.ModelQuery;
@@ -17,15 +17,13 @@ import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
 
+@Service
 public class DefaultCatalogService extends AbstractService implements CatalogService {
 
 	protected static final String PARAM_SESSION_CATALOGVERSIONS = "sessionCatalogVersions";
 
 	@Autowired
 	protected QueryService queryService;
-
-	@Autowired
-	protected ModelService modelService;
 
 	@Autowired
 	protected SessionService sessionService;

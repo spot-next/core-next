@@ -1,12 +1,14 @@
 package io.spotnext.commerce.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.itemtype.commerce.catalog.Category;
 import io.spotnext.itemtype.commerce.catalog.Product;
+import io.spotnext.itemtype.commerce.catalog.VariantProduct;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
 
 /**
@@ -57,5 +59,14 @@ public interface ProductService {
 	 * @return a non-null list of all products in the given catalogs.
 	 */
 	List<Product> getAllProducts(Set<CatalogVersion> catalogVersions);
+
+	/**
+	 * Returns all variant products grouped by their respective base product.
+	 * 
+	 * @param catalogVersions of the products
+	 * 
+	 * @return a map with all variant products groups by their base product
+	 */
+	Map<Product, List<VariantProduct>> getAllVariantProducts(Set<CatalogVersion> catalogVersions);
 
 }

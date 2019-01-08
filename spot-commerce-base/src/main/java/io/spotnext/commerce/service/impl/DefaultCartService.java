@@ -7,13 +7,13 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.commerce.exception.NoSuchCartException;
 import io.spotnext.commerce.service.CartService;
 import io.spotnext.commerce.service.ProductService;
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
-import io.spotnext.core.infrastructure.service.ModelService;
 import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
@@ -28,10 +28,8 @@ import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
+@Service
 public class DefaultCartService extends AbstractService implements CartService {
-
-	@Autowired
-	protected ModelService modeService;
 
 	@Autowired
 	protected UserService<User, UserGroup> userService;
@@ -120,7 +118,7 @@ public class DefaultCartService extends AbstractService implements CartService {
 
 	protected CartEntry updateEntry(Cart cart, CartEntry entry, String productId, int quantity) {
 		int highestOrderEntryNumber = cart.getEntries().stream().map(e -> e.getEntryNumber()).max(Integer::compare).orElse(0);
-		entry.setEntryNumber(highestOrderEntryNumber++);
+		entry.setEntryNumber(highestOrderEntryNumber + 1);
 		entry.setProduct(productService.getProductForId(productId).orElseThrow());
 		entry.setQuantity(quantity);
 		entry.setOrder(cart);

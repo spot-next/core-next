@@ -15,7 +15,7 @@
 		<value code="HALF_VAT" />
 		<value code="NO_VAT" />
 	</enum>
-
+	
 	<enum name="OrderStatus" package="io.spotnext.itemtype.commerce.enumeration">
 		<description>The render engine used to render CMS items.</description>
 		<value code="OPEN" />
@@ -130,7 +130,7 @@
 			<property name="width" type="double" />
 			<property name="height" type="double" />
 			<property name="depth" type="double" />
-			<property name="taxClass" type="TaxClass">>
+			<property name="taxClass" type="TaxClass">
 				<defaultValue>io.spotnext.itemtype.commerce.enumeration.TaxClass.FULL_VAT</defaultValue>
 			</property>
 			<property name="description" type="LocalizedString">
@@ -139,9 +139,24 @@
 			<property name="ean" type="String">
 				<description>The EAN product code.</description>
 			</property>
+			
+			<property name="thumbnail" type="ImageMedia" />
+			<property name="mainImage" type="ImageMedia" />
 		</properties>
 	</type>
-
+	
+	<type name="VariantProduct" abstract="true" package="io.spotnext.itemtype.commerce.catalog" extends="Product">
+		<description>
+			The base class for all variant products. 
+			Variant option properties have to be annotated with io.spotnext.commerce.annotations.VariantOption!
+		</description>
+		<properties>
+			<property name="baseProduct" type="Product">
+				<description>The base product this variant belongs to.</description>
+			</property>
+		</properties>
+	</type>
+	
 	<type name="Category" package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>Categories are used to group products.</description>
 		<properties>

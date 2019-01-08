@@ -190,7 +190,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		if (session != null) {
 			final Optional<UserData> user = session.<UserData>attribute(CoreConstants.SESSION_KEY_CURRENT_USER);
 
-			user.orElse(DEFAULT_USER);
+			return user.orElse(DEFAULT_USER);
 		} else {
 			Logger.warn("No session is set up.");
 		}
