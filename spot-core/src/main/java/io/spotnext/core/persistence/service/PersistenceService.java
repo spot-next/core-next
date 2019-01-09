@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -125,6 +126,14 @@ public interface PersistenceService {
 	 * @param items a {@link java.util.List} object.
 	 */
 	<T extends Item> void detach(List<T> items);
+
+	/**
+	 * Returns the table name of the given type. Depending on the underlying storage engine, this might null.
+	 * 
+	 * @param itemType
+	 * @return
+	 */
+	<T extends Item> Optional<String> getTableName(Class<T> itemType);
 
 	/**
 	 * Converts the given item to a map.

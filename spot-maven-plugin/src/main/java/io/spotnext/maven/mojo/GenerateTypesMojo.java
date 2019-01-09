@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -94,6 +95,7 @@ import io.spotnext.maven.velocity.type.parts.JavaField;
 import io.spotnext.maven.velocity.type.parts.JavaGenericTypeArgument;
 import io.spotnext.maven.velocity.type.parts.JavaMemberType;
 import io.spotnext.maven.velocity.type.parts.JavaMethod;
+import io.spotnext.maven.velocity.type.parts.JavaMethodArgument;
 import io.spotnext.maven.velocity.util.VelocityUtil;
 import io.spotnext.support.util.ClassUtil;
 import io.spotnext.support.util.MiscUtil;
@@ -257,12 +259,9 @@ public class GenerateTypesMojo extends AbstractMojo {
 				JavaClass enumeration = new JavaClass(enumType.getName(), enumType.getPackage());
 				enumeration.setSuperClass(DynamicEnum.class);
 
-				JavaMethod constructor = new JavaMethod();
-				constructor.setName(enumeration.getName());
-				constructor.addArgument("internalName", new JavaMemberType(String.class));
-				constructor.setVisibility(Visibility.PRIVATE);
-				constructor.setCodeBlock("super(internalName);");
-				// we just leave the return type empty, to make it a constructor
+				final JavaMethodArgument arg = new JavaMethodArgument(new JavaMemberType(String.class), "internalName");
+				final JavaMethod constructor = createConstructor(enumeration.getName(), Visibility.PRIVATE, Collections.singletonList(arg),
+						"super(internalName);");
 
 				enumeration.addMethod(constructor);
 
@@ -310,6 +309,23 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		return ret;
+	}
+
+	protected JavaMethod createConstructor(String name, Visibility visibility, List<JavaMethodArgument> arguments, String codeBlock) {
+		JavaMethod constructor = new JavaMethod();
+		constructor.setName(name);
+
+		if (arguments != null) {
+			for (JavaMethodArgument arg : arguments) {
+				constructor.addArgument(arg);
+			}
+		}
+
+		constructor.setVisibility(visibility);
+		constructor.setCodeBlock(codeBlock);
+		// we just leave the return type empty, to make it a constructor
+
+		return constructor;
 	}
 
 	/**
