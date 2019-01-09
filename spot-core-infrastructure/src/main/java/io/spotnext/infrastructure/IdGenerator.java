@@ -1,18 +1,10 @@
 package io.spotnext.infrastructure;
 
-import java.util.UUID;
+import io.spotnext.infrastructure.type.Item;
 
-public class IdGenerator {
-	public static String createStringIdFromRandomUUID() {
-		final UUID uuid = java.util.UUID.randomUUID();
-		return uuid.toString();
-	}
+public interface IdGenerator {
 
-	public static Long createLongIdFromRandomUUID() {
-		return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-	}
+	String createStringId(Class<? extends Item> itemType) throws SequenceAccessException;
 
-	public static int createSerialIntId() {
-		return 0;
-	}
+	Long createLongId(Class<? extends Item> itemType) throws SequenceAccessException;
 }

@@ -1,4 +1,4 @@
-package io.spotnext.core.persistence.exception;
+package io.spotnext.infrastructure;
 
 /**
  * <p>SequenceAccessException class.</p>
@@ -7,7 +7,7 @@ package io.spotnext.core.persistence.exception;
  * @version 1.0
  * @since 1.0
  */
-public class SequenceAccessException extends Exception {
+public class SequenceAccessException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**

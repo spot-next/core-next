@@ -9,8 +9,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
-import io.spotnext.infrastructure.type.Item;
-
 /**
  * <p>
  * Abstract ItemSerializationMixIn class.

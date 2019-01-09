@@ -37,6 +37,7 @@ import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.service.PersistenceService;
+import io.spotnext.infrastructure.IdGenerator;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.Localizable;
 import io.spotnext.itemtype.core.beans.UserData;
@@ -86,6 +87,9 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 
 	@Autowired
 	protected ItemInterceptorRegistry<ItemRemoveInterceptor<Item>> itemRemoveInterceptorRegistry;
+
+	@Autowired
+	protected IdGenerator idGenerator;
 
 	/** {@inheritDoc} */
 	@Override
@@ -291,9 +295,9 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			Field property = ClassUtil.getFieldDefinition(item.getClass(), propertyName, true);
 
 			if (property != null) {
-				Class<?> propertyType = property.getType();
+				final Class<?> propertyType = property.getType();
 
-				Optional<Localizable<Object>> newLocalizable = (Optional<Localizable<Object>>) ClassUtil.instantiate(propertyType);
+				final Optional<Localizable<Object>> newLocalizable = (Optional<Localizable<Object>>) ClassUtil.instantiate(propertyType, idGenerator);
 
 				if (newLocalizable.isPresent()) {
 					localizable = newLocalizable.get();

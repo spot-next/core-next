@@ -39,6 +39,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		}
 
 		sfb.scanPackages(itemPackagePathsToscan.toArray(new String[0]));
+		sfb.setInterceptor(new DefaultHibernateInterceptor());
 
 		return super.buildSessionFactory(sfb);
 	}

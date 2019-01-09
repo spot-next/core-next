@@ -2,6 +2,7 @@ package io.spotnext.test.jackson;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +29,8 @@ public abstract class AbstractSerializationTest {
 	@Mock
 	ApplicationContext context;
 
+	Random random = new Random();
+
 	public AbstractSerializationTest() {
 		super();
 	}
@@ -53,17 +56,20 @@ public abstract class AbstractSerializationTest {
 
 	protected User mockUser() {
 		User user = new User();
+		user.set("id", random.nextLong());
 		user.setUid("userID");
 		user.setShortName("user");
 		user.setGroups(new HashSet<>());
 
 		UserGroup group1 = new UserGroup();
+		group1.set("id", random.nextLong());
 		group1.setUid("group1ID");
 		group1.setShortName("group1");
 		group1.setMembers(new HashSet<>());
 		group1.getMembers().add(user);
 
 		UserGroup group2 = new UserGroup();
+		group2.set("id", random.nextLong());
 		group2.setUid("group2ID");
 		group2.setShortName("group2");
 		group2.setMembers(new HashSet<>());
@@ -77,6 +83,7 @@ public abstract class AbstractSerializationTest {
 
 	protected Catalog mockCatalog(int i) {
 		Catalog catalog = new Catalog();
+		catalog.set("id", random.nextLong());
 		catalog.setUid("testCatalog");
 		catalog.versions = new HashSet<>();
 
@@ -84,6 +91,7 @@ public abstract class AbstractSerializationTest {
 
 		for (int b = 0; b < i; b++) {
 			CatalogVersion cv = new CatalogVersion();
+			cv.set("id", random.nextLong());
 			cv.setUid("version" + b);
 			cvs.add(cv);
 		}

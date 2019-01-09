@@ -41,6 +41,9 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.internal.FetchingScrollableResultsImpl;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.query.Query;
 import org.hibernate.stat.Statistics;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -819,6 +822,29 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		bindSession();
 
 		return getSession().contains(item);
+	}
+
+	@Override
+	public <T extends Item> Optional<String> getTableName(Class<T> itemType) {
+		bindSession();
+
+		return transactionService.execute(() -> {
+			SessionImpl session = (SessionImpl) getSession();
+
+			final Optional<T> example = ClassUtil.instantiate(itemType);
+			final EntityPersister persister = session.getEntityPersister(null, example.get());
+
+			if (persister instanceof AbstractEntityPersister) {
+				AbstractEntityPersister persisterImpl = (AbstractEntityPersister) persister;
+
+				String tableName = persisterImpl.getTableName();
+				String rootTableName = persisterImpl.getRootTableName();
+
+				return Optional.of(tableName);
+			} else {
+				throw new RuntimeException("Unexpected persister type; a subtype of AbstractEntityPersister expected.");
+			}
+		});
 	}
 
 	public Session getSession() {

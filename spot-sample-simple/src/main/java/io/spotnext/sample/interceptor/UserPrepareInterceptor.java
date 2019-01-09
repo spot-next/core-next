@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import io.spotnext.core.infrastructure.exception.ItemInterceptorException;
 import io.spotnext.core.infrastructure.interceptor.ItemPrepareInterceptor;
 import io.spotnext.core.infrastructure.interceptor.impl.AbstractItemInterceptor;
-import io.spotnext.core.persistence.exception.SequenceAccessException;
 import io.spotnext.core.persistence.service.SequenceGenerator;
+import io.spotnext.infrastructure.SequenceAccessException;
 import io.spotnext.itemtype.core.user.User;
 
 @Service

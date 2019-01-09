@@ -1,18 +1,16 @@
 package io.spotnext.core.persistence.hibernate.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import io.spotnext.core.persistence.exception.SequenceAccessException;
 import io.spotnext.core.persistence.hibernate.support.ItemSequence;
 import io.spotnext.core.persistence.service.SequenceGenerator;
+import io.spotnext.infrastructure.SequenceAccessException;
 
 /**
  * This is a very primitive implementation using the {@link io.spotnext.core.persistence.hibernate.support.ItemSequence} entity to increment the sequence

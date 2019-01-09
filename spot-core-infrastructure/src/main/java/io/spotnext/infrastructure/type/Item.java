@@ -28,6 +28,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -55,13 +57,17 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	public static final String PROPERTY_LAST_MODIFIED_AT = "lastModifiedAt";
 	public static final String PROPERTY_CREATED_AT = "createdAt";
 
+	@Qualifier("idGenerator")
+	@Autowired
+	protected transient IdGenerator idGenerator;
+
 	// @Autowired
 	// protected AuditingHandler auditingHandler;
 
 	// JPA
 	@Id
 	@Column(name = "id")
-	final protected Long id = IdGenerator.createLongIdFromRandomUUID();
+	final protected Long id;
 
 //	@Index(name = "idx_createdAt")
 	@CreationTimestamp
@@ -90,6 +96,15 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	 */
 	@Column
 	protected boolean deleted = false;
+
+	protected Item(@Qualifier("idGenerator") @Autowired IdGenerator idGenerator) {
+		this.idGenerator = idGenerator;
+		this.id = idGenerator.createLongId(this.getClass());
+	}
+
+	public Item() {
+		this.id = -1l;
+	}
 
 	/**
 	 * Returns a hash code calculated of all properties that are defined as unique (with the {@link Property} annotation). This is necessary to implement

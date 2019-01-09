@@ -1,6 +1,6 @@
 package io.spotnext.core.persistence.service;
 
-import io.spotnext.core.persistence.exception.SequenceAccessException;
+import io.spotnext.infrastructure.SequenceAccessException;
 
 /**
  * This service generates unique serial numbers for the given sequence name.

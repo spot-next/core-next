@@ -32,6 +32,7 @@
 	<context:component-scan base-package="io.spotnext.core.persistence.instrumentation.transformers" />
 	<context:component-scan base-package="io.spotnext.core.persistence.service" />
 	<context:component-scan base-package="io.spotnext.core.persistence.valueprovider" />
+	<context:component-scan base-package="io.spotnext.core.persistence.generator" />
 	<context:component-scan base-package="io.spotnext.core.security.service" />
 	<context:component-scan base-package="io.spotnext.core.security.strategy" />
 	<context:component-scan base-package="io.spotnext.core.infrastructure.aspect" />
@@ -148,7 +149,6 @@
 
 	<!-- item interceptors -->
 	<bean id="abstractItemInterceptorRegistry" abstract="true" class="io.spotnext.core.infrastructure.support.ItemInterceptorRegistry">
-
 		<property name="typeService" ref="typeService" />
 		<property name="persistenceService" ref="persistenceService" />
 	</bean>
@@ -159,4 +159,6 @@
 	<bean id="itemLoadInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 	<bean id="itemRemoveInterceptorRegistry" parent="abstractItemInterceptorRegistry" />
 
+	<!-- persistence sequence generators -->
+	<alias name="sequenceIdGenerator" alias="idGenerator"/>
 </beans>

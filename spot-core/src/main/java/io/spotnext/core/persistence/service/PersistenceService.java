@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,9 @@ import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.infrastructure.type.Item;
 
 /**
- * <p>PersistenceService interface.</p>
+ * <p>
+ * PersistenceService interface.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -99,8 +102,7 @@ public interface PersistenceService {
 	<T extends Item> void remove(Class<T> type, long id);
 
 	/**
-	 * Saves the database to disk. This has to be done before the application quits
-	 * to prevent data corruption.
+	 * Saves the database to disk. This has to be done before the application quits to prevent data corruption.
 	 */
 	void saveDataStorage();
 
@@ -117,10 +119,8 @@ public interface PersistenceService {
 	<T extends Item> void initItem(T item);
 
 	/**
-	 * Detaches a given item model from the underlying persistence implementation.
-	 * This is useful if serializing the item causes problems. The effect can be
-	 * different depending on the persistence service implementation, but in general
-	 * lazy-loading properties will not work anymore afterwards.
+	 * Detaches a given item model from the underlying persistence implementation. This is useful if serializing the item causes problems. The effect can be
+	 * different depending on the persistence service implementation, but in general lazy-loading properties will not work anymore afterwards.
 	 *
 	 * @param items a {@link java.util.List} object.
 	 */
@@ -147,18 +147,24 @@ public interface PersistenceService {
 	 * Attaches the given item in case it is detached.
 	 *
 	 * @param item a T object.
-	 * @return true if the item was successfully attached to the persistence
-	 *         context.
+	 * @return true if the item was successfully attached to the persistence context.
 	 * @throws io.spotnext.infrastructure.exception.ModelNotFoundException
 	 * @param <T> a T object.
 	 */
 	<T extends Item> boolean attach(T item) throws ModelNotFoundException;
 
 	/**
-	 * Unbinds the current session. This is useful to free up a session if an
-	 * uncaught exception is thrown in a thread.
+	 * Unbinds the current session. This is useful to free up a session if an uncaught exception is thrown in a thread.
 	 */
 	void unbindSession();
+
+	/**
+	 * Returns the table name of the given type. Depending on the underlying storage engine, this might null.
+	 * 
+	 * @param itemType
+	 * @return
+	 */
+	<T extends Item> Optional<String> getTableName(Class<T> itemType);
 
 	/**
 	 * Clears all internal persistence-related caches.
