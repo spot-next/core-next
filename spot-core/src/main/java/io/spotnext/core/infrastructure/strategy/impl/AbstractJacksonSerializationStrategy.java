@@ -68,6 +68,7 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		jacksonMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		jacksonMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
 

@@ -219,12 +219,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 					}
 				} while (values.size() < sourceQuery.getPageSize() && scrollResult.next());
 
-				if (scrollResult.last()) {
-					// different implementations handle this either with a start index of 0 or 1 ...
-					totalCount = scrollResult.getRowNumber();
-					if (!(scrollResult instanceof FetchingScrollableResultsImpl)) {
-						totalCount += 1;
-					}
+				// go to last row to get max rows
+				scrollResult.last();
+				totalCount = scrollResult.getRowNumber();
+
+				// different implementations handle this either with a start index of 0 or 1 ...
+				if (!(scrollResult instanceof FetchingScrollableResultsImpl)) {
+					totalCount += 1;
 				}
 			} finally {
 				MiscUtil.closeQuietly(scrollResult);

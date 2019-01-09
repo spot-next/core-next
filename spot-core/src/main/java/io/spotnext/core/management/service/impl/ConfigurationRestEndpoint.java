@@ -93,7 +93,7 @@ public class ConfigurationRestEndpoint extends AbstractRestEndpoint {
 
 		final List<Entry<Object, Object>> entries = properties.entrySet().stream() //
 				.skip(MiscUtil.positiveIntOrDefault(page - 1, 1) * pageSize) //
-				.limit(pageSize) //
+				.limit(pageSize > 0 ? pageSize : Long.MAX_VALUE) //
 				.sorted(new Comparator<Entry<Object, Object>>() {
 					@Override
 					public int compare(Entry<Object, Object> o1, Entry<Object, Object> o2) {
