@@ -1,18 +1,26 @@
 package io.spotnext.core.infrastructure.strategy.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.PropertyFilter;
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -30,6 +38,7 @@ import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.infrastructure.type.Item;
+import io.spotnext.support.util.ClassUtil;
 import spark.ModelAndView;
 
 public abstract class AbstractJacksonSerializationStrategy extends AbstractService implements SerializationStrategy, PostConstructor {
@@ -40,17 +49,17 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 	private ObjectMapper jacksonMapper;
 	private ObjectWriter jacksonWriter;
 
+	protected static final PropertyFilter NON_NULL_FILTER = new NonNullPropertyFilter();
+	protected static final FilterProvider NON_NULL_FILTER_PROVIDER = new SimpleFilterProvider(Collections.singletonMap("nonNull", NON_NULL_FILTER));
+
 	protected abstract ObjectMapper createMapper();
 
 	/**
-	 * <p>
-	 * init.
-	 * </p>
-	 *
-	 * @throws java.lang.ClassNotFoundException if any.
+	 * Sets up the serialization strategy.
 	 */
 	@Override
 	public void setup() {
+
 		jacksonMapper = createMapper();
 
 		jacksonMapper.addMixIn(Item.class, ItemSerializationMixIn.class);
@@ -59,6 +68,7 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 
 		jacksonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		jacksonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		jacksonMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		jacksonMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
 
@@ -86,6 +96,8 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 		}
 
 		try {
+//			ObjectWriter writer =  jacksonWriter.with(NON_NULL_FILTER_PROVIDER).
+			
 			return this.jacksonWriter.writeValueAsString(object);
 		} catch (final JsonProcessingException e) {
 			throw new SerializationException("Cannot serialize object: " + e.getMessage(), e);
@@ -116,4 +128,18 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 	public void setTypeService(TypeService typeService) {
 		this.typeService = typeService;
 	}
+
+	/**
+	 * Only serializes non-null fields.
+	 */
+	protected static class NonNullPropertyFilter extends SimpleBeanPropertyFilter {
+		@Override
+		public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer) throws Exception {
+			Object value = ClassUtil.getField(pojo, writer.getName(), true);
+
+			if (value != null) {
+				writer.serializeAsField(pojo, jgen, provider);
+			}
+		}
+	};
 }

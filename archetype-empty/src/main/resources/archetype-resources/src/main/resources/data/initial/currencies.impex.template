@@ -1,2 +1,2 @@
 INSERT Currency ; isoCode  ; name[lang=de_DE] ; name[lang=en_GB] 
-                ; EUR      ; Euro             ; Euro
+                ; eur      ; Euro             ; Euro

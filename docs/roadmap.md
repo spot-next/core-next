@@ -9,7 +9,7 @@
 * Audit logging
 * Search integration (solr etc)
 
-## **1.2.x** `~EOF February 2019`
+## **1.2.x** `~EOF June 2019`
 
 * Better DTO projections (without the need for explicite aliases)
 * Better LocalizedString support (other localized types too)
@@ -17,7 +17,7 @@
 * REST interface for JPQL
 * Spring MVC integration
 
-## **1.1.x** `~EOF December 2018`
+## **1.1.x** `~EOF March 2018`
 
 * Transparent persistence operation over REST interface
 * More ImpEx features
@@ -26,7 +26,7 @@
 * Generated API docs
 * Javadoc
 
-## **1.0.x** `~EOF September 2018`
+## **1.0.x** `~EOF January 2018`
 
 The upcomping 1.0.x release contains the following features:
 * Complete persistence layer based on Hibernate

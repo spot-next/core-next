@@ -349,7 +349,7 @@ The `ImportConfiguration` can be configured:
 * `ignoreErrors`: if true, errors (like unresolvable item references) are ignored (although logged) and as many as possible items are being imported. By default this is disabled though.
 * `scriptIdentifier`: is optional, but can be useful for debugging purposes (in the logs)
 
-> During **system initialization** botj the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
+> During **system initialization** both the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
 
 ```java
 @Override
@@ -367,6 +367,20 @@ For conventience the `ModuleInit.importScript` method can be used:
 ```java
 ModuleInit.importScript("/data/initial/countries.impex", "Importing countries");
 ```
+
+The core system contains the following impex files:
+* Initial data:
+** catalogs.impex
+** countries.impex
+** currencies.impex
+** languages.impex
+** users.impex
+* Sample data:
+** medias.impex
+** users.impex
+
+If any of these files exists in the custom project as well (in the correct folder!), it overrides the original files provided by the framework. So if you need to import "users" but don't want to override the default `users.impex`, just add a custom prefix to the impex file name.
+
 ### Other Services
 #### Localization & internationalization
 

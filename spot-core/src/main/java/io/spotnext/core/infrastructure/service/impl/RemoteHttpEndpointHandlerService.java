@@ -41,6 +41,7 @@ import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 import spark.Filter;
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -149,7 +150,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		} else {
 			// TODO: maybe restart the service?
-			Logger.debug("Ignoring context refresh event, as remote endpoints have already been started.");
+			Logger.debug(() -> "Ignoring context refresh event, as remote endpoints have already been started.");
 		}
 	}
 
@@ -314,6 +315,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					// session
 					setupSession(service, request, response);
 					setupLocale(request);
+					setupEncoding(request, response);
 					setupCorsHeaders(request, response);
 				});
 
@@ -334,7 +336,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				service.after((request, response) -> {
 					cleanup();
-					setupEncoding(request, response);
+//					setupEncoding(request, response);
+//					response.raw().flushBuffer();
 				});
 
 				service.init();
@@ -404,7 +407,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		final String acceptEncoding = request.headers("Accept-Encoding");
 
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
-			response.header("Content-Encoding", "gzip");
+			response.raw().addHeader("Content-Encoding", "gzip");
 		}
 	}
 
@@ -462,9 +465,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				}
 
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
+
+			} catch (HaltException e) {
+				// if this is thrown, the request will not be processed any further
+				throw e;
 			} catch (final Exception e) {
 				if (!(e instanceof AuthenticationException)) {
-					Logger.exception(e.getMessage(), e);
+					Logger.exception(StringUtils.defaultString(e.getMessage(), e.getClass().getName()), e);
 				}
 
 				Throwable realException = e;

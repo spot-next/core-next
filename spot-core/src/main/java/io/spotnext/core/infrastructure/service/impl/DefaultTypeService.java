@@ -196,7 +196,7 @@ public class DefaultTypeService extends AbstractService implements TypeService {
 	/** {@inheritDoc} */
 	@Override
 	public ItemTypeDefinition getItemTypeDefinition(final String typeCode) throws UnknownTypeException {
-		ValidationUtil.validateNotEmpty("Type code cannot be empty", typeCode);
+		ValidationUtil.validateNotBlankOrEmpty("Type code cannot be empty", typeCode);
 
 		ItemTypeDefinition itemType = itemTypeDefinitions.get(typeCode);
 

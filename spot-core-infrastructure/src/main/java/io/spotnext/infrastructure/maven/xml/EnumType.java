@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -20,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="value" type="{}EnumValue" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="dynamic" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -36,6 +38,8 @@ public class EnumType
 {
 
     protected List<EnumValue> value;
+    @XmlAttribute(name = "dynamic")
+    protected Boolean dynamic;
 
     /**
      * Gets the value of the value property.
@@ -64,6 +68,34 @@ public class EnumType
             value = new ArrayList<EnumValue>();
         }
         return this.value;
+    }
+
+    /**
+     * Gets the value of the dynamic property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isDynamic() {
+        if (dynamic == null) {
+            return false;
+        } else {
+            return dynamic;
+        }
+    }
+
+    /**
+     * Sets the value of the dynamic property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setDynamic(Boolean value) {
+        this.dynamic = value;
     }
 
 }

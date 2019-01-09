@@ -72,4 +72,10 @@ public class WebSession extends Session implements HttpSession {
 		return false;
 	}
 
+	@Override
+	public Object getAttribute(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

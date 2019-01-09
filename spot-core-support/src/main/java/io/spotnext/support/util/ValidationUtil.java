@@ -76,7 +76,7 @@ public class ValidationUtil {
 	 * @param text    the text which should be checked.
 	 * @throws IllegalArgumentException if the text is blank
 	 */
-	public static void validateNotEmpty(final String message, final String text) throws IllegalArgumentException {
+	public static void validateNotBlankOrEmpty(final String message, final String text) throws IllegalArgumentException {
 		if (StringUtils.isBlank(text)) {
 			throw new IllegalArgumentException(message);
 		}

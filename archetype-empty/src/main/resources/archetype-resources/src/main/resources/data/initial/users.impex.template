@@ -1,0 +1,7 @@
+INSERT UserGroup ; uid                ; groups(uid)     ; shortName
+                 ; rest-access        ;                 ; REST-interface access group
+                 ; admin              ; rest-access     ; Admin group
+
+INSERT User ; uid              ; password                             ; groups(uid)[default=admin] ; shortName
+            ; admin            ; MD5:ee10c315eba2c75b403ea99136f5b48d ;                            ; Administrator
+            ; anonymous        ;                                      ;                            ; Anonymous user

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,13 +46,13 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	static {
 		DEFAULT_USER.setUid(CoreConstants.ANONYMOUS_USER_UID);
 	}
-	
+
 	@Autowired
 	protected SessionService sessionService;
 
 	@Autowired
 	protected AuthenticationService authenticationService;
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public U createUser(final Class<U> type, final String userId) throws CannotCreateUserException {
@@ -103,18 +104,22 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Cacheable("misc")
 	@Override
 	public boolean isUserInGroup(final String userUid, final String groupUid) {
-		final List<PrincipalGroup> groupsToCheck = new ArrayList<>(getUser(userUid).getGroups());
+		User user = getUser(userUid);
 
-		for (int x = 0; x < groupsToCheck.size(); x++) {
-			final PrincipalGroup currentGroup = groupsToCheck.get(x);
+		if (user != null && user.getGroups() != null) {
+			final List<PrincipalGroup> groupsToCheck = new ArrayList<>(user.getGroups());
 
-			// check if groups match
-			if (StringUtils.equals(groupUid, currentGroup.getUid())) {
-				return true;
+			for (int x = 0; x < groupsToCheck.size(); x++) {
+				final PrincipalGroup currentGroup = groupsToCheck.get(x);
+
+				// check if groups match
+				if (StringUtils.equals(groupUid, currentGroup.getUid())) {
+					return true;
+				}
+
+				// if not, add all subgroups to the list of groups to check
+				groupsToCheck.addAll(groupsToCheck.size(), currentGroup.getGroups());
 			}
-
-			// if not, add all subgroups to the list of groups to check
-			groupsToCheck.addAll(groupsToCheck.size(), currentGroup.getGroups());
 		}
 
 		return false;
@@ -164,10 +169,10 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public void setCurrentUser(final U user) {
 		final Session session = sessionService.getCurrentSession();
-		
+
 		final UserData userData = new UserData();
 		user.setUid(user.getUid());
-		
+
 		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, userData);
 	}
 
@@ -183,11 +188,9 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		if (session != null) {
-			final UserData user = (UserData) session.getAttribute(CoreConstants.SESSION_KEY_CURRENT_USER);
-			
-			if (user != null) {
-				return user;
-			}
+			final Optional<UserData> user = session.<UserData>attribute(CoreConstants.SESSION_KEY_CURRENT_USER);
+
+			return user.orElse(DEFAULT_USER);
 		} else {
 			Logger.warn("No session is set up.");
 		}

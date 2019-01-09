@@ -130,7 +130,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @return true if not filtered out by the above definition.
 	 */
 	protected boolean isValidClass(final String className) {
-		return className.contains(".") && !className.contains("$Proxy") && !className.contains("sun/reflect")
+		return className.contains(".") && !className.contains("jdk.internal") && !className.contains("$Proxy") && !className.contains("sun/reflect")
 				&& !className.contains("java.lang");
 	}
 

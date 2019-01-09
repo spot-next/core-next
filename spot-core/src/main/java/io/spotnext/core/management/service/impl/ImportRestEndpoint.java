@@ -64,7 +64,7 @@ public class ImportRestEndpoint extends AbstractRestEndpoint {
 				final ImportRequest importRequest = serializationService.deserialize(SERIALIZATION_CONFIG, script, ImportRequest.class);
 
 				ValidationUtil.validateNotNull("Import config missing", importRequest.getConfig());
-				ValidationUtil.validateNotEmpty("Import script missing", importRequest.getScript());
+				ValidationUtil.validateNotBlankOrEmpty("Import script missing", importRequest.getScript());
 
 				if (StringUtils.isBlank(importRequest.getConfig().getScriptIdentifier())) {
 					importRequest.getConfig().setScriptIdentifier("HTTP request from " + request.ip());

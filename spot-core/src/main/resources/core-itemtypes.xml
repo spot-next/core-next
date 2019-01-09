@@ -52,6 +52,7 @@
 		<description>The approval status, eg. of products or CMS items.</description>
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
+		<value code="CHECK" />
 	</enum>
 
 	<enum name="DataFormat" package="io.spotnext.itemtype.core.enumeration">
@@ -86,6 +87,7 @@
 	<bean name="SerializationConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds serialization configuration and parameters.</description>
 		<properties>
+			<property name="serializeNulls" type="boolean" />
 			<property name="format" type="DataFormat">
 				<description>Specifies the serialization format.</description>
 				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>

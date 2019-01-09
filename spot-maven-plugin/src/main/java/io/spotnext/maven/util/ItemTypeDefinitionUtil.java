@@ -18,6 +18,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
@@ -42,6 +43,7 @@ import io.spotnext.infrastructure.maven.xml.Types;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.maven.exception.IllegalItemTypeDefinitionException;
 import io.spotnext.support.util.FileUtils;
+import io.spotnext.support.util.ValidationUtil;
 
 /**
  * <p>
@@ -230,6 +232,8 @@ public class ItemTypeDefinitionUtil {
 		for (final InputStream defFile : definitions) {
 			final Types typesDefs = loadTypeDefinition(defFile);
 
+			ValidationUtil.validateNotNull("Could not load type definitions", typesDefs);
+
 			// these types are only allowed to be defined once
 			populateTypeDefinition(typesDefs.getAtomic(), atomicDefs, false);
 			populateTypeDefinition(typesDefs.getCollection(), collectionDefs, false);
@@ -362,7 +366,9 @@ public class ItemTypeDefinitionUtil {
 
 			typeDef = (Types) jaxb.unmarshal(file);
 		} catch (final Exception e) {
-			log.error(e);
+			Throwable rootCause = ExceptionUtils.getRootCause(e);
+
+			log.error(rootCause.getMessage());
 		}
 
 		return typeDef;
