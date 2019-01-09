@@ -115,7 +115,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Test
 	public void testLocalizedString() {
 		final Currency currency = modelService.create(Currency.class);
-		currency.setIsoCode("EUR");
+		currency.setIsoCode("USD");
 
 		final String german = "german";
 		final String english = "english";

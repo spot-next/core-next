@@ -5,12 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.metamodel.BasicType;
-
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class DynamicEnum implements Enumeration, BasicType<String> {
-	protected static final List<DynamicEnum> values = new ArrayList<>();
+public abstract class DynamicEnum implements Enumeration {
+	private static final List<DynamicEnum> values = new ArrayList<>();
 	protected String internalName;
 
 	protected DynamicEnum(String internalName) {
@@ -50,13 +48,4 @@ public abstract class DynamicEnum implements Enumeration, BasicType<String> {
 		return Objects.hashCode(internalName);
 	}
 
-	@Override
-	public Class<String> getJavaType() {
-		return String.class;
-	}
-
-	@Override
-	public PersistenceType getPersistenceType() {
-		return PersistenceType.BASIC;
-	}
 }
