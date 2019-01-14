@@ -173,4 +173,19 @@ public interface PersistenceService {
 	 * Clears all internal persistence-related caches.
 	 */
 	void evictCaches();
+
+	/**
+	 * Initializes the type system database schema.
+	 */
+	void initializeTypeSystem();
+
+	/**
+	 * Updates the type system database schema.
+	 */
+	void updateTypeSystem();
+
+	/**
+	 * Removes the database schema from the database.
+	 */
+	void validateTypeSystem();
 }

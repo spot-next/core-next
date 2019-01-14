@@ -171,7 +171,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 		final Session session = sessionService.getCurrentSession();
 
 		final UserData userData = new UserData();
-		user.setUid(user.getUid());
+		userData.setUid(user.getUid());
 
 		session.setAttribute(CoreConstants.SESSION_KEY_CURRENT_USER, userData);
 	}

@@ -1,5 +1,6 @@
 package io.spotnext.core.infrastructure.service;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import io.spotnext.core.infrastructure.http.Session;
@@ -57,7 +58,7 @@ public interface SessionService {
 	 * session of the given id. This is useful to gain different privileges.
 	 *
 	 * @param sessionId a {@link java.lang.String} object.
-	 * @param callable a {@link java.util.concurrent.Callable} object.
+	 * @param callable  a {@link java.util.concurrent.Callable} object.
 	 * @return a T object.
 	 */
 	<T> T executeInSessionContext(String sessionId, Callable<T> callable);
@@ -71,4 +72,8 @@ public interface SessionService {
 	 */
 	<T> T executeInSystemSessionContext(Callable<T> callable);
 
+	/**
+	 * @return Returns all currently registered sessions, grouped by the session id.
+	 */
+	Map<String, Session> getAllSessions();
 }

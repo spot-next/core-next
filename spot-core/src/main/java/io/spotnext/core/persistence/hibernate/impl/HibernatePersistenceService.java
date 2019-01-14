@@ -132,37 +132,58 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		this.configurationService = configurationService;
 
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-			Logger.info("Initializing type system schema ...");
-
-			final SchemaExport schemaExport = new SchemaExport();
-			schemaExport.setHaltOnError(true);
-			schemaExport.setFormat(true);
-			schemaExport.setDelimiter(";");
-			schemaExport.setOutputFile("db-schema.sql");
-
-			try {
-				// TODO will most likely fail, implement a pure JDBC "drop
-				// database" approach?
-				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
-			} catch (final Exception e) {
-				Logger.warn("Could not drop type system schema.");
-			}
-
-			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+			initializeTypeSystem();
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
-			Logger.info("Updating type system schema ...");
-
-			final SchemaUpdate schemaExport = new SchemaUpdate();
-			schemaExport.setHaltOnError(true);
-			schemaExport.setFormat(true);
-			schemaExport.setDelimiter(";");
-			schemaExport.setOutputFile("db-schema.sql");
-			schemaExport.execute(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+			updateTypeSystem();
 		}
 
-		// validate schema
+		validateTypeSystem();
+
+		if (configurationService.getBoolean("cleantypesystem", false)) {
+			Logger.info("Cleaning type system ... (not yet implemented)");
+			clearTypeSystem();
+		}
+
+		Logger.info(String.format("Persistence service initialized"));
+	}
+
+	@Override
+	public void initializeTypeSystem() {
+		Logger.info("Initializing type system schema ...");
+
+		final SchemaExport schemaExport = new SchemaExport();
+		schemaExport.setHaltOnError(true);
+		schemaExport.setFormat(true);
+		schemaExport.setDelimiter(";");
+		schemaExport.setOutputFile("db-schema.sql");
+
+		try {
+			// TODO will most likely fail, implement a pure JDBC "drop
+			// database" approach?
+			schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+		} catch (final Exception e) {
+			Logger.warn("Could not drop type system schema.");
+		}
+
+		schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+	}
+
+	@Override
+	public void updateTypeSystem() {
+		Logger.info("Updating type system schema ...");
+
+		final SchemaUpdate schemaExport = new SchemaUpdate();
+		schemaExport.setHaltOnError(true);
+		schemaExport.setFormat(true);
+		schemaExport.setDelimiter(";");
+		schemaExport.setOutputFile("db-schema.sql");
+		schemaExport.execute(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+	}
+
+	@Override
+	public void validateTypeSystem() {
 		final SchemaManagementTool tool = metadataIntegrator.getServiceRegistry()
 				.getService(SchemaManagementTool.class);
 
@@ -181,12 +202,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				Logger.warn("Type system schema needs to be initialized/updated");
 			}
 		}
+	}
 
-		if (configurationService.getBoolean("cleantypesystem", false)) {
-			Logger.info("Cleaning type system ... (not yet implemented)");
-		}
+	protected void clearTypeSystem() {
 
-		Logger.info(String.format("Persistence service initialized"));
 	}
 
 	private QueryResult executeQuery(JpqlQuery sourceQuery, Query query) {
