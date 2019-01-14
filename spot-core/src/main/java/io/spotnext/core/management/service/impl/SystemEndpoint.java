@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.constant.CoreConstants;
@@ -47,14 +48,9 @@ public class SystemEndpoint extends AbstractRestEndpoint {
 
 	/**
 	 * Provides type system actions to initialize, update and clear the database schema
-	 *
-	 * @param request  a {@link spark.Request} object.
-	 * @param response a {@link spark.Response} object.
-	 * @return the response object
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.get, pathMapping = { "", "/",
-			"/typesystem/:action" }, mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = { "/typesystem/:action" }, mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public HttpResponse executeTypeSystemAction(final Request request, final Response response) {
 		String typeSystemAction = request.params("action");
 
@@ -82,15 +78,10 @@ public class SystemEndpoint extends AbstractRestEndpoint {
 	}
 
 	/**
-	 * Provides type system actions to initialize, update and clear the database schema
-	 *
-	 * @param request  a {@link spark.Request} object.
-	 * @param response a {@link spark.Response} object.
-	 * @return the response object
+	 * Returns all active sessions.
 	 */
 	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
-	@Handler(method = HttpMethod.get, pathMapping = { "", "/",
-			"/sessions" }, mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	@Handler(method = HttpMethod.get, pathMapping = { "/sessions" }, mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
 	public HttpResponse listAllSessions(final Request request, final Response response) {
 
 		final Map<String, Session> sessions = sessionService.getAllSessions();
@@ -98,6 +89,33 @@ public class SystemEndpoint extends AbstractRestEndpoint {
 				.collect(Collectors.toList());
 
 		return DataResponse.ok().withPayload(sessionData);
+	}
+
+	/**
+	 * Returns all active sessions.
+	 */
+	@Log(logLevel = LogLevel.DEBUG, measureExecutionTime = true)
+	@Handler(method = HttpMethod.delete, pathMapping = {
+			"/sessions/:sessionId" }, mimeType = MimeType.JSON, responseTransformer = JsonResponseTransformer.class)
+	public HttpResponse terminateSession(final Request request, final Response response) {
+		String sessionIdToKill = request.params("sessionId");
+
+		boolean success = false;
+
+		if (StringUtils.isNotBlank(sessionIdToKill)) {
+			final Session session = sessionService.getSession(sessionIdToKill);
+
+			if (session != null) {
+				sessionService.closeSession(sessionIdToKill);
+				success = true;
+			}
+		}
+
+		if (success) {
+			return DataResponse.ok();
+		}
+
+		return DataResponse.badRequest().withError("error.sessions.id.invalid", "Could not terminate session - invalid sessionId.");
 	}
 
 	protected class SessionData {
