@@ -484,7 +484,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				// wrap the exception and forward it to the response transformer
 				// there it will be handled appropriately
 				if (realException instanceof AuthenticationException) {
-					ret = ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException);
+					// return the authentication response or a generic exception response
+					ret = ((AuthenticationException) realException).getResponse()
+							.orElse(ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException));
 				} else if (realException instanceof Exception) {
 					ret = ExceptionResponse.internalServerError((Exception) realException);
 				} else {

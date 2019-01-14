@@ -96,9 +96,9 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 		}
 
 		try {
-//			ObjectWriter writer =  jacksonWriter.with(NON_NULL_FILTER_PROVIDER).
+//			jacksonMapper.setSerializationInclusion(Include.NON_NULL);
 			
-			return this.jacksonWriter.writeValueAsString(object);
+			return jacksonMapper.writeValueAsString(object);
 		} catch (final JsonProcessingException e) {
 			throw new SerializationException("Cannot serialize object: " + e.getMessage(), e);
 		}
