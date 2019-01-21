@@ -2,14 +2,17 @@ package io.spotnext.commerce.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.spotnext.commerce.exception.NoSuchCartEntryException;
 import io.spotnext.commerce.exception.NoSuchCartException;
 import io.spotnext.commerce.service.CartService;
 import io.spotnext.commerce.service.ProductService;
@@ -112,8 +115,17 @@ public class DefaultCartService extends AbstractService implements CartService {
 
 	@Override
 	public CartEntry removeFromCart(Cart cart, int entryNumber) {
+		final List<CartEntry> entriesToDelete = cart.getEntries().stream() //
+				.filter(e -> e.getEntryNumber() == entryNumber) //
+				.map(e -> (CartEntry) e) //
+				.collect(Collectors.toList());
 
-		return null;
+		if (entriesToDelete.size() == 1) {
+			cart.getEntries().removeAll(entriesToDelete);
+			return entriesToDelete.get(0);
+		}
+
+		throw new NoSuchCartEntryException(cart.getUid(), entryNumber);
 	}
 
 	protected CartEntry updateEntry(Cart cart, CartEntry entry, String productId, int quantity) {
@@ -146,13 +158,13 @@ public class DefaultCartService extends AbstractService implements CartService {
 	@SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
 	public CartModificationResult updateCart(CartModification modificationData) throws NoSuchCartException {
 		Cart cart = getCart(modificationData.getCartId()).orElseThrow(() -> new NoSuchCartException(modificationData.getCartId()));
-		Optional<CartEntry> entry = getCartEntryToModify(cart, modificationData.getCartEntryNumber());
+		Optional<CartEntry> entry = getCartEntryToModify(cart, modificationData);
 
 		CartModificationResult result = new CartModificationResult();
 
 		switch (modificationData.getOperation()) {
 		case UPDATE_ENTRY:
-			if (entry.isPresent()) {
+			if (modificationData.getQuantity() > 0 && entry.isPresent()) {
 				addModifiedCartEntries(result,
 						updateCart(cart, entry.get().getEntryNumber(), entry.get().getProduct().getUid(), modificationData.getQuantity()));
 				break;
@@ -160,10 +172,15 @@ public class DefaultCartService extends AbstractService implements CartService {
 
 			// fall through in case an entry number was specified
 		case ADD_ENTRY:
-			addModifiedCartEntries(result, addToCart(cart, modificationData.getProductId(), modificationData.getQuantity()));
-			break;
+			if (modificationData.getQuantity() > 0) {
+				addModifiedCartEntries(result, addToCart(cart, modificationData.getProductId(), modificationData.getQuantity()));
+			}
+
+			// fall through because quantity 0 also means delete!
 		case REMOVE_ENTRY:
-			addModifiedCartEntries(result, removeFromCart(cart, entry.get().getEntryNumber()));
+			if (entry.isPresent()) {
+				addModifiedCartEntries(result, removeFromCart(cart, entry.get().getEntryNumber()));
+			}
 			break;
 		default:
 			break;
@@ -182,11 +199,18 @@ public class DefaultCartService extends AbstractService implements CartService {
 		}
 	}
 
-	private Optional<CartEntry> getCartEntryToModify(Cart cart, Integer entryNnmber) {
-		if (entryNnmber == null) {
-			return Optional.empty();
+	private Optional<CartEntry> getCartEntryToModify(Cart cart, CartModification modificationData) {
+		if (modificationData.getCartEntryNumber() == null) {
+			if (StringUtils.isNotBlank(modificationData.getProductId())) {
+				return cart.getEntries().stream() //
+						.filter(e -> modificationData.getProductId().equals(e.getProduct().getUid())) //
+						.map(e -> (CartEntry) e) //
+						.findFirst();
+			} else {
+				return Optional.empty();
+			}
 		}
 
-		return cart.getEntries().stream().filter(e -> e.getEntryNumber() == entryNnmber).map(e -> (CartEntry) e).findFirst();
+		return cart.getEntries().stream().filter(e -> modificationData.getCartEntryNumber().equals(e.getEntryNumber())).map(e -> (CartEntry) e).findFirst();
 	}
 }

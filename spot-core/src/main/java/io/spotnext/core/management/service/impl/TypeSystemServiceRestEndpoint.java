@@ -58,7 +58,9 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 		final int pageSize = MiscUtil.positiveIntOrDefault(request.queryParams("pageSize"), CoreConstants.REQUEST_DEFAULT_PAGE_SIZE);
 		final String sortField = request.queryParams("sort");
 
-		final List<GenericItemDefinitionData> types = typeService.getItemTypeDefinitions().values().stream() //
+		var allTypes = typeService.getItemTypeDefinitions();
+
+		final List<GenericItemDefinitionData> types = allTypes.values().stream() //
 				.skip(MiscUtil.positiveIntOrDefault(page - 1, 1) * pageSize) //
 				.limit(pageSize) //
 				.map(itemTypeConverter::convert) //
@@ -66,7 +68,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 				.collect(Collectors.toList());
 
 		final Pageable<GenericItemDefinitionData> pageableData = new PageablePayload<GenericItemDefinitionData>(types, page,
-				pageSize, Long.valueOf(types.size()));
+				pageSize, Long.valueOf(allTypes.values().size()));
 
 		return DataResponse.ok().withPayload(pageableData);
 	}
