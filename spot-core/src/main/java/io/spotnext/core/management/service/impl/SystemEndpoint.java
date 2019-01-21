@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.constant.CoreConstants;
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.annotation.logging.Log;
@@ -118,7 +119,8 @@ public class SystemEndpoint extends AbstractRestEndpoint {
 		return DataResponse.badRequest().withError("error.sessions.id.invalid", "Could not terminate session - invalid sessionId.");
 	}
 
-	protected class SessionData {
+	@SuppressFBWarnings("URF_UNREAD_FIELD")
+	protected static class SessionData {
 		private String id;
 		private String userName;
 		private Date creationData;
