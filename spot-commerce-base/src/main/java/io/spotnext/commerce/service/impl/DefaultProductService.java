@@ -113,7 +113,7 @@ public class DefaultProductService extends AbstractService implements ProductSer
 		final List<VariantProduct> products = getProductForIdAndCatalogVersion(VariantProduct.class, null, catalogService.getSessionCatalogVersions());
 
 		final List<String> variantsWithNoBaseProduct = products.stream() //
-				.filter(v -> v.getBaseProduct() != null) //
+				.filter(v -> v.getBaseProduct() == null) //
 				.map(v -> v.getUid()) //
 				.collect(Collectors.toList());
 
