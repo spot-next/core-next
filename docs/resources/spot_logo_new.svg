@@ -1,0 +1,43 @@
+<svg width="640" height="640" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet">
+ <defs>
+  <path id="d1OETR2Gst" d="m346.149994,345.679993l257.740021,0l0,257.72998l-257.740021,0l0,-257.72998z"/>
+  <path id="b25ATMJa9b" d="m42.310001,43.73l131.240002,0l0,559.679974l-131.240002,0l0,-559.679974z"/>
+  <path id="c2ePCE6QKF" d="m194.940002,188.520004l408.950012,0l0,135.050003l-408.950012,0l0,-135.050003z"/>
+  <path id="aEIhiZDnY" d="m194.940002,43.73l204.470001,0l0,123.639996l-204.470001,0l0,-123.639996z"/>
+  <path id="b49FKelUD" d="m419.380005,43.73l184.51001,0l0,123.639996l-184.51001,0l0,-123.639996z"/>
+  <path id="aPWVBhBmy" d="m194.940002,345.679993l131.23999,0l0,257.72998l-131.23999,0l0,-257.72998z"/>
+  <style>@import url(file:///Users/matthias/Library/Fonts/Puente%20Bold.ttf);</style>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <g id="svg_2">
+    <g id="svg_3">
+     <use x="-7.526703" y="-5" id="svg_4" fill="#86db35" xlink:href="#d1OETR2Gst"/>
+    </g>
+    <g id="svg_5">
+     <use x="-7.526703" y="-5" id="svg_6" fill="#3585db" xlink:href="#b25ATMJa9b"/>
+    </g>
+    <g id="svg_7">
+     <use x="-7.526703" y="-5" id="svg_8" fill="#db3560" xlink:href="#c2ePCE6QKF"/>
+    </g>
+    <g id="svg_9">
+     <use x="-7.526703" y="-5" id="svg_10" fill="#35db9f" xlink:href="#aEIhiZDnY"/>
+    </g>
+    <g id="svg_11">
+     <use x="-1.578018" transform="matrix(0.967481, 0, 0, 1, 13.6376, 0)" id="svg_12" fill="#f5df0d" xlink:href="#b49FKelUD" y="-5.763351"/>
+    </g>
+    <g id="svg_13">
+     <use x="-7.526703" y="-5" id="svg_14" fill="#c435db" xlink:href="#aPWVBhBmy"/>
+    </g>
+   </g>
+  </g>
+  <g id="textToPathGroup">
+   <path fill="#FFF" d="m533.473267,371.600006l0,74c-11.199951,0.5 -18.599976,3.100006 -22.199982,7.600006c-3.599976,4.5 -5.799988,13.899994 -6.599976,28c-1.299988,26.700012 -10.400024,47.899963 -27.200012,63.799988c-16.799988,15.900024 -38.5,23.799988 -65.199982,23.799988c-3.700012,0 -6.700012,-0.099976 -8.800018,-0.399963l0,-74.000031c11.200012,-0.299988 18.5,-2.699982 21.800018,-7.399994c3.299988,-4.700012 5.799988,-15.899994 7.399994,-33.799988c2.399994,-25.100006 11.900024,-45 28.400024,-59.800018c16.5,-14.799988 37.599976,-22.199982 63.199982,-22.199982c3.5,0 6.5,0.099976 9.199951,0.399994z" id="textToPath-0"/>
+  </g>
+ </g>
+</svg>
