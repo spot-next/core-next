@@ -468,8 +468,40 @@
 			</property>
 		</properties>
 	</type>
+	
+	<type name="PersistenceQueryTemplate" package="io.spotnext.itemtype.core.configuration"
+		extends="UniqueIdItem">
+		<description>This type can be used to store a configuration entry.</description>
+		<properties>
+			<property name="query" type="String" />
+			<property name="description" type="String">
+				<description>The short description for this query template.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="CockpitConfiguration" package="io.spotnext.itemtype.core.configuration"
+		extends="UniqueIdItem">
+		<description>The main cockpit configuration</description>
+		<properties>
+		</properties>
+	</type>
+	
+	<type name="CockpitTypeConfiguration" package="io.spotnext.itemtype.core.configuration"
+		extends="UniqueIdItem">
+		<description>The main cockpit configuration for a specific tyüe</description>
+		<properties>
+			<property name="typeCode" type="String" />
+		</properties>
+	</type>
+	
 
 	<!-- RELATIONS -->
+
+	<relation name="CockpitConfiguration2CockpitTypeConfiguration">
+		<source itemType="CockpitConfiguration" cardinality="many" />
+		<target itemType="CockpitTypeConfiguration" mappedBy="typeConfigurations" cardinality="many" />
+	</relation>
 
 	<relation name="Catalog2CatalogVersion">
 		<source itemType="Catalog" mappedBy="catalog" cardinality="one">
