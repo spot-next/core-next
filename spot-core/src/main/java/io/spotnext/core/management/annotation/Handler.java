@@ -34,7 +34,7 @@ public @interface Handler {
 	 * Defines the URL path that will be handled. It will be appended to the
 	 * {@link RemoteEndpoint#pathMapping()}.
 	 */
-	String pathMapping() default "";
+	String[] pathMapping() default "";
 
 	/**
 	 * This is the URL path that this handler method will handle. The path mapping

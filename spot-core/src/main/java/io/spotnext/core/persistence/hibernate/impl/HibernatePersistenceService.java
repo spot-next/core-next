@@ -2,6 +2,7 @@ package io.spotnext.core.persistence.hibernate.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -36,8 +37,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.internal.FetchingScrollableResultsImpl;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.query.Query;
 import org.hibernate.stat.Statistics;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
@@ -48,6 +54,7 @@ import org.hibernate.tool.schema.spi.SchemaManagementException;
 import org.hibernate.tool.schema.spi.SchemaManagementTool;
 import org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator;
 import org.hibernate.tool.schema.spi.SchemaValidator;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
@@ -68,7 +75,9 @@ import io.spotnext.core.infrastructure.support.LogLevel;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
+import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.query.SortOrder;
 import io.spotnext.core.persistence.query.SortOrder.OrderDirection;
 import io.spotnext.core.persistence.service.TransactionService;
@@ -77,6 +86,7 @@ import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 import io.spotnext.support.util.ClassUtil;
+import io.spotnext.support.util.MiscUtil;
 
 /**
  * <p>
@@ -122,37 +132,58 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		this.configurationService = configurationService;
 
 		if (configurationService.getBoolean("core.setup.typesystem.initialize", false)) {
-			Logger.info("Initializing type system schema ...");
-
-			final SchemaExport schemaExport = new SchemaExport();
-			schemaExport.setHaltOnError(true);
-			schemaExport.setFormat(true);
-			schemaExport.setDelimiter(";");
-			schemaExport.setOutputFile("db-schema.sql");
-
-			try {
-				// TODO will most likely fail, implement a pure JDBC "drop
-				// database" approach?
-				schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
-			} catch (final Exception e) {
-				Logger.warn("Could not drop type system schema.");
-			}
-
-			schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+			initializeTypeSystem();
 		}
 
 		if (configurationService.getBoolean("core.setup.typesystem.update", false)) {
-			Logger.info("Updating type system schema ...");
-
-			final SchemaUpdate schemaExport = new SchemaUpdate();
-			schemaExport.setHaltOnError(true);
-			schemaExport.setFormat(true);
-			schemaExport.setDelimiter(";");
-			schemaExport.setOutputFile("db-schema.sql");
-			schemaExport.execute(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+			updateTypeSystem();
 		}
 
-		// validate schema
+		validateTypeSystem();
+
+		if (configurationService.getBoolean("cleantypesystem", false)) {
+			Logger.info("Cleaning type system ... (not yet implemented)");
+			clearTypeSystem();
+		}
+
+		Logger.info(String.format("Persistence service initialized"));
+	}
+
+	@Override
+	public void initializeTypeSystem() {
+		Logger.info("Initializing type system schema ...");
+
+		final SchemaExport schemaExport = new SchemaExport();
+		schemaExport.setHaltOnError(true);
+		schemaExport.setFormat(true);
+		schemaExport.setDelimiter(";");
+		schemaExport.setOutputFile("db-schema.sql");
+
+		try {
+			// TODO will most likely fail, implement a pure JDBC "drop
+			// database" approach?
+			schemaExport.drop(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+		} catch (final Exception e) {
+			Logger.warn("Could not drop type system schema.");
+		}
+
+		schemaExport.createOnly(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+	}
+
+	@Override
+	public void updateTypeSystem() {
+		Logger.info("Updating type system schema ...");
+
+		final SchemaUpdate schemaExport = new SchemaUpdate();
+		schemaExport.setHaltOnError(true);
+		schemaExport.setFormat(true);
+		schemaExport.setDelimiter(";");
+		schemaExport.setOutputFile("db-schema.sql");
+		schemaExport.execute(EnumSet.of(TargetType.DATABASE), metadataIntegrator.getMetadata());
+	}
+
+	@Override
+	public void validateTypeSystem() {
 		final SchemaManagementTool tool = metadataIntegrator.getServiceRegistry()
 				.getService(SchemaManagementTool.class);
 
@@ -171,25 +202,77 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 				Logger.warn("Type system schema needs to be initialized/updated");
 			}
 		}
+	}
 
-		if (configurationService.getBoolean("cleantypesystem", false)) {
-			Logger.info("Cleaning type system ... (not yet implemented)");
+	protected void clearTypeSystem() {
+
+	}
+
+	private QueryResult executeQuery(JpqlQuery sourceQuery, Query query) {
+		List values = new ArrayList<>();
+		Integer totalCount = null;
+
+		if (sourceQuery.getPageSize() > 0) {
+			int start = (sourceQuery.getPage() > 0 ? sourceQuery.getPage() - 1 : 0) * sourceQuery.getPageSize();
+
+			ScrollableResults scrollResult = null;
+
+			try {
+				scrollResult = query.scroll();
+
+				if (start > 0) {
+					scrollResult.scroll(start);
+				}
+
+				do {
+					Object value = scrollResult.get();
+
+					// this should actually not happen, but it does ...
+					// TODO: check and fix null result objects
+					if (value != null) {
+						if (value.getClass().isArray()) {
+							Object[] valueArray = (Object[]) value;
+							if (valueArray.length > 0) {
+								values.add(valueArray[0]);
+							}
+						} else {
+							values.add(value);
+						}
+					}
+				} while (values.size() < sourceQuery.getPageSize() && scrollResult.next());
+
+				// go to last row to get max rows
+				scrollResult.last();
+				totalCount = scrollResult.getRowNumber();
+
+				// different implementations handle this either with a start index of 0 or 1 ...
+				if (!(scrollResult instanceof FetchingScrollableResultsImpl)) {
+					totalCount += 1;
+				}
+			} finally {
+				MiscUtil.closeQuietly(scrollResult);
+			}
+		} else {
+			values = query.list();
+			totalCount = values.size();
 		}
 
-		Logger.info(String.format("Persistence service initialized"));
+		QueryResult result = new QueryResult(values, sourceQuery.getPage(), sourceQuery.getPageSize(), totalCount != null ? Long.valueOf(totalCount) : null);
+		return result;
 	}
 
 	/** {@inheritDoc} */
 	// @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 	@Override
-	public <T> List<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
+	public <T> QueryResult<T> query(final io.spotnext.core.persistence.query.JpqlQuery<T> sourceQuery) throws QueryException {
 		bindSession();
 
 		try {
 			return transactionService.execute(() -> {
-				List<T> results = null;
+				QueryResult<T> results = null;
 
 				final Session session = getSession();
+				session.setDefaultReadOnly(sourceQuery.isReadOnly());
 
 				// if this is an item type, we just load the entities
 				// if it is a "primitive" natively supported type we can also
@@ -205,83 +288,118 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						throw new QueryException("Could not parse query", e);
 					}
 
-					// query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
-					// true);
-
+					setAccessLevel(sourceQuery, query);
 					setCacheSettings(session, sourceQuery, query);
 					setFetchSubGraphsHint(session, sourceQuery, query);
 					setParameters(sourceQuery.getParams(), query);
-					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
-					results = query.getResultList();
+//					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
 
+					results = executeQuery(sourceQuery, query);
 				} else {
 					// otherwise we load each value into a list of tuples
 					// in that case the selected columns need to be aliased in
-					// case
-					// the given result
-					// type has no constructor that exactly matches the returned
-					// columns' types, as
-					// otherwise we cannot map the row values to properties.
-
-					final Query<Tuple> query;
-					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
-						query = session.createQuery(sourceQuery.getQuery());
-					} else {
-						query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
-					}
-
-					// optimize query query.setReadOnly(true).setHint(QueryHints.HINT_CACHEABLE,
-					// true);
-
-					setParameters(sourceQuery.getParams(), query);
-					setPagination(query, sourceQuery.getPage(), sourceQuery.getPageSize());
+					// case the given result type has no constructor that exactly matches the returned
+					// columns' types, as otherwise we cannot map the row values to properties.
 
 					// only try to load results if the result type is not Void
-					if (Void.class.isAssignableFrom(sourceQuery.getResultClass())) {
-						query.executeUpdate();
+					if (sourceQuery.isExecuteUpdate()) {
+						final Query<Integer> query = session.createQuery(sourceQuery.getQuery());
+
+						setAccessLevel(sourceQuery, (Query<T>) query);
+						setParameters(sourceQuery.getParams(), query);
+
+						int resultCode = query.executeUpdate();
 						session.flush();
 						if (sourceQuery.isClearCaches()) {
 							session.clear();
 						}
+
+						boolean returnTypeSpecified = !Void.class.isAssignableFrom(sourceQuery.getResultClass());
+
+						results = (QueryResult<T>) new QueryResult<Integer>(returnTypeSpecified ? Arrays.asList(resultCode) : null, 0, 0, null);
 					} else {
-						final List<Tuple> resultList = query.list();
-						results = new ArrayList<>();
+						// fetch the temporary Tuple (!) result and convert it into the target type manually
+						final Query<Tuple> query = session.createQuery(sourceQuery.getQuery(), Tuple.class);
 
-						for (final Tuple t : resultList) {
-							// first try to create the pojo using a constructor
-							// that matches the result's column types
+						setAccessLevel(sourceQuery, (Query<T>) query);
+						setParameters(sourceQuery.getParams(), query);
 
-							final List<Object> values = t.getElements().stream().map(e -> t.get(e))
-									.collect(Collectors.toList());
-							Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
+						if (Map.class.isAssignableFrom(sourceQuery.getResultClass())) {
+							// all selected columns must specify an alias, otherwise the column value would not appear in the map!
+							query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+							results = executeQuery(sourceQuery, query);
+						} else {
+							final QueryResult<Tuple> tempResults = (QueryResult<Tuple>) executeQuery(sourceQuery, query);
+							List<T> finalResults = new ArrayList<>();
 
-							// if the POJO can't be instantiated, we try to
-							// create it manually and inject the data using
-							// reflection for this to work, each selected column
-							// has to have the same alias as the pojo's
-							// property!
-							if (!pojo.isPresent()) {
-								final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+							// if the return type is Tuple, a tuple array is returned
+							// therefore we have to extract the first tuple first and use that as a base object
+							// if no return type is set, it is only a Tuple
+							for (final Object entry : tempResults.getResults()) {
+								// first try to create the pojo using a constructor
+								// that matches the result's column types
 
-								if (obj.isPresent()) {
-									final Object o = obj.get();
-									t.getElements().stream()
-											.forEach(el -> ClassUtil.setField(o, el.getAlias(), t.get(el.getAlias())));
+								Tuple t = null;
+
+								if (entry != null && entry.getClass().isArray()) {
+									Object[] entryArray = ((Object[]) entry);
+
+									if (entryArray.length > 0) {
+										t = (Tuple) entryArray[0];
+									}
+								} else if (entry instanceof Tuple) {
+									t = (Tuple) entry;
 								}
 
-								pojo = obj;
+								if (t == null) {
+									continue;
+								}
+
+								final Tuple tupleEntry = t;
+
+								final List<Object> values = t.getElements().stream().map(e -> tupleEntry.get(e))
+										.collect(Collectors.toList());
+
+								if (Tuple.class.isAssignableFrom(sourceQuery.getResultClass())) {
+									// if the only object in the tuple is an item, we can directly return it, otherwise we just return a list of values
+									if (values != null && values.size() == 1 && values.get(0) instanceof Item) {
+										finalResults.add((T) values.get(0));
+									} else {
+										finalResults.add((T) values);
+									}
+								} else {
+									Optional<T> pojo = ClassUtil.instantiate(sourceQuery.getResultClass(), values.toArray());
+
+									// if the POJO can't be instantiated, we try to
+									// create it manually and inject the data using
+									// reflection for this to work, each selected column
+									// has to have the same alias as the pojo's
+									// property!
+									if (!pojo.isPresent()) {
+										final Optional<T> obj = ClassUtil.instantiate(sourceQuery.getResultClass());
+
+										if (obj.isPresent()) {
+											final Object o = obj.get();
+											t.getElements().stream()
+													.forEach(el -> ClassUtil.setField(o, el.getAlias(), tupleEntry.get(el.getAlias())));
+										}
+
+										pojo = obj;
+									}
+
+									if (pojo.isPresent()) {
+										finalResults.add(pojo.get());
+									} else {
+										throw new InstantiationException(String.format("Could not instantiate result type '%s'",
+												sourceQuery.getResultClass()));
+									}
+								}
 							}
 
-							if (pojo.isPresent()) {
-								results.add(pojo.get());
-							} else {
-								throw new InstantiationException(String.format("Could not instantiate result type '%s'",
-										sourceQuery.getResultClass()));
-							}
+							results = new QueryResult<>(finalResults, sourceQuery.getPage(), sourceQuery.getPageSize(), tempResults.getTotalCount());
 						}
 					}
 				}
-
 				return results;
 			});
 		} catch (final QueryException e) {
@@ -289,6 +407,10 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		} catch (final Exception e) {
 			throw new QueryException(String.format("Could not execute query '%s'", sourceQuery.getQuery()), e);
 		}
+	}
+
+	private <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setAccessLevel(Q sourceQuery, Query<T> query) {
+		query.setReadOnly(sourceQuery.isReadOnly());
 	}
 
 	protected <T, Q extends io.spotnext.core.persistence.query.Query<T>> void setCacheSettings(final Session session,
@@ -402,13 +524,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 						message = e.getMessage();
 					}
 
-					throw new ModelSaveException(message);
+					throw new ModelSaveException(message, e);
 				} catch (final DataIntegrityViolationException | TransactionRequiredException
 						| IllegalArgumentException e) {
 
 					throw new ModelSaveException("Could not save given items: " + e.getMessage(), e);
 
-				} catch (final PersistenceException e) {
+				} catch (final Exception e) {
 					final Throwable rootCause = ExceptionUtils.getRootCause(e);
 					final String rootCauseMessage = rootCause != null ? rootCause.getMessage() : e.getMessage();
 
@@ -589,7 +711,12 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			setFetchSubGraphsHint(session, sourceQuery, query);
 			setCacheSettings(session, sourceQuery, query);
 
-			final List<T> results = ((Query<T>) query).getResultList();
+			final Query<T> queryObj = ((Query<T>) query);
+
+			// set proper access level
+			setAccessLevel(sourceQuery, queryObj);
+
+			final List<T> results = queryObj.getResultList();
 
 			return results;
 		});
@@ -665,9 +792,13 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 	/** {@inheritDoc} */
 	@Override
 	public void clearDataStorage() {
+		Logger.warn("Clearing database not supported yet");
+	}
+
+	@Override
+	public void evictCaches() {
 		bindSession();
 
-		// em.clear();
 		getSession().clear();
 	}
 
@@ -712,6 +843,29 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 		return getSession().contains(item);
 	}
 
+	@Override
+	public <T extends Item> Optional<String> getTableName(Class<T> itemType) {
+		bindSession();
+
+		return transactionService.execute(() -> {
+			SessionImpl session = (SessionImpl) getSession();
+
+			final Optional<T> example = ClassUtil.instantiate(itemType);
+			final EntityPersister persister = session.getEntityPersister(null, example.get());
+
+			if (persister instanceof AbstractEntityPersister) {
+				AbstractEntityPersister persisterImpl = (AbstractEntityPersister) persister;
+
+				String tableName = persisterImpl.getTableName();
+				String rootTableName = persisterImpl.getRootTableName();
+
+				return Optional.of(tableName);
+			} else {
+				throw new RuntimeException("Unexpected persister type; a subtype of AbstractEntityPersister expected.");
+			}
+		});
+	}
+
 	public Session getSession() {
 		final EntityManagerHolder holder = ((EntityManagerHolder) TransactionSynchronizationManager
 				.getResource(entityManagerFactory));
@@ -741,6 +895,8 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 			final EntityManagerHolder emHolder = (EntityManagerHolder) TransactionSynchronizationManager
 					.unbindResource(entityManagerFactory);
 			EntityManagerFactoryUtils.closeEntityManager(emHolder.getEntityManager());
+		} else {
+			throw new IllegalStateException("No entitiy manager factory found");
 		}
 	}
 

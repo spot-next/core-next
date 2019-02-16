@@ -53,6 +53,18 @@ public class ExceptionResponse extends DataResponse {
 	}
 
 	/**
+	 * <p>
+	 * badRequest.
+	 * </p>
+	 *
+	 * @param exception a {@link java.lang.Exception} object.
+	 * @return a {@link io.spotnext.infrastructure.http.ExceptionResponse} object.
+	 */
+	public static ExceptionResponse badRequest(Exception exception) {
+		return new ExceptionResponse(HttpStatus.BAD_REQUEST, exception);
+	}
+
+	/**
 	 * <p>serviceUnavailable.</p>
 	 *
 	 * @param exception a {@link java.lang.Exception} object.

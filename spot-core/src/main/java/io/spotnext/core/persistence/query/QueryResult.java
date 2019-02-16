@@ -11,21 +11,18 @@ import java.util.stream.Stream;
  * @version 1.0
  * @since 1.0
  */
-public class QueryResult<T> {
+public class QueryResult<T> implements Pageable<T> {
 	private final List<T> results;
 	private final int pageSize;
 	private final int page;
-	private final long totalCount;
+	private final Long totalCount;
 
 	/**
-	 * @param results
-	 *            the result list
-	 * @param page
-	 *            the current page of the paged result
-	 * @param pageSize
-	 *            the page size
+	 * @param results the result list
+	 * @param page the current page of the paged result
+	 * @param pageSize the page size
 	 */
-	public QueryResult(final List<T> results, final int page, final int pageSize, final long totalCount) {
+	public QueryResult(final List<T> results, final int page, final int pageSize, final Long totalCount) {
 		if (results != null) {
 			this.results = results;
 		} else {
@@ -37,10 +34,8 @@ public class QueryResult<T> {
 		this.totalCount = totalCount;
 	}
 
-	/**
-	 * @return the results.
-	 */
-	public List<T> getResultList() {
+	@Override
+	public List<T> getResults() {
 		return results;
 	}
 
@@ -58,25 +53,24 @@ public class QueryResult<T> {
 		return totalCount == 0;
 	}
 
-	/**
-	 * @return the current page size of the result.
-	 */
+	@Override
 	public int getPageSize() {
 		return pageSize;
 	}
 
-	/**
-	 * @return the current page of the paged result.
-	 */
+	@Override
 	public int getPage() {
 		return page;
 	}
 
-	/**
-	 * @return the amount of result objects.
-	 */
-	public long getTotalCount() {
+	@Override
+	public Long getTotalCount() {
 		return totalCount;
+	}
+
+	@Override
+	public long getCount() {
+		return results.size();
 	}
 
 }

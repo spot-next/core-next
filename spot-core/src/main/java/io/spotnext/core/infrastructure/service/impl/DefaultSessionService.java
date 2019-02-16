@@ -1,5 +1,6 @@
 package io.spotnext.core.infrastructure.service.impl;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -11,7 +12,9 @@ import io.spotnext.core.infrastructure.http.Session;
 import io.spotnext.core.infrastructure.service.SessionService;
 
 /**
- * <p>DefaultSessionService class.</p>
+ * <p>
+ * DefaultSessionService class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -20,8 +23,8 @@ import io.spotnext.core.infrastructure.service.SessionService;
 @Service
 public class DefaultSessionService implements SessionService {
 
-	Map<String, Session> sessions = new ConcurrentHashMap<>();
-	ThreadLocal<Session> currentSession = new ThreadLocal<>();
+	protected Map<String, Session> sessions = new ConcurrentHashMap<>();
+	protected ThreadLocal<Session> currentSession = new ThreadLocal<>();
 
 	/** {@inheritDoc} */
 	@Override
@@ -97,6 +100,11 @@ public class DefaultSessionService implements SessionService {
 	public <T> T executeInSystemSessionContext(final Callable<T> callable) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Map<String, Session> getAllSessions() {
+		return Collections.unmodifiableMap(sessions);
 	}
 
 }

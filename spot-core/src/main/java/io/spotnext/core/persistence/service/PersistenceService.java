@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import io.spotnext.core.persistence.exception.ModelNotUniqueException;
 import io.spotnext.core.persistence.exception.QueryException;
 import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.ModelQuery;
+import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.infrastructure.type.Item;
 
 /**
@@ -58,10 +60,10 @@ public interface PersistenceService {
 	 * Returns the paginated results for the given query.
 	 *
 	 * @param query a {@link io.spotnext.core.persistence.query.JpqlQuery} object.
-	 * @return a {@link java.util.List} object.
+	 * @return the query result, never null
 	 * @throws io.spotnext.core.persistence.exception.QueryException if any.
 	 */
-	<T> List<T> query(JpqlQuery<T> query) throws QueryException;
+	<T> QueryResult<T> query(JpqlQuery<T> query) throws QueryException;
 
 	/**
 	 * Returns an entity with the given.
@@ -126,6 +128,14 @@ public interface PersistenceService {
 	<T extends Item> void detach(List<T> items);
 
 	/**
+	 * Returns the table name of the given type. Depending on the underlying storage engine, this might null.
+	 * 
+	 * @param itemType
+	 * @return
+	 */
+	<T extends Item> Optional<String> getTableName(Class<T> itemType);
+
+	/**
 	 * Converts the given item to a map.
 	 *
 	 * @param item a T object.
@@ -158,4 +168,24 @@ public interface PersistenceService {
 	 * uncaught exception is thrown in a thread.
 	 */
 	void unbindSession();
+
+	/**
+	 * Clears all internal persistence-related caches.
+	 */
+	void evictCaches();
+
+	/**
+	 * Initializes the type system database schema.
+	 */
+	void initializeTypeSystem();
+
+	/**
+	 * Updates the type system database schema.
+	 */
+	void updateTypeSystem();
+
+	/**
+	 * Removes the database schema from the database.
+	 */
+	void validateTypeSystem();
 }

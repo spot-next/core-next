@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+
+	<collection elementType="AbstractOrderEntryData" name="AbstractOrderEntryDataList" collectionType="List" />
+	<collection elementType="DiscountData" name="DiscountDataList" collectionType="List" />
+	<collection elementType="TaxData" name="TaxDataList" collectionType="List" />
+	<collection elementType="CartEntry" name="CartEntryList" collectionType="List" />
+	<collection elementType="AbstractOrderEntry" name="AbstractOrderEntryList" collectionType="List" />
 
 	<!-- enums -->
 
+	<enum name="TaxClass" package="io.spotnext.itemtype.commerce.enumeration">
+		<description>The tax classes a product is assigned to.</description>
+		<value code="FULL_VAT" />
+		<value code="HALF_VAT" />
+		<value code="NO_VAT" />
+	</enum>
+	
 	<enum name="OrderStatus" package="io.spotnext.itemtype.commerce.enumeration">
-		<description>The render engine used to render cms items.</description>
+		<description>The render engine used to render CMS items.</description>
 		<value code="OPEN" />
 		<value code="APPROVAL_PENDING" />
 		<value code="APPROVED" />
@@ -14,10 +26,84 @@
 		<value code="UNKNOWN" />
 	</enum>
 
+	<enum name="CartModificationOperation" package="io.spotnext.itemtype.commerce.enumeration">
+		<description>The operation that should be applied to a cart.</description>
+		<value code="ADD_ENTRY" />
+		<value code="REMOVE_ENTRY" />
+		<value code="UPDATE_ENTRY" />
+		<value code="CALCULATE_TOTALS" />
+		<value code="CALCULATE_ALL" />
+	</enum>
+
+	<!-- beans -->
+
+	<bean name="CartModification" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="cartId" type="String" />
+			<property name="cartEntryNumber" type="Integer" />
+			<property name="productId" type="String" />
+			<property name="quantity" type="int" />
+			<property name="operation" type="CartModificationOperation" />
+		</properties>
+	</bean>
+
+	<bean name="CartModificationResult" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="modifiedCartEntries" type="AbstractOrderEntryList" />
+		</properties>
+	</bean>
+
+	<bean name="CartData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="uid" type="String" />
+			<property name="user" type="UserData" />
+			<property name="entries" type="AbstractOrderEntryDataList" />
+			<property name="store" type="BaseStore" />
+			<property name="subTotalPrice" type="BigDecimal" />
+			<property name="totalPrice" type="BigDecimal" />
+			<property name="discounts" type="DiscountDataList" />
+			<property name="taxes" type="TaxDataList" />
+		</properties>
+	</bean>
+
+	<bean name="AbstractOrderEntryData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="entryNumber" type="int" />
+			<property name="quantity" type="int" />
+			<property name="product" type="ProductData" />
+			<property name="basePrice" type="BigDecimal" />
+			<property name="totalPrice" type="BigDecimal" />
+			<property name="discounts" type="DiscountDataList" />
+		</properties>
+	</bean>
+
+	<bean name="ProductData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="uid" type="String" />
+			<property name="name" type="int" />
+			<property name="description" type="ProductData" />
+		</properties>
+	</bean>
+
+	<bean name="DiscountData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="uid" type="String" />
+			<property name="value" type="BigDecimal" />
+			<property name="relative" type="boolean" />
+		</properties>
+	</bean>
+
+	<bean name="TaxData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+			<property name="uid" type="String" />
+			<property name="value" type="BigDecimal" />
+			<property name="relative" type="boolean" />
+		</properties>
+	</bean>
+
 	<!-- base configuration -->
 
-	<type name="BaseStore" typeCode="BaseStore"
-		package="io.spotnext.itemtype.commerce.store" extends="UniqueIdItem">
+	<type name="BaseStore" typeCode="BaseStore" package="io.spotnext.itemtype.commerce.store" extends="UniqueIdItem">
 		<description>This holds the base configuration for a store.</description>
 		<properties>
 			<property name="name" type="String">
@@ -31,12 +117,21 @@
 
 	<!-- product related types -->
 
-	<type name="Product" typeCode="Product"
-		package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
+	<type name="Product" typeCode="Product" package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>The base type Product is used for all purchasable items.</description>
 		<properties>
 			<property name="name" type="LocalizedString">
 				<description>The name of the product.</description>
+			</property>
+			<property name="approvalStatus" type="ApprovalStatus">
+				<defaultValue>io.spotnext.itemtype.core.enumeration.ApprovalStatus.UNAPPROVED</defaultValue>
+			</property>
+			<property name="weight" type="double" />
+			<property name="width" type="double" />
+			<property name="height" type="double" />
+			<property name="depth" type="double" />
+			<property name="taxClass" type="TaxClass">
+				<defaultValue>io.spotnext.itemtype.commerce.enumeration.TaxClass.FULL_VAT</defaultValue>
 			</property>
 			<property name="description" type="LocalizedString">
 				<description>The localized description of the product.</description>
@@ -44,11 +139,25 @@
 			<property name="ean" type="String">
 				<description>The EAN product code.</description>
 			</property>
+			
+			<property name="thumbnail" type="ImageMedia" />
+			<property name="mainImage" type="ImageMedia" />
 		</properties>
 	</type>
-
-	<type name="Category" typeCode="Category"
-		package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
+	
+	<type name="VariantProduct" abstract="true" package="io.spotnext.itemtype.commerce.catalog" extends="Product">
+		<description>
+			The base class for all variant products. 
+			Variant option properties have to be annotated with io.spotnext.commerce.annotations.VariantOption!
+		</description>
+		<properties>
+			<property name="baseProduct" type="Product">
+				<description>The base product this variant belongs to.</description>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="Category" package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>Categories are used to group products.</description>
 		<properties>
 			<property name="name" type="LocalizedString">
@@ -58,15 +167,13 @@
 		</properties>
 	</type>
 
-	<type name="PriceGroup" typeCode="PriceGroup"
-		package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
+	<type name="PriceGroup" package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 		</properties>
 	</type>
 
-	<type name="Price" typeCode="Price"
-		package="io.spotnext.itemtype.commerce.catalog">
+	<type name="Price" package="io.spotnext.itemtype.commerce.catalog">
 		<description>This is the container for all categories and products.</description>
 		<properties>
 			<property name="productId" type="String">
@@ -95,14 +202,20 @@
 		</properties>
 	</type>
 
-	<type name="Tax" package="io.spotnext.itemtype.commerce.store"
-		extends="UniqueIdItem">
+	<type name="Tax" package="io.spotnext.itemtype.commerce.store" extends="UniqueIdItem">
 		<properties>
+			<property name="taxClass" type="TaxClass">
+				<modifiers unique="true" />
+			</property>
 			<property name="value" type="BigDecimal">
+				<modifiers unique="true" />
 			</property>
-			<property name="description" type="LocalizedString">
-			</property>
+			<property name="description" type="LocalizedString" />
 			<property name="country" type="Country">
+				<modifiers unique="true" />
+			</property>
+			<property name="relative" type="boolean">
+				<defaultValue>true</defaultValue>
 			</property>
 		</properties>
 	</type>
@@ -126,8 +239,7 @@
 		</properties>
 	</type>
 
-	<type name="FutureStock" extends="Stock"
-		package="io.spotnext.itemtype.commerce.store">
+	<type name="FutureStock" extends="Stock" package="io.spotnext.itemtype.commerce.store">
 		<properties>
 			<property name="availableAt" type="String">
 				<description>Defines a future stock and when it will be available.</description>
@@ -140,11 +252,19 @@
 
 	<!-- cart and orders -->
 
-	<type name="AbstractOrder" abstract="true"
-		package="io.spotnext.itemtype.commerce.order" extends="UniqueIdItem">
+	<type name="AbstractOrder" abstract="true" package="io.spotnext.itemtype.commerce.order" extends="UniqueIdItem">
 		<description>The abstract base type for orders and carts.</description>
 		<properties>
-			<property name="customer" type="Customer">
+			<property name="totalPrice" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="subTotalPrice" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="taxValue" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="customer" type="User">
 				<modifiers unique="true" />
 				<annotations>
 					<annotation javaClass="javax.validation.constraints.NotNull" />
@@ -153,9 +273,16 @@
 		</properties>
 	</type>
 
-	<type name="AbstractOrderEntry" abstract="true"
-		package="io.spotnext.itemtype.commerce.order">
+	<type name="AbstractOrderEntry" abstract="true" package="io.spotnext.itemtype.commerce.order">
 		<properties>
+			<property name="entryNumber" type="int" />
+			<property name="basePrice" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="totalPrice" type="BigDecimal">
+				<defaultValue>java.math.BigDecimal.ZERO</defaultValue>
+			</property>
+			<property name="quantity" type="int" />
 			<property name="product" type="Product">
 				<modifiers unique="true" />
 				<annotations>
@@ -165,13 +292,11 @@
 		</properties>
 	</type>
 
-	<type name="OrderEntry" extends="AbstractOrderEntry"
-		package="io.spotnext.itemtype.commerce.order">
+	<type name="OrderEntry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order">
 
 	</type>
 
-	<type name="CartEntry" extends="AbstractOrderEntry"
-		package="io.spotnext.itemtype.commerce.order">
+	<type name="CartEntry" extends="AbstractOrderEntry" package="io.spotnext.itemtype.commerce.order">
 
 	</type>
 
@@ -183,8 +308,7 @@
 
 	<!-- customers -->
 
-	<type name="Customer" extends="User"
-		package="io.spotnext.itemtype.commerce.customer">
+	<type name="Customer" extends="User" package="io.spotnext.itemtype.commerce.customer">
 		<properties>
 			<property name="firstName" type="String">
 			</property>
@@ -194,9 +318,23 @@
 			</property>
 		</properties>
 	</type>
-	
+
+	<type name="PaymentMethode" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.checkout">
+		<properties>
+			<property name="name" type="LocalizedString" />
+			<property name="description" type="LocalizedString" />
+		</properties>
+	</type>
+
+	<type name="ShippingMethode" extends="UniqueIdItem" package="io.spotnext.itemtype.commerce.checkout">
+		<properties>
+			<property name="name" type="LocalizedString" />
+			<property name="description" type="LocalizedString" />
+		</properties>
+	</type>
+
 	<!-- CMS components -->
-	
+
 	<type name="CategoryMenuComponent" extends="AbstractMenuComponent" package="io.spotnext.itemtype.cms">
 		<properties>
 			<property name="category" type="Category">
@@ -213,7 +351,7 @@
 			</property>
 		</properties>
 	</type>
-	
+
 	<!-- relations -->
 
 	<relation name="Category2Product">
@@ -223,7 +361,7 @@
 			<description>The products in this catalog.</description>
 		</target>
 	</relation>
-	
+
 	<relation name="Category2Category">
 		<description>The categories that are included as sub categories.</description>
 		<source cardinality="many" itemType="Category" mappedBy="superCategories" />
@@ -233,8 +371,7 @@
 	<relation name="AbstractOrder2AbstractOrderEntry">
 		<description>The categories the product is referenced by.</description>
 		<source cardinality="one" itemType="AbstractOrder" mappedBy="order"></source>
-		<target cardinality="many" itemType="AbstractOrderEntry"
-			mappedBy="entries">
+		<target cardinality="many" itemType="AbstractOrderEntry" mappedBy="entries">
 			<description>The order entries.</description>
 		</target>
 	</relation>

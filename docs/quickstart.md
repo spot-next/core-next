@@ -1,6 +1,6 @@
 # Quick start
 
-To run spot you need a **Java 10+ and maven**. First add this to your local **~/.m2/settings.xml** to enable the spOt snapshop repository:
+To run spot you need a **Java 10+ and maven**. First add this to your local **~/.m2/settings.xml** to enable the core-next snapshop repository:
 ```xml
 <profiles>
   <profile>
@@ -23,7 +23,7 @@ To run spot you need a **Java 10+ and maven**. First add this to your local **~/
 </profiles>
 ```
 
-With this command you can directly initializes an empty spOt project:
+With this command you can directly initializes an empty core-next project:
 ```bash
 mvn -Psonatype-staging-archetypes archetype:generate -B \
 		-DarchetypeGroupId=io.spot-next.archetypes \
@@ -58,7 +58,7 @@ So what is the meaning of the command line arguments?
 * **core.setup.import.initialdata** imports some basic data, like the admin user, country and language data
 * **core.setup.import.sampledata** imports some test users and media files
 
-> The **first two** arguments are **necessary** if you boot up spOt the first time.
+> The **first two** arguments are **necessary** if you boot up core-next the first time.
 
 During boot you will then get some output similar to this:
 ```
@@ -98,8 +98,8 @@ During boot you will then get some output similar to this:
 
 The last line indicates that the system has booted and can now be used. But what for?
 
-A core spOt project does not do any useful stuff - overall it's a framework. So you got to do the work ;-)
-Actually that's not entirely true. As mentioned earlier, spOt provides a generic REST CRUD service that allows you to manipulate all available domain models.
+A core core-next project does not do any useful stuff - overall it's a framework. So you got to do the work ;-)
+Actually that's not entirely true. As mentioned earlier, core-next provides a generic REST CRUD service that allows you to manipulate all available domain models.
 
 Fire up [Postman](https://www.getpostman.com/) (or a REST-client of your choosing) and issue this request:
 ```http
@@ -157,7 +157,7 @@ Let's say our project goal is to offer a party guest list service:
 
 Before we are going to implement the actual functionality, we start by modelling the domain objects. Among the predefined types `User` and `Address` seem suitable candidates for "party guest" and "location".
 But we definitely need a new model type `Party`.
-> In the JPA/HIbernate world this would be called an "Entity". The corresponding spOt terminology is "Item type".
+> In the JPA/HIbernate world this would be called an "Entity". The corresponding core-next terminology is "Item type".
 
 Open the `src/main/resources/test-project-itemtypes.xml` file - it contains the type definitions.     
 Common Java IDEs like Eclipse or IntelliJ offer auto-completion in XML files. This comes in handy to explore the possible constructs (in a type-safe and correct way!).
@@ -237,7 +237,7 @@ Content-Type: application/json
 Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
 
 {
-    "title": "spOt test party",
+    "title": "core-next test party",
      "motto": {
         "en": "Let's do it",
         "de": "Auf geht's",
@@ -267,7 +267,7 @@ Authorization: Basic YWRtaW46TUQ1OmVlMTBjMzE1ZWJhMmM3NWI0MDNlYTk5MTM2ZjViNDhk
     "errors": [
         {
             "code": "error.internal",
-            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"spOt test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"uid\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.types.itemtypes.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
+            "message": "Cannot deserialize object: Cannot construct instance of `io.spotnext.itemtype.core.internationalization.Country` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('at')\n at [Source: (String)\"{\n    \"title\": \"core-next test party\",\n    \"location\": {\n    \t\"typeCode\": \"useraddress\",\n    \t\"streetName\": \"Test street\",\n    \t\"streetNumber\": \"100\",\n    \t\"city\": \"Vienna\",\n    \t\"postalCode\": \"1030\",\n    \t\"country\": \"at\"\n    },\n    \"guests\": [\n    \t{\n    \t\t\"typeCode\": \"user\",\n    \t\t\"uid\": \"guest-01\",\n    \t\t\"shortName\": \"Guest user #1\"\n    \t}\n    ]\n}\"; line: 18, column: 1] (through reference chain: io.spotnext.test.types.itemtypes.Party[\"location\"]->io.spotnext.itemtype.core.user.UserAddress[\"country\"])"
         }
     ],
     "warnings": []
@@ -323,7 +323,7 @@ This results in something like this:
 After fixing our POST request the creation of a `Party` item succeeds:
 ```json
 {
-    "title": "spOt test party",
+    "title": "core-next test party",
      "motto": {
         "en": "Let's do it",
         "de": "Auf geht's",
@@ -409,7 +409,7 @@ This could of course also be one with a simle `if` statement too.
 
 > Here you can find [further details regarding spring events](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#context-functionality-events-annotation).
 
-Right now spOt doesn't contain any messaging services (but this is definitely something on the roadmap), so for now we just *Simple Java Mail* for that. Include that in the `pom.xml`: 
+Right now core-next doesn't contain any messaging services (but this is definitely something on the roadmap), so for now we just *Simple Java Mail* for that. Include that in the `pom.xml`: 
 ```xml
 <dependency>
     <groupId>org.simplejavamail</groupId>
@@ -892,7 +892,7 @@ Any class (in the component scan path) annotated with `@RemoteEndpoint` will be 
 ### Homepage
 The method `getHomepage` has no `pathMapping` defined, so it will directly handle the base URL defined on the class level. It basically just fetches all `Party` items and returns a `ModelAndView` object that needed by the Thymeleaf response transformer to render actual HTML.
 
-Nothing special so far. Unlike Spring Security or many other similar frameworks, spOt does not offer a "login" functionality by default. But a simple form-based login is only a few lines of code (`postLogin`). The `AuthorizationService` returns a `User` or null in case the authorization fails. Then the user object is then registered as the `currentUser` in the (backend) session.
+Nothing special so far. Unlike Spring Security or many other similar frameworks, core-next does not offer a "login" functionality by default. But a simple form-based login is only a few lines of code (`postLogin`). The `AuthorizationService` returns a `User` or null in case the authorization fails. Then the user object is then registered as the `currentUser` in the (backend) session.
 
 On each request the `IsAdminFilter` checks if the current user is an admin:
 ```java
@@ -1008,7 +1008,7 @@ Now that we have an endpoint we just need a template for our page (/resources/te
 
 		<!-- Site footer -->
 		<footer class="footer">
-			<p>&copy; spOt next 2018</p>
+			<p>&copy; core-next next 2018</p>
 		</footer>
 	</div>
 
@@ -1033,10 +1033,10 @@ Now we can fire up our little backend. It looks like this (served on the default
 We can see our previously created party item(s). After we logged in using `admin:nimda` we are even able to cancel parties:
 ![Party backend management](resources/party_service_manage.png "")
 
-Compare to Spring MVC and Spring Security, spOt doesn't try to do a lot of magic, but instead followes KISS principle :-)
+Compare to Spring MVC and Spring Security, core-next doesn't try to do a lot of magic, but instead followes KISS principle :-)
 
 ## Summary
-Hopefully this little quickstart tutorial gave you a (good) first impression what spOt is all about. For more infos, just dig through the (ever-growing) documentation.  There is a whole lot of other interesting features that we haven't touched yet, like:
+Hopefully this little quickstart tutorial gave you a (good) first impression what core-next is all about. For more infos, just dig through the (ever-growing) documentation.  There is a whole lot of other interesting features that we haven't touched yet, like:
 * Using interceptors to generate sequence numbers
 * Localization features (both property and database based)
 * Serialization

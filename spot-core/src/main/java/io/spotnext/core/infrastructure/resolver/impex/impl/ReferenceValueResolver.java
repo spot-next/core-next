@@ -7,14 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ValueResolverException;
 import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
-import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.impex.ColumnDefinition;
 import io.spotnext.core.persistence.query.JpqlQuery;
@@ -32,9 +30,6 @@ import io.spotnext.support.util.ClassUtil;
  */
 @Service
 public class ReferenceValueResolver<T extends Item> extends AbstractService implements ImpexValueResolver<T> {
-
-	@Autowired
-	private TypeService typeService;
 
 	@Autowired
 	private QueryService queryService;
@@ -74,13 +69,13 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 
 		final QueryResult<T> result = queryService.query(qry);
 
-		if (result.getResultList().size() > 1) {
+		if (result.getResults().size() > 1) {
 			throw new ValueResolverException("Ambiguous results found for given input values.");
-		} else if (result.getResultList().size() == 0) {
+		} else if (result.getResults().size() == 0) {
 			throw new ValueResolverException(String.format("No results found for given input value '%s'", value));
 		}
 
-		return result.getResultList().get(0);
+		return result.getResults().get(0);
 	}
 
 	private void fillQuery(final QueryDefinition queryDef, final Class<Item> type, final Node... nodes) {

@@ -7,10 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.exception.ValueResolverException;
@@ -23,7 +22,7 @@ import io.spotnext.core.persistence.service.QueryService;
 
 /**
  * <p>
- * ReferenceValueResolver class.
+ * FileValueResolver class.
  * </p>
  *
  * @author mojo2012

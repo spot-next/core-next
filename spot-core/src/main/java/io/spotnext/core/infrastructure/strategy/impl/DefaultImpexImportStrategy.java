@@ -32,8 +32,8 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
-//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
+import io.spotnext.core.infrastructure.exception.ImpexValidationException;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.exception.ValueResolverException;
 import io.spotnext.core.infrastructure.resolver.impex.ImpexValueResolver;
@@ -71,6 +71,7 @@ import io.spotnext.support.util.ValidationUtil;
 @Service
 public class DefaultImpexImportStrategy extends AbstractService implements ImpexImportStrategy {
 
+	protected static final String MODIFIER_UNIQUE = "unique";
 	/** Constant <code>MAP_ENTRY_SEPARATOR="->"</code> */
 	public static final String MAP_ENTRY_SEPARATOR = "->";
 	/** Constant <code>COLLECTION_VALUE_SEPARATOR=","</code> */
@@ -125,10 +126,61 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			Logger.debug(String.format("Processing %s work units", workUnits.size()));
 			processWorkUnits(workUnits);
 
+			Logger.debug(String.format("Validating %s work units", workUnits.size()));
+			validateWorkUnits(workUnits, config);
+
 			Logger.debug(String.format("Importing %s work units", workUnits.size()));
 			transactionService.executeWithoutResult(() -> importWorkUnits(workUnits, config));
 		} else {
 			Logger.warn(String.format("Ignoring empty file %s", config.getScriptIdentifier()));
+		}
+	}
+
+	private void validateWorkUnits(List<WorkUnit> workUnits, ImportConfiguration config) throws ImpexImportException {
+		for (WorkUnit unit : workUnits) {
+			// check for unknown properties
+			unit.getHeaderColumns().stream() //
+					.filter(c -> !ITEM_REFERENCE_MARKER.equals(c.getPropertyName())) //
+					.filter(c -> c.getPropertyDefinition() == null).forEach(c -> {
+						throw new ImpexValidationException(String.format("Unknown property '%s' for type '%s'", c.getPropertyName(), unit.getItemType()));
+					});
+
+			// fetch unique column definition
+			final List<ColumnDefinition> uniqueColumns = unit.getHeaderColumns().stream()
+					.filter(c -> BooleanUtils.toBoolean(c.getModifiers().get(MODIFIER_UNIQUE)))
+					.collect(Collectors.toList());
+
+			final String rawHeader = unit.getRawScriptRows().get(0);
+
+			if (uniqueColumns.stream().anyMatch(c -> isCollectionType(c) || isMapType(c))) {
+				final String message = "Columns with type Collection or Map cannot be used as unique identifiers in header: " + rawHeader;
+
+				if (config.getIgnoreErrors()) {
+					Logger.warn(message);
+				} else {
+					throw new ImpexImportException(message);
+				}
+
+			}
+
+			// if insert_update or update we need to have at least one unique column defined
+			if (CollectionUtils.containsAny(Arrays.asList(ImpexCommand.UPDATE, ImpexCommand.INSERT_UPDATE, ImpexCommand.REMOVE), unit.getCommand())
+					&& uniqueColumns.size() == 0) {
+
+				final String message = "At least one column with a 'unique' modifier is needed for header: " + rawHeader;
+
+				if (config.getIgnoreErrors()) {
+					Logger.warn(message);
+				} else {
+					throw new ImpexImportException(message);
+				}
+			}
+
+			if (ImpexCommand.INSERT.equals(unit.getCommand()) && uniqueColumns.size() > 0) {
+				final String message = "Column with a 'unique' modifier is not allowed for header: " + rawHeader;
+
+				Logger.warn(message);
+			}
 		}
 	}
 
@@ -188,7 +240,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		try {
 			return typeService.getClassForTypeCode(typeName);
 		} catch (final UnknownTypeException e) {
-			throw new ImpexImportException(String.format("Cannot process ImpEx header for type %s: %s", typeName, line));
+			throw new ImpexImportException(String.format("Unknown type '%s' for impex header: %s", typeName, line));
 		}
 	}
 
@@ -199,7 +251,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 				unit.setHeaderColumns(parseHeaderColumns(parsedRows.get(0), unit));
 				unit.setDataRows(parsedRows.subList(1, parsedRows.size()));
-			} catch (final IOException e) {
+			} catch (final IOException | UnknownTypeException e) {
 				throw new ImpexImportException(String.format("Cannot process work unit '%s' for type %s", unit.getCommand(), unit.getItemType()), e);
 			}
 		}
@@ -251,16 +303,11 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 							continue;
 						}
 
-						final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode).get(col.getPropertyName());
-
-						if (propDef != null) {
-							final Class<?> returnType = propDef.getReturnType();
-							col.setColumnType(returnType);
-
-							// resolve values using the default or the
-							// configured value resolvers
+						if (col.getPropertyDefinition() != null) {
+							// resolve values using the default or the configured value resolvers
 							try {
-								final Object propertyValue = resolveValue(val, returnType, propDef.getGenericTypeArguments(), col, itemReferences);
+								final Object propertyValue = resolveValue(val, col.getColumnType(), col.getPropertyDefinition().getGenericTypeArguments(), col,
+										itemReferences);
 								rawItem.put(col, propertyValue);
 							} catch (final ValueResolverException e) {
 								if (config.getIgnoreErrors()) {
@@ -405,6 +452,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("UPDATE %s AS %s SET %s WHERE %s.id = :id", typeName, typeName, whereClause, typeName),
 				params, Void.class);
 		query.setClearCaches(true);
+		query.setExecuteUpdate(true);
 
 		return query;
 	}
@@ -423,6 +471,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		final JpqlQuery<Void> query = new JpqlQuery<>(String.format("DELETE FROM %s AS %s WHERE %s", typeName, typeName, whereClause), params, Void.class);
 		query.setClearCaches(true);
+		query.setExecuteUpdate(true);
 
 		return query;
 	}
@@ -439,17 +488,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 		for (final ColumnDefinition col : headerColumns) {
 			// only look at the unique properties
-			if (BooleanUtils.toBoolean(col.getModifiers().get("unique"))) {
-				if (isCollectionType(col) || isMapType(col)) {
-					final String message = "Columns with type Collection or Map cannot be used as unique identifiers.";
-
-					if (config.getIgnoreErrors()) {
-						Logger.warn(message);
-					} else {
-						throw new ImpexImportException(message);
-					}
-				}
-
+			if (BooleanUtils.toBoolean(col.getModifiers().get(MODIFIER_UNIQUE))) {
 				ret.put(col.getPropertyName(), rawItem.get(col));
 			}
 		}
@@ -620,7 +659,13 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 
 			// this is not a item refenrence path but a virtual reference
 			if (PATTERN_ITEM_REFERENCE_COLUMN_DEFINITION.matcher(desc).matches()) {
-				return itemReferences.get(value);
+				final Item item = itemReferences.get(value);
+
+				if (item != null) {
+					modelService.refresh(item);
+				}
+
+				return item;
 			} else {
 				return referenceValueResolver.resolve(value, type, null, columnDefinition);
 			}
@@ -636,10 +681,12 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 		}
 	}
 
-	protected List<ColumnDefinition> parseHeaderColumns(final List<String> columns, final WorkUnit unit) {
+	protected List<ColumnDefinition> parseHeaderColumns(final List<String> columns, final WorkUnit unit) throws UnknownTypeException {
 		final List<ColumnDefinition> parsedColumns = new ArrayList<>();
 
 		boolean isFirst = true;
+
+		String typeCode = typeService.getTypeCodeForClass(unit.getItemType());
 
 		for (final String col : columns) {
 			if (isFirst) {
@@ -665,6 +712,9 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				colDef.setPropertyName(propertyName);
 				colDef.setValueResolutionDescriptor(valueResolutionDescriptor);
 				colDef.addModifiers(parseModifiers(modifiers));
+
+				final ItemTypePropertyDefinition propDef = typeService.getItemTypeProperties(typeCode).get(propertyName);
+				colDef.setPropertyDefinition(propDef);
 
 				parsedColumns.add(colDef);
 			} else if (trimmedCol.equals(ITEM_REFERENCE_MARKER)) {

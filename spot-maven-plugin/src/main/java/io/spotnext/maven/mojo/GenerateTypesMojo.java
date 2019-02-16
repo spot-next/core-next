@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,6 +70,8 @@ import io.spotnext.infrastructure.maven.xml.RelationType;
 import io.spotnext.infrastructure.maven.xml.RelationshipCardinality;
 import io.spotnext.infrastructure.type.AccessorType;
 import io.spotnext.infrastructure.type.Bean;
+import io.spotnext.infrastructure.type.DynamicEnum;
+import io.spotnext.infrastructure.type.Enumeration;
 import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemCollectionFactory;
 import io.spotnext.infrastructure.type.Localizable;
@@ -91,6 +95,7 @@ import io.spotnext.maven.velocity.type.parts.JavaField;
 import io.spotnext.maven.velocity.type.parts.JavaGenericTypeArgument;
 import io.spotnext.maven.velocity.type.parts.JavaMemberType;
 import io.spotnext.maven.velocity.type.parts.JavaMethod;
+import io.spotnext.maven.velocity.type.parts.JavaMethodArgument;
 import io.spotnext.maven.velocity.util.VelocityUtil;
 import io.spotnext.support.util.ClassUtil;
 import io.spotnext.support.util.MiscUtil;
@@ -244,27 +249,83 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 *
 	 * @return a {@link java.util.List} object.
 	 */
-	protected List<JavaEnum> generateEnums() {
-		final List<JavaEnum> ret = new ArrayList<>();
+	protected List<AbstractComplexJavaType> generateEnums() {
+		final List<AbstractComplexJavaType> ret = new ArrayList<>();
 
 		for (final EnumType enumType : typeDefinitions.getEnumTypes().values()) {
-			final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
-			enumeration.setDescription(enumType.getDescription());
+			AbstractComplexJavaType newEnum;
 
-			populateInterfaces(enumType.getInterfaces(), enumeration);
+			if (enumType.isDynamic()) {
+				JavaClass enumeration = new JavaClass(enumType.getName(), enumType.getPackage());
+				enumeration.setSuperClass(DynamicEnum.class);
 
-			for (final EnumValue value : enumType.getValue()) {
-				final JavaEnumValue v = new JavaEnumValue();
-				v.setName(value.getCode());
-				v.setInternalName(value.getValue());
+				final JavaMethodArgument arg = new JavaMethodArgument(new JavaMemberType(String.class), "internalName");
+				final JavaMethod constructor = createConstructor(enumeration.getName(), Visibility.PRIVATE, Collections.singletonList(arg),
+						"super(internalName);");
 
-				enumeration.addValue(v);
+				enumeration.addMethod(constructor);
+
+				for (final EnumValue value : enumType.getValue()) {
+					final String internalName = StringUtils.isNotBlank(value.getValue()) ? value.getValue() : value.getCode();
+
+					// add constant for each property
+					final JavaField enumValueField = new JavaField();
+					enumValueField.setVisibility(Visibility.PUBLIC);
+					enumValueField.addModifier(JavaMemberModifier.STATIC);
+					enumValueField.addModifier(JavaMemberModifier.FINAL);
+					enumValueField.setAssignement(new JavaExpression("new " + enumeration.getName() + "(\"" + internalName + "\")", JavaValueType.LITERAL));
+					enumValueField.setType(new JavaMemberType(enumeration.getName()));
+					enumValueField.setName(value.getCode());
+					enumValueField.setDescription(value.getDescription());
+
+					enumeration.addField(enumValueField);
+				}
+
+				newEnum = enumeration;
+			} else {
+				final JavaEnum enumeration = new JavaEnum(enumType.getName(), enumType.getPackage());
+
+				// add this marker interface to make generated enums distinguishable from regular ones
+				// this might be interesting serialization
+				final JavaInterface enumerationInterface = new JavaInterface(Enumeration.class);
+				enumeration.addInterface(enumerationInterface);
+
+				for (final EnumValue value : enumType.getValue()) {
+					final JavaEnumValue v = new JavaEnumValue();
+					v.setName(value.getCode());
+					v.setInternalName(value.getValue());
+					v.setDescription(value.getDescription());
+
+					enumeration.addValue(v);
+				}
+
+				newEnum = enumeration;
 			}
 
-			ret.add(enumeration);
+			populateInterfaces(enumType.getInterfaces(), newEnum);
+
+			newEnum.setDescription(enumType.getDescription());
+			ret.add(newEnum);
 		}
 
 		return ret;
+	}
+
+	protected JavaMethod createConstructor(String name, Visibility visibility, List<JavaMethodArgument> arguments, String codeBlock) {
+		JavaMethod constructor = new JavaMethod();
+		constructor.setName(name);
+
+		if (arguments != null) {
+			for (JavaMethodArgument arg : arguments) {
+				constructor.addArgument(arg);
+			}
+		}
+
+		constructor.setVisibility(visibility);
+		constructor.setCodeBlock(codeBlock);
+		// we just leave the return type empty, to make it a constructor
+
+		return constructor;
 	}
 
 	/**
@@ -315,10 +376,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			if (beanType.getProperties() != null) {
 				for (final Property prop : beanType.getProperties().getProperty()) {
-					final JavaMemberType propType = createMemberType(prop.getType());
+					final JavaMemberType propType = createMemberType(prop.getType(), false);
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
+
+					populatePropertyAnnotation(prop, field);
 
 					if (prop.getDefaultValue() != null && prop.getDefaultValue().getContent() != null) {
 						field.setAssignement(new JavaExpression(prop.getDefaultValue().getContent(), JavaValueType.LITERAL));
@@ -328,8 +391,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 					bean.addField(field);
 					populatePropertyAnnotations(prop.getAnnotations(), field);
 
-					addGetter(field, bean);
-					addSetter(field, bean);
+					addGetter(field, bean, true);
+					addSetter(field, bean, true);
 				}
 			}
 
@@ -414,6 +477,18 @@ public class GenerateTypesMojo extends AbstractMojo {
 					}
 				}
 
+//				final BaseType complexType = typeDefinitions.getType(prop.getType());
+//
+//				if (complexType instanceof CollectionType) {
+//					if (CollectionsType.SET.equals(((CollectionType) complexType).getCollectionType())) {
+//						field.setAssignement(new JavaExpression("new java.util.HashSet<>()", JavaValueType.LITERAL));
+//					} else {
+//						field.setAssignement(new JavaExpression("new java.util.ArrayList<>()", JavaValueType.LITERAL));
+//					}
+//				} else if (complexType instanceof MapType) {
+//					field.setAssignement(new JavaExpression("new java.util.HashMap<>()", JavaValueType.LITERAL));
+//				}
+
 				populatePropertyAnnotation(prop, field);
 				populatePropertyAnnotations(prop.getAnnotations(), field);
 
@@ -427,20 +502,16 @@ public class GenerateTypesMojo extends AbstractMojo {
 					isWritable = prop.getModifiers().isWritable();
 				}
 
-				if (isReadable) {
-					if (prop.isLocalized()) {
-						addLocalizedGetters(prop, field, javaClass);
-					} else {
-						addGetter(field, javaClass);
-					}
+				if (prop.isLocalized()) {
+					addLocalizedGetters(prop, field, javaClass, isReadable);
+				} else {
+					addGetter(field, javaClass, isReadable);
 				}
 
-				if (isWritable) {
-					if (prop.isLocalized()) {
-						addLocalizedSetters(prop, field, javaClass);
-					} else {
-						addSetter(field, javaClass);
-					}
+				if (prop.isLocalized()) {
+					addLocalizedSetters(prop, field, javaClass, isWritable);
+				} else {
+					addSetter(field, javaClass, isWritable);
 				}
 
 				// add constant for each property
@@ -510,7 +581,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @MojoExecutionException in there is no localized type found
 	 */
-	protected void addLocalizedGetters(final Property prop, final JavaField field, final JavaClass javaClass)
+	protected void addLocalizedGetters(final Property prop, final JavaField field, final JavaClass javaClass, boolean isPublic)
 			throws MojoExecutionException {
 
 		// TODO: needs refactoring
@@ -522,11 +593,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		final JavaMethod getter = addGetter(field, javaClass,
-				String.format(getNullInitializationString(prop) + "return this.%s.get();", field.getName()));
+				String.format(getNullInitializationString(prop) + "return this.%s.get();", field.getName()), isPublic);
 		getter.setType(new JavaMemberType(localizedType.get()));
 
 		final JavaMethod locGetter = addGetter(field, javaClass,
-				String.format(getNullInitializationString(prop) + "return this.%s.get(locale);", field.getName()));
+				String.format(getNullInitializationString(prop) + "return this.%s.get(locale);", field.getName()), isPublic);
 		locGetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locGetter.setType(getter.getType());
 	}
@@ -548,8 +619,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass) {
-		return addGetter(field, javaClass, String.format("return this.%s;", field.getName()));
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, boolean isPublic) {
+		return addGetter(field, javaClass, String.format("return this.%s;", field.getName()), isPublic);
 	}
 
 	/**
@@ -562,7 +633,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param codeBlock a {@link java.lang.String} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
+	protected JavaMethod addGetter(final JavaField field, final JavaClass javaClass, final String codeBlock, boolean isPublic) {
 		final JavaMethod getter = new JavaMethod();
 
 		if ("boolean".equals(field.getType().getFullyQualifiedName())) {
@@ -572,7 +643,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 		getter.setType(field.getType());
 		getter.setDescription(field.getDescription());
-		getter.setVisibility(Visibility.PUBLIC);
+		getter.setVisibility(isPublic ? Visibility.PUBLIC : Visibility.PROTECTED);
 		getter.setCodeBlock(codeBlock);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
@@ -595,7 +666,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param field     a {@link io.spotnext.maven.velocity.type.parts.JavaField} object.
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 */
-	protected void addLocalizedSetters(final Property prop, final JavaField field, final JavaClass javaClass)
+	protected void addLocalizedSetters(final Property prop, final JavaField field, final JavaClass javaClass, boolean isPublic)
 			throws MojoExecutionException {
 		// TODO: needs refactoring
 		final Optional<String> localizedType = getLocalizedType(prop.getType());
@@ -606,11 +677,11 @@ public class GenerateTypesMojo extends AbstractMojo {
 		}
 
 		final JavaMethod setter = addSetter(field, javaClass, String
-				.format(getNullInitializationString(prop) + "this.%s.set(%s);", field.getName(), field.getName()));
+				.format(getNullInitializationString(prop) + "this.%s.set(%s);", field.getName(), field.getName()), isPublic);
 		setter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 
 		final JavaMethod locSetter = addSetter(field, javaClass, String.format(
-				getNullInitializationString(prop) + "this.%s.set(locale, %s);", field.getName(), field.getName()));
+				getNullInitializationString(prop) + "this.%s.set(locale, %s);", field.getName(), field.getName()), isPublic);
 		locSetter.addArgument("locale", new JavaMemberType(Locale.class));
 		locSetter.getArguments().get(0).setType(new JavaMemberType(localizedType.get()));
 	}
@@ -624,8 +695,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param javaClass a {@link io.spotnext.maven.velocity.type.base.JavaClass} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass) {
-		return addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()));
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, boolean isPublic) {
+		return addSetter(field, javaClass, String.format("this.%s = %s;", field.getName(), field.getName()), isPublic);
 	}
 
 	/**
@@ -638,14 +709,14 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @param codeBlock a {@link java.lang.String} object.
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMethod} object.
 	 */
-	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock) {
+	protected JavaMethod addSetter(final JavaField field, final JavaClass javaClass, final String codeBlock, boolean isPublic) {
 		final JavaMethod setter = new JavaMethod();
 		setter.setName(generateMethodName("set", field.getName()));
 		setter.setType(JavaMemberType.VOID);
 		setter.setDescription(field.getDescription());
 		setter.addArgument(field.getName(), field.getType());
 		setter.setCodeBlock(codeBlock);
-		setter.setVisibility(Visibility.PUBLIC);
+		setter.setVisibility(isPublic ? Visibility.PUBLIC : Visibility.PROTECTED);
 
 		final JavaAnnotation accessorAnnotation = new JavaAnnotation(Accessor.class);
 		accessorAnnotation.addParameter("propertyName", field.getName(), JavaValueType.STRING);
@@ -747,6 +818,20 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @MojoExecutionException if any.
 	 */
 	protected JavaMemberType createMemberType(final String typeName) throws MojoExecutionException {
+		return createMemberType(typeName, true);
+	}
+
+	/**
+	 * <p>
+	 * createMemberType.
+	 * </p>
+	 *
+	 * @param typeName           a {@link java.lang.String} object.
+	 * @param collectionOverride if true {@link Set} is used for all collection properties
+	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
+	 * @MojoExecutionException if any.
+	 */
+	protected JavaMemberType createMemberType(final String typeName, boolean collectionOverride) throws MojoExecutionException {
 		final BaseType propType = typeDefinitions.getType(typeName);
 
 		JavaMemberType ret = null;
@@ -771,7 +856,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 						String.format("Type '%s' is not supported as collection element type", t.getElementType()));
 			}
 
-			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType());
+			ret = createCollectionMemberType(t.getCollectionType(), t.getElementType(), collectionOverride);
 
 		} else if (propType instanceof MapType) {
 			final MapType t = (MapType) propType;
@@ -812,7 +897,8 @@ public class GenerateTypesMojo extends AbstractMojo {
 	protected boolean isSupportedCollectionType(final String typeName) {
 		return typeDefinitions.getAtomicTypes().containsKey(typeName)
 				|| typeDefinitions.getEnumTypes().containsKey(typeName)
-				|| typeDefinitions.getBeanTypes().containsKey(typeName);
+				|| typeDefinitions.getBeanTypes().containsKey(typeName)
+				|| typeDefinitions.getItemTypes().containsKey(typeName);
 	}
 
 	/**
@@ -820,27 +906,30 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * createCollectionMemberType.
 	 * </p>
 	 *
-	 * @param collectionType a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
-	 * @param elementType    a {@link java.lang.String} object.
+	 * @param collectionType     a {@link io.spotnext.infrastructure.maven.xml.CollectionsType} object.
+	 * @param elementType        a {@link java.lang.String} object.
+	 * @param collectionOverride
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
 	 * @MojoExecutionException if any.
 	 */
-	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType)
+	protected JavaMemberType createCollectionMemberType(final CollectionsType collectionType, final String elementType, boolean collectionOverride)
 			throws MojoExecutionException {
 
 		JavaMemberType ret = null;
 
-		// TODO: temporarily disabled, this would not work with hibernate FETCH
-		// JOINS!
-		// if (CollectionsType.COLLECTION.equals(collectionType)) {
-		// ret = new JavaMemberType(Collection.class);
-		// } else if (CollectionsType.SET.equals(collectionType)) {
-		// ret = new JavaMemberType(Set.class);
-		// } else {
-		// ret = new JavaMemberType(List.class);
-		// }
-
-		ret = new JavaMemberType(Set.class);
+		if (!collectionOverride) {
+			// TODO: temporarily disabled, this would not work with hibernate FETCH
+			// JOINS!
+			if (CollectionsType.COLLECTION.equals(collectionType)) {
+				ret = new JavaMemberType(Collection.class);
+			} else if (CollectionsType.SET.equals(collectionType)) {
+				ret = new JavaMemberType(Set.class);
+			} else {
+				ret = new JavaMemberType(List.class);
+			}
+		} else {
+			ret = new JavaMemberType(Set.class);
+		}
 
 		// add generic collection type
 		final JavaMemberType genType = createMemberType(elementType);
@@ -1114,6 +1203,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final io.spotnext.infrastructure.type.RelationType relationType = getRelationType(from, to);
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 
+			ItemType toType = typeDefinitions.getItemTypes().get(to.getItemType());
+
+			relationAnn.addParameter("referencedType", toType.getPackage() + "." + toType.getName(), JavaValueType.CLASS);
+
 			if (StringUtils.isNotBlank(from.getMappedBy())) {
 				relationAnn.addParameter("mappedTo", from.getMappedBy(), JavaValueType.STRING);
 			}
@@ -1157,26 +1250,25 @@ public class GenerateTypesMojo extends AbstractMojo {
 				addSetter = to.getModifiers().isWritable();
 			}
 
-			if (addGetter) {
-				propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
+			propAnn.addParameter("readable", addGetter, JavaValueType.LITERAL);
 
-				if (io.spotnext.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
-					// wrap the collection into proxy collection that allows us to intercept mutating calls
-					// (like add, remove) -> needed to update relation infos
-					javaClass.getImports().add(ItemCollectionFactory.class.getName());
-					addGetter(property, javaClass,
-							String.format("return %s.wrap(this, \"%s\", this.%s);", ItemCollectionFactory.class.getSimpleName(), property.getName(),
-									property.getName()));
+			if (io.spotnext.infrastructure.type.RelationType.OneToMany.equals(relationType)) {
+				// wrap the collection into proxy collection that allows us to intercept mutating calls
+				// (like add, remove) -> needed to update relation infos
+				javaClass.getImports().add(ItemCollectionFactory.class.getName());
+				JavaMethod getter = addGetter(property, javaClass,
+						String.format("return %s.wrap(this, \"%s\", this.%s, %s.class);", ItemCollectionFactory.class.getSimpleName(), property.getName(),
+								property.getName(), property.getType().getName()),
+						addGetter);
 
-				} else {
-					addGetter(property, javaClass);
-				}
+				addSetter(property, javaClass, String.format("%s().clear();%s().addAll(%s);", getter.getName(), getter.getName(), property.getName()),
+						addSetter);
+			} else {
+				addGetter(property, javaClass, addGetter);
+				addSetter(property, javaClass, addSetter);
 			}
 
-			if (addSetter) {
-				propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
-				addSetter(property, javaClass);
-			}
+			propAnn.addParameter("writable", addSetter, JavaValueType.LITERAL);
 
 			// add constant for each property
 			final JavaField constant = new JavaField();
@@ -1258,7 +1350,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 			final CollectionsType colType = RelationCollectionType.List.equals(collectionType) ? CollectionsType.LIST
 					: CollectionsType.SET;
 
-			type = createCollectionMemberType(colType, elementType);
+			type = createCollectionMemberType(colType, elementType, true);
 		} else {
 			type = createMemberType(elementType);
 		}
@@ -1285,7 +1377,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 							ann.addParameter(a.getName(), a.getStringValue(), JavaValueType.STRING);
 						} else {
 							getLog().warn(String.format(
-									"Validator for property %s misconfigured, all attribute values are empty",
+									"Annotation for property %s misconfigured, all attribute values are empty",
 									field.getName()));
 						}
 					}

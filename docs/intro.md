@@ -1,9 +1,9 @@
 # Introduction
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/core-next/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/core-next)
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Join the chat at https://gitter.im/spot-next/Lobby](https://badges.gitter.im/spot-next/Lobby.svg)](https://gitter.im/spot-next/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-The idea of the spOt microservice framework is to take the good parts of the SAP Hybris framework and bring them to the next level. For those who don't know SAP Hybris: it's a enterprise-grade ecommerce framework with it's own custom object-oriented persistence layer. You don't need to setup database tables or anything like that - all models are generated from XML definitions. It allows you to extend all models, even those who are defined by the framework itself. This makes it pretty easy to add new properties to types like Product, Category or Customer.
+The idea of the core-next microservice framework is to take the good parts of the SAP Hybris framework and bring them to the next level. For those who don't know SAP Hybris: it's a enterprise-grade ecommerce framework with it's own custom object-oriented persistence layer. You don't need to setup database tables or anything like that - all models are generated from XML definitions. It allows you to extend all models, even those who are defined by the framework itself. This makes it pretty easy to add new properties to types like Product, Category or Customer.
 
 Additionally, the framework also offers the so called "Accelerator". A demo-shop/website (B2C, B2B, telco, insurance) that can be used as a starting point for your ecommerce project.
 
@@ -22,7 +22,7 @@ Also the readily-available services are often over-engineerd and hard to customi
 Of course, documentation is ... scarce and mostly useless. Out of frustration this project was born!
 
 ## Core concepts
-The three fundamental principles of spOt revolves around the idea of
+The three fundamental principles of core-next revolves around the idea of
 * **Everything is an object**: from a basic localization value to a configuration entry
 * **Consistency across all places**:  every API feels the same way
 * **Sane defaults**: less configurability, better default settings
@@ -44,11 +44,11 @@ All those services are not re-implemented from scratch but rather "wrap" well-kn
 
 All these various technologies are integrated (actually abstracted away) and follow the **Principle of Least Surprise**. Ever tried to **serialize a Hibernate entity** using Gson or Jackson? Have fun!
 
-Not only does serialization work as expected - spOt even provides a generic REST interface for you, to manipulate every aspect of your domain objects.
+Not only does serialization work as expected - core-next even provides a generic REST interface for you, to manipulate every aspect of your domain objects.
 Every (new) type is automatically available as REST endpoint, offering functionality like search/filter, load, save, delete and update single properties.
 
 ### Sane defaults
-The open-source world spawned some very awesome peaces of software. But sometimes they are a bit overengineered and hard to use for common scenarios. spOt tried to **dumb down the APIs** and make them more **usable by setting better defaults** and **hiding the most obscure features**.
+The open-source world spawned some very awesome peaces of software. But sometimes they are a bit overengineered and hard to use for common scenarios. core-next tried to **dumb down the APIs** and make them more **usable by setting better defaults** and **hiding the most obscure features**.
 
 Probably every newcomer to Hibernate is struck by awe when seeing the "FETCH JOIN" in work and a few days is struck by anger only to see it fail with some obscure exceptions like:
 
@@ -61,9 +61,9 @@ Don't worry, although Hibernate is used for persistence, such thing never can ha
 You are still here? Well, then let's better get started!
 
 ## Contact & Support
-* Create a [GitHub issue](https://github.com/spot-next/spot-framework/issues) for bug reports, feature requests, or questions
+* Create a [GitHub issue](https://github.com/spot-next/core-next/issues) for bug reports, feature requests, or questions
 * Join [spot-next@gitter](https://gitter.im/spot-next/Lobby) for announcements
-* Add a ⭐️ [star on GitHub](https://github.com/spot-next/spot-framework) or ❤️ to support the project!
+* Add a ⭐️ [star on GitHub](https://github.com/spot-next/core-next) or ❤️ to support the project!
 
 
 ## License
@@ -71,6 +71,5 @@ This project is licensed under the [Apache 2.0 License](http://www.apache.org/li
 
 Copyright (c) 2018 Matthias Fuchs
 
-"spot next" and the "spot next" logo are a registered trademark of Matthias Fuchs
 
 

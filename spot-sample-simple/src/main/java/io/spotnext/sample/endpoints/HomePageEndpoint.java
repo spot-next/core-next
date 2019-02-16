@@ -106,6 +106,6 @@ public class HomePageEndpoint {
 		JpqlQuery<Party> partyQuery = new JpqlQuery<>(query, Party.class);
 		QueryResult<Party> result = queryService.query(partyQuery);
 
-		return result.getResultList();
+		return result.getResults();
 	}
 }

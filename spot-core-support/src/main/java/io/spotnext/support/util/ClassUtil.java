@@ -614,7 +614,7 @@ public class ClassUtil {
 		Constructor<T> matchingConstructor = null;
 
 		for (final Constructor<?> c : type.getDeclaredConstructors()) {
-			boolean found = true;
+			boolean found = c.getParameterCount() == constructorArgValues.size();
 
 			for (int i = 0; i < c.getParameterTypes().length; i++) {
 				if (c.getParameterCount() != constructorArgTypes.size()) {
@@ -696,7 +696,13 @@ public class ClassUtil {
 	 * @return the property value. If no matching getter is found, null is returned also.
 	 */
 	public static Object getProperty(Object object, String propertyName) {
-		return invokeMethod(object, createGetterMethodName(propertyName));
+		String methodName = createGetterMethodName(propertyName);
+
+		if (getMethodDefinition(object.getClass(), methodName).isPresent()) {
+			return invokeMethod(object, methodName);
+		} else {
+			return getField(object, propertyName, true);
+		}
 	}
 
 	/**
@@ -707,7 +713,13 @@ public class ClassUtil {
 	 * @param value        to write to the property. Missing setters are ignored.
 	 */
 	public static void setProperty(Object object, String propertyName, Object value) {
-		invokeMethod(object, createSetterMethodName(propertyName), value);
+		String methodName = createSetterMethodName(propertyName);
+
+		if (getMethodDefinition(object.getClass(), methodName).isPresent()) {
+			invokeMethod(object, methodName, value);
+		} else {
+			setField(object, propertyName, value);
+		}
 	}
 
 	private static String createGetterMethodName(String propertyName) {

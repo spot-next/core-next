@@ -5,7 +5,12 @@
 	<!-- atomic java types -->
 	<!-- primitive types -->
 	<atomic name="boolean" className="boolean" />
+	<atomic name="byte" className="byte" />
+	<atomic name="short" className="short" />
 	<atomic name="int" className="int" />
+	<atomic name="long" className="long" />
+	<atomic name="float" className="float" />
+	<atomic name="double" className="double" />
 	
 	<!-- complex types -->
 	<atomic name="String" className="java.lang.String" />
@@ -47,6 +52,7 @@
 		<description>The approval status, eg. of products or CMS items.</description>
 		<value code="APPROVED" />
 		<value code="UNAPPROVED" />
+		<value code="CHECK" />
 	</enum>
 
 	<enum name="DataFormat" package="io.spotnext.itemtype.core.enumeration">
@@ -81,6 +87,7 @@
 	<bean name="SerializationConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds serialization configuration and parameters.</description>
 		<properties>
+			<property name="serializeNulls" type="boolean" />
 			<property name="format" type="DataFormat">
 				<description>Specifies the serialization format.</description>
 				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>

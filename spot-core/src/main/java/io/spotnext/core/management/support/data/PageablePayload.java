@@ -1,69 +1,25 @@
 package io.spotnext.core.management.support.data;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import io.spotnext.core.persistence.query.QueryResult;
 
 /**
- * <p>PageablePayload class.</p>
+ * This is a wrapper for result data that supports pagination.
  *
  * @author mojo2012
  * @version 1.0
  * @since 1.0
  */
-public class PageablePayload<T> {
-	private final List<T> data;
-	private final int page;
-	private final int pageSize;
-	private final long totalCount;
+@JsonInclude(Include.NON_NULL)
+public class PageablePayload<T> extends QueryResult<T> {
 
-	/**
-	 * <p>Constructor for PageablePayload.</p>
-	 *
-	 * @param objects a {@link java.util.List} object.
-	 * @param page a int.
-	 * @param pageSize a int.
-	 */
-	public PageablePayload(final List<T> objects, final int page, final int pageSize, long totalCount) {
-		this.data = Collections.unmodifiableList(objects);
-		this.page = page;
-		this.pageSize = pageSize;
-		this.totalCount = totalCount;
-	}
-
-	/**
-	 * <p>Getter for the field <code>data</code>.</p>
-	 *
-	 * @return a {@link java.util.List} object.
-	 */
-	public List<T> getData() {
-		return data;
-	}
-
-	/**
-	 * <p>Getter for the field <code>page</code>.</p>
-	 *
-	 * @return a int.
-	 */
-	public int getPage() {
-		return page;
-	}
-
-	/**
-	 * <p>Getter for the field <code>pageSize</code>.</p>
-	 *
-	 * @return a int.
-	 */
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	/**
-	 * <p>Getter for the field <code>objectCount</code>.</p>
-	 *
-	 * @return a int.
-	 */
-	public long getTotalCount() {
-		return totalCount;
+	public PageablePayload(Collection<T> results, int page, int pageSize, Long totalCount) {
+		super(results.stream().collect(Collectors.toList()), page, pageSize, totalCount);
 	}
 
 }

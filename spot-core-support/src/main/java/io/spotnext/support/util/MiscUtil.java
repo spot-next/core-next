@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.LocaleUtils;
@@ -26,10 +27,27 @@ import io.spotnext.support.exception.UnsupportedLocale;
 public class MiscUtil {
 
 	/**
-	 * Calls close() on all given objects that implement the
-	 * {@link java.io.Closeable} interface. Doesn't throw any exceptions at all.
+	 * Calls close() on all given objects that implement the {@link AutoCloseable} interface. Doesn't throw any exceptions at all.
 	 *
-	 * @param closableObjects a {@link java.io.Closeable} object.
+	 * @param closableObjects a {@link AutoCloseable} object.
+	 */
+	public static void closeQuietly(final AutoCloseable... closableObjects) {
+		for (final AutoCloseable c : closableObjects) {
+			try {
+				if (c != null) {
+					c.close();
+				}
+			} catch (final Exception e) {
+				// LOG.log(Level.WARN, String.format("An error occured while closing %s",
+				// e.get));
+			}
+		}
+	}
+
+	/**
+	 * Calls close() on all given objects that implement the {@link Closeable} interface. Doesn't throw any exceptions at all.
+	 *
+	 * @param closableObjects a {@link Closeable} object.
 	 */
 	public static void closeQuietly(final Closeable... closableObjects) {
 		for (final Closeable c : closableObjects) {
@@ -51,11 +69,40 @@ public class MiscUtil {
 	 *
 	 * @param value        a {@link java.lang.String} object.
 	 * @param defaultValue a int.
-	 * @return a int.
+	 * @return the parsed int value, otherwise return the defaultValue.
 	 */
 	public static int intOrDefault(final String value, final int defaultValue) {
 		if (StringUtils.isNotBlank(value)) {
 			return Integer.parseInt(value);
+		}
+
+		return defaultValue;
+	}
+
+	/**
+	 * @param value        the input value
+	 * @param defaultValue the default value
+	 * @return the prased value if it is positive, otherwise return the defaultValue.
+	 */
+	public static int positiveIntOrDefault(final String value, final int defaultValue) {
+		if (StringUtils.isNotBlank(value)) {
+			int val = Integer.parseInt(value);
+			if (val >= 0) {
+				return val;
+			}
+		}
+
+		return defaultValue;
+	}
+
+	/**
+	 * @param value        the input value
+	 * @param defaultValue the default value
+	 * @return the original value if it is positive, otherwise return the defaultValue.
+	 */
+	public static int positiveIntOrDefault(final int value, final int defaultValue) {
+		if (value >= 0) {
+			return value;
 		}
 
 		return defaultValue;
@@ -147,8 +194,7 @@ public class MiscUtil {
 	 * parseLocale.
 	 * </p>
 	 *
-	 * @throws java.lang.IllegalStateException if the locale can be parsed but is
-	 *         not available/valid.
+	 * @throws java.lang.IllegalStateException if the locale can be parsed but is not available/valid.
 	 * @param localeString a {@link java.lang.String} object.
 	 * @return a {@link java.util.Locale} object.
 	 * @throws java.lang.IllegalStateException if any.
@@ -178,12 +224,9 @@ public class MiscUtil {
 	 * getCountryLocale.
 	 * </p>
 	 *
-	 * @param locale the locale that doesn't contain a country part, eg. for
-	 *               {@link java.util.Locale#ENGLISH}
-	 * @return a the corresponding locale with country part, eg.
-	 *         {@link java.util.Locale#UK}
-	 * @throws io.spotnext.support.exception.UnsupportedLocale when there is no
-	 *         country locale defined for the given locale.
+	 * @param locale the locale that doesn't contain a country part, eg. for {@link java.util.Locale#ENGLISH}
+	 * @return a the corresponding locale with country part, eg. {@link java.util.Locale#UK}
+	 * @throws io.spotnext.support.exception.UnsupportedLocale when there is no country locale defined for the given locale.
 	 * @throws io.spotnext.support.exception.UnsupportedLocale if any.
 	 */
 	public static Locale getCountryLocale(Locale locale) throws UnsupportedLocale {
@@ -214,11 +257,9 @@ public class MiscUtil {
 	}
 
 	/**
-	 * Evaluates the given expression in a null-safe way (even for nested
-	 * expressions)
+	 * Evaluates the given expression in a null-safe way (even for nested expressions)
 	 * <p>
-	 * Example: $(() -&gt; order.getOrderEntries().get(0).getCode()) will never fail
-	 * with a {@link java.lang.NullPointerException}!
+	 * Example: $(() -&gt; order.getOrderEntries().get(0).getCode()) will never fail with a {@link java.lang.NullPointerException}!
 	 * </p>
 	 *
 	 * @param expression the java expression to evaluate
@@ -234,12 +275,10 @@ public class MiscUtil {
 	}
 
 	/**
-	 * Basically the same as {@link #$(Supplier)} but instead of an empty
-	 * {@link java.util.Optional} it returns the given default value.
+	 * Basically the same as {@link #$(Supplier)} but instead of an empty {@link java.util.Optional} it returns the given default value.
 	 *
 	 * @param expression   the java expression to evaluate
-	 * @param defaultValue the default value to return in case of null (or an
-	 *                     {@link java.lang.NullPointerException}
+	 * @param defaultValue the default value to return in case of null (or an {@link java.lang.NullPointerException}
 	 * @return returns the evaluated result or the default value in case it's null
 	 * @param <T> a T object.
 	 */
@@ -253,5 +292,25 @@ public class MiscUtil {
 		}
 
 		return ret != null ? ret : defaultValue;
+	}
+
+	/**
+	 * Returns the given object if it is valid or the given default value if not.
+	 * 
+	 * @param object       to check
+	 * @param check        expression
+	 * @param defaultValue value to return in case the given object is not valid
+	 * @return either the original object or the fallback, depending on the check
+	 */
+	public static <T> T validOr(T object, Function<T, Boolean> check, Supplier<T> defaultValue) {
+		return check.apply(object) ? object : defaultValue.get();
+	}
+
+	public static boolean greaterThan(Number number, Number operand) {
+		if (number instanceof Comparable && operand instanceof Comparable) {
+			return ((Comparable<Number>) number).compareTo(operand) > 0;
+		}
+
+		throw new IllegalArgumentException("Arguments must be of type 'Comparable'");
 	}
 }

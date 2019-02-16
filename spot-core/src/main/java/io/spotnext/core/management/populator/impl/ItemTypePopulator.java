@@ -32,6 +32,7 @@ public class ItemTypePopulator<S extends ItemTypeDefinition, T extends GenericIt
 		target.setTypeClass(source.getTypeClass());
 		target.setPackageName(source.getPackageName());
 		target.setAbstract(source.isAbstract());
+		target.setPersistable(source.isPersistable());
 
 		for (final ItemTypePropertyDefinition member : source.getProperties().values()) {
 			target.addProperty(member);

@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 import io.spotnext.maven.velocity.JavaMethodModifier;
 
 /**
- * <p>JavaMethod class.</p>
- *
- * @since 1.0
+ * The method type both handles regular (static and instance) methods. But it also provides a way to add constructors, just don't add a return type.
  */
 public class JavaMethod extends JavaMember {
 	private static final long serialVersionUID = 1L;
@@ -22,7 +20,9 @@ public class JavaMethod extends JavaMember {
 	protected String codeBlock;
 
 	/**
-	 * <p>Getter for the field <code>codeBlock</code>.</p>
+	 * <p>
+	 * Getter for the field <code>codeBlock</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -31,7 +31,9 @@ public class JavaMethod extends JavaMember {
 	}
 
 	/**
-	 * <p>Setter for the field <code>codeBlock</code>.</p>
+	 * <p>
+	 * Setter for the field <code>codeBlock</code>.
+	 * </p>
 	 *
 	 * @param codeBlock a {@link java.lang.String} object.
 	 */
@@ -40,7 +42,9 @@ public class JavaMethod extends JavaMember {
 	}
 
 	/**
-	 * <p>Getter for the field <code>methodModifiers</code>.</p>
+	 * <p>
+	 * Getter for the field <code>methodModifiers</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Set} object.
 	 */
@@ -49,7 +53,9 @@ public class JavaMethod extends JavaMember {
 	}
 
 	/**
-	 * <p>addMethodModifier.</p>
+	 * <p>
+	 * addMethodModifier.
+	 * </p>
 	 *
 	 * @param modifier a {@link io.spotnext.maven.velocity.JavaMethodModifier} object.
 	 */
@@ -58,7 +64,9 @@ public class JavaMethod extends JavaMember {
 	}
 
 	/**
-	 * <p>addArgument.</p>
+	 * <p>
+	 * addArgument.
+	 * </p>
 	 *
 	 * @param name a {@link java.lang.String} object.
 	 * @param type a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
@@ -68,7 +76,20 @@ public class JavaMethod extends JavaMember {
 	}
 
 	/**
-	 * <p>Getter for the field <code>arguments</code>.</p>
+	 * <p>
+	 * addArgument.
+	 * </p>
+	 *
+	 * @param argument to add to the method.
+	 */
+	public void addArgument(JavaMethodArgument argument) {
+		this.arguments.add(argument);
+	}
+
+	/**
+	 * <p>
+	 * Getter for the field <code>arguments</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.List} object.
 	 */

@@ -68,7 +68,7 @@ package $packagePath;
 #end
 
 #javadoc($javadoc)
-@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({ "MF_CLASS_MASKS_FIELD", "EI_EXPOSE_REP", "EI_EXPOSE_REP2", "HE_EQUALS_NO_HASHCODE", "EQ_DOESNT_OVERRIDE_EQUALS" })
 #annotations($annotations)
 $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superClass.name)extends $superClass.name #end #if($interfaces) implements #interfaces($interfaces) #end  {
 	#if( ! $superclassName)	/** Default serialVersionUID value. */
@@ -88,9 +88,9 @@ $visibility.toLowerCase() #if ($abstract)abstract #end class $name #if($superCla
 	#foreach ($method in $methods)
 		#javadoc($method.javadoc)
 		#annotations($method.annotations)
-		$method.visibility.toLowerCase() #modifiers($method.methodModifiers) #modifiers($method.modifiers) $method.type.name#if($method.type.array) []#end #genericTypeArguments($method.type.genericArguments) $method.name (
+		$method.visibility.toLowerCase() #modifiers($method.methodModifiers) #modifiers($method.modifiers) #if($method.type) $method.type.name #if($method.type.array) []#end #end #genericTypeArguments($method.type.genericArguments) $method.name (
 			#foreach ( $arg in $method.arguments )
-				$arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
+				#annotations($arg.annotations) $arg.type.name#if($arg.type.array) []#end #genericTypeArguments($arg.type.genericArguments) $arg.name
 				#if( $foreach.hasNext ), #end
 			#end
 		) {

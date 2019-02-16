@@ -41,6 +41,7 @@ import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 import spark.Filter;
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
@@ -149,7 +150,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			}
 		} else {
 			// TODO: maybe restart the service?
-			Logger.debug("Ignoring context refresh event, as remote endpoints have already been started.");
+			Logger.debug(() -> "Ignoring context refresh event, as remote endpoints have already been started.");
 		}
 	}
 
@@ -180,7 +181,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	 *
 	 * @throws io.spotnext.core.management.exception.RemoteServiceInitException if any.
 	 */
-	//@SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
+	// @SuppressFBWarnings(value = { "REC_CATCH_EXCEPTION", "UI_INHERITANCE_UNSAFE_GETRESOURCE" })
 	public void init() throws RemoteServiceInitException {
 //		Security.addProvider(new OpenSSLProvider());
 //		sslContextFactory.setProvider("Conscrypt");
@@ -248,42 +249,50 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 							transformer = jsonResponseTransformer;
 						}
 
-						final String pathMapping = StringUtils.join(remoteEndpoint.pathMapping(), handler.pathMapping()).replace("//", "/");
+						final List<String> pathMappings = new ArrayList<>();
 
-						if (handler.method() == HttpMethod.trace) {
-							service.trace(pathMapping, mimeType, route, transformer);
+						for (String basePath : remoteEndpoint.pathMapping()) {
+							for (String path : handler.pathMapping()) {
+								pathMappings.add(StringUtils.join(basePath, path).replace("//", "/"));
+							}
 						}
 
-						if (handler.method() == HttpMethod.connect) {
-							service.connect(pathMapping, mimeType, route, transformer);
-						}
+						for (String pathMapping : pathMappings) {
+							if (handler.method() == HttpMethod.trace) {
+								service.trace(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.options) {
-							service.options(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.connect) {
+								service.connect(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.get) {
-							service.get(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.options) {
+								service.options(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.post) {
-							service.post(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.get) {
+								service.get(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.put) {
-							service.put(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.post) {
+								service.post(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.delete) {
-							service.delete(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.put) {
+								service.put(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.head) {
-							service.head(pathMapping, mimeType, route, transformer);
-						}
+							if (handler.method() == HttpMethod.delete) {
+								service.delete(pathMapping, mimeType, route, transformer);
+							}
 
-						if (handler.method() == HttpMethod.patch) {
-							service.patch(pathMapping, mimeType, route, transformer);
+							if (handler.method() == HttpMethod.head) {
+								service.head(pathMapping, mimeType, route, transformer);
+							}
+
+							if (handler.method() == HttpMethod.patch) {
+								service.patch(pathMapping, mimeType, route, transformer);
+							}
 						}
 					}
 				}
@@ -306,6 +315,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 					// session
 					setupSession(service, request, response);
 					setupLocale(request);
+					setupEncoding(request, response);
 					setupCorsHeaders(request, response);
 				});
 
@@ -326,7 +336,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 				service.after((request, response) -> {
 					cleanup();
-					setupEncoding(request, response);
+//					setupEncoding(request, response);
+//					response.raw().flushBuffer();
 				});
 
 				service.init();
@@ -338,6 +349,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 	protected void cleanup() {
 		HttpRequestHolder.clear();
+		persistenceService.evictCaches();
 		persistenceService.unbindSession();
 	}
 
@@ -395,7 +407,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		final String acceptEncoding = request.headers("Accept-Encoding");
 
 		if (StringUtils.containsAny(acceptEncoding, "gzip")) {
-			response.header("Content-Encoding", "gzip");
+			response.raw().addHeader("Content-Encoding", "gzip");
 		}
 	}
 
@@ -440,7 +452,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 			this.authenticationFilter = authenticationFilter;
 		}
 
-		//@SuppressFBWarnings("REC_CATCH_EXCEPTION")
+		// @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 		@Override
 		public Object handle(final Request request, final Response response) throws Exception {
 			response.type(contentType);
@@ -453,9 +465,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				}
 
 				ret = httpMethodImpl.invoke(serviceImpl, request, response);
+
+			} catch (HaltException e) {
+				// if this is thrown, the request will not be processed any further
+				throw e;
 			} catch (final Exception e) {
 				if (!(e instanceof AuthenticationException)) {
-					Logger.exception(e.getMessage(), e);
+					Logger.exception(StringUtils.defaultString(e.getMessage(), e.getClass().getName()), e);
 				}
 
 				Throwable realException = e;
@@ -468,7 +484,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				// wrap the exception and forward it to the response transformer
 				// there it will be handled appropriately
 				if (realException instanceof AuthenticationException) {
-					ret = ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException);
+					// return the authentication response or a generic exception response
+					ret = ((AuthenticationException) realException).getResponse()
+							.orElse(ExceptionResponse.withStatus(HttpStatus.UNAUTHORIZED, (Exception) realException));
 				} else if (realException instanceof Exception) {
 					ret = ExceptionResponse.internalServerError((Exception) realException);
 				} else {
@@ -489,13 +507,17 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 		 * @param responseBody
 		 */
 		protected Object processResponse(final Response response, final Object responseBody) {
-			if (responseBody instanceof HttpResponse) {
-				final HttpResponse body = (HttpResponse) responseBody;
-				response.status(body.getHttpStatus().value());
-				return body;
-			}
+			if (!response.raw().isCommitted()) {
+				if (responseBody instanceof HttpResponse) {
+					final HttpResponse body = (HttpResponse) responseBody;
+					response.status(body.getHttpStatus().value());
+					return body;
+				}
 
-			return responseBody;
+				return responseBody;
+			} else {
+				return null;
+			}
 		}
 	}
 

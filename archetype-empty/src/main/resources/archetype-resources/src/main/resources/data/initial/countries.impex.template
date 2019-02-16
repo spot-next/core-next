@@ -1,0 +1,242 @@
+INSERT Country ;iso3Code;isoCode;shortName[lang=en_GB]           ;phoneCountryCode
+               ;AFG     ;AF     ;Afghanistan                     ;93                   
+               ;ALB     ;AL     ;Albania                         ;355                  
+               ;DZA     ;DZ     ;Algeria                         ;213                  
+               ;ASM     ;AS     ;American Samoa                  ;1-684                
+               ;AND     ;AD     ;Andorra                         ;376                  
+               ;AGO     ;AO     ;Angola                          ;244                  
+               ;AIA     ;AI     ;Anguilla                        ;1-264                
+               ;ATA     ;AQ     ;Antarctica                      ;672                  
+               ;ATG     ;AG     ;Antigua and Barbuda             ;1-268                
+               ;ARG     ;AR     ;Argentina                       ;54                   
+               ;ARM     ;AM     ;Armenia                         ;374                  
+               ;ABW     ;AW     ;Aruba                           ;297                  
+               ;AUS     ;AU     ;Australia                       ;61                   
+               ;AUT     ;AT     ;Austria                         ;43                   
+               ;AZE     ;AZ     ;Azerbaijan                      ;994                  
+               ;BHS     ;BS     ;Bahamas                         ;1-242                
+               ;BHR     ;BH     ;Bahrain                         ;973                  
+               ;BGD     ;BD     ;Bangladesh                      ;880                  
+               ;BRB     ;BB     ;Barbados                        ;1-246                
+               ;BLR     ;BY     ;Belarus                         ;375                  
+               ;BEL     ;BE     ;Belgium                         ;32                   
+               ;BLZ     ;BZ     ;Belize                          ;501                  
+               ;BEN     ;BJ     ;Benin                           ;229                  
+               ;BMU     ;BM     ;Bermuda                         ;1-441                
+               ;BTN     ;BT     ;Bhutan                          ;975                  
+               ;BOL     ;BO     ;Bolivia                         ;591                  
+               ;BIH     ;BA     ;Bosnia and Herzegovina          ;387                  
+               ;BWA     ;BW     ;Botswana                        ;267                  
+               ;BRA     ;BR     ;Brazil                          ;55                   
+               ;IOT     ;IO     ;British Indian Ocean Territory  ;246                  
+               ;VGB     ;VG     ;British Virgin Islands          ;1-284                
+               ;BRN     ;BN     ;Brunei                          ;673                  
+               ;BGR     ;BG     ;Bulgaria                        ;359                  
+               ;BFA     ;BF     ;Burkina Faso                    ;226                  
+               ;BDI     ;BI     ;Burundi                         ;257                  
+               ;KHM     ;KH     ;Cambodia                        ;855                  
+               ;CMR     ;CM     ;Cameroon                        ;237                  
+               ;CAN     ;CA     ;Canada                          ;1                    
+               ;CPV     ;CV     ;Cape Verde                      ;238                  
+               ;CYM     ;KY     ;Cayman Islands                  ;1-345                
+               ;CAF     ;CF     ;Central African Republic        ;236                  
+               ;TCD     ;TD     ;Chad                            ;235                  
+               ;CHL     ;CL     ;Chile                           ;56                   
+               ;CHN     ;CN     ;China                           ;86                   
+               ;CXR     ;CX     ;Christmas Island                ;61                   
+               ;CCK     ;CC     ;Cocos Islands                   ;61                   
+               ;COL     ;CO     ;Colombia                        ;57                   
+               ;COM     ;KM     ;Comoros                         ;269                  
+               ;COK     ;CK     ;Cook Islands                    ;682                  
+               ;CRI     ;CR     ;Costa Rica                      ;506                  
+               ;HRV     ;HR     ;Croatia                         ;385                  
+               ;CUB     ;CU     ;Cuba                            ;53                   
+               ;CUW     ;CW     ;Curacao                         ;599                  
+               ;CYP     ;CY     ;Cyprus                          ;357                  
+               ;CZE     ;CZ     ;Czech Republic                  ;420                  
+               ;COD     ;CD     ;Democratic Republic of the Congo;243                  
+               ;DNK     ;DK     ;Denmark                         ;45                   
+               ;DJI     ;DJ     ;Djibouti                        ;253                  
+               ;DMA     ;DM     ;Dominica                        ;1-767                
+               ;DOM     ;DO     ;Dominican Republic              ;"1-809; 1-829; 1-849"
+               ;TLS     ;TL     ;East Timor                      ;670                  
+               ;ECU     ;EC     ;Ecuador                         ;593                  
+               ;EGY     ;EG     ;Egypt                           ;20                   
+               ;SLV     ;SV     ;El Salvador                     ;503                  
+               ;GNQ     ;GQ     ;Equatorial Guinea               ;240                  
+               ;ERI     ;ER     ;Eritrea                         ;291                  
+               ;EST     ;EE     ;Estonia                         ;372                  
+               ;ETH     ;ET     ;Ethiopia                        ;251                  
+               ;FLK     ;FK     ;Falkland Islands                ;500                  
+               ;FRO     ;FO     ;Faroe Islands                   ;298                  
+               ;FJI     ;FJ     ;Fiji                            ;679                  
+               ;FIN     ;FI     ;Finland                         ;358                  
+               ;FRA     ;FR     ;France                          ;33                   
+               ;PYF     ;PF     ;French Polynesia                ;689                  
+               ;GAB     ;GA     ;Gabon                           ;241                  
+               ;GMB     ;GM     ;Gambia                          ;220                  
+               ;GEO     ;GE     ;Georgia                         ;995                  
+               ;DEU     ;DE     ;Germany                         ;49                   
+               ;GHA     ;GH     ;Ghana                           ;233                  
+               ;GIB     ;GI     ;Gibraltar                       ;350                  
+               ;GRC     ;GR     ;Greece                          ;30                   
+               ;GRL     ;GL     ;Greenland                       ;299                  
+               ;GRD     ;GD     ;Grenada                         ;1-473                
+               ;GUM     ;GU     ;Guam                            ;1-671                
+               ;GTM     ;GT     ;Guatemala                       ;502                  
+               ;GGY     ;GG     ;Guernsey                        ;44-1481              
+               ;GIN     ;GN     ;Guinea                          ;224                  
+               ;GNB     ;GW     ;Guinea-Bissau                   ;245                  
+               ;GUY     ;GY     ;Guyana                          ;592                  
+               ;HTI     ;HT     ;Haiti                           ;509                  
+               ;HND     ;HN     ;Honduras                        ;504                  
+               ;HKG     ;HK     ;Hong Kong                       ;852                  
+               ;HUN     ;HU     ;Hungary                         ;36                   
+               ;ISL     ;IS     ;Iceland                         ;354                  
+               ;IND     ;IN     ;India                           ;91                   
+               ;IDN     ;ID     ;Indonesia                       ;62                   
+               ;IRN     ;IR     ;Iran                            ;98                   
+               ;IRQ     ;IQ     ;Iraq                            ;964                  
+               ;IRL     ;IE     ;Ireland                         ;353                  
+               ;IMN     ;IM     ;Isle of Man                     ;44-1624              
+               ;ISR     ;IL     ;Israel                          ;972                  
+               ;ITA     ;IT     ;Italy                           ;39                   
+               ;CIV     ;CI     ;Ivory Coast                     ;225                  
+               ;JAM     ;JM     ;Jamaica                         ;1-876                
+               ;JPN     ;JP     ;Japan                           ;81                   
+               ;JEY     ;JE     ;Jersey                          ;44-1534              
+               ;JOR     ;JO     ;Jordan                          ;962                  
+               ;KAZ     ;KZ     ;Kazakhstan                      ;7                    
+               ;KEN     ;KE     ;Kenya                           ;254                  
+               ;KIR     ;KI     ;Kiribati                        ;686                  
+               ;XKX     ;XK     ;Kosovo                          ;383                  
+               ;KWT     ;KW     ;Kuwait                          ;965                  
+               ;KGZ     ;KG     ;Kyrgyzstan                      ;996                  
+               ;LAO     ;LA     ;Laos                            ;856                  
+               ;LVA     ;LV     ;Latvia                          ;371                  
+               ;LBN     ;LB     ;Lebanon                         ;961                  
+               ;LSO     ;LS     ;Lesotho                         ;266                  
+               ;LBR     ;LR     ;Liberia                         ;231                  
+               ;LBY     ;LY     ;Libya                           ;218                  
+               ;LIE     ;LI     ;Liechtenstein                   ;423                  
+               ;LTU     ;LT     ;Lithuania                       ;370                  
+               ;LUX     ;LU     ;Luxembourg                      ;352                  
+               ;MAC     ;MO     ;Macau                           ;853                  
+               ;MKD     ;MK     ;Macedonia                       ;389                  
+               ;MDG     ;MG     ;Madagascar                      ;261                  
+               ;MWI     ;MW     ;Malawi                          ;265                  
+               ;MYS     ;MY     ;Malaysia                        ;60                   
+               ;MDV     ;MV     ;Maldives                        ;960                  
+               ;MLI     ;ML     ;Mali                            ;223                  
+               ;MLT     ;MT     ;Malta                           ;356                  
+               ;MHL     ;MH     ;Marshall Islands                ;692                  
+               ;MRT     ;MR     ;Mauritania                      ;222                  
+               ;MUS     ;MU     ;Mauritius                       ;230                  
+               ;MYT     ;YT     ;Mayotte                         ;262                  
+               ;MEX     ;MX     ;Mexico                          ;52                   
+               ;FSM     ;FM     ;Micronesia                      ;691                  
+               ;MDA     ;MD     ;Moldova                         ;373                  
+               ;MCO     ;MC     ;Monaco                          ;377                  
+               ;MNG     ;MN     ;Mongolia                        ;976                  
+               ;MNE     ;ME     ;Montenegro                      ;382                  
+               ;MSR     ;MS     ;Montserrat                      ;1-664                
+               ;MAR     ;MA     ;Morocco                         ;212                  
+               ;MOZ     ;MZ     ;Mozambique                      ;258                  
+               ;MMR     ;MM     ;Myanmar                         ;95                   
+               ;NAM     ;NA     ;Namibia                         ;264                  
+               ;NRU     ;NR     ;Nauru                           ;674                  
+               ;NPL     ;NP     ;Nepal                           ;977                  
+               ;NLD     ;NL     ;Netherlands                     ;31                   
+               ;ANT     ;AN     ;Netherlands Antilles            ;599                  
+               ;NCL     ;NC     ;New Caledonia                   ;687                  
+               ;NZL     ;NZ     ;New Zealand                     ;64                   
+               ;NIC     ;NI     ;Nicaragua                       ;505                  
+               ;NER     ;NE     ;Niger                           ;227                  
+               ;NGA     ;NG     ;Nigeria                         ;234                  
+               ;NIU     ;NU     ;Niue                            ;683                  
+               ;PRK     ;KP     ;North Korea                     ;850                  
+               ;MNP     ;MP     ;Northern Mariana Islands        ;1-670                
+               ;NOR     ;NO     ;Norway                          ;47                   
+               ;OMN     ;OM     ;Oman                            ;968                  
+               ;PAK     ;PK     ;Pakistan                        ;92                   
+               ;PLW     ;PW     ;Palau                           ;680                  
+               ;PSE     ;PS     ;Palestine                       ;970                  
+               ;PAN     ;PA     ;Panama                          ;507                  
+               ;PNG     ;PG     ;Papua New Guinea                ;675                  
+               ;PRY     ;PY     ;Paraguay                        ;595                  
+               ;PER     ;PE     ;Peru                            ;51                   
+               ;PHL     ;PH     ;Philippines                     ;63                   
+               ;PCN     ;PN     ;Pitcairn                        ;64                   
+               ;POL     ;PL     ;Poland                          ;48                   
+               ;PRT     ;PT     ;Portugal                        ;351                  
+               ;PRI     ;PR     ;Puerto Rico                     ;"1-787; 1-939"       
+               ;QAT     ;QA     ;Qatar                           ;974                  
+               ;COG     ;CG     ;Republic of the Congo           ;242                  
+               ;REU     ;RE     ;Reunion                         ;262                  
+               ;ROU     ;RO     ;Romania                         ;40                   
+               ;RUS     ;RU     ;Russia                          ;7                    
+               ;RWA     ;RW     ;Rwanda                          ;250                  
+               ;BLM     ;BL     ;Saint Barthelemy                ;590                  
+               ;SHN     ;SH     ;Saint Helena                    ;290                  
+               ;KNA     ;KN     ;Saint Kitts and Nevis           ;1-869                
+               ;LCA     ;LC     ;Saint Lucia                     ;1-758                
+               ;MAF     ;MF     ;Saint Martin                    ;590                  
+               ;SPM     ;PM     ;Saint Pierre and Miquelon       ;508                  
+               ;VCT     ;VC     ;Saint Vincent and the Grenadines;1-784                
+               ;WSM     ;WS     ;Samoa                           ;685                  
+               ;SMR     ;SM     ;San Marino                      ;378                  
+               ;STP     ;ST     ;Sao Tome and Principe           ;239                  
+               ;SAU     ;SA     ;Saudi Arabia                    ;966                  
+               ;SEN     ;SN     ;Senegal                         ;221                  
+               ;SRB     ;RS     ;Serbia                          ;381                  
+               ;SYC     ;SC     ;Seychelles                      ;248                  
+               ;SLE     ;SL     ;Sierra Leone                    ;232                  
+               ;SGP     ;SG     ;Singapore                       ;65                   
+               ;SXM     ;SX     ;Sint Maarten                    ;1-721                
+               ;SVK     ;SK     ;Slovakia                        ;421                  
+               ;SVN     ;SI     ;Slovenia                        ;386                  
+               ;SLB     ;SB     ;Solomon Islands                 ;677                  
+               ;SOM     ;SO     ;Somalia                         ;252                  
+               ;ZAF     ;ZA     ;South Africa                    ;27                   
+               ;KOR     ;KR     ;South Korea                     ;82                   
+               ;SSD     ;SS     ;South Sudan                     ;211                  
+               ;ESP     ;ES     ;Spain                           ;34                   
+               ;LKA     ;LK     ;Sri Lanka                       ;94                   
+               ;SDN     ;SD     ;Sudan                           ;249                  
+               ;SUR     ;SR     ;Suriname                        ;597                  
+               ;SJM     ;SJ     ;Svalbard and Jan Mayen          ;47                   
+               ;SWZ     ;SZ     ;Swaziland                       ;268                  
+               ;SWE     ;SE     ;Sweden                          ;46                   
+               ;CHE     ;CH     ;Switzerland                     ;41                   
+               ;SYR     ;SY     ;Syria                           ;963                  
+               ;TWN     ;TW     ;Taiwan                          ;886                  
+               ;TJK     ;TJ     ;Tajikistan                      ;992                  
+               ;TZA     ;TZ     ;Tanzania                        ;255                  
+               ;THA     ;TH     ;Thailand                        ;66                   
+               ;TGO     ;TG     ;Togo                            ;228                  
+               ;TKL     ;TK     ;Tokelau                         ;690                  
+               ;TON     ;TO     ;Tonga                           ;676                  
+               ;TTO     ;TT     ;Trinidad and Tobago             ;1-868                
+               ;TUN     ;TN     ;Tunisia                         ;216                  
+               ;TUR     ;TR     ;Turkey                          ;90                   
+               ;TKM     ;TM     ;Turkmenistan                    ;993                  
+               ;TCA     ;TC     ;Turks and Caicos Islands        ;1-649                
+               ;TUV     ;TV     ;Tuvalu                          ;688                  
+               ;VIR     ;VI     ;U.S. Virgin Islands             ;1-340                
+               ;UGA     ;UG     ;Uganda                          ;256                  
+               ;UKR     ;UA     ;Ukraine                         ;380                  
+               ;ARE     ;AE     ;United Arab Emirates            ;971                  
+               ;GBR     ;GB     ;United Kingdom                  ;44                   
+               ;USA     ;US     ;United States                   ;1                    
+               ;URY     ;UY     ;Uruguay                         ;598                  
+               ;UZB     ;UZ     ;Uzbekistan                      ;998                  
+               ;VUT     ;VU     ;Vanuatu                         ;678                  
+               ;VAT     ;VA     ;Vatican                         ;379                  
+               ;VEN     ;VE     ;Venezuela                       ;58                   
+               ;VNM     ;VN     ;Vietnam                         ;84                   
+               ;WLF     ;WF     ;Wallis and Futuna               ;681                  
+               ;ESH     ;EH     ;Western Sahara                  ;212                  
+               ;YEM     ;YE     ;Yemen                           ;967                  
+               ;ZMB     ;ZM     ;Zambia                          ;260                  
+               ;ZWE     ;ZW     ;Zimbabwe                        ;263                  
+               

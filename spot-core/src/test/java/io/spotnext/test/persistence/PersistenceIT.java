@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.OneToMany;
 import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
@@ -18,10 +19,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
 import io.spotnext.core.infrastructure.exception.ModelSaveException;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.persistence.service.SequenceGenerator;
 import io.spotnext.core.testing.AbstractIntegrationTest;
+import io.spotnext.core.testing.TestMocker;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
 import io.spotnext.itemtype.core.internationalization.Currency;
@@ -32,6 +35,9 @@ import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
 
 public class PersistenceIT extends AbstractIntegrationTest {
+
+	@Autowired
+	protected TestMocker testMocker;
 
 	@Autowired
 	protected SequenceGenerator sequenceGenerator;
@@ -109,7 +115,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Test
 	public void testLocalizedString() {
 		final Currency currency = modelService.create(Currency.class);
-		currency.setIsoCode("EUR");
+		currency.setIsoCode("USD");
 
 		final String german = "german";
 		final String english = "english";
@@ -237,7 +243,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Assert.assertEquals(localization.getUid(), loaded.getUid());
 
 		// test using map
-		Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
+		final Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
 		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
 
 		Assert.assertEquals(localization.getUid(), resultFromMap.getUid());
@@ -300,5 +306,47 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		}
 
 		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
+	}
+
+	/**
+	 * If the many side of a {@link OneToMany} relation has set its property to unique=true, it has to be removed when it is removed from the one-side's
+	 * collection property.
+	 */
+	@Test(expected = ModelNotFoundException.class)
+	public void testOneToManyWithUniqueConstraint() {
+		final Catalog catalog = testMocker.mockCatalog();
+
+		// this must trigger a cascade-remove on the many-side
+		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Staged".equals(v.getUid())).findFirst().get();
+		catalog.getVersions().remove(cvToDelete);
+
+		// should delete catalogversion, as the catalog is part of its unique key constraint
+		modelService.save(catalog);
+		modelService.refresh(catalog);
+
+		Assert.assertEquals(1, catalog.getVersions().size());
+
+		// throws an exception if already deleted
+		modelService.refresh(cvToDelete);
+	}
+
+	@Ignore
+	@Test(expected = ModelNotFoundException.class)
+	public void testOneToManyWithUniqueConstraint_WithReference() {
+		final Catalog catalog = testMocker.mockCatalog();
+
+		// this must trigger a cascade-remove on the many-side
+		// difference here is that the online catalog is referenced by the staged catalog from
+		final CatalogVersion cvToDelete = catalog.getVersions().stream().filter(v -> "Online".equals(v.getUid())).findFirst().get();
+		catalog.getVersions().remove(cvToDelete);
+
+		// should delete catalogversion, as the catalog is part of its unique key constraint
+		modelService.save(catalog);
+		modelService.refresh(catalog);
+
+		Assert.assertEquals(1, catalog.getVersions().size());
+
+		// throws an exception if already deleted
+		modelService.refresh(cvToDelete);
 	}
 }

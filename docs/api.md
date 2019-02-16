@@ -1,16 +1,16 @@
 # API documentation
 
 ## General architecture
-The general idea behind spot is that each subsystem of your application should be implemented as one microservice. Those microservices communicate via REST or any other remote protocol.
+The general idea behind core-next is that each subsystem of your application should be implemented as one microservice. Those microservices communicate via REST or any other remote protocol.
 There the whole framework is split into these three API blocks:
 * Persistence
 * Infrastructure
 * REST endpoint
 
-The infrastructure API provides facilities to implement the business logic. It handles serialization, conversion, internationalization, persistence etc. The CRUD REST endpoint offers a generic way to access the the stored domain objects. It can be used from other (spot) microservices.
+The infrastructure API provides facilities to implement the business logic. It handles serialization, conversion, internationalization, persistence etc. The CRUD REST endpoint offers a generic way to access the the stored domain objects. It can be used from other (core-next) microservices.
 
 ### Spring configuration
-The spot framework is build upon the Spring Boot framework. Every spot application has a main `Init` class that basically is just a **Spring application** class:
+The core-next framework is build upon the Spring Boot framework. Every core-next application has a main `Init` class that basically is just a **Spring application** class:
 
 ```java
 @DependsOn("coreInit")
@@ -57,7 +57,7 @@ All (merged) properties can be accessed using either:
 * `io.spotnext.core.infrastructure.service.ConfigurationService`'s methods like `getString()`
 
 #### Summary
-Aside from that, a spot application can be utilized as any regular Spring app.
+Aside from that, a core-next application can be utilized as any regular Spring app.
 
 ### Persistence layer
 The persistence layer is based on **Hibernate/JPA** - although its complexity is highly abstracted away. In contrast to a pure JPA approach entities are not created as Java classes and configured via XML or Annotations. Entities (or so called Item types) are generated based on type definitinos written in XML.
@@ -106,10 +106,10 @@ The most notable frameworks used are:
 * **Serialization**: Jackson
 * **HTTP endpoints**: [spark](http://sparkjava.com/)
 
-It is an advantage to have Spring know-how to make the best out of spot. You won't get into contact with Hibernate on the other hand. Hibernate's complexitiy is hidden - persistence operations are consolidated in the `ModelService`and `QueryService`.
+It is an advantage to have Spring know-how to make the best out of core-next. You won't get into contact with Hibernate on the other hand. Hibernate's complexitiy is hidden - persistence operations are consolidated in the `ModelService`and `QueryService`.
 
 ### Persistence operations
-One of the fundamental aspects of spot is the "everything is an object" mantra. Therefore one of the most important services is the `ModelService`. It provides basic functinality to handle `Item`s (also called "models", or "entities" in JPA).
+One of the fundamental aspects of core-next is the "everything is an object" mantra. Therefore one of the most important services is the `ModelService`. It provides basic functinality to handle `Item`s (also called "models", or "entities" in JPA).
 
 #### Item lifecycle
 The basic item lifecycle looks like this:
@@ -128,12 +128,12 @@ By extending the base class the new interceptor is registered in the interceptor
 
 A good example for a prepare interceptor is the `io.spotnext.core.infrastructure.interceptor.impl.UniqueIdItemSaveInterceptor`. It generates a unique "business key" for each item extending `UniqueIdItem`:
 
-[](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java ':include')
+[](https://raw.githubusercontent.com/spot-next/core-next/develop/spot-core/src/main/java/io/spotnext/core/infrastructure/interceptor/impl/UniqueIdItemSaveInterceptor.java ':include')
 
 #### Item modification events
 Interceptors are called synchronously and therefore have a high impact on the performance of persistence operations. So if you plan on doing some heavy work bound to a specific persistence operation, using `ItemModificationEvent`s is a better idea - they are called asynchronously. You can subscribe to such an event by using Spring's annotation-based handling mechanism:
 
-[PartyModificationListener](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-sample-simple/src/main/java/io/spotnext/sample/listeners/PartyModificationListener.java ':include')
+[PartyModificationListener](https://raw.githubusercontent.com/spot-next/core-next/develop/spot-sample-simple/src/main/java/io/spotnext/sample/listeners/PartyModificationListener.java ':include')
 
 The handled item can be accessed using `ItemModificationEvent.getItem()` (used in the condition SPEL expression). Furthermore the kind of modification is expose through `ItemModificationEvent.getModificationType()`.
 
@@ -327,13 +327,13 @@ The supported modifiers are:
 
 Here is a quick demonstration of references and default values:
 
-[users.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/initial/users.impex ':include')
+[users.impex](https://raw.githubusercontent.com/spot-next/core-next/develop/spot-core/src/main/resources/data/initial/users.impex ':include')
 
 ... and localized strings:
 
-[localized_strings.impex](https://raw.githubusercontent.com/spot-next/spot-framework/develop/spot-core/src/main/resources/data/test/localized_string.impex ':include')
+[localized_strings.impex](https://raw.githubusercontent.com/spot-next/core-next/develop/spot-core/src/main/resources/data/test/localized_string.impex ':include')
 
-More examples can be found [**here**](https://github.com/spot-next/spot-framework/tree/develop/spot-core/src/main/resources/data/test)
+More examples can be found [**here**](https://github.com/spot-next/core-next/tree/develop/spot-core/src/main/resources/data/test)
 
 The `ImpportService` API looks like:
 ```java
@@ -349,7 +349,7 @@ The `ImportConfiguration` can be configured:
 * `ignoreErrors`: if true, errors (like unresolvable item references) are ignored (although logged) and as many as possible items are being imported. By default this is disabled though.
 * `scriptIdentifier`: is optional, but can be useful for debugging purposes (in the logs)
 
-> During **system initialization** botj the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
+> During **system initialization** both the essential and the sample data are imported using this functionality, eg. in `CoreInit`. Every custom `Init` class has to implement these methods:
 
 ```java
 @Override
@@ -367,6 +367,20 @@ For conventience the `ModuleInit.importScript` method can be used:
 ```java
 ModuleInit.importScript("/data/initial/countries.impex", "Importing countries");
 ```
+
+The core system contains the following impex files:
+* Initial data:
+** catalogs.impex
+** countries.impex
+** currencies.impex
+** languages.impex
+** users.impex
+* Sample data:
+** medias.impex
+** users.impex
+
+If any of these files exists in the custom project as well (in the correct folder!), it overrides the original files provided by the framework. So if you need to import "users" but don't want to override the default `users.impex`, just add a custom prefix to the impex file name.
+
 ### Other Services
 #### Localization & internationalization
 
@@ -411,7 +425,7 @@ These defintions look like this:
 ```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+	xsi:noNamespaceSchemaLocation="http://core-next.io/schemas/v2/itemtypes.xsd">
 
     <atomic name="String" className="java.lang.String" />
 

@@ -51,7 +51,7 @@ public @interface RemoteEndpoint {
 	 * 
 	 * @return the URL path that will be handled.
 	 */
-	String pathMapping() default "";
+	String[] pathMapping() default "";
 
 	/**
 	 * Defines the filter that is used authenticate incoming requests. By default

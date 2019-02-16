@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
@@ -36,6 +35,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import io.spotnext.infrastructure.IdGenerator;
+import io.spotnext.infrastructure.IndirectPropertyAccess;
 import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
 import io.spotnext.support.util.ClassUtil;
@@ -47,7 +47,7 @@ import io.spotnext.support.util.ClassUtil;
 @MappedSuperclass
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
-public abstract class Item implements Serializable, Comparable<Item> {
+public abstract class Item implements Serializable, Comparable<Item>, IndirectPropertyAccess {
 
 	private static final long serialVersionUID = 1L;
 	public static final String TYPECODE = "item";
@@ -211,52 +211,14 @@ public abstract class Item implements Serializable, Comparable<Item> {
 	 * @return all filtered item properties
 	 */
 	public Map<String, Object> getProperties(BiPredicate<Field, Object> filter) {
+		// TODO is this really necessary?
 		if (this instanceof HibernateProxy) {
 			if (!Hibernate.isInitialized(this)) {
 				Hibernate.initialize(this);
 			}
 		}
 
-		final Map<String, Object> props = new HashMap<>();
-
-		for (final Field field : ClassUtil.getFieldsWithAnnotation(this.getClass(), Property.class)) {
-			final Object propertyValue = ClassUtil.getField(this, field.getName(), true);
-
-			if (filter == null || filter.test(field, propertyValue)) {
-				props.put(field.getName(), propertyValue);
-			}
-		}
-
-		return props;
-	}
-	
-	/**
-	 * Returns all fields annotated with the {@link Property} annotation.
-	 * 
-	 * @return all item properties
-	 */
-	public Map<String, Object> getProperties() {
-		return getProperties(null);
-	}
-
-	/**
-	 * Gets the property value for the given property name.
-	 * 
-	 * @param propertyName of the field to get the value from
-	 * @return the field value
-	 */
-	public Object get(String propertyName) {
-		return ClassUtil.getProperty(this, propertyName);
-	}
-
-	/**
-	 * Sets the given property value. Unknown properties are ignored.
-	 * 
-	 * @param propertyName the name of the property to write to
-	 * @param value        the property value
-	 */
-	public void set(String propertyName, Object value) {
-		ClassUtil.setProperty(this, propertyName, value);
+		return IndirectPropertyAccess.super.getProperties(filter);
 	}
 
 	private boolean isUniqueField(Field field, Object fieldValue) {

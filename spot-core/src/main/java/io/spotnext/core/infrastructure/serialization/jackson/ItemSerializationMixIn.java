@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
+import io.spotnext.infrastructure.type.Item;
+
 /**
  * <p>
  * Abstract ItemSerializationMixIn class.
@@ -18,7 +20,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
  * @version 1.0
  * @since 1.0
  */
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.ANY, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
 @JsonPropertyOrder({ "typeCode", "id", "version", "createdAt", "createdBy", "lastModifiedAt", "lastModifiedBy" })
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })

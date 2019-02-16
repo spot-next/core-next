@@ -8,10 +8,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.annotation.logging.Log;
@@ -194,7 +194,7 @@ public abstract class AbstractModelService extends AbstractService implements Mo
 			throw new ModelValidationException(message, errors);
 		}
 
-		// travers all properties recursively and check field values of type Item
+		// traverse all properties recursively and check field values of type Item
 		ClassUtil.visitFields(item, (field) -> Item.class.isAssignableFrom(field.getType()),
 				(field, subItem) -> validateModel((Item) subItem), true);
 	}

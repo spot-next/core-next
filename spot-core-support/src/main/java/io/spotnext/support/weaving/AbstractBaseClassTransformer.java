@@ -56,6 +56,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 	protected final List<String> classPaths = new ArrayList<>();
 	protected Consumer<Throwable> errorLogger = null;
+	protected ClassPool classPool;
 
 	/** {@inheritDoc} */
 	@Override
@@ -63,7 +64,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
 			final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException {
 
-		final ClassPool classPool = new ClassPool(ClassPool.getDefault());
+		classPool = new ClassPool(ClassPool.getDefault());
 		classPool.childFirstLookup = true;
 		classPool.appendClassPath(new LoaderClassPath(Thread.currentThread().getContextClassLoader()));
 		classPool.appendSystemPath();
@@ -129,7 +130,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	 * @return true if not filtered out by the above definition.
 	 */
 	protected boolean isValidClass(final String className) {
-		return className.contains(".") && !className.contains("$Proxy") && !className.contains("sun/reflect")
+		return className.contains(".") && !className.contains("jdk.internal") && !className.contains("$Proxy") && !className.contains("sun/reflect")
 				&& !className.contains("java.lang");
 	}
 
@@ -352,6 +353,26 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		allAnnotations.addAll(annotations);
 
 		final AttributeInfo info = clazz.getClassFile().getAttribute(AnnotationsAttribute.visibleTag);
+
+		if (info != null && info instanceof AnnotationsAttribute) {
+			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;
+			attInfo.setAnnotations(allAnnotations.toArray(new Annotation[0]));
+		}
+	}
+
+	/**
+	 * Adds the given annotations to the given method.
+	 *
+	 * @param method      to which the annotation should be added
+	 * @param annotations the non-null collection of all annotations to add
+	 * @throws IllegalClassTransformationException if any.
+	 */
+	protected void addAnnotations(final CtMethod method, final List<Annotation> annotations)
+			throws IllegalClassTransformationException {
+		final List<Annotation> allAnnotations = new ArrayList<>(getAnnotations(method));
+		allAnnotations.addAll(annotations);
+
+		final AttributeInfo info = method.getMethodInfo2().getAttribute(AnnotationsAttribute.visibleTag);
 
 		if (info != null && info instanceof AnnotationsAttribute) {
 			final AnnotationsAttribute attInfo = (AnnotationsAttribute) info;

@@ -3,8 +3,12 @@ package io.spotnext.core.infrastructure.support.impex;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
+
 /**
- * <p>ColumnDefinition class.</p>
+ * <p>
+ * ColumnDefinition class.
+ * </p>
  *
  * @author mojo2012
  * @version 1.0
@@ -15,10 +19,12 @@ public class ColumnDefinition {
 	private String columnName;
 	private final Map<String, String> modifiers = new HashMap<>();
 	private String valueResolutionDescriptor;
-	private Class<?> columnType;
+	private ItemTypePropertyDefinition propertyDefinition;
 
 	/**
-	 * <p>getPropertyName.</p>
+	 * <p>
+	 * getPropertyName.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -27,7 +33,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>setPropertyName.</p>
+	 * <p>
+	 * setPropertyName.
+	 * </p>
 	 *
 	 * @param propertyName a {@link java.lang.String} object.
 	 */
@@ -36,7 +44,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>modifiers</code>.</p>
+	 * <p>
+	 * Getter for the field <code>modifiers</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.util.Map} object.
 	 */
@@ -45,7 +55,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>addModifier.</p>
+	 * <p>
+	 * addModifier.
+	 * </p>
 	 *
 	 * @param key a {@link java.lang.String} object.
 	 * @param value a {@link java.lang.String} object.
@@ -55,7 +67,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>addModifiers.</p>
+	 * <p>
+	 * addModifiers.
+	 * </p>
 	 *
 	 * @param parseModifiers a {@link java.util.Map} object.
 	 */
@@ -64,7 +78,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>Setter for the field <code>valueResolutionDescriptor</code>.</p>
+	 * <p>
+	 * Setter for the field <code>valueResolutionDescriptor</code>.
+	 * </p>
 	 *
 	 * @param valueResolutionDescriptor a {@link java.lang.String} object.
 	 */
@@ -73,7 +89,9 @@ public class ColumnDefinition {
 	}
 
 	/**
-	 * <p>Getter for the field <code>valueResolutionDescriptor</code>.</p>
+	 * <p>
+	 * Getter for the field <code>valueResolutionDescriptor</code>.
+	 * </p>
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
@@ -87,16 +105,23 @@ public class ColumnDefinition {
 	 * @return a {@link java.lang.Class} object.
 	 */
 	public Class<?> getColumnType() {
-		return columnType;
+		return propertyDefinition != null ? propertyDefinition.getReturnType() : null;
 	}
 
-	/**
-	 * <p>Setter for the field <code>columnType</code>.</p>
-	 *
-	 * @param columnType a {@link java.lang.Class} object.
-	 */
-	public void setColumnType(Class<?> columnType) {
-		this.columnType = columnType;
+	public String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
+
+	public ItemTypePropertyDefinition getPropertyDefinition() {
+		return propertyDefinition;
+	}
+
+	public void setPropertyDefinition(ItemTypePropertyDefinition propertyDefinition) {
+		this.propertyDefinition = propertyDefinition;
 	}
 
 }
