@@ -76,12 +76,25 @@
 			<property name="discounts" type="DiscountDataList" />
 		</properties>
 	</bean>
+	
+	<bean name="OrderEntryData" extends="AbstractOrderEntryData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+		</properties>
+	</bean>
+
+	<bean name="CartEntryData" extends="AbstractOrderEntryData" package="io.spotnext.itemtype.commerce.order">
+		<properties>
+		</properties>
+	</bean>
+	
 
 	<bean name="ProductData" package="io.spotnext.itemtype.commerce.order">
 		<properties>
 			<property name="uid" type="String" />
-			<property name="name" type="int" />
-			<property name="description" type="ProductData" />
+			<property name="name" type="String" />
+			<property name="description" type="String" />
+			<property name="price" type="double" />
+			<property name="strikethroughPrice" type="double" />
 		</properties>
 	</bean>
 
@@ -160,10 +173,17 @@
 	<type name="Category" package="io.spotnext.itemtype.commerce.catalog" extends="CatalogItem">
 		<description>Categories are used to group products.</description>
 		<properties>
+			<property name="name" type="LocalizedString" />
+			<property name="description" type="LocalizedString" />
+		</properties>
+	</type>
+
+	<type name="Manufacturer" package="io.spotnext.itemtype.commerce.catalog" extends="UniqueIdItem">
+		<properties>
 			<property name="name" type="LocalizedString">
+				<description>The localized name of the manufacturer.</description>
 			</property>
-			<property name="description" type="LocalizedString">
-			</property>
+			<property name="logo" type="ImageMedia" />
 		</properties>
 	</type>
 
@@ -366,6 +386,14 @@
 		<description>The categories that are included as sub categories.</description>
 		<source cardinality="many" itemType="Category" mappedBy="superCategories" />
 		<target cardinality="many" itemType="Category" mappedBy="subCategories" />
+	</relation>
+	
+	<relation name="Product2Manufacturer">
+		<description>The categories the product is referenced by.</description>
+		<source cardinality="many" itemType="Product" mappedBy="products" />
+		<target cardinality="one" itemType="Manufacturer" mappedBy="manufacturer">
+			<description>The manufacturer of the product.</description>
+		</target>
 	</relation>
 
 	<relation name="AbstractOrder2AbstractOrderEntry">
