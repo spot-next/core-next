@@ -161,20 +161,21 @@ public class DefaultCartService extends AbstractService implements CartService {
 		CartModificationResult result = new CartModificationResult();
 
 		switch (modificationData.getOperation()) {
-		case UPDATE_ENTRY:
-			if (modificationData.getQuantity() > 0 && entry.isPresent()) {
-				addModifiedCartEntries(result,
-						updateCart(cart, entry.get().getEntryNumber(), entry.get().getProduct().getUid(), modificationData.getQuantity()));
-				break;
-			}
-
-			// fall through in case an entry number was specified
 		case ADD_ENTRY:
-			if (modificationData.getQuantity() > 0) {
+			if (modificationData.getQuantity() > 0 && entry.isEmpty()) {
 				addModifiedCartEntries(result, addToCart(cart, modificationData.getProductId(), modificationData.getQuantity()));
 			}
 
 			// fall through because quantity 0 also means delete!
+		case UPDATE_ENTRY:
+			if (modificationData.getQuantity() > 0 && entry.isPresent()) {
+				int newQuantity = entry.get().getQuantity() + modificationData.getQuantity();
+
+				addModifiedCartEntries(result, updateCart(cart, entry.get().getEntryNumber(), entry.get().getProduct().getUid(), newQuantity));
+				break;
+			}
+
+			// fall through in case an entry number was specified
 		case REMOVE_ENTRY:
 			if (entry.isPresent()) {
 				addModifiedCartEntries(result, removeFromCart(cart, entry.get().getEntryNumber()));

@@ -1,5 +1,7 @@
 package io.spotnext.commerce.facade.impl;
 
+import static io.spotnext.support.util.MiscUtil.$;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,7 +20,6 @@ import io.spotnext.itemtype.commerce.order.CartEntryData;
 import io.spotnext.itemtype.commerce.order.CartModification;
 import io.spotnext.itemtype.commerce.order.CartModificationResult;
 import io.spotnext.itemtype.commerce.order.ProductData;
-import static io.spotnext.support.util.MiscUtil.$;
 
 public class DefaultCartFacade extends AbstractFacade implements CartFacade {
 
@@ -68,5 +69,10 @@ public class DefaultCartFacade extends AbstractFacade implements CartFacade {
 		data.setProduct(product);
 
 		return data;
+	}
+
+	@Override
+	public int getCurrentAmountOfCartItems() {
+		return getCurrentCart().getEntries().stream().mapToInt(e -> e.getQuantity()).sum();
 	}
 }

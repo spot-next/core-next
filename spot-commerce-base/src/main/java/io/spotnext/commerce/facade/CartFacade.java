@@ -23,4 +23,9 @@ public interface CartFacade {
 	 * @return can never be null
 	 */
 	CartData getCurrentCart();
+
+	/**
+	 * @return the amount of all items in the current session cart.
+	 */
+	int getCurrentAmountOfCartItems();
 }
