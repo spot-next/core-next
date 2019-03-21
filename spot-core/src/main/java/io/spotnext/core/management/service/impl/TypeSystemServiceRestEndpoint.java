@@ -20,7 +20,7 @@ import io.spotnext.core.management.support.data.PageablePayload;
 import io.spotnext.core.management.transformer.JsonResponseTransformer;
 import io.spotnext.core.persistence.query.Pageable;
 import io.spotnext.infrastructure.type.ItemTypeDefinition;
-import io.spotnext.support.util.ClassUtil;
+import io.spotnext.support.util.Comparators;
 import io.spotnext.support.util.MiscUtil;
 import spark.Request;
 import spark.Response;
@@ -79,18 +79,7 @@ public class TypeSystemServiceRestEndpoint extends AbstractRestEndpoint {
 		final String field = sort.length > 0 ? StringUtils.defaultIfBlank(sort[0], "typeCode") : "typeCode";
 		final boolean descending = sort.length > 1 ? "DESC".equals(StringUtils.trimToEmpty(sort[1])) : false;
 
-		Comparator<GenericItemDefinitionData> comparator = new Comparator<>() {
-			public int compare(GenericItemDefinitionData o1, GenericItemDefinitionData o2) {
-				Object fieldValue1 = ClassUtil.getField(o1, field, true);
-				Object fieldValue2 = ClassUtil.getField(o2, field, true);
-
-				if (fieldValue1 instanceof Comparable && fieldValue2 instanceof Comparable) {
-					return (descending ? -1 : 1) * ((Comparable) fieldValue1).compareTo(fieldValue2);
-				}
-
-				return 0;
-			};
-		};
+		Comparator<GenericItemDefinitionData> comparator = Comparators.propertyBasedComparator(field, !descending);
 
 		return comparator;
 	}
