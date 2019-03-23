@@ -13,8 +13,11 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -45,7 +48,8 @@ import io.spotnext.support.util.ClassUtil;
 // JPA
 @Cacheable
 @MappedSuperclass
-// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(length = 100)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
 public abstract class Item implements Serializable, Comparable<Item>, IndirectPropertyAccess {
 
@@ -165,6 +169,14 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 
 	public void setCreatedBy(final String createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
 	}
 
 	public void setLastModifiedBy(final String lastModifiedBy) {

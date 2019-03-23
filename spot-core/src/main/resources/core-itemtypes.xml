@@ -38,6 +38,9 @@
 	<collection name="DoubleList" elementType="Double" />
 	<collection name="FloatList" elementType="Float" />
 	<collection name="UserRoleList" elementType="UserRole" />
+	<collection name="CockpitColumnListViewConfigurationList" elementType="CockpitColumnListViewConfiguration" />
+	<collection name="CockpitColumnSearchViewConfigurationList" elementType="CockpitColumnSearchViewConfiguration" />
+	
 
 	<!-- enums -->
 
@@ -61,7 +64,22 @@
 		<value code="JSON" />
 		<value code="XML" />
 	</enum>
+	
+	<enum name="SortOrder" package="io.spotnext.itemtype.core.enumeration">
+		<value code="ASCENDING" value="ASC" />
+		<value code="DESCENDING" value="DESC" />
+	</enum>
 
+	<enum name="SearchOperator" package="io.spotnext.itemtype.core.enumeration">
+		<value code="EQUALS" />
+		<value code="NOT_EQUALS" />
+		<value code="CONTAINS" />
+		<value code="NOT_CONTAINS" />
+		<value code="STARTS_WITH" />
+		<value code="ENDS_WITH" />
+	</enum>	
+	
+	
 	<bean name="ImportConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
 		<properties>
@@ -468,6 +486,53 @@
 			</property>
 		</properties>
 	</type>
+	
+	<!-- COCKPIT CONFIGURATION TYPES -->
+	
+	<type name="CockpitTypeConfiguration" package="io.spotnext.itemtype.core.cockpit"
+		extends="UniqueIdItem">
+		<properties>
+			<property name="listColumns" type="CockpitColumnListViewConfigurationList" />
+			<property name="searchColumns" type="CockpitColumnSearchViewConfigurationList" />
+		</properties>
+	</type>
+	
+	<type name="AbstractCockpitColumnConfiguration" abstract="true" package="io.spotnext.itemtype.core.cockpit"
+		extends="UniqueIdItem">
+		<properties>
+			<property name="columnName" type="String" />
+			<property name="name" type="LocalizedString" localized="true" />
+		</properties>
+	</type>
+	
+	<type name="CockpitColumnListViewConfiguration" package="io.spotnext.itemtype.core.cockpit"
+		extends="AbstractCockpitColumnConfiguration">
+		<properties>
+			<property name="sortOrder" type="SortOrder" />
+			<property name="sortable" type="boolean" />
+		</properties>
+	</type>
+	
+	<type name="CockpitColumnSearchViewConfiguration" package="io.spotnext.itemtype.core.cockpit"
+		extends="AbstractCockpitColumnConfiguration">
+		<properties>
+			<property name="operator" type="SearchOperator" />
+		</properties>
+	</type>
+	
+<!-- 	<type name="CockpitTypeConfiguration" package="io.spotnext.itemtype.core.cockpit" -->
+<!-- 		extends="UniqueIdItem"> -->
+<!-- 		<properties> -->
+<!-- 			<property name="stringValue" type="String" /> -->
+<!-- 			<property name="intValue" type="Integer" /> -->
+<!-- 			<property name="longValue" type="Long" /> -->
+<!-- 			<property name="doubleValue" type="Double" /> -->
+<!-- 			<property name="floatValue" type="Float" /> -->
+<!-- 			<property name="description" type="String"> -->
+<!-- 				<description>The short description of the configuration entry's purpose.</description> -->
+<!-- 			</property> -->
+<!-- 		</properties> -->
+<!-- 	</type> -->
 
 	<!-- RELATIONS -->
 
