@@ -172,7 +172,7 @@
 	<xs:complexType name="ItemType">
 		<xs:complexContent>
 			<xs:extension base="JavaType">
-				<xs:attribute name="typeCode" type="xs:string" use="optional">
+				<xs:attribute name="typeCode" type="TypeCode" use="optional">
 					<xs:annotation>
 						<xs:documentation>
 							The internal code of the item type, used for
@@ -192,6 +192,14 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+
+
+	<xs:simpleType name="TypeCode">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1" />
+			<xs:maxLength value="31" />
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="DefaultValue" mixed="true">
 		<xs:attribute name="value" use="optional" type="xs:string" />
