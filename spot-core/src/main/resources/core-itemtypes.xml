@@ -505,7 +505,7 @@
 		</properties>
 	</type>
 	
-	<type name="CockpitColumnListViewConfiguration" package="io.spotnext.itemtype.core.cockpit"
+	<type name="CockpitColumnListViewConfiguration" typeCode="CockpitColumnListViewConfig" package="io.spotnext.itemtype.core.cockpit"
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="sortOrder" type="SortOrder" />
@@ -513,7 +513,7 @@
 		</properties>
 	</type>
 	
-	<type name="CockpitColumnSearchViewConfiguration" package="io.spotnext.itemtype.core.cockpit"
+	<type name="CockpitColumnSearchViewConfiguration" typeCode="CockpitColumnSearchViewConfig" package="io.spotnext.itemtype.core.cockpit"
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="operator" type="SearchOperator" />
