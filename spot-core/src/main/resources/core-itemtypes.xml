@@ -38,8 +38,8 @@
 	<collection name="DoubleList" elementType="Double" />
 	<collection name="FloatList" elementType="Float" />
 	<collection name="UserRoleList" elementType="UserRole" />
-	<collection name="CockpitColumnListViewConfigurationList" elementType="CockpitColumnListViewConfiguration" />
-	<collection name="CockpitColumnSearchViewConfigurationList" elementType="CockpitColumnSearchViewConfiguration" />
+	<collection name="CockpitColumnListViewConfigList" elementType="CockpitColumnListViewConfig" />
+	<collection name="CockpitColumnSearchViewConfigList" elementType="CockpitColumnSearchViewConfig" />
 	
 
 	<!-- enums -->
@@ -68,6 +68,7 @@
 	<enum name="SortOrder" package="io.spotnext.itemtype.core.enumeration">
 		<value code="ASCENDING" value="ASC" />
 		<value code="DESCENDING" value="DESC" />
+		<value code="UNSORTED" value="UNSORTED" />
 	</enum>
 
 	<enum name="SearchOperator" package="io.spotnext.itemtype.core.enumeration">
@@ -492,8 +493,9 @@
 	<type name="CockpitTypeConfiguration" package="io.spotnext.itemtype.core.cockpit"
 		extends="UniqueIdItem">
 		<properties>
-			<property name="listColumns" type="CockpitColumnListViewConfigurationList" />
-			<property name="searchColumns" type="CockpitColumnSearchViewConfigurationList" />
+			<property name="owner" type="Principal" />
+			<property name="listColumns" type="CockpitColumnListViewConfigList" />
+			<property name="searchColumns" type="CockpitColumnSearchViewConfigList" />
 		</properties>
 	</type>
 	
@@ -502,10 +504,11 @@
 		<properties>
 			<property name="columnName" type="String" />
 			<property name="name" type="LocalizedString" localized="true" />
+			<property name="position" type="int" />
 		</properties>
 	</type>
 	
-	<type name="CockpitColumnListViewConfiguration" typeCode="CockpitColumnListViewConfig" package="io.spotnext.itemtype.core.cockpit"
+	<type name="CockpitColumnListViewConfig" package="io.spotnext.itemtype.core.cockpit"
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="sortOrder" type="SortOrder" />
@@ -513,7 +516,7 @@
 		</properties>
 	</type>
 	
-	<type name="CockpitColumnSearchViewConfiguration" typeCode="CockpitColumnSearchViewConfig" package="io.spotnext.itemtype.core.cockpit"
+	<type name="CockpitColumnSearchViewConfig" package="io.spotnext.itemtype.core.cockpit"
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="operator" type="SearchOperator" />

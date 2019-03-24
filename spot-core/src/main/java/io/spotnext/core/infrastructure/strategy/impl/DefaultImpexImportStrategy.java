@@ -625,7 +625,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				ret = resolvedValues;
 
 				for (final String v : collectionValues) {
-					resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition, itemReferences));
+					resolvedValues.add(resolveSingleValue(v.trim(), genericArguments.get(0), columnDefinition, itemReferences));
 				}
 			} else if (Map.class.isAssignableFrom(type)) {
 				final String[] mapEntryValues = val.split(COLLECTION_VALUE_SEPARATOR);

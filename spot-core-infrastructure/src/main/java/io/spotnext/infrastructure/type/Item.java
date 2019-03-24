@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -48,7 +47,6 @@ import io.spotnext.support.util.ClassUtil;
 // JPA
 @Cacheable
 @MappedSuperclass
-@DiscriminatorColumn(length = 100)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
 public abstract class Item implements Serializable, Comparable<Item>, IndirectPropertyAccess {
