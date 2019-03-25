@@ -505,6 +505,7 @@
 			<property name="columnName" type="String" />
 			<property name="name" type="LocalizedString" localized="true" />
 			<property name="position" type="int" />
+			<property name="visible" type="boolean" />
 		</properties>
 	</type>
 	
@@ -520,7 +521,6 @@
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="operator" type="SearchOperator" />
-			<property name="visible" type="boolean" />
 		</properties>
 	</type>
 	

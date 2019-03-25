@@ -986,6 +986,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			throws IOException, MojoExecutionException {
 
 		for (final AbstractComplexJavaType type : types) {
+			if (StringUtils.isBlank(type.getPackagePath())) {
+				throw new MojoExecutionException(String.format("Type %s has no package defined", type.getName()));
+			}
+
 			final String srcPackagePath = type.getPackagePath().replace(".", File.separator);
 
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
