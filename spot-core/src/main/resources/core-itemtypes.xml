@@ -520,6 +520,7 @@
 		extends="AbstractCockpitColumnConfiguration">
 		<properties>
 			<property name="operator" type="SearchOperator" />
+			<property name="visible" type="boolean" />
 		</properties>
 	</type>
 	
