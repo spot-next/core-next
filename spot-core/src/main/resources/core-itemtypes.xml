@@ -38,8 +38,6 @@
 	<collection name="DoubleList" elementType="Double" />
 	<collection name="FloatList" elementType="Float" />
 	<collection name="UserRoleList" elementType="UserRole" />
-	<collection name="CockpitColumnListViewConfigList" elementType="CockpitColumnListViewConfig" />
-	<collection name="CockpitColumnSearchViewConfigList" elementType="CockpitColumnSearchViewConfig" />
 	
 
 	<!-- enums -->
@@ -494,8 +492,12 @@
 		extends="UniqueIdItem">
 		<properties>
 			<property name="owner" type="Principal" />
-			<property name="listColumns" type="CockpitColumnListViewConfigList" />
-			<property name="searchColumns" type="CockpitColumnSearchViewConfigList" />
+			<property name="labelExpression" type="String">
+				<description>A SpEL expression that returns the label for the given input object.</description>
+			</property>
+			<property name="labelProviderBean" type="String" >
+				<description>A bean id/alias that implements io.spotnext.admin.providers.LabelProvider.</description>
+			</property>
 		</properties>
 	</type>
 	
@@ -599,6 +601,16 @@
 		<description>The languages that are synchronized from source to target catalog version.</description>
 		<source itemType="CatalogVersion" cardinality="many" />
 		<target itemType="Language" mappedBy="synchronizedLanguages" cardinality="many" />
+	</relation>
+	
+	<relation name="CockpitTypeConfiguration2CockpitColumnListViewConfig">
+		<source itemType="CockpitTypeConfiguration" cardinality="many" />
+		<target itemType="CockpitColumnListViewConfig" mappedBy="listColumns" cardinality="many" />
+	</relation>
+	
+	<relation name="CockpitTypeConfiguration2CockpitColumnSearchViewConfig">
+		<source itemType="CockpitTypeConfiguration" cardinality="many" />
+		<target itemType="CockpitColumnSearchViewConfig" mappedBy="searchColumns" cardinality="many" />
 	</relation>
 
 </types>
