@@ -1,6 +1,7 @@
 package io.spotnext.sample;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 
 import io.spotnext.cms.CmsBaseConfiguration;
@@ -8,6 +9,7 @@ import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 
+@DependsOn(value = "coreInit")
 @Import(value = { CmsBaseConfiguration.class })
 @SpringBootApplication
 public class SampleInit extends ModuleInit {
