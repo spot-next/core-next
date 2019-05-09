@@ -566,6 +566,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 	private Optional<String> getLocalizedType(final String localizableTypeCode) {
 		final ItemType localizableType = typeDefinitions.getItemTypes().get(localizableTypeCode);
 
+		if (localizableType == null) {
+			throw new IllegalStateException(String.format("Type '%s' is not localizable", localizableTypeCode));
+		}
+
 		if (localizableType.getInterfaces() != null
 				&& CollectionUtils.isNotEmpty(localizableType.getInterfaces().getInterface())) {
 			final Optional<String> genericType = localizableType.getInterfaces().getInterface().stream()//
