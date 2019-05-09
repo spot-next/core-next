@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +57,7 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 
 		final List<Node> nodes = parse(new StringCharacterIterator(desc), targetType);
 		final QueryDefinition queryDef = new QueryDefinition((Class<Item>) targetType);
-		fillQuery(queryDef, (Class<Item>) targetType, nodes.toArray(new Node[0]));
+		fillQuery(queryDef, (Class<Item>) targetType, null, null, nodes.toArray(new Node[0]));
 
 		if (inputParams.length != queryDef.getParamCount()) {
 			throw new ValueResolverException("Input values doesn't match expected header column definition.");
@@ -78,7 +80,12 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 		return result.getResults().get(0);
 	}
 
-	private void fillQuery(final QueryDefinition queryDef, final Class<Item> type, final Node... nodes) {
+	private void fillQuery(final QueryDefinition queryDef, final Class<Item> type,
+			Map<Class<?>, Integer> aliasesForJoins, Map<Class<?>, Integer> aliasesForWhereClause, final Node... nodes) {
+
+		final Map<Class<?>, Integer> aliasesMappingJoins = aliasesForJoins != null ? aliasesForJoins : new HashMap<>();
+		final Map<Class<?>, Integer> aliasesMappingWhereClause = aliasesForWhereClause != null ? aliasesForWhereClause : new HashMap<>();
+
 		for (final Node node : nodes) {
 			if (node.getNodes().size() > 0) {
 
@@ -86,17 +93,30 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 				final Class<?> fieldType = propertyField.getType();
 
 				final String fieldTypeName = fieldType.getSimpleName();
+				final String fieldTypeNameAlias = generateTypeAlias(fieldType, aliasesMappingJoins, true);
 
-				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeName + " ON "
-						+ type.getSimpleName() + "." + propertyField.getName() + " = " + fieldTypeName + ".id ");
+				queryDef.getJoinClauses().add("JOIN " + fieldTypeName + " AS " + fieldTypeNameAlias + " ON "
+						+ generateTypeAlias(type, aliasesMappingJoins, false) + "." + propertyField.getName() + " = " + fieldTypeNameAlias + ".id ");
 
-				fillQuery(queryDef, (Class<Item>) fieldType, node.getNodes().toArray(new Node[0]));
+				fillQuery(queryDef, (Class<Item>) fieldType, aliasesForJoins, aliasesMappingWhereClause, node.getNodes().toArray(new Node[0]));
 
 			} else {
-				queryDef.getWhereClauses().add(
-						type.getSimpleName() + "." + node.getPropertyName() + " = ?" + queryDef.getNextParamIndex());
+				String propertySelector = generateTypeAlias(type, aliasesMappingWhereClause, true) + "." + node.getPropertyName();
+
+				queryDef.getWhereClauses().add(propertySelector + " = ?" + queryDef.getNextParamIndex());
 			}
 		}
+	}
+
+	private String generateTypeAlias(Class<?> type, Map<Class<?>, Integer> aliases, boolean increment) {
+		int count = aliases.getOrDefault(type, 0);
+		String alias = type.getSimpleName() + "_" + count;
+
+		if (increment) {
+			aliases.put(type, ++count);
+		}
+
+		return alias;
 	}
 
 	private List<Node> parse(final StringCharacterIterator descIterator, final Class<?> itemType) {
@@ -176,8 +196,10 @@ public class ReferenceValueResolver<T extends Item> extends AbstractService impl
 
 		@Override
 		public String toString() {
-			final String query = "SELECT " + rootType.getSimpleName() + " FROM " + rootType.getSimpleName() + " AS "
-					+ rootType.getSimpleName() + " " + joinClauses.stream().collect(Collectors.joining(" ")) + " WHERE "
+			String typeAlias = rootType.getSimpleName() + "_0";
+
+			final String query = "SELECT " + typeAlias + " FROM " + rootType.getSimpleName() + " AS "
+					+ typeAlias + " " + joinClauses.stream().collect(Collectors.joining(" ")) + " WHERE "
 					+ whereClauses.stream().collect(Collectors.joining(" AND "));
 
 			return query;
