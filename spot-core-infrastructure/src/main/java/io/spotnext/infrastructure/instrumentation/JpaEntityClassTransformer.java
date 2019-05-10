@@ -420,7 +420,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 				jpaAnnotations.addAll(createSerializationAnnotation(entityClass, field, false));
 			} else {
 				// one to one in case the field type is a subtype of Item
-				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, null, propertyAnnotation));
+				jpaAnnotations.addAll(createCascadeAnnotations(entityClass, field, OneToOne.class, relAnnotation.get(), propertyAnnotation));
 			}
 
 		} else if (isItemType(field.getType())) {
@@ -594,14 +594,21 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected void addMappedByAnnotationValue(final CtField field, final Annotation annotation,
-			final CtClass entityClass, final Annotation relation) {
+			Class<? extends java.lang.annotation.Annotation> annotationType, final CtClass entityClass, final Annotation relation) {
 
 		if (relation != null) {
 			final StringMemberValue mappedTo = (StringMemberValue) relation.getMemberValue(MV_MAPPED_TO);
+			final EnumMemberValue nodeTypeVal = (EnumMemberValue) relation.getMemberValue(MV_NODE_TYPE);
+			final RelationNodeType nodeType = RelationNodeType.valueOf(nodeTypeVal.getValue());
+			final boolean isOne2One = OneToOne.class.equals(annotationType);
 
-			if (mappedTo != null && StringUtils.isNotBlank(mappedTo.getValue())) {
-				annotation.addMemberValue(MV_MAPPED_BY,
-						createAnnotationStringValue(field.getFieldInfo2().getConstPool(), mappedTo.getValue()));
+			// for one2one relations we only want to set the mapped by for the target side
+			// for ever other annotation we ignore this check
+			if (!isOne2One || (isOne2One && RelationNodeType.TARGET.equals(nodeType))) {
+				if (mappedTo != null && StringUtils.isNotBlank(mappedTo.getValue())) {
+					annotation.addMemberValue(MV_MAPPED_BY, createAnnotationStringValue(field.getFieldInfo2().getConstPool(),
+							mappedTo.getValue()));
+				}
 			}
 		}
 	}
@@ -638,14 +645,15 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 	}
 
 	protected List<Annotation> createCascadeAnnotations(final CtClass clazz, final CtField field,
-			final Class<? extends java.lang.annotation.Annotation> annotationType, Annotation relationAnnotation, Annotation propertyAnnotation)
+			final Class<? extends java.lang.annotation.Annotation> annotationType,
+			Annotation relationAnnotation, Annotation propertyAnnotation)
 			throws IllegalClassTransformationException, NotFoundException {
 
 		final List<Annotation> annotations = new ArrayList<>();
 
 		boolean addRemoveCascadeType = false;
 
-		if (OneToMany.class.equals(annotationType)) {
+		if (OneToMany.class.equals(annotationType) || OneToOne.class.equals(annotationType)) {
 			final StringMemberValue mappedToVal = (StringMemberValue) relationAnnotation.getMemberValue(MV_MAPPED_TO);
 			final ClassMemberValue referencedTypeVal = (ClassMemberValue) relationAnnotation.getMemberValue(MV_REFERENCED_TYPE);
 
@@ -672,7 +680,7 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		annotations.add(addHibernateCascadeAnnotation(field, addRemoveCascadeType));
 
 		if (relationAnnotation != null) {
-			addMappedByAnnotationValue(field, x2xAnn, clazz, relationAnnotation);
+			addMappedByAnnotationValue(field, x2xAnn, annotationType, clazz, relationAnnotation);
 		}
 
 		return annotations;
