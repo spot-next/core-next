@@ -201,7 +201,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			}
 
 			// looks for commands
-			final String stringCommand = StringUtils.trimToEmpty(trimmedLine.substring(0, trimmedLine.indexOf(" ")));
+			final String stringCommand = StringUtils.contains(trimmedLine, " ") ? StringUtils.trimToEmpty(trimmedLine.substring(0, trimmedLine.indexOf(" "))) : trimmedLine;
 			final Optional<ImpexCommand> command = parseImpexCommand(stringCommand);
 
 			if (command.isPresent()) {
