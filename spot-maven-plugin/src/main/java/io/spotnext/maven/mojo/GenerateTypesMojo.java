@@ -1220,6 +1220,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			ItemType toType = typeDefinitions.getItemTypes().get(to.getItemType());
 
+			if (toType == null) {
+				throw new MojoExecutionException(String.format("Referenced type '%s' not defined", to.getItemType()));
+			}
+
 			relationAnn.addParameter("referencedType", toType.getPackage() + "." + toType.getName(), JavaValueType.CLASS);
 
 			if (StringUtils.isNotBlank(from.getMappedBy())) {
