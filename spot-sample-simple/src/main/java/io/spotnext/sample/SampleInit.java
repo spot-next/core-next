@@ -28,6 +28,7 @@ public class SampleInit extends ModuleInit {
 	protected void importSampleData() throws ModuleInitializationException {
 		super.importSampleData();
 
+		importScript("/data/sample/cronjob.impex", "Importing sample cronjobs");
 		importScript("/data/sample/parties.impex", "Importing sample parties");
 	}
 

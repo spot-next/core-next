@@ -78,6 +78,20 @@
 		<value code="ENDS_WITH" />
 	</enum>	
 	
+	<enum name="CronJobStatus" package="io.spotnext.itemtype.core.enumeration">
+		<value code="FINISHED" />
+		<value code="RUNNING" />
+		<value code="PAUSED" />
+		<value code="ABORTED" />
+		<value code="UNKNOWN" />
+	</enum>
+	
+	<enum name="CronJobResult" package="io.spotnext.itemtype.core.enumeration">
+		<value code="SUCCESS" />
+		<value code="FAILURE" />
+		<value code="ERROR" />
+		<value code="UNKNOWN" />
+	</enum>
 	
 	<bean name="ImportConfiguration" package="io.spotnext.itemtype.core.beans">
 		<description>Holds import configuration and parameters.</description>
@@ -539,6 +553,56 @@
 <!-- 			</property> -->
 <!-- 		</properties> -->
 <!-- 	</type> -->
+
+	<type name="AbstractCronJob" typeCode="cronjob" extends="UniqueIdItem" abstract="true" package="io.spotnext.itemtype.core.scheduling">
+		<description>The base type for all cronjobs.</description>
+		<properties>
+			<property name="trigger" type="CronJobTrigger" />
+			<property name="sessionUser" type="String">
+				<description>The default user that is used for the session in which the cronjob is executed.</description>
+				<defaultValue>"admin"</defaultValue>
+			</property>
+			<property name="sessionLanguage" type="Language">
+				<description>The default language that is used for the session in which the cronjob is executed.</description>
+			</property>
+			<property name="performable" type="String">
+				<description>
+					The spring bean name of the underlying business logic 
+					(an implementation of io.spotnext.core.infrastructure.scheduling.support.AbstractCronJobPerformable)
+				</description>
+			</property>
+			<property name="status" type="CronJobStatus">
+				<description>The current status of the cronjob.</description>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.CronJobStatus.UNKNOWN</defaultValue>
+			</property>
+			<property name="result" type="CronJobResult">
+				<description>The reslt of the last run.</description>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.CronJobResult.UNKNOWN</defaultValue>
+			</property>
+			<property name="lastStarted" type="LocalDateTime" />
+			<property name="lastFinished" type="LocalDateTime" />
+			<property name="numberOfRetries" type="int">
+				<description>This value will be reset to 0 when the cronjob was performed successfully.</description>
+			</property>
+			<property name="maxRetriesOnFailure" type="int">
+				<defaultValue>3</defaultValue>
+			</property>
+		</properties>
+	</type>
+	
+	<type name="NoopCronJob" extends="AbstractCronJob" package="io.spotnext.itemtype.core.scheduling" />
+	
+	<type name="CronJobTrigger" package="io.spotnext.itemtype.core.scheduling">
+		<description>The trigger for a cronjob. Valid values for the properties are based on the cronjob syntax.</description>
+		<properties>
+			<property name="second" type="String" />
+			<property name="minute" type="String" />
+			<property name="hour" type="String" />
+			<property name="dayOfMonth" type="String" />
+			<property name="month" type="String" />
+			<property name="weekDay" type="String" />
+		</properties>
+	</type>
 
 	<!-- RELATIONS -->
 

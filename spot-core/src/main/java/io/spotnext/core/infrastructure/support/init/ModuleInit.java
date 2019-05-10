@@ -272,4 +272,24 @@ public abstract class ModuleInit implements ApplicationContextAware, PostConstru
 
 		return args.toArray(new String[args.size()]);
 	}
+
+	/**
+	 * Check if the given context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}.
+	 *
+	 * @param context the spring context that has been started/refreshed
+	 * @return true if the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
+	 */
+	public static boolean isBootComplete(final ApplicationContext context) {
+		try {
+			context.getBean(Registry.getMainClass());
+
+			// we don't care if the ModuleInit has finished initializing (like
+			// import sample data). But if this line is reached, the most inner child context
+			// containing the startup ModuleInit has been loaded. Therefore all beans have
+			// already been scanned for remote endpoints.
+			return true;
+		} catch (final BeansException e) {
+			return false;
+		}
+	}
 }

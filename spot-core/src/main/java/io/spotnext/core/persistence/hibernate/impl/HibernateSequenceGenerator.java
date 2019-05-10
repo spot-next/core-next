@@ -1,12 +1,10 @@
 package io.spotnext.core.persistence.hibernate.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +28,7 @@ public class HibernateSequenceGenerator implements SequenceGenerator {
 
 	private final Map<String, ItemSequence> sequences = new ConcurrentHashMap<>();
 
-	@Value("${service.persistence.sequencegenerator.poolsize}")
+	@Value("${service.persistence.sequencegenerator.poolsize:}")
 	private final int poolSize = 50;
 	private final Map<String, AtomicLong> cachedIds = new ConcurrentHashMap<>();
 
