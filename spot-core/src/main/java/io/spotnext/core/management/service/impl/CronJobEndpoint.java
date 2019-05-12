@@ -65,8 +65,13 @@ public class CronJobEndpoint extends AbstractRestEndpoint {
 		String cronJobUid = request.params(":cronJobUid");
 
 		try {
-			cronJobService.abortCronJob(cronJobUid);
-			return DataResponse.ok();
+			var cancelled = cronJobService.abortCronJob(cronJobUid);
+
+			if (cancelled) {
+				return DataResponse.ok();
+			} else {
+				return DataResponse.notFound().withError("error.cronjob.abortjob", "Cronjob not running");
+			}
 		} catch (Exception e) {
 			return ExceptionResponse.badRequest().withError("error.cronjob.startjob", e.getMessage());
 		}

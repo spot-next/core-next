@@ -29,11 +29,28 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 	 * 
 	 * @param force if true, the cronjob will be killed!
 	 */
-	public abstract void requestAbort(boolean force);
+	public void requestAbort(boolean force) {
+		Thread.currentThread().interrupt();
+	}
+
+	/**
+	 * Checks if the cronjob has been requested to abort and throws an exception that cancels code execution. The exception is handled/swallowed and will not be
+	 * logged as a real exception.
+	 * 
+	 * @throws CronJobAbortException
+	 */
+	public void abortIfRequested() throws CronJobAbortException {
+		// calling this also clears the thread status! (don't call it twice)
+		if (Thread.currentThread().isInterrupted()) {
+			throw new CronJobAbortException("Cronjob abort requested");
+		}
+	}
 
 	public PerformResult start(T cronJob) {
 		try {
 			return perform(cronJob);
+		} catch (CronJobAbortException e) {
+			Logger.info(String.format("Cronjob '%s' has been aborted", cronJob.getUid()));
 		} catch (Throwable e) {
 			Logger.exception(String.format("Cronjob '%s' failed", cronJob.getUid()), e);
 		}
@@ -47,7 +64,7 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 	 * @param cronJob the associated cronjob item.
 	 * @return the result of the cronjob run.
 	 */
-	protected abstract PerformResult perform(T cronJob);
+	protected abstract PerformResult perform(T cronJob) throws CronJobException;
 
 	@Override
 	public void setBeanName(String beanName) {

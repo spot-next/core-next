@@ -83,6 +83,7 @@
 		<value code="RUNNING" />
 		<value code="PAUSED" />
 		<value code="ABORTED" />
+		<value code="SCHEDULED" />
 		<value code="UNKNOWN" />
 	</enum>
 	

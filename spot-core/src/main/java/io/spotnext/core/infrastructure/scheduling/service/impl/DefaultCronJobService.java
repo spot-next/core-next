@@ -109,7 +109,9 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 			final AbstractCronJobPerformable<AbstractCronJob> performable = performables.get(cronJob.getPerformable());
 
 			if (performable != null) {
-				if (runningCronJobs.get(cronJob) == null) {
+				ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
+
+				if (runningCronJob == null || runningCronJob.isCancelled() || runningCronJob.isDone()) {
 					// start the scheduled task
 					ScheduledFuture<?> schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
 
@@ -155,7 +157,7 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
 
 		if (runningCronJob != null) {
-			var cancel = runningCronJob.cancel(false);
+			var cancel = runningCronJob.cancel(true);
 			cronJob.setResult(CronJobResult.UNKNOWN);
 			cronJob.setStatus(CronJobStatus.FINISHED);
 			modelService.save(cronJob);

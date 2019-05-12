@@ -10,13 +10,11 @@ import io.spotnext.itemtype.core.scheduling.AbstractCronJob;
 public class EmptyCronJobPerformable extends AbstractCronJobPerformable<AbstractCronJob> {
 
 	@Override
-	public void requestAbort(boolean force) {
-		//
-	}
-
-	@Override
 	public PerformResult perform(AbstractCronJob cronJob) {
 		Logger.info("Empty cronjob triggered");
+
+		abortIfRequested();
+
 		return SUCCESS;
 	}
 
