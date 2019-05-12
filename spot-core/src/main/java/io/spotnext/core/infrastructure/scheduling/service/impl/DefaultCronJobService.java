@@ -1,11 +1,17 @@
 package io.spotnext.core.infrastructure.scheduling.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,16 +24,20 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.infrastructure.scheduling.support.AbstractCronJobPerformable;
 import io.spotnext.core.infrastructure.scheduling.support.AbstractCronJobPerformable.PerformResult;
+import io.spotnext.core.infrastructure.scheduling.support.CronJobException;
 import io.spotnext.core.infrastructure.service.impl.AbstractService;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
+import io.spotnext.core.persistence.query.JpqlQuery;
 import io.spotnext.core.persistence.query.LambdaQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
+import io.spotnext.itemtype.core.beans.CronJobData;
 import io.spotnext.itemtype.core.enumeration.CronJobResult;
 import io.spotnext.itemtype.core.enumeration.CronJobStatus;
 import io.spotnext.itemtype.core.scheduling.AbstractCronJob;
+import io.spotnext.support.util.ValidationUtil;
 
 @Service
 @DependsOn("persistenceService")
@@ -54,6 +64,7 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 			taskScheduler.setPoolSize(poolsize);
 			taskScheduler.setThreadNamePrefix("CronJob");
 			taskScheduler.initialize();
+			taskScheduler.setRemoveOnCancelPolicy(true);
 
 			if (startCronJobsOnBoot) {
 				startCronjobs();
@@ -72,12 +83,25 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		final QueryResult<AbstractCronJob> result = queryService.query(jobsQuery);
 
 		for (var job : result.getResults()) {
-			startCronJob(job);
+			try {
+				startCronJob(job);
+			} catch (CronJobException e) {
+				Logger.error(String.format("Could not start cronjob '%s'", job.getUid()));
+			}
 		}
 	}
 
 	@Override
-	public void startCronJob(AbstractCronJob cronJob) {
+	public void startCronJob(String cronJobUid) throws CronJobException {
+		final var cronJob = getCronJobByUid(cronJobUid);
+
+		ValidationUtil.validateNotNull("No cronjob with the given UID found!", cronJob);
+
+		startCronJob(cronJob);
+	}
+
+	@Override
+	public void startCronJob(AbstractCronJob cronJob) throws CronJobException {
 		final var cronTabEntry = getCronTabEntry(cronJob);
 
 		if (cronTabEntry.isPresent()) {
@@ -85,11 +109,13 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 			final AbstractCronJobPerformable<AbstractCronJob> performable = performables.get(cronJob.getPerformable());
 
 			if (performable != null) {
-				if (runningCronJobs.get(cronJob) != null) {
+				if (runningCronJobs.get(cronJob) == null) {
+					// start the scheduled task
 					ScheduledFuture<?> schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
+
 					runningCronJobs.put(cronJob, schedule);
 				} else {
-					Logger.warn(String.format("Cronjob '%s' could not be started, as it is already scheduled.", cronJob.getUid()));
+					throw new CronJobException(String.format("Cronjob '%s' could not be started, as it is already scheduled.", cronJob.getUid()));
 				}
 			} else {
 				Logger.warn(String.format("CronJob '%s' has defined an unknown performable '%s'.", cronJob.getUid(), cronJob.getPerformable()));
@@ -99,26 +125,89 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		}
 	}
 
+	@Override
+	public List<CronJobData> getAllCronJobs(CronJobStatus... states) {
+		var query = new JpqlQuery<>(String.format("SELECT c FROM %s AS c WHERE c.status IN :status", AbstractCronJob.class.getSimpleName()),
+				AbstractCronJob.class);
+
+		final List<CronJobStatus> allowedStates;
+
+		if (ArrayUtils.isNotEmpty(states)) {
+			allowedStates = Arrays.asList(states);
+		} else {
+			allowedStates = new ArrayList<>();
+			allowedStates.addAll(Arrays.asList(CronJobStatus.values()));
+		}
+
+		query.addParam("status", allowedStates);
+
+		var result = queryService.query(query);
+
+		return result.getResults().stream().map(this::convertCronJob).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean abortCronJob(String cronJobUid) throws IllegalArgumentException {
+		final var cronJob = getCronJobByUid(cronJobUid);
+
+		ValidationUtil.validateNotNull("No cronjob with the given UID found!", cronJob);
+
+		ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
+
+		if (runningCronJob != null) {
+			var cancel = runningCronJob.cancel(false);
+			cronJob.setResult(CronJobResult.UNKNOWN);
+			cronJob.setStatus(CronJobStatus.FINISHED);
+			modelService.save(cronJob);
+
+			if (cancel) {
+				runningCronJobs.remove(cronJob);
+				return cancel;
+			}
+		}
+
+		return false;
+	}
+
+	protected AbstractCronJob getCronJobByUid(String cronJobUid) {
+		return modelService.get(AbstractCronJob.class, Collections.singletonMap(AbstractCronJob.PROPERTY_UID, cronJobUid));
+	}
+
+	protected CronJobData convertCronJob(AbstractCronJob item) {
+		var data = new CronJobData();
+
+		data.setUid(item.getUid());
+		data.setLastStarted(item.getLastStarted());
+		data.setLastFinished(item.getLastFinished());
+		data.setStatus(item.getStatus());
+		data.setResult(item.getResult());
+		data.setNumberOfRetries(item.getNumberOfRetries());
+
+		return data;
+	}
+
 	protected void performCronjob(AbstractCronJob cronJob, AbstractCronJobPerformable<AbstractCronJob> performable) {
 		PerformResult result = null;
 
 		// refresh the items (this is another thread!) and update the start time
 		modelService.refresh(cronJob);
+		cronJob.setStatus(CronJobStatus.RUNNING);
 		cronJob.setLastStarted(LocalDateTime.now());
 		modelService.save(cronJob);
 
 		try {
 			if (cronJob.getNumberOfRetries() < cronJob.getMaxRetriesOnFailure()) {
-				result = performable.perform(cronJob);
+				result = performable.start(cronJob);
 
 				// reset the number of retries, as it has been performed successfully
+				modelService.refresh(cronJob);
 				cronJob.setNumberOfRetries(0);
+				modelService.save(cronJob);
 			} else {
 				Logger.warn(String.format("Cronjob '%s' failed %s times out of %s and will be halted.", cronJob.getUid(), cronJob.getNumberOfRetries(),
 						cronJob.getMaxRetriesOnFailure()));
 
-				ScheduledFuture<?> schedule = runningCronJobs.get(cronJob);
-				schedule.cancel(false);
+				abortCronJob(cronJob.getUid());
 			}
 		} catch (Throwable e) {
 			Logger.error("Cronjob '%s' failed - trying %s more times");
@@ -128,10 +217,10 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 
 			throw e;
 		} finally {
+			modelService.refresh(cronJob);
 			cronJob.setResult(result.getResult());
 			cronJob.setStatus(result.getStatus());
 			cronJob.setLastFinished(LocalDateTime.now());
-
 			modelService.save(cronJob);
 		}
 	}

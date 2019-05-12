@@ -137,6 +137,25 @@
 			</property>
 		</properties>
 	</bean>
+	
+	<bean name="CronJobData" package="io.spotnext.itemtype.core.beans">
+		<properties>
+			<property name="uid" type="String">
+				<description>The cronjob id.</description>
+			</property>
+			<property name="status" type="CronJobStatus">
+				<description>The current status of the cronjob.</description>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.CronJobStatus.UNKNOWN</defaultValue>
+			</property>
+			<property name="result" type="CronJobResult">
+				<description>The reslt of the last run.</description>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.CronJobResult.UNKNOWN</defaultValue>
+			</property>
+			<property name="lastStarted" type="LocalDateTime" />
+			<property name="lastFinished" type="LocalDateTime" />
+			<property name="numberOfRetries" type="int" />
+		</properties>
+	</bean>
 
 	<!-- users and groups -->
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.scheduling.service.impl.CronJobService;
+import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.PostConstructor;
 import io.spotnext.itemtype.core.enumeration.CronJobResult;
 import io.spotnext.itemtype.core.enumeration.CronJobStatus;
@@ -28,13 +29,23 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 	 */
 	public abstract void requestAbort(boolean force);
 
+	public PerformResult start(T cronJob) {
+		try {
+			return perform(cronJob);
+		} catch (Throwable e) {
+			Logger.exception(String.format("Cronjob '%s' failed", cronJob.getUid()), e);
+		}
+
+		return ABORTED;
+	}
+
 	/**
 	 * The actual business logic of the cronjob performable.
 	 * 
 	 * @param cronJob the associated cronjob item.
 	 * @return the result of the cronjob run.
 	 */
-	public abstract PerformResult perform(T cronJob);
+	protected abstract PerformResult perform(T cronJob);
 
 	@Override
 	public void setBeanName(String beanName) {
@@ -58,4 +69,9 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 			return status;
 		}
 	}
+
+	protected PerformResult SUCCESS = new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
+	protected PerformResult ERROR = new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
+	protected PerformResult FAILURE = new PerformResult(CronJobResult.FAILURE, CronJobStatus.ABORTED);
+	protected PerformResult ABORTED = new PerformResult(CronJobResult.UNKNOWN, CronJobStatus.FINISHED);
 }
