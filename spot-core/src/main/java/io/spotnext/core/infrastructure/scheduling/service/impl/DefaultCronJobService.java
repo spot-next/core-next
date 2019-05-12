@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,10 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 
 	@Override
 	public void startCronJob(AbstractCronJob cronJob) throws CronJobException {
+		startCronJob(cronJob, false);
+	}
+
+	protected void startCronJob(AbstractCronJob cronJob, boolean startImmediately) throws CronJobException {
 		final var cronTabEntry = getCronTabEntry(cronJob);
 
 		if (cronTabEntry.isPresent()) {
@@ -112,8 +117,14 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 				ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
 
 				if (runningCronJob == null || runningCronJob.isCancelled() || runningCronJob.isDone()) {
-					// start the scheduled task
-					ScheduledFuture<?> schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
+					final ScheduledFuture<?> schedule;
+
+					// start the scheduled task either immediately or schedule it
+					if (startImmediately) {
+						schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), new Date());
+					} else {
+						schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
+					}
 
 					runningCronJobs.put(cronJob, schedule);
 				} else {
