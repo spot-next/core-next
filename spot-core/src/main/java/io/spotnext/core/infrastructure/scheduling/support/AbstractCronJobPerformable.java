@@ -3,6 +3,7 @@ package io.spotnext.core.infrastructure.scheduling.support;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.scheduling.service.impl.CronJobService;
 import io.spotnext.core.infrastructure.support.Logger;
 import io.spotnext.core.infrastructure.support.spring.PostConstructor;
@@ -10,6 +11,7 @@ import io.spotnext.itemtype.core.enumeration.CronJobResult;
 import io.spotnext.itemtype.core.enumeration.CronJobStatus;
 import io.spotnext.itemtype.core.scheduling.AbstractCronJob;
 
+@SuppressFBWarnings(value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> implements BeanNameAware, PostConstructor {
 
 	@Autowired
