@@ -82,8 +82,8 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 		}
 	}
 
-	protected PerformResult SUCCESS = new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
-	protected PerformResult ERROR = new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
-	protected PerformResult FAILURE = new PerformResult(CronJobResult.FAILURE, CronJobStatus.ABORTED);
-	protected PerformResult ABORTED = new PerformResult(CronJobResult.UNKNOWN, CronJobStatus.FINISHED);
+	public static final PerformResult SUCCESS = new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
+	public static final PerformResult ERROR = new PerformResult(CronJobResult.ERROR, CronJobStatus.FINISHED);
+	public static final PerformResult FAILURE = new PerformResult(CronJobResult.FAILURE, CronJobStatus.ABORTED);
+	public static final PerformResult ABORTED = new PerformResult(CronJobResult.UNKNOWN, CronJobStatus.FINISHED);
 }

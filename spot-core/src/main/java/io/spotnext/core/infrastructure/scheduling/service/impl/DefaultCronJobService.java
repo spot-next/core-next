@@ -35,7 +35,6 @@ import io.spotnext.core.persistence.query.LambdaQuery;
 import io.spotnext.core.persistence.query.QueryResult;
 import io.spotnext.core.persistence.service.QueryService;
 import io.spotnext.itemtype.core.beans.CronJobData;
-import io.spotnext.itemtype.core.enumeration.CronJobResult;
 import io.spotnext.itemtype.core.enumeration.CronJobStatus;
 import io.spotnext.itemtype.core.scheduling.AbstractCronJob;
 import io.spotnext.support.util.ValidationUtil;
@@ -196,7 +195,8 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 	}
 
 	protected void performCronjob(AbstractCronJob cronJob, AbstractCronJobPerformable<AbstractCronJob> performable) {
-		PerformResult result = null;
+		// assume it will fail ;-)
+		PerformResult result = AbstractCronJobPerformable.FAILURE;
 
 		try {
 			// register cronjob as running
@@ -224,7 +224,6 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 			}
 		} catch (Throwable e) {
 			increaseRetryCounter(cronJob);
-			result = new PerformResult(CronJobResult.FAILURE, CronJobStatus.FINISHED);
 
 			Logger.error(String.format("Cronjob '%s' failed - trying %s more times", cronJob.getUid(),
 					cronJob.getMaxRetriesOnFailure() - cronJob.getNumberOfRetries()));
@@ -259,7 +258,7 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		return Optional.empty();
 	}
 
-	protected class PerformableHolder {
+	protected static class PerformableHolder {
 		private final Thread thread;
 		private final AbstractCronJobPerformable<AbstractCronJob> performable;
 
