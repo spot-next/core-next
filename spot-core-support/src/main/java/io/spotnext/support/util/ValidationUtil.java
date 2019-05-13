@@ -63,6 +63,17 @@ public class ValidationUtil {
 	/**
 	 * @param message the exception message
 	 * @param object  the object which should be checked.
+	 * @throws IllegalArgumentException if the object is NOT null
+	 */
+	public static void validateNull(final String message, final Object object) throws IllegalArgumentException {
+		if (object != null) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	/**
+	 * @param message the exception message
+	 * @param object  the object which should be checked.
 	 * @throws IllegalArgumentException if the object is null
 	 */
 	public static void validateNotNull(final String message, final Object object) throws IllegalArgumentException {

@@ -26,19 +26,15 @@ public class DefaultSessionService implements SessionService {
 	protected Map<String, Session> sessions = new ConcurrentHashMap<>();
 	protected ThreadLocal<Session> currentSession = new ThreadLocal<>();
 
-	/** {@inheritDoc} */
 	@Override
-	public Session createSession(final boolean registerAsCurrentSession) {
+	public Session createSession(String sessionId, boolean registerAsCurrentSession) {
 		// if there's already a session for this thread, we remove it
 		if (currentSession.get() != null) {
 			sessions.remove(currentSession.get().getId());
 		}
 
-		// generate a new unique id as session id
-		final UUID sessionId = UUID.randomUUID();
-
 		// create the session object
-		final Session session = new Session(sessionId.toString());
+		final Session session = new Session(sessionId);
 
 		if (registerAsCurrentSession) {
 			// set the newly created session as current session for the current
@@ -50,6 +46,13 @@ public class DefaultSessionService implements SessionService {
 		sessions.put(session.getId(), session);
 
 		return session;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Session createSession(final boolean registerAsCurrentSession) {
+		// generate a new unique id as session id
+		return createSession(UUID.randomUUID().toString(), registerAsCurrentSession);
 	}
 
 	/** {@inheritDoc} */

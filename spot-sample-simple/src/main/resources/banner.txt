@@ -1,18 +1,19 @@
-${AnsiColor.BRIGHT_GREEN}                                                                      
-${AnsiColor.BRIGHT_GREEN}                                                            ██████    
-${AnsiColor.BRIGHT_GREEN}                                                            ██████    
-${AnsiColor.BRIGHT_GREEN}                                                            ██████    
-${AnsiColor.BRIGHT_GREEN}           ███████    ███████████          ██████████       █████████ 
-${AnsiColor.BRIGHT_GREEN}         █████████  ███████████████     █████    ███████    █████████ 
-${AnsiColor.BRIGHT_GREEN}        █████████  █████████████████  ██████       ███████  █████████ 
-${AnsiColor.BRIGHT_GREEN}        ██████     ██████     ██████  █████████       ████  ██████    
-${AnsiColor.BRIGHT_GREEN}        ██████     ██████    ███████  █████████       ████  ██████    
-${AnsiColor.BRIGHT_GREEN}     █████████     ██████ ██████████  ██████       ███████  █████████ 
-${AnsiColor.BRIGHT_GREEN}    █████████      ██████ ████████      █████    ███████     ████████ 
-${AnsiColor.BRIGHT_GREEN}    ███████        ██████ ██████           ██████████          ██████ 
-${AnsiColor.BRIGHT_GREEN}                   ██████                                             
-${AnsiColor.BRIGHT_GREEN}                   ██████                                             
-${AnsiColor.BRIGHT_GREEN}                   ██████                                             
+
+
+${AnsiColor.BRIGHT_GREEN}                              ██████████                                            
+${AnsiColor.BRIGHT_GREEN}                          ██████████████████                                        
+${AnsiColor.BRIGHT_GREEN}          ██████████    ██████████████████████         ██████      ██████████       
+${AnsiColor.BRIGHT_GREEN}       ████████████    ████████     ███████████      ████████    ███████████████    
+${AnsiColor.BRIGHT_GREEN}      █████████████   ██████████      ██████████    █████████  ██████████████████   
+${AnsiColor.BRIGHT_GREEN}     █████████████   █████████████      █████████  ██████████ ██████████████████    
+${AnsiColor.BRIGHT_GREEN}     ████████        ███████████████      ███████  ████████   ████████   █████      
+${AnsiColor.BRIGHT_GREEN}     ████████        ███████████████     ████████  ████████   ████████  ████        
+${AnsiColor.BRIGHT_GREEN}     █████████████   █████████████     ██████████  ████████   ████████████████     
+${AnsiColor.BRIGHT_GREEN}      █████████████   ██████████     ███████████   ████████    ████████████████     
+${AnsiColor.BRIGHT_GREEN}       █████████████   ████████    ████████████    ████████     ████████████████    
+${AnsiColor.BRIGHT_GREEN}         ████████████   ██████████████████████     ████████       ███████████████   
+${AnsiColor.BRIGHT_GREEN}                          ██████████████████                                        
+${AnsiColor.BRIGHT_GREEN}                              ██████████    
 
 spot-sample-simple ${application.version}
                                                          

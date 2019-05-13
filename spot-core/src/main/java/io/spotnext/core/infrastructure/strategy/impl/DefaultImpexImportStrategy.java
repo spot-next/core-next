@@ -201,7 +201,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 			}
 
 			// looks for commands
-			final String stringCommand = StringUtils.trimToEmpty(trimmedLine.substring(0, trimmedLine.indexOf(" ")));
+			final String stringCommand = StringUtils.contains(trimmedLine, " ") ? StringUtils.trimToEmpty(trimmedLine.substring(0, trimmedLine.indexOf(" "))) : trimmedLine;
 			final Optional<ImpexCommand> command = parseImpexCommand(stringCommand);
 
 			if (command.isPresent()) {
@@ -625,7 +625,7 @@ public class DefaultImpexImportStrategy extends AbstractService implements Impex
 				ret = resolvedValues;
 
 				for (final String v : collectionValues) {
-					resolvedValues.add(resolveSingleValue(v, genericArguments.get(0), columnDefinition, itemReferences));
+					resolvedValues.add(resolveSingleValue(v.trim(), genericArguments.get(0), columnDefinition, itemReferences));
 				}
 			} else if (Map.class.isAssignableFrom(type)) {
 				final String[] mapEntryValues = val.split(COLLECTION_VALUE_SEPARATOR);

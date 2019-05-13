@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.ElementCollection;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -376,7 +378,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			if (beanType.getProperties() != null) {
 				for (final Property prop : beanType.getProperties().getProperty()) {
-					final JavaMemberType propType = createMemberType(prop.getType(), false);
+					final JavaMemberType propType = createMemberType(prop.getType(), false, true);
 
 					final JavaField field = new JavaField();
 					field.setName(prop.getName());
@@ -457,7 +459,12 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 		if (type.getProperties() != null) {
 			for (final Property prop : type.getProperties().getProperty()) {
-				final JavaMemberType propType = createMemberType(prop.getType());
+				final JavaMemberType propType;
+				try {
+					propType = createMemberType(prop.getType());
+				} catch (MojoExecutionException e) {
+					throw new MojoExecutionException(String.format("Could not create property %s.%s", type.getName(), prop.getName()), e);
+				}
 
 				final JavaField field = new JavaField();
 				field.setVisibility(Visibility.PROTECTED);
@@ -558,6 +565,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 	private Optional<String> getLocalizedType(final String localizableTypeCode) {
 		final ItemType localizableType = typeDefinitions.getItemTypes().get(localizableTypeCode);
+
+		if (localizableType == null) {
+			throw new IllegalStateException(String.format("Type '%s' is not localizable", localizableTypeCode));
+		}
 
 		if (localizableType.getInterfaces() != null
 				&& CollectionUtils.isNotEmpty(localizableType.getInterfaces().getInterface())) {
@@ -818,7 +829,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @MojoExecutionException if any.
 	 */
 	protected JavaMemberType createMemberType(final String typeName) throws MojoExecutionException {
-		return createMemberType(typeName, true);
+		return createMemberType(typeName, false, false);
 	}
 
 	/**
@@ -831,7 +842,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 	 * @return a {@link io.spotnext.maven.velocity.type.parts.JavaMemberType} object.
 	 * @MojoExecutionException if any.
 	 */
-	protected JavaMemberType createMemberType(final String typeName, boolean collectionOverride) throws MojoExecutionException {
+	protected JavaMemberType createMemberType(final String typeName, boolean collectionOverride, boolean supportItemCollections) throws MojoExecutionException {
 		final BaseType propType = typeDefinitions.getType(typeName);
 
 		JavaMemberType ret = null;
@@ -851,7 +862,7 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			// check if the element type is an enum or an atomic type, all
 			// others are not supported
-			if (!isSupportedCollectionType(t.getElementType())) {
+			if (!isSupportedCollectionType(t.getElementType(), supportItemCollections)) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as collection element type", t.getElementType()));
 			}
@@ -863,14 +874,14 @@ public class GenerateTypesMojo extends AbstractMojo {
 
 			// check if the key type is an enum or an atomic type, all others
 			// are not supported
-			if (!isSupportedCollectionType(t.getKeyType())) {
+			if (!isSupportedCollectionType(t.getKeyType(), supportItemCollections)) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as map key type", t.getKeyType()));
 			}
 
 			// check if the value type is an enum or an atomic type, all others
 			// are not supported
-			if (!isSupportedCollectionType(t.getValueType())) {
+			if (!isSupportedCollectionType(t.getValueType(), supportItemCollections)) {
 				throw new MojoExecutionException(
 						String.format("Type '%s' is not supported as map key type", t.getValueType()));
 			}
@@ -889,16 +900,16 @@ public class GenerateTypesMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Checks if the given type can be used for collections or maps.
+	 * Checks if the given type can be used for collections or maps. Hint: Hibernate doesn't support entities in {@link ElementCollection}s.
 	 *
 	 * @param typeName of the type to check
 	 * @return true if it is valid to use
 	 */
-	protected boolean isSupportedCollectionType(final String typeName) {
+	protected boolean isSupportedCollectionType(final String typeName, boolean supportItemTypes) {
 		return typeDefinitions.getAtomicTypes().containsKey(typeName)
 				|| typeDefinitions.getEnumTypes().containsKey(typeName)
 				|| typeDefinitions.getBeanTypes().containsKey(typeName)
-				|| typeDefinitions.getItemTypes().containsKey(typeName);
+				|| (supportItemTypes && typeDefinitions.getItemTypes().containsKey(typeName));
 	}
 
 	/**
@@ -981,6 +992,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			throws IOException, MojoExecutionException {
 
 		for (final AbstractComplexJavaType type : types) {
+			if (StringUtils.isBlank(type.getPackagePath())) {
+				throw new MojoExecutionException(String.format("Type %s has no package defined", type.getName()));
+			}
+
 			final String srcPackagePath = type.getPackagePath().replace(".", File.separator);
 
 			final Path filePath = Paths.get(targetClassesDirectory.getAbsolutePath(), srcPackagePath,
@@ -1204,6 +1219,10 @@ public class GenerateTypesMojo extends AbstractMojo {
 			relationAnn.addParameter("type", relationType, JavaValueType.ENUM_VALUE);
 
 			ItemType toType = typeDefinitions.getItemTypes().get(to.getItemType());
+
+			if (toType == null) {
+				throw new MojoExecutionException(String.format("Referenced type '%s' not defined", to.getItemType()));
+			}
 
 			relationAnn.addParameter("referencedType", toType.getPackage() + "." + toType.getName(), JavaValueType.CLASS);
 

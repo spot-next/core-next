@@ -757,7 +757,11 @@ public class HibernatePersistenceService extends AbstractPersistenceService {
 
 		transactionService.execute(() -> {
 			for (final T item : items) {
-				getSession().remove(item);
+				if (isAttached(item)) {
+					getSession().remove(item);
+				} else {
+					remove(item.getClass(), item.getId());
+				}
 			}
 			return null;
 		});

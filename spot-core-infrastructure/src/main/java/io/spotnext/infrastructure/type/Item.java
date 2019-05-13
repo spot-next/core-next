@@ -15,6 +15,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -34,6 +36,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.spotnext.infrastructure.IdGenerator;
 import io.spotnext.infrastructure.IndirectPropertyAccess;
 import io.spotnext.infrastructure.annotation.ItemType;
@@ -45,7 +49,7 @@ import io.spotnext.support.util.ClassUtil;
 // JPA
 @Cacheable
 @MappedSuperclass
-// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @EntityListeners({ AuditingEntityListener.class })
 public abstract class Item implements Serializable, Comparable<Item>, IndirectPropertyAccess {
 
@@ -167,6 +171,14 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 		this.createdBy = createdBy;
 	}
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public String getLastModifiedBy() {
+		return lastModifiedBy;
+	}
+
 	public void setLastModifiedBy(final String lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
 	}
@@ -210,6 +222,7 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	 * @param filter can be null or a predicate that further filters the returned item properties.
 	 * @return all filtered item properties
 	 */
+	@JsonIgnore
 	public Map<String, Object> getProperties(BiPredicate<Field, Object> filter) {
 		// TODO is this really necessary?
 		if (this instanceof HibernateProxy) {

@@ -382,6 +382,35 @@ The core system contains the following impex files:
 If any of these files exists in the custom project as well (in the correct folder!), it overrides the original files provided by the framework. So if you need to import "users" but don't want to override the default `users.impex`, just add a custom prefix to the impex file name.
 
 ### Other Services
+#### Cronjob scheduling
+Recurring tasks, like importing files from a hotfolder, can easily be implemented using the cronjob infrastructure. A cronjob is composed out of configuration holder (a subtype of `AbstractCronJob`) and a subclass of `AbstractCronJobPerformable`.
+
+The `AbstractCronJob` item type holds various basic configuration settings about the cronjob:
+
+* trigger used for scheduling
+* bean id of the `performable`
+* current status, eg. RUNNING
+* result of the last run
+* maximum number of retires in case of an unhandled exception
+
+The code execution takes place in the `performable` which can be configured using the `AbstractCronJob.performable` property. This is just a bean id that will be scheduled and called according to the trigger. The trigger can be configured like a crontab entry `0/30 * * * * *` (= start every 30 seconds).
+
+When the cronjob scheduler executes the `performable` the bean's `public PerformResult perform(AbstractCronJob cronJob)` method is called. In case the processing was successful, a `AbstractCronJobPerformable.SUCCESS` should be returned, otherwise there are also `FAILURE` if the cronjob had to be aborted or `ERROR` if there was an error, but the cronjob could be terminated gracefull.
+
+If a running cronjob is requested to abort (eg. using `io.spotnext.core.infrastructure.scheduling.service.impl.CronJobService.abortCronJob(String)`) or the REST interface, the status `ABORTED` will be returned. A long running cronjob performable should therefore call `io.spotnext.core.infrastructure.scheduling.support.AbstractCronJobPerformable.abortIfRequested()` regularely to check if the cronjob should be aborted.
+
+Cronjobs can easily be setup using ImpEx:
+```impex
+INSERT CronJobTrigger ; &ref    ; second ; minute ; hour ; dayOfMonth ; month ; weekDay ; 
+                      ; trigger ; 0/30      ; *      ; *    ; *          ; *     ; *       ; 
+                          
+
+INSERT_UPDATE NoopCronJob ; uid [ unique = true ] ; performable             ; trigger(&ref)
+                          ; empty-cronjob         ; emptyCronJobPerformable ; trigger
+```
+
+> The `emptyCronJobPerformable` has to be implemented!
+
 #### Localization & internationalization
 
 There are two services dealing with this topic:

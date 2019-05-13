@@ -6,8 +6,7 @@ import java.util.concurrent.Callable;
 import io.spotnext.core.infrastructure.http.Session;
 
 /**
- * This service provides basic backend sessions handling. It does not integrate
- * into spring or any other web framework.
+ * This service provides basic backend sessions handling. It does not integrate into spring or any other web framework.
  *
  * @author mojo2012
  * @version 1.0
@@ -18,14 +17,23 @@ public interface SessionService {
 	/**
 	 * Creates a new {@link io.spotnext.infrastructure.http.Session} object and sets it for the current thread.
 	 *
+	 * @param sessionId                the id to use for this new session
+	 * @param registerAsCurrentSession a boolean.
+	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
+	 */
+	Session createSession(String sessionId, boolean registerAsCurrentSession);
+
+	/**
+	 * Creates a new {@link io.spotnext.infrastructure.http.Session} object and sets it for the current thread.
+	 *
 	 * @param registerAsCurrentSession a boolean.
 	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
 	Session createSession(boolean registerAsCurrentSession);
 
 	/**
-	 * Returns the {@link io.spotnext.infrastructure.http.Session} associates with the current thread. If there is
-	 * no session registered yet, a new one is created and automatically registered.
+	 * Returns the {@link io.spotnext.infrastructure.http.Session} associates with the current thread. If there is no session registered yet, a new one is
+	 * created and automatically registered.
 	 *
 	 * @return a {@link io.spotnext.infrastructure.http.Session} object.
 	 */
@@ -54,8 +62,8 @@ public interface SessionService {
 	void closeSession(String sessionID);
 
 	/**
-	 * Executes the given {@link java.util.concurrent.Callable} in another thread setting the using the
-	 * session of the given id. This is useful to gain different privileges.
+	 * Executes the given {@link java.util.concurrent.Callable} in another thread setting the using the session of the given id. This is useful to gain
+	 * different privileges.
 	 *
 	 * @param sessionId a {@link java.lang.String} object.
 	 * @param callable  a {@link java.util.concurrent.Callable} object.
@@ -64,8 +72,7 @@ public interface SessionService {
 	<T> T executeInSessionContext(String sessionId, Callable<T> callable);
 
 	/**
-	 * Executes the given {@link java.util.concurrent.Callable} in another thread using the system (=
-	 * root) session context.
+	 * Executes the given {@link java.util.concurrent.Callable} in another thread using the system (= root) session context.
 	 *
 	 * @param callable a {@link java.util.concurrent.Callable} object.
 	 * @return a T object.

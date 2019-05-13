@@ -9,11 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -30,7 +28,7 @@ import io.spotnext.core.infrastructure.service.SessionService;
 import io.spotnext.core.infrastructure.service.UserService;
 import io.spotnext.core.infrastructure.support.HttpRequestHolder;
 import io.spotnext.core.infrastructure.support.Logger;
-import io.spotnext.core.infrastructure.support.spring.Registry;
+import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
@@ -144,33 +142,13 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 
 			// wait for the all contexts to be started before starting the spark service
 			// it's not possible to add new routes to already started spark instances
-			if (isBootComplete(event.getApplicationContext())) {
+			if (ModuleInit.isBootComplete(event.getApplicationContext())) {
 				init();
 				isStarted = true;
 			}
 		} else {
 			// TODO: maybe restart the service?
 			Logger.debug(() -> "Ignoring context refresh event, as remote endpoints have already been started.");
-		}
-	}
-
-	/**
-	 * Check if the given context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}.
-	 *
-	 * @param context the spring context that has been started/refreshed
-	 * @return true if the context contains the startup {@link io.spotnext.infrastructure.support.init.ModuleInit}
-	 */
-	public boolean isBootComplete(final ApplicationContext context) {
-		try {
-			context.getBean(Registry.getMainClass());
-
-			// we don't care if the ModuleInit has finished initializing (like
-			// import sample data). But if this line is reached, the most inner child context
-			// containing the startup ModuleInit has been loaded. Therefore all beans have
-			// already been scanned for remote endpoints.
-			return true;
-		} catch (final BeansException e) {
-			return false;
 		}
 	}
 

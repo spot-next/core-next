@@ -1,11 +1,13 @@
 package $package;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.DependsOn;
 
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.infrastructure.exception.ModuleInitializationException;
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 
+@DependsOn(value = "coreInit")
 @SpringBootApplication(scanBasePackages = { "$package" })
 public class Init extends ModuleInit {
 

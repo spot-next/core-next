@@ -38,4 +38,11 @@ public abstract class AbstractService extends BeanAware {
 		return modelService;
 	}
 
+	protected <T> T getBeanByType(Class<T> type) {
+		return getApplicationContext().getBean(type);
+	}
+
+	protected <T> T getBeanById(String beanId) {
+		return (T) getApplicationContext().getBean(beanId);
+	}
 }
