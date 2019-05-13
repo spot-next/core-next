@@ -25,15 +25,6 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 	}
 
 	/**
-	 * Requests to abort the cronjob. The implementation can decide when or if at all it aborts.
-	 * 
-	 * @param force if true, the cronjob will be killed!
-	 */
-	public void requestAbort(boolean force) {
-		Thread.currentThread().interrupt();
-	}
-
-	/**
 	 * Checks if the cronjob has been requested to abort and throws an exception that cancels code execution. The exception is handled/swallowed and will not be
 	 * logged as a real exception.
 	 * 
@@ -42,17 +33,19 @@ public abstract class AbstractCronJobPerformable<T extends AbstractCronJob> impl
 	public void abortIfRequested() throws CronJobAbortException {
 		// calling this also clears the thread status! (don't call it twice)
 		if (Thread.currentThread().isInterrupted()) {
-			throw new CronJobAbortException("Cronjob abort requested");
+			throw new CronJobAbortException("Cronjob aborted");
 		}
 	}
 
-	public PerformResult start(T cronJob) {
+	public PerformResult start(T cronJob) throws CronJobException {
 		try {
+			Logger.info(String.format("Starting cronjob '%s'", cronJob.getUid()));
 			return perform(cronJob);
 		} catch (CronJobAbortException e) {
+			// this is a signal that the cronjob was requested to abort, so not a real exception
 			Logger.info(String.format("Cronjob '%s' has been aborted", cronJob.getUid()));
-		} catch (Throwable e) {
-			Logger.exception(String.format("Cronjob '%s' failed", cronJob.getUid()), e);
+		} finally {
+			Logger.info(String.format("Finished cronjob '%s'", cronJob.getUid()));
 		}
 
 		return ABORTED;

@@ -44,16 +44,17 @@ import io.spotnext.support.util.ValidationUtil;
 @DependsOn("persistenceService")
 public class DefaultCronJobService extends AbstractService implements CronJobService {
 
-	@Value("${service.cronjob.startonboot:}")
-	private boolean startCronJobsOnBoot = true;
+	@Value("${service.cronjob.scheduleonboot:}")
+	private boolean scheduleCronJobsOnBoot = true;
 
 	@Value("${service.cronjob.poolsize:}")
 	private int poolsize = 5;
 
-	private ThreadPoolTaskScheduler taskScheduler;
+	private final Map<String, AbstractCronJobPerformable<AbstractCronJob>> registeredPerformables = new HashMap<>();
+	private final Map<AbstractCronJob, PerformableHolder> runningCronJobs = new HashMap<>();
+	private final Map<AbstractCronJob, ScheduledFuture<?>> scheduledCronJobs = new HashMap<>();
 
-	private Map<AbstractCronJob, ScheduledFuture<?>> runningCronJobs = new HashMap<>();
-	private Map<String, AbstractCronJobPerformable<AbstractCronJob>> performables = new HashMap<>();
+	private ThreadPoolTaskScheduler taskScheduler;
 
 	@Autowired
 	private QueryService queryService;
@@ -67,8 +68,8 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 			taskScheduler.initialize();
 			taskScheduler.setRemoveOnCancelPolicy(true);
 
-			if (startCronJobsOnBoot) {
-				startCronjobs();
+			if (scheduleCronJobsOnBoot) {
+				scheduleCronjobs();
 			}
 		}
 	}
@@ -76,16 +77,16 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 	@Override
 	public void registerPerformable(String beanName, AbstractCronJobPerformable<AbstractCronJob> performable) {
 		Logger.debug(String.format("Registering performable '%s' of type %s", beanName, performable.getClass().getName()));
-		performables.put(beanName, performable);
+		registeredPerformables.put(beanName, performable);
 	}
 
-	protected void startCronjobs() {
+	protected void scheduleCronjobs() {
 		final LambdaQuery<AbstractCronJob> jobsQuery = new LambdaQuery<>(AbstractCronJob.class);
 		final QueryResult<AbstractCronJob> result = queryService.query(jobsQuery);
 
 		for (var job : result.getResults()) {
 			try {
-				startCronJob(job);
+				startCronJob(job, false);
 			} catch (CronJobException e) {
 				Logger.error(String.format("Could not start cronjob '%s'", job.getUid()));
 			}
@@ -103,7 +104,7 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 
 	@Override
 	public void startCronJob(AbstractCronJob cronJob) throws CronJobException {
-		startCronJob(cronJob, false);
+		startCronJob(cronJob, true);
 	}
 
 	protected void startCronJob(AbstractCronJob cronJob, boolean startImmediately) throws CronJobException {
@@ -111,24 +112,22 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 
 		if (cronTabEntry.isPresent()) {
 			final var cronTrigger = new CronTrigger(cronTabEntry.get());
-			final AbstractCronJobPerformable<AbstractCronJob> performable = performables.get(cronJob.getPerformable());
+			final var performable = registeredPerformables.get(cronJob.getPerformable());
 
 			if (performable != null) {
-				ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
+				modelService.refresh(cronJob);
 
-				if (runningCronJob == null || runningCronJob.isCancelled() || runningCronJob.isDone()) {
-					final ScheduledFuture<?> schedule;
-
-					// start the scheduled task either immediately or schedule it
+				// only allow to start the cronjob if is is not already running
+				if (!CronJobStatus.RUNNING.equals(cronJob.getStatus())) {
 					if (startImmediately) {
-						schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), new Date());
-					} else {
-						schedule = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
-					}
+						taskScheduler.schedule(() -> performCronjob(cronJob, performable), new Date());
 
-					runningCronJobs.put(cronJob, schedule);
+					} else if (!scheduledCronJobs.containsKey(cronJob)) { // only scheduled if not already scheduled!
+						final var scheduled = taskScheduler.schedule(() -> performCronjob(cronJob, performable), cronTrigger);
+						scheduledCronJobs.put(cronJob, scheduled);
+					}
 				} else {
-					throw new CronJobException(String.format("Cronjob '%s' could not be started, as it is already scheduled.", cronJob.getUid()));
+					throw new CronJobException(String.format("Cronjob '%s' could not be started, as it is already running.", cronJob.getUid()));
 				}
 			} else {
 				Logger.warn(String.format("CronJob '%s' has defined an unknown performable '%s'.", cronJob.getUid(), cronJob.getPerformable()));
@@ -159,24 +158,21 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		return result.getResults().stream().map(this::convertCronJob).collect(Collectors.toList());
 	}
 
+	/**
+	 * The thread that the cronjob performable is running on will be interrupted which signals the performable to abort. This will only work though, if the
+	 * performable regularly calls {@link AbstractCronJobPerformable#abortIfRequested()}!
+	 */
 	@Override
 	public boolean abortCronJob(String cronJobUid) throws IllegalArgumentException {
 		final var cronJob = getCronJobByUid(cronJobUid);
 
 		ValidationUtil.validateNotNull("No cronjob with the given UID found!", cronJob);
 
-		ScheduledFuture<?> runningCronJob = runningCronJobs.get(cronJob);
+		var runningPerformable = runningCronJobs.get(cronJob);
 
-		if (runningCronJob != null) {
-			var cancel = runningCronJob.cancel(true);
-			cronJob.setResult(CronJobResult.UNKNOWN);
-			cronJob.setStatus(CronJobStatus.FINISHED);
-			modelService.save(cronJob);
-
-			if (cancel) {
-				runningCronJobs.remove(cronJob);
-				return cancel;
-			}
+		if (runningPerformable != null) {
+			runningPerformable.getThread().interrupt();
+			return true;
 		}
 
 		return false;
@@ -192,8 +188,8 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		data.setUid(item.getUid());
 		data.setLastStarted(item.getLastStarted());
 		data.setLastFinished(item.getLastFinished());
-		data.setStatus(item.getStatus());
-		data.setResult(item.getResult());
+		data.setRunning(runningCronJobs.containsKey(item));
+		data.setLastResult(item.getResult());
 		data.setNumberOfRetries(item.getNumberOfRetries());
 
 		return data;
@@ -202,13 +198,16 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 	protected void performCronjob(AbstractCronJob cronJob, AbstractCronJobPerformable<AbstractCronJob> performable) {
 		PerformResult result = null;
 
-		// refresh the items (this is another thread!) and update the start time
-		modelService.refresh(cronJob);
-		cronJob.setStatus(CronJobStatus.RUNNING);
-		cronJob.setLastStarted(LocalDateTime.now());
-		modelService.save(cronJob);
-
 		try {
+			// register cronjob as running
+			runningCronJobs.put(cronJob, new PerformableHolder(Thread.currentThread(), performable));
+
+			// refresh the items (this is another thread!) and update the start time
+			modelService.refresh(cronJob);
+			cronJob.setStatus(CronJobStatus.RUNNING);
+			cronJob.setLastStarted(LocalDateTime.now());
+			modelService.save(cronJob);
+
 			if (cronJob.getNumberOfRetries() < cronJob.getMaxRetriesOnFailure()) {
 				result = performable.start(cronJob);
 
@@ -217,19 +216,22 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 				cronJob.setNumberOfRetries(0);
 				modelService.save(cronJob);
 			} else {
-				Logger.warn(String.format("Cronjob '%s' failed %s times out of %s and will be halted.", cronJob.getUid(), cronJob.getNumberOfRetries(),
+				Logger.warn(String.format("Cronjob '%s' failed %s times out of %s and will be unscheduled.", cronJob.getUid(), cronJob.getNumberOfRetries(),
 						cronJob.getMaxRetriesOnFailure()));
 
-				abortCronJob(cronJob.getUid());
+				// unschedule the cronjob as it has failed to often!
+				scheduledCronJobs.get(cronJob).cancel(true);
 			}
 		} catch (Throwable e) {
-			Logger.error("Cronjob '%s' failed - trying %s more times");
-
-			result = new PerformResult(CronJobResult.FAILURE, CronJobStatus.FINISHED);
 			increaseRetryCounter(cronJob);
+			result = new PerformResult(CronJobResult.FAILURE, CronJobStatus.FINISHED);
 
-			throw e;
+			Logger.error(String.format("Cronjob '%s' failed - trying %s more times", cronJob.getUid(),
+					cronJob.getMaxRetriesOnFailure() - cronJob.getNumberOfRetries()));
 		} finally {
+			// remove running marker, so that it can be restarted
+			runningCronJobs.remove(cronJob);
+
 			modelService.refresh(cronJob);
 			cronJob.setResult(result.getResult());
 			cronJob.setStatus(result.getStatus());
@@ -255,5 +257,24 @@ public class DefaultCronJobService extends AbstractService implements CronJobSer
 		}
 
 		return Optional.empty();
+	}
+
+	protected class PerformableHolder {
+		private final Thread thread;
+		private final AbstractCronJobPerformable<AbstractCronJob> performable;
+
+		public PerformableHolder(Thread thread, AbstractCronJobPerformable<AbstractCronJob> performable) {
+			this.thread = thread;
+			this.performable = performable;
+		}
+
+		public Thread getThread() {
+			return thread;
+		}
+
+		public AbstractCronJobPerformable<AbstractCronJob> getPerformable() {
+			return performable;
+		}
+
 	}
 }

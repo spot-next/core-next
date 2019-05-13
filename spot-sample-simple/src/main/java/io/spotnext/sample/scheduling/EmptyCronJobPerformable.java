@@ -11,7 +11,7 @@ public class EmptyCronJobPerformable extends AbstractCronJobPerformable<Abstract
 
 	@Override
 	public PerformResult perform(AbstractCronJob cronJob) {
-		Logger.info("Empty cronjob triggered");
+		Logger.info("Empty cronjob triggered in thread " + Thread.currentThread().getName());
 
 		abortIfRequested();
 

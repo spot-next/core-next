@@ -29,7 +29,7 @@ public interface CronJobService {
 	void startCronJob(String cronJobUid) throws IllegalArgumentException, CronJobException;
 
 	/**
-	 * Starts the given cronjob.
+	 * Starts the given cronjob immediately.
 	 * 
 	 * @param cronJob the non-null cronjob item instance.
 	 * @throws CronJobException if the cronjob is already running
