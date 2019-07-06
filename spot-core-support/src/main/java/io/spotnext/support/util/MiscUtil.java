@@ -313,4 +313,8 @@ public class MiscUtil {
 
 		throw new IllegalArgumentException("Arguments must be of type 'Comparable'");
 	}
+	
+	public static <T, C extends T> void with(T object, Class<C> asCastType, Consumer<C> consumer) {
+		consumer.accept((C) object);
+	}
 }
