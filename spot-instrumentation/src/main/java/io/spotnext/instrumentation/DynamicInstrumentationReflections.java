@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.instrument.InstrumentationSavingAgent;
 
 import io.spotnext.instrumentation.util.Assert;
@@ -86,7 +87,13 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	public static boolean isAfterJava10() {
-		return System.getProperty("java.version").startsWith("11");
+		final var javaVersion = System.getProperty("java.version");
+		
+		if (NumberUtils.isCreatable(javaVersion)) {
+			return Double.parseDouble(javaVersion) >= 10;
+		}
+		
+		return false;
 	}
 
 	private static void addUrlToURLClassLoader(final URL url)
