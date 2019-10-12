@@ -696,10 +696,13 @@ public class ClassUtil {
 	 * @return the property value. If no matching getter is found, null is returned also.
 	 */
 	public static Object getProperty(Object object, String propertyName) {
-		String methodName = createGetterMethodName(propertyName);
-
-		if (getMethodDefinition(object.getClass(), methodName).isPresent()) {
+		var methodName = createGetterMethodName(propertyName);
+		var className = object.getClass();
+		
+		if (getMethodDefinition(className, methodName).isPresent()) {
 			return invokeMethod(object, methodName);
+		} else if (getMethodDefinition(className, propertyName).isPresent()) {
+			return invokeMethod(object, propertyName);
 		} else {
 			return getField(object, propertyName, true);
 		}

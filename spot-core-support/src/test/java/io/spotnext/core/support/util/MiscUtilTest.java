@@ -26,4 +26,15 @@ public class MiscUtilTest {
 
 		Assert.assertEquals(Integer.valueOf(0), length);
 	}
+	
+	@Test
+	public void testWithHelper() {
+//		BaseOpeningDay day = new OpeningDay();
+//
+//		MiscUtil.with(day, OpeningDay.class, d -> {
+//			d.setWeekday(DayOfWeek.SUNDAY);
+//		});
+//
+//		assertEquals(DayOfWeek.SUNDAY, ((OpeningDay) day).getWeekday());
+	}
 }
