@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.instrument.InstrumentationSavingAgent;
 
 import io.spotnext.instrumentation.util.Assert;
@@ -48,7 +50,8 @@ public final class DynamicInstrumentationReflections {
 		}
 		try {
 			final String normalizedPath = FilenameUtils.normalize(dirOrJar.getAbsolutePath());
-			Assert.assertTrue(pathsAddedToSystemClassLoader.add(normalizedPath), String.format("Path [%s] has already been added before!", normalizedPath));
+			Assert.assertTrue(pathsAddedToSystemClassLoader.add(normalizedPath),
+					String.format("Path [%s] has already been added before!", normalizedPath));
 
 			final URL url = new File(normalizedPath).toURI().toURL();
 			if (isBeforeJava9()) {
@@ -86,7 +89,15 @@ public final class DynamicInstrumentationReflections {
 	}
 
 	public static boolean isAfterJava10() {
-		return System.getProperty("java.version").startsWith("11");
+		final var javaVersion = System.getProperty("java.version");
+
+		final var majorVersion = StringUtils.substring(javaVersion, 0, javaVersion.indexOf("."));
+
+		if (NumberUtils.isCreatable(majorVersion)) {
+			return Double.parseDouble(majorVersion) >= 10;
+		}
+
+		return false;
 	}
 
 	private static void addUrlToURLClassLoader(final URL url)
@@ -116,7 +127,8 @@ public final class DynamicInstrumentationReflections {
 
 			if (isAfterJava10()) {
 				final Field urlsField = ucp.getClass().getDeclaredField("unopenedUrls");
-				final ArrayDeque<URL> urls = (ArrayDeque<URL>) unsafe.getObject(ucp, unsafe.objectFieldOffset(urlsField));
+				final ArrayDeque<URL> urls = (ArrayDeque<URL>) unsafe.getObject(ucp,
+						unsafe.objectFieldOffset(urlsField));
 				synchronized (urls) {
 					if (url == null || path.contains(url)) {
 						return;
