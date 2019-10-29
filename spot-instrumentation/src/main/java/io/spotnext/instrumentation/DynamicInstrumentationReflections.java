@@ -90,8 +90,14 @@ public final class DynamicInstrumentationReflections {
 
 	public static boolean isAfterJava10() {
 		final var javaVersion = System.getProperty("java.version");
+		final var indexOfPoint = javaVersion.indexOf(".");
+		final String majorVersion;
 
-		final var majorVersion = StringUtils.substring(javaVersion, 0, javaVersion.indexOf("."));
+		if (indexOfPoint > 0) {
+			majorVersion = StringUtils.substring(javaVersion, 0, javaVersion.indexOf("."));
+		} else {
+			majorVersion = javaVersion;
+		}
 
 		if (NumberUtils.isCreatable(majorVersion)) {
 			return Double.parseDouble(majorVersion) >= 10;
