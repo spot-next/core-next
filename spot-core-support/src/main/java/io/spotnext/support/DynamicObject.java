@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.json.JSONObject;
-
 import io.spotnext.support.exception.CannotInvokeException;
 
 /**
@@ -68,13 +66,4 @@ public class DynamicObject {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * Returns the object representation as JSON.
-	 */
-	@Override
-	public String toString() {
-		return new JSONObject(properties).toString();
-	}
 }

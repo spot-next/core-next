@@ -31,7 +31,6 @@ import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * Helper utility to handle all kinds of reflection stuff.
@@ -465,7 +464,7 @@ public class ClassUtil {
 				}
 			}
 
-			ret = AnnotationUtils.findAnnotation(method, annotation);
+			ret = method.getAnnotation(annotation);
 		} else {
 			final FieldSignature fieldSignature = (FieldSignature) sig;
 
