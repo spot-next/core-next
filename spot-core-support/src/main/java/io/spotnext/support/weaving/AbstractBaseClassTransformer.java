@@ -611,6 +611,33 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 	}
 
+	protected Optional<CtMethod> getGetter(CtClass entityClass, CtField field) {
+		return getMethod(entityClass, "get" + StringUtils.capitalize(field.getName()));
+	}
+
+	protected Optional<CtMethod> getSetter(CtClass entityClass, CtField field) {
+		return getMethod(entityClass, "set" + StringUtils.capitalize(field.getName()));
+	}
+	
+	/**
+	 * Finds the method with the given name, ignoring any method parameters.
+	 * 
+	 * @param entityClass the class to inspect
+	 * @param methodName
+	 * @return the method or null
+	 */
+	protected Optional<CtMethod> getMethod(CtClass entityClass, String methodName) {
+		CtMethod method = null;
+
+		try {
+			method = entityClass.getDeclaredMethod(methodName);
+		} catch (NotFoundException e) {
+			// ignore
+		}
+
+		return Optional.ofNullable(method);
+	}
+
 	/**
 	 * @param the consumer that can do additional logging when exceptions occur. Can be null.
 	 */
