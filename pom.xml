@@ -87,7 +87,7 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<url>http://github.com/mojo2012/</url>
+			<url>https://github.com/mojo2012/</url>
 			<organizationUrl>https://spot-next.io</organizationUrl>
 			<organization>spOt</organization>
 		</developer>
@@ -114,7 +114,7 @@
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -169,7 +169,7 @@
 		<repository>
 			<id>central</id>
 			<name>Central Repository</name>
-			<url>http://repo.maven.apache.org/maven2</url>
+			<url>https://repo.maven.apache.org/maven2</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
@@ -180,7 +180,7 @@
 		<repository>
 			<id>mvnrepository</id>
 			<name>mvnrepository</name>
-			<url>http://www.mvnrepository.com</url>
+			<url>https://www.mvnrepository.com</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
