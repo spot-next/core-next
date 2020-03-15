@@ -1,4 +1,4 @@
-![spot-logo](docs/resources/spot_logo.png)
+![spot-logo](docs/resources/core-next-logo.png)
 
 # spOt micro framework
 [![Code Coverage](https://scan.coverity.com/projects/13539/badge.svg)](https://scan.coverity.com/projects/mojo2012-spot-framework) [![Build Status](https://travis-ci.org/spot-next/spot-framework.svg?branch=master)](https://travis-ci.org/spot-next/spot-framework) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.spot-next/spot-framework) [![Javadocs](http://javadoc.io/badge/io.spot-next/spot-core.svg)](http://javadoc.io/doc/io.spot-next/spot-core) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Join the chat at https://gitter.im/spot-next/Lobby](https://badges.gitter.im/spot-next/Lobby.svg)](https://gitter.im/spot-next/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
