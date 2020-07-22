@@ -14,8 +14,10 @@ import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -105,7 +107,10 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 					if (transformedClass.isPresent()) {
 						try {
-							return transformedClass.get().toBytecode();
+							writeByteCodeToFile(transformedClass.get());
+							final var byteCode = transformedClass.get().toBytecode();
+							
+							return byteCode;
 						} catch (final Exception e) {
 							final String message = String.format("Could not compile transformed class %s", classId);
 							LOG.error(message, e);
@@ -121,6 +126,14 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 		}
 
 		return null;
+	}
+
+	/**
+	 * This method can be overridden to save the transformed bytecode, eg. for debugging purposes.
+	 * @param byteCode the transformed bytecode
+	 */
+	protected void writeByteCodeToFile(CtClass transformedClass) {
+		//
 	}
 
 	/**
@@ -618,7 +631,7 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 	protected Optional<CtMethod> getSetter(CtClass entityClass, CtField field) {
 		return getMethod(entityClass, "set" + StringUtils.capitalize(field.getName()));
 	}
-	
+
 	/**
 	 * Finds the method with the given name, ignoring any method parameters.
 	 * 
@@ -637,6 +650,19 @@ public abstract class AbstractBaseClassTransformer implements ClassFileTransform
 
 		return Optional.ofNullable(method);
 	}
+	
+	protected Set<CtClass> getAllSuperclasses(CtClass ctClass) throws NotFoundException {
+        HashSet<CtClass> ctClasses = new HashSet<>();
+
+        while (ctClass != null){
+            ctClasses.add(ctClass);
+            CtClass[] interfaces = ctClass.getInterfaces();
+            Collections.addAll(ctClasses, interfaces);
+            ctClass = ctClass.getSuperclass();
+        }
+
+        return ctClasses;
+    }
 
 	/**
 	 * @param the consumer that can do additional logging when exceptions occur. Can be null.

@@ -103,7 +103,7 @@ public class ClassUtil {
 
 		Class<?> currentType = type;
 
-		while (!currentType.getSuperclass().equals(stopClass)) {
+		while (currentType.getSuperclass() != null && !currentType.getSuperclass().equals(stopClass)) {
 			final Class<?> superClass = currentType.getSuperclass();
 
 			types.add(superClass);
