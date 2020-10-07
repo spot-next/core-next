@@ -50,7 +50,6 @@ import io.spotnext.support.weaving.AbstractBaseClassTransformer;
 import io.spotnext.support.weaving.IllegalClassTransformationException;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
@@ -476,33 +475,6 @@ public class JpaEntityClassTransformer extends AbstractBaseClassTransformer {
 		final List<Annotation> annotations = new ArrayList<>();
 
 		return annotations;
-	}
-
-	private Optional<CtMethod> getGetter(CtClass entityClass, CtField field) {
-		return getMethod(entityClass, "get" + StringUtils.capitalize(field.getName()));
-	}
-
-	private Optional<CtMethod> getSetter(CtClass entityClass, CtField field) {
-		return getMethod(entityClass, "set" + StringUtils.capitalize(field.getName()));
-	}
-
-	/**
-	 * Finds the method with the given name, ignoring any method parameters.
-	 * 
-	 * @param entityClass the class to inspect
-	 * @param methodName
-	 * @return the method or null
-	 */
-	protected Optional<CtMethod> getMethod(CtClass entityClass, String methodName) {
-		CtMethod method = null;
-
-		try {
-			method = entityClass.getDeclaredMethod(methodName);
-		} catch (NotFoundException e) {
-			// ignore
-		}
-
-		return Optional.ofNullable(method);
 	}
 
 	/**

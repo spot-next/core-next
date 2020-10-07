@@ -6,6 +6,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -312,5 +313,41 @@ public class MiscUtil {
 		}
 
 		throw new IllegalArgumentException("Arguments must be of type 'Comparable'");
+	}
+
+	public static <T, C extends T> void with(T object, Class<C> asCastType, Consumer<C> consumer) {
+		consumer.accept((C) object);
+	}
+	
+	public static void rethrowSilently(Exception ex) throws RuntimeException {
+		if (ex instanceof RuntimeException) {
+			throw (RuntimeException) ex;
+		} else {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	public static void tryAndThrowQuietly(ExceptionRunnable runnable, String exeptionMessage) {
+		tryAndThrowQuietly(runnable, e -> {
+			var msg = exeptionMessage != null ? exeptionMessage : e.getMessage();
+
+			if (msg == null) {
+				msg = String.format("Exception of type '%s' occured", e.getClass());
+			}
+
+			throw new IllegalStateException(msg);
+		});
+	}
+	
+	public static void tryAndThrowQuietly(ExceptionRunnable runnable, Consumer<Exception> exeptionHandler) {
+		try {
+			runnable.run();
+		} catch (Exception e) {
+			exeptionHandler.accept(e);
+		}
+	}
+
+	public static interface ExceptionRunnable {
+		void run() throws Exception;
 	}
 }

@@ -1,4 +1,4 @@
-package io.spotnext.support.util;
+package io.spotnext.spring.web.util;
 
 import org.apache.commons.collections4.Transformer;
 import org.springframework.expression.EvaluationContext;

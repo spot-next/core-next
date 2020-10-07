@@ -1,4 +1,4 @@
-package io.spotnext.support.util;
+package io.spotnext.core.infrastructure.support;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SpringUtil {
 	 * @param type a {@link java.lang.Class} object.
 	 * @param beanId
 	 *            if this is not empty it will override the default bean id
-	 * @param scope a {@link io.spotnext.support.util.SpringUtil.BeanScope} object.
+	 * @param scope a {@link io.spotnext.core.infrastructure.support.SpringUtil.BeanScope} object.
 	 * @param beanFactory a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry} object.
 	 * @param alias a {@link java.lang.String} object.
 	 * @param constructorArguments a {@link java.util.List} object.

@@ -31,7 +31,6 @@ import org.aspectj.lang.reflect.FieldSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
 
 /**
  * Helper utility to handle all kinds of reflection stuff.
@@ -104,7 +103,7 @@ public class ClassUtil {
 
 		Class<?> currentType = type;
 
-		while (!currentType.getSuperclass().equals(stopClass)) {
+		while (currentType.getSuperclass() != null && !currentType.getSuperclass().equals(stopClass)) {
 			final Class<?> superClass = currentType.getSuperclass();
 
 			types.add(superClass);
@@ -465,7 +464,7 @@ public class ClassUtil {
 				}
 			}
 
-			ret = AnnotationUtils.findAnnotation(method, annotation);
+			ret = method.getAnnotation(annotation);
 		} else {
 			final FieldSignature fieldSignature = (FieldSignature) sig;
 
@@ -696,10 +695,13 @@ public class ClassUtil {
 	 * @return the property value. If no matching getter is found, null is returned also.
 	 */
 	public static Object getProperty(Object object, String propertyName) {
-		String methodName = createGetterMethodName(propertyName);
-
-		if (getMethodDefinition(object.getClass(), methodName).isPresent()) {
+		var methodName = createGetterMethodName(propertyName);
+		var className = object.getClass();
+		
+		if (getMethodDefinition(className, methodName).isPresent()) {
 			return invokeMethod(object, methodName);
+		} else if (getMethodDefinition(className, propertyName).isPresent()) {
+			return invokeMethod(object, propertyName);
 		} else {
 			return getField(object, propertyName, true);
 		}
