@@ -43,3 +43,4 @@ ajcore.*.txt
 *.eml
 .idea
 *.iws
+.history

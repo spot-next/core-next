@@ -143,18 +143,18 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<aspectj.version>1.9.2</aspectj.version>
+		<aspectj.version>1.9.6</aspectj.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<java.version>11</java.version>
 
 		<!-- misc -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<log4j.version>2.13.2</log4j.version>
-		<junit.version>4.12</junit.version>
-		<junit.jupiter.version>5.3.1</junit.jupiter.version>
-		<spring.boot.version>2.1.0.RELEASE</spring.boot.version>
-		<spring.version>5.1.2.RELEASE</spring.version>
+		<log4j.version>2.14.0</log4j.version>
+		<junit.version>4.13.1</junit.version>
+		<junit.jupiter.version>5.7.0</junit.jupiter.version>
+		<spring.boot.version>2.4.1</spring.boot.version>
+		<spring.version>5.3.3</spring.version>
 
 		<!-- GPG -->
 		<gpg.keyname>${env.GPG_KEY}</gpg.keyname>
@@ -232,7 +232,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M2</version>
+					<version>3.0.0-M3</version>
 					<configuration>
 						<rules>
 							<dependencyConvergence />
@@ -243,7 +243,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>flatten-maven-plugin</artifactId>
-					<version>1.0.0</version>
+					<version>1.2.5</version>
 					<configuration>
 						<updatePomFile>true</updatePomFile>
 						<pomElements>
@@ -305,7 +305,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.2.0</version>
 					<executions>
 						<execution>
 							<id>add-source</id>
@@ -325,7 +325,7 @@
 				<!-- COMPILING -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 					<configuration>
 						<nonFilteredFileExtensions>
 							<nonFilteredFileExtension>jks</nonFilteredFileExtension>
@@ -336,7 +336,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<useIncrementalCompilation>true</useIncrementalCompilation>
 						<release>${maven.compiler.target}</release>
@@ -456,7 +456,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -509,7 +509,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>3.1.8</version>
+					<version>4.2.0</version>
 					<configuration>
 						<effort>more</effort>
 						<jvmArgs>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</jvmArgs>
@@ -529,7 +529,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.2</version>
+					<version>0.8.6</version>
 					<executions>
 						<execution>
 							<id>prepare-agent</id>
@@ -543,7 +543,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.8</version>
+					<version>3.14.0</version>
 					<configuration>
 						<skip>true</skip>
 						<rulesets>
@@ -567,7 +567,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
+					<version>3.0.0-M5</version>
 					<configuration>
 						<!-- <debugForkedProcess>true</debugForkedProcess> -->
 						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED --illegal-access=deny</argLine>
@@ -577,7 +577,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.18.1</version>
+					<version>3.0.0-M5</version>
 					<configuration>
 						<includes>
 							<include>**/*IT.java</include>
@@ -599,7 +599,7 @@
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
-					<version>2.2.4</version>
+					<version>4.0.3</version>
 					<configuration>
 						<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 						<dateFormat>yyyyMMdd-HHmmss</dateFormat>
@@ -627,7 +627,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.0</version>
 					<configuration>
 						<failOnError>false</failOnError>
 						<additionalparam>-Xdoclint:none</additionalparam>
@@ -657,7 +657,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
@@ -694,7 +694,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.8.2</version>
+					<version>3.0.0-M1</version>
 					<configuration>
 						<skip>true</skip>
 					</configuration>
@@ -857,7 +857,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.8</version>
+				<version>3.14.0</version>
 				<configuration>
 					<skip>true</skip>
 					<rulesets>
@@ -870,7 +870,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.1.1</version>
 				<configuration>
 					<configLocation>config/sun_checks.xml</configLocation>
 				</configuration>
@@ -896,13 +896,13 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
-			<version>4.2</version>
+			<version>4.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
-			<version>3.1.8</version>
+			<!-- <version>4.2.0</version> -->
 		</dependency>
 
 	</dependencies>
@@ -918,12 +918,13 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.25</version>
+				<version>1.7.30</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-annotations</artifactId>
-				<version>3.1.8</version>
+				<!-- <version>3.1.8</version> -->
+				<version>4.2.0</version>
 				<scope>provided</scope>
 			</dependency>
 		</dependencies>
