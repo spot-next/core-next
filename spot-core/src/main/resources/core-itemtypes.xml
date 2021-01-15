@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+<types
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="https://core-next.io/schemas/v2/itemtypes.xsd">
 
 	<!-- atomic java types -->
 	<!-- primitive types -->
@@ -122,10 +123,10 @@
 			<property name="serializeNulls" type="boolean" />
 			<property name="format" type="DataFormat">
 				<description>Specifies the serialization format.</description>
-				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>
 				<annotations>
 					<annotation javaClass="javax.validation.constraints.NotNull" />
 				</annotations>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>
 			</property>
 		</properties>
 	</bean>
@@ -695,4 +696,3 @@
 	</relation>
 
 </types>
-

@@ -1,6 +1,7 @@
 package io.spotnext.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.EnableLoadTimeWeaving;
@@ -14,8 +15,11 @@ import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.persistence.service.QueryService;
 
 /**
- * This is the main entry point for the application. After the application has been initialized, {@link io.spotnext.core.CoreInit#initialize()},
- * {@link io.spotnext.core.CoreInit#importInitialData()} and {@link io.spotnext.core.CoreInit#importSampleData()} will be called in that exact order.
+ * This is the main entry point for the application. After the application has
+ * been initialized, {@link io.spotnext.core.CoreInit#initialize()},
+ * {@link io.spotnext.core.CoreInit#importInitialData()} and
+ * {@link io.spotnext.core.CoreInit#importSampleData()} will be called in that
+ * exact order.
  *
  * @author mojo2012
  * @version 1.0
@@ -54,7 +58,8 @@ public class CoreInit extends ModuleInit {
 		importScript("/data/initial/catalogs.impex", "Importing catalogs");
 	}
 
-	// @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Stream is closed in ImportService")
+	// @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification =
+	// "Stream is closed in ImportService")
 	@Log(message = "Importing sample data for $classSimpleName", measureExecutionTime = true)
 	@Override
 	protected void importSampleData() throws ModuleInitializationException {

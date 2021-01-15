@@ -1,10 +1,9 @@
 package io.spotnext.test.registry;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.junit.Test;
 
 import io.spotnext.core.infrastructure.support.spring.BuildInfo;
 import io.spotnext.core.infrastructure.support.spring.Registry;

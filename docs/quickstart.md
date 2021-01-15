@@ -170,7 +170,7 @@ First we add the new `Party` type:
 			<description>The unique title of the party</description>
 			<modifiers unique="true" />
 			<annotations>
-				<annotation javaClass="javax.validation.constraints.NotNull" />
+				<annotation javaClass="jakarta.validation.constraints.NotNull" />
 			</annotations>
 		</property>
 		<property name="motto" type="LocalizedString" localized="true">
@@ -195,7 +195,7 @@ First we add the new `Party` type:
 > Add the /src/gen/java` folder to your IDE's build path, otherwise the IDE might not be able to resolve the newly generated classes!
 
 Both the **name and the package are mandatory** as some java code is generated out of this XML snippet. Every item has a unique `PK` to distinquish different objects in the database. Additionally we added the "unique-modifier" to the `title` property. This creates another database constraint that only allows one `Party` with the same title.
-The validator element `javax.validation.constraints.NotNull` adds a [JSR-303 validation](https://beanvalidation.org/1.0/spec/) to the property. Basically it means that the value may not be `null` when saving.
+The validator element `jakarta.validation.constraints.NotNull` adds a [JSR-303 validation](https://beanvalidation.org/1.0/spec/) to the property. Basically it means that the value may not be `null` when saving.
 The description elements will be rendered as Javadoc.
 
 What we are still missing is list of guests. In general there are two options to add a collection property to an Item type:
@@ -634,7 +634,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import javax.annotation.Resource;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import io.spotnext.core.CoreInit;
 import io.spotnext.core.persistence.query.JpqlQuery;

@@ -1,8 +1,7 @@
 package io.spotnext.core.testing;
 
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.model.InitializationError;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import io.spotnext.core.infrastructure.support.init.ModuleInit;
 import io.spotnext.core.infrastructure.support.spring.Registry;
@@ -15,7 +14,7 @@ import io.spotnext.support.util.ClassUtil;
  * @version 1.0
  * @since 1.0
  */
-public class SpotJunitRunner extends SpringJUnit4ClassRunner {
+public class SpotSpringExtension extends SpringExtension {
 
 	static {
 		ModuleInit.initializeWeavingSupport();
@@ -29,21 +28,19 @@ public class SpotJunitRunner extends SpringJUnit4ClassRunner {
 	 * @param clazz a {@link java.lang.Class} object.
 	 * @throws org.junit.runners.model.InitializationError if any.
 	 */
-	public SpotJunitRunner(final Class<?> clazz) throws InitializationError {
-		super(clazz);
+	public SpotSpringExtension() {
+		super();
 
-		testAnnotation = ClassUtil.getAnnotation(clazz, IntegrationTest.class);
+	}
+
+	@Override
+	public void beforeTestExecution(ExtensionContext context) throws Exception {
+		testAnnotation = ClassUtil.getAnnotation(context.getTestClass().get(), IntegrationTest.class);
 
 		if (testAnnotation != null) {
 			Registry.setMainClass(this.testAnnotation.initClass());
 		}
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void run(final RunNotifier notifier) {
-		notifier.addListener(new SpotJunitRunListener());
-		notifier.fireTestRunStarted(getDescription());
-		super.run(notifier);
+		
+		super.beforeTestExecution(context);
 	}
 }

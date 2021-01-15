@@ -1,7 +1,7 @@
 package io.spotnext.sample.interceptor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import io.spotnext.core.CoreInit;
@@ -33,6 +33,6 @@ public class DefaultUserTypeIT extends AbstractIntegrationTest {
 		modelService.save(user);
 		modelService.refresh(user);
 
-		Assert.assertEquals(UserType.REGISTERED, user.getType());
+		Assertions.assertEquals(UserType.REGISTERED, user.getType());
 	}
 }

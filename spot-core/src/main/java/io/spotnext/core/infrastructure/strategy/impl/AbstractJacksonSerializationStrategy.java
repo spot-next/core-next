@@ -3,9 +3,6 @@ package io.spotnext.core.infrastructure.strategy.impl;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 
-import org.apache.commons.lang3.SerializationException;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +20,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import org.apache.commons.lang3.SerializationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.annotation.logging.Log;
 import io.spotnext.core.infrastructure.exception.DeserializationException;
@@ -72,7 +72,7 @@ public abstract class AbstractJacksonSerializationStrategy extends AbstractServi
 		jacksonMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		jacksonMapper.configure(MapperFeature.USE_GETTERS_AS_SETTERS, false);
 
-		jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
+//		jacksonMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"));
 
 		final TypeResolverBuilder<?> typeResolver = new ItemTypeResolverBuilder();
 		typeResolver.init(JsonTypeInfo.Id.CUSTOM, new ItemTypeResolver());

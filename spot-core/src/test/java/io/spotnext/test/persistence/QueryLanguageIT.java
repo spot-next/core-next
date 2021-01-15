@@ -1,8 +1,8 @@
 package io.spotnext.test.persistence;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.persistence.query.JpqlQuery;
@@ -48,7 +48,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.setEagerFetchRelations(true);
 		final QueryResult<UserGroup> result = queryService.query(query);
 
-		Assert.assertTrue(result.getResults().size() > 0);
+		Assertions.assertTrue(result.getResults().size() > 0);
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assertions.assertEquals(result.getResults().get(0).getUid(), user.getUid());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<String> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResults().get(0), user.getUid());
+		Assertions.assertEquals(result.getResults().get(0), user.getUid());
 	}
 
 	@Test
@@ -76,12 +76,12 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
+		Assertions.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assertions.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	// not yet working as the column name is not automatically used as alias.
-	@Ignore
+	@Disabled
 	@Test
 	public void testDtoQueryWithoutAlias() throws Exception {
 		final JpqlQuery<UserData> query = new JpqlQuery<>("SELECT uid, shortName FROM User u WHERE uid = :uid",
@@ -89,8 +89,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		query.addParam("uid", "testUser");
 		final QueryResult<UserData> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
+		Assertions.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assertions.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	@Test
@@ -98,8 +98,8 @@ public class QueryLanguageIT extends AbstractIntegrationTest {
 		final LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("testUser"));
 		final QueryResult<User> result = queryService.query(query);
 
-		Assert.assertEquals(result.getResults().get(0).getUid(), user.getUid());
-		Assert.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
+		Assertions.assertEquals(result.getResults().get(0).getUid(), user.getUid());
+		Assertions.assertEquals(result.getResults().get(0).getShortName(), user.getShortName());
 	}
 
 	protected static class UserData {

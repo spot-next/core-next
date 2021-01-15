@@ -28,6 +28,7 @@ public class DefaultXmlSerializationStrategy extends AbstractJacksonSerializatio
 		final ObjectMapper objectMapper = new XmlMapper(xmlModule);
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		
+		objectMapper.configure(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID, true);
 //		objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
 //		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 //		objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);

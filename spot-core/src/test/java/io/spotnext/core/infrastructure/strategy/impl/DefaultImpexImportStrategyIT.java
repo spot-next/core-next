@@ -3,8 +3,8 @@ package io.spotnext.core.infrastructure.strategy.impl;
 import java.util.Locale;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.ImpexImportException;
@@ -39,7 +39,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 	// INSERT
 
-	@Test
+	@org.junit.jupiter.api.Test
 	public void testLocalizedString() throws ImpexImportException {
 		final ImportConfiguration conf = new ImportConfiguration();
 		conf.setScriptIdentifier("/data/test/localized_string.impex");
@@ -50,8 +50,8 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 
 		final Country country = result.getResults().get(0);
 
-		Assert.assertEquals("test land", country.getShortName(Locale.ENGLISH));
-		Assert.assertEquals("Testland", country.getShortName(Locale.GERMANY));
+		Assertions.assertEquals("test land", country.getShortName(Locale.ENGLISH));
+		Assertions.assertEquals("Testland", country.getShortName(Locale.GERMANY));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		final LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getUid().equals("testMedia"));
 		final QueryResult<Media> result = queryService.query(query);
 
-		Assert.assertTrue(result.getTotalCount() == 1);
+		Assertions.assertTrue(result.getTotalCount() == 1);
 	}
 
 	@Test
@@ -75,14 +75,14 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		final LambdaQuery<User> userQuery = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("testuser"));
 		final QueryResult<User> userResult = queryService.query(userQuery);
 
-		Assert.assertTrue(userResult.getTotalCount() == 1);
-		Assert.assertEquals("testuser", userResult.getResults().get(0).getUid());
+		Assertions.assertTrue(userResult.getTotalCount() == 1);
+		Assertions.assertEquals("testuser", userResult.getResults().get(0).getUid());
 
 		final LambdaQuery<UserGroup> userGroupQuery = new LambdaQuery<>(UserGroup.class).filter(u -> u.getUid().equals("test-group"));
 		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
-		Assert.assertTrue(userGroupResult.getTotalCount() == 1);
-		Assert.assertEquals("test-group", userGroupResult.getResults().get(0).getUid());
+		Assertions.assertTrue(userGroupResult.getTotalCount() == 1);
+		Assertions.assertEquals("test-group", userGroupResult.getResults().get(0).getUid());
 	}
 
 	@Test
@@ -98,13 +98,13 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		userGroupQuery.setIgnoreCache(true);
 		final QueryResult<UserGroup> userGroupResult = queryService.query(userGroupQuery);
 
-		Assert.assertTrue(userResult.getTotalCount() == 1);
-		Assert.assertEquals("testuser", userResult.getResults().get(0).getUid());
-		Assert.assertTrue(userGroupResult.getTotalCount() == 1);
-		Assert.assertEquals("test-group", userGroupResult.getResults().get(0).getUid());
+		Assertions.assertTrue(userResult.getTotalCount() == 1);
+		Assertions.assertEquals("testuser", userResult.getResults().get(0).getUid());
+		Assertions.assertTrue(userGroupResult.getTotalCount() == 1);
+		Assertions.assertEquals("test-group", userGroupResult.getResults().get(0).getUid());
 
 		// check if user is in group
-		Assert.assertEquals("testuser", userGroupResult.getResults().get(0).getMembers().iterator().next().getUid());
+		Assertions.assertEquals("testuser", userGroupResult.getResults().get(0).getMembers().iterator().next().getUid());
 	}
 
 	// INSERT_UPDATE
@@ -123,7 +123,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		LambdaQuery<UserGroup> query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getUid().equals(groupId));
 		QueryResult<UserGroup> result = queryService.query(query);
 
-		Assert.assertNull(result.getResults().get(0).getShortName());
+		Assertions.assertNull(result.getResults().get(0).getShortName());
 
 		// execute update
 		final ImportConfiguration conf = new ImportConfiguration();
@@ -134,8 +134,8 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		query = new LambdaQuery<>(UserGroup.class).filter(u -> u.getUid().equals(groupId));
 		result = queryService.query(query);
 
-		Assert.assertEquals(groupShortName, result.getResults().get(0).getShortName());
-		Assert.assertTrue(CollectionUtils.isEmpty(result.getResults().get(0).getGroups()));
+		Assertions.assertEquals(groupShortName, result.getResults().get(0).getShortName());
+		Assertions.assertTrue(CollectionUtils.isEmpty(result.getResults().get(0).getGroups()));
 	}
 
 	// REMOVE
@@ -150,7 +150,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		LambdaQuery<Media> query = new LambdaQuery<>(Media.class).filter(u -> u.getUid().equals("testMedia"));
 		QueryResult<Media> result = queryService.query(query);
 
-		Assert.assertTrue(result.getTotalCount() == 1);
+		Assertions.assertTrue(result.getTotalCount() == 1);
 
 		// and them remove it again
 		conf = new ImportConfiguration();
@@ -161,7 +161,7 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		query = new LambdaQuery<>(Media.class).filter(u -> u.getUid().equals("testMedia"));
 		result = queryService.query(query);
 
-		Assert.assertTrue(result.getTotalCount() == 0);
+		Assertions.assertTrue(result.getTotalCount() == 0);
 	}
 
 	@Test
@@ -175,12 +175,12 @@ public class DefaultImpexImportStrategyIT extends AbstractIntegrationTest {
 		LambdaQuery<User> query = new LambdaQuery<>(User.class).filter(u -> u.getUid().equals("refUser"));
 		QueryResult<User> result = queryService.query(query);
 
-		Assert.assertTrue(result.getTotalCount() == 1);
+		Assertions.assertTrue(result.getTotalCount() == 1);
 
 		User refUser = result.getResults().get(0);
 		UserGroup refGroup = (UserGroup) refUser.getGroups().iterator().next();
 
-		Assert.assertEquals("refGroup", refGroup.getUid());
+		Assertions.assertEquals("refGroup", refGroup.getUid());
 
 	}
 }

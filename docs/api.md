@@ -418,7 +418,7 @@ There are two services dealing with this topic:
 * `I18NService`: is basically just a convenience wrapper to access `Locale` and `Currency` information
 * `L10NService`: handles message translation/interpolation.
 
-The `L10NService` both implements `org.springframework.context.MessageSource` and `javax.validation.MessageInterpolator`. Therefore it can easily be plugged into a lot of existing frameworks, or just used manually. At first, messages are looked up in the persistence store (`io.spotnext.itemtype.core.internationalization.LocalizationValue` items).
+The `L10NService` both implements `org.springframework.context.MessageSource` and `jakarta.validation.MessageInterpolator`. Therefore it can easily be plugged into a lot of existing frameworks, or just used manually. At first, messages are looked up in the persistence store (`io.spotnext.itemtype.core.internationalization.LocalizationValue` items).
 This allows for translations to be changed at runtime, e.g through the REST interface.
 
 If the message key cannot be resolved, the fallback (Spring) parent message source is invoked. It looks up the keys in `messages_XX.properties` files.
@@ -477,7 +477,7 @@ These defintions look like this:
 		<properties>
 			<property name="type" type="UserType">
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 				<defaultValue>io.spotnext.sample.types.enumerations.UserType.REGISTERED
 				</defaultValue>

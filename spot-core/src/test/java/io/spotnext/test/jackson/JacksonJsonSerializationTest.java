@@ -2,8 +2,9 @@ package io.spotnext.test.jackson;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.strategy.impl.DefaultJsonSerializationStrategy;
@@ -12,9 +13,10 @@ import io.spotnext.itemtype.core.user.User;
 
 public class JacksonJsonSerializationTest extends AbstractSerializationTest {
 
-	DefaultJsonSerializationStrategy jsonStrategy = new DefaultJsonSerializationStrategy();
+	private DefaultJsonSerializationStrategy jsonStrategy = new DefaultJsonSerializationStrategy();
 
 	@Override
+	@BeforeEach
 	public void setup() throws IOException, UnknownTypeException, ClassNotFoundException {
 		super.setup();
 
@@ -34,12 +36,12 @@ public class JacksonJsonSerializationTest extends AbstractSerializationTest {
 		Catalog sourceCatalog = mockCatalog(1);
 		Catalog destCatalog = mockCatalog(2);
 
-		Assert.assertEquals(1, sourceCatalog.getVersions().size());
-		Assert.assertEquals(2, destCatalog.getVersions().size());
+		Assertions.assertEquals(1, sourceCatalog.getVersions().size());
+		Assertions.assertEquals(2, destCatalog.getVersions().size());
 
 		text = jsonStrategy.serialize(sourceCatalog);
 		destCatalog = jsonStrategy.deserialize(text, destCatalog);
 
-		Assert.assertEquals(sourceCatalog.getVersions().size(), destCatalog.getVersions().size());
+		Assertions.assertEquals(sourceCatalog.getVersions().size(), destCatalog.getVersions().size());
 	}
 }

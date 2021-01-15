@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidationException;
 
+
 /**
  * <p>ValidationService interface.</p>
  *
@@ -16,8 +17,7 @@ public interface ValidationService {
 	/**
 	 * Validates JSR-303 annotations of the given object.
 	 *
-	 * @param object
-	 *            to validate
+	 * @param object to validate
 	 * @throws javax.validation.ValidationException
 	 * @param <T> a T object.
 	 * @return a {@link java.util.Set} object.
@@ -25,11 +25,9 @@ public interface ValidationService {
 	<T extends Object> Set<ConstraintViolation<T>> validate(T object) throws ValidationException;
 
 	/**
-	 * Converts a collection of {@link javax.validation.ConstraintViolation} objects into a
-	 * readable message form.
+	 * Converts a collection of {@link javax.validation.ConstraintViolation} objects into a readable message form.
 	 *
-	 * @param violations
-	 *            the violations to process
+	 * @param violations the violations to process
 	 * @return the human-readable string representation
 	 */
 	String convertToReadableMessage(Set<ConstraintViolation<?>> violations);

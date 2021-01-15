@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -61,8 +61,8 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<Party> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResults().size());
-		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
+		Assertions.assertEquals(1, result.getResults().size());
+		Assertions.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
 	}
 
 	@Test
@@ -72,8 +72,8 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<Party> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResults().size());
-		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
+		Assertions.assertEquals(1, result.getResults().size());
+		Assertions.assertEquals(PARTY_TITLE, result.getResults().get(0).getTitle());
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final Party result = modelService.get(query);
 
-		Assert.assertEquals(PARTY_TITLE, result.getTitle());
+		Assertions.assertEquals(PARTY_TITLE, result.getTitle());
 	}
 
 	@Test
@@ -96,9 +96,9 @@ public class PartyPersistenceIT extends AbstractIntegrationTest {
 
 		final QueryResult<PartyData> result = queryService.query(query);
 
-		Assert.assertEquals(1, result.getResults().size());
-		Assert.assertEquals(PartyData.class, result.getResults().get(0).getClass());
-		Assert.assertEquals(PARTY_TITLE, result.getResults().get(0).getPartyTitle());
+		Assertions.assertEquals(1, result.getResults().size());
+		Assertions.assertEquals(PartyData.class, result.getResults().get(0).getClass());
+		Assertions.assertEquals(PARTY_TITLE, result.getResults().get(0).getPartyTitle());
 	}
 
 	public static class PartyData {

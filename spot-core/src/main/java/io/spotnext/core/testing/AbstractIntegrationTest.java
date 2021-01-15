@@ -3,13 +3,12 @@ package io.spotnext.core.testing;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.TransactionStatus;
 
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -42,7 +42,8 @@ import io.spotnext.support.util.ClassUtil;
  */
 @Import(TestConfiguration.class)
 @TestPropertySource(locations = "classpath:/core-testing.properties", properties = { "spring.main.allow-bean-definition-overriding=true" })
-@RunWith(SpotJunitRunner.class)
+//@RunWith(SpotJunitRunner.class)
+@ExtendWith(SpotSpringExtension.class)
 @IntegrationTest
 @SpringBootTest(classes = CoreInit.class)
 //@SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
@@ -66,9 +67,6 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	@Autowired
 	protected ModelService modelService;
 
-	@Rule
-	public TestName testNameRule = new TestName();
-
 	protected String getTestPackagePath() {
 		return this.getClass().getPackage().getName();
 	}
@@ -76,14 +74,14 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	/**
 	 * Called before all tests are executed.
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void initialize() {
 	}
 
 	/**
 	 * Called when all tests have been executed.
 	 */
-	@AfterClass
+	@AfterAll
 	public static void shutdown() {
 	}
 
@@ -96,8 +94,8 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	 * @throw IllegalStateException if module initialization didn't finish within the max allowed time.
 	 */
 	// @SuppressFBWarnings(value = "UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR", justification = "injected by spring")
-	@Before
-	public void beforeTest() throws InterruptedException {
+	@BeforeEach
+	public void beforeTest(TestInfo testInfo) throws InterruptedException {
 		MockitoAnnotations.initMocks(this);
 
 		final Class<? extends ModuleInit> initClass = Registry.getMainClass();
@@ -117,7 +115,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 			}
 		}
 
-		if (isCurrentTestmethodTransactional()) {
+		if (isCurrentTestmethodTransactional(testInfo)) {
 			transactionStatus.set(transactionService.start());
 		} else {
 			transactionStatus.set(null);
@@ -130,8 +128,8 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 		}
 	}
 
-	protected boolean isCurrentTestmethodTransactional() {
-		final Optional<Method> testMethod = ClassUtil.getMethodDefinition(this.getClass(), testNameRule.getMethodName());
+	protected boolean isCurrentTestmethodTransactional(TestInfo testInfo) {
+		final Optional<Method> testMethod = ClassUtil.getMethodDefinition(this.getClass(), testInfo.getTestMethod().get().getName());
 
 		return testMethod.isPresent() && !ClassUtil.hasAnnotation(testMethod.get(), Transactionless.class);
 	}
@@ -139,7 +137,7 @@ public abstract class AbstractIntegrationTest implements ApplicationContextAware
 	/**
 	 * Called after each test has been executed.
 	 */
-	@After
+	@AfterEach
 	public void afterTest() {
 		try {
 			teardownTest();

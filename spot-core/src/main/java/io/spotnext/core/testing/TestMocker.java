@@ -1,6 +1,6 @@
 package io.spotnext.core.testing;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,7 @@ public class TestMocker {
 		modelService.save(catalogVersionStaged);
 		modelService.refresh(catalog);
 
-		Assert.assertEquals(2, catalog.getVersions().size());
+		Assertions.assertEquals(2, catalog.getVersions().size());
 
 		return catalog;
 	}

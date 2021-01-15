@@ -44,3 +44,4 @@ ajcore.*.txt
 .idea
 *.iws
 .history
+pom.xml.versionsBackup

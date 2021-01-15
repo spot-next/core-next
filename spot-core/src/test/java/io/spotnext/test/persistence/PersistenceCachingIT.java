@@ -1,13 +1,12 @@
 package io.spotnext.test.persistence;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 import io.spotnext.core.persistence.hibernate.impl.HibernatePersistenceService;
 import io.spotnext.core.testing.AbstractIntegrationTest;
@@ -32,7 +31,7 @@ public class PersistenceCachingIT extends AbstractIntegrationTest {
 	protected void teardownTest() {
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testSingleItemLoad() {
 		persistenceService.getSession().clear();

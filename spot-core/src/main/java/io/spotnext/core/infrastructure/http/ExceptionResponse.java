@@ -3,7 +3,7 @@ package io.spotnext.core.infrastructure.http;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

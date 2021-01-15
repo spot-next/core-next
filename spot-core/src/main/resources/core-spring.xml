@@ -18,13 +18,15 @@
 	<!-- enable @Value property resolution -->
 	<context:property-placeholder />
 
-	<context:component-scan base-package="io.spotnext.infrastructure.scheduling" />
-	<context:component-scan base-package="io.spotnext.infrastructure.support.spring" />
-	<context:component-scan base-package="io.spotnext.infrastructure.spring" />
-	<context:component-scan base-package="io.spotnext.infrastructure.service" />
-	<context:component-scan base-package="io.spotnext.infrastructure.strategy" />
-	<context:component-scan base-package="io.spotnext.infrastructure.resolver" />
-	<context:component-scan base-package="io.spotnext.infrastructure.interceptor" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.scheduling" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.support.spring" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.spring" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.service" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.strategy" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.resolver" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.interceptor" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.aspect" />
+	<context:component-scan base-package="io.spotnext.core.infrastructure.service" />
 	<context:component-scan base-package="io.spotnext.core.management.service" />
 	<context:component-scan base-package="io.spotnext.core.management.converter" />
 	<context:component-scan base-package="io.spotnext.core.management.populator" />
@@ -35,7 +37,6 @@
 	<context:component-scan base-package="io.spotnext.core.persistence.valueprovider" />
 	<context:component-scan base-package="io.spotnext.core.security.service" />
 	<context:component-scan base-package="io.spotnext.core.security.strategy" />
-	<context:component-scan base-package="io.spotnext.core.infrastructure.aspect" />
 
 	<context:component-scan base-package="io.spotnext.itemtype" />
 

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.spotnext.cms.exception.PageNotFoundException;
 import io.spotnext.cms.service.TemplateRenderService;
 import io.spotnext.core.infrastructure.http.ModelAndView;
-import io.spotnext.itemtype.cms.CmsPage;
 
 /**
  * The abstract base class class for HTTP endpoints that will be rendered using

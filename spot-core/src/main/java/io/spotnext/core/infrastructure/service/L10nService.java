@@ -2,11 +2,11 @@ package io.spotnext.core.infrastructure.service;
 
 import java.util.Locale;
 
-import javax.validation.MessageInterpolator;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+
+import javax.validation.MessageInterpolator;
 
 /**
  * <p>L10nService interface.</p>

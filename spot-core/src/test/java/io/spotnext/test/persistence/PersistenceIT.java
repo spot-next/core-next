@@ -1,8 +1,9 @@
 package io.spotnext.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -12,11 +13,9 @@ import java.util.stream.Collectors;
 import javax.persistence.OneToMany;
 import javax.persistence.OptimisticLockException;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.spotnext.core.infrastructure.exception.ModelNotFoundException;
@@ -42,8 +41,8 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	@Autowired
 	protected SequenceGenerator sequenceGenerator;
 
-	@Rule
-	public ExpectedException expectedExeption = ExpectedException.none();
+//	@Rule
+//	public ExpectedException expectedExeption = ExpectedException.none();
 
 	@Override
 	protected void prepareTest() {
@@ -53,7 +52,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	protected void teardownTest() {
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	public void testDuplicateEntityAttachedToPersistenceContext() {
 		final User loaded = modelService.get(User.class, Collections.singletonMap(User.PROPERTY_UID, "tester1"));
@@ -77,7 +76,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 	 * The catalogVersion Default:Online already be available through the initial data. Therefore saving a second item will cause a uniqueness constraint
 	 * violation.
 	 */
-	@Test(expected = ModelSaveException.class)
+	@Test
 	public void testUniqueConstraintOfSubclass() {
 		final Catalog catalog = modelService.get(Catalog.class, Collections.singletonMap(Catalog.PROPERTY_UID, "Default"));
 
@@ -85,7 +84,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		version.setCatalog(catalog);
 		version.setUid("Online");
 
-		modelService.save(version);
+		assertThrows(ModelSaveException.class, () -> modelService.save(version));
 	}
 
 	private User createUser(final String id, final String shortName) {
@@ -128,10 +127,10 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final Currency loadedCurrency = modelService.get(Currency.class, currency.getId());
 
 		// these locales are not the same as the locales with country codes!
-		Assert.assertNull(loadedCurrency.getName(Locale.ENGLISH));
-		Assert.assertNull(loadedCurrency.getName(Locale.GERMAN));
-		Assert.assertEquals(english, loadedCurrency.getName(Locale.UK));
-		Assert.assertEquals(german, loadedCurrency.getName(Locale.GERMANY));
+		Assertions.assertNull(loadedCurrency.getName(Locale.ENGLISH));
+		Assertions.assertNull(loadedCurrency.getName(Locale.GERMAN));
+		Assertions.assertEquals(english, loadedCurrency.getName(Locale.UK));
+		Assertions.assertEquals(german, loadedCurrency.getName(Locale.GERMANY));
 	}
 
 	@Test
@@ -146,8 +145,8 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedUser = modelService.get(User.class, user.getId());
 
-		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
+		Assertions.assertEquals(1, loadedUser.getAddresses().size());
+		Assertions.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -172,8 +171,8 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		Logger.debug("Addresses after load: "
 				+ user.getAddresses().stream().map(a -> "ID = " + a.getId() + ", streetname = " + a.getStreetName()).collect(Collectors.joining(",")));
 
-		Assert.assertEquals(1, loadedUser.getAddresses().size());
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
+		Assertions.assertEquals(1, loadedUser.getAddresses().size());
+		Assertions.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -189,7 +188,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final User loadedUser = modelService.get(User.class, user.getId());
 
-		Assert.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
+		Assertions.assertEquals(loadedUser.getAddresses().iterator().next().getId(), address.getId());
 	}
 
 	@Test
@@ -217,12 +216,12 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final UserGroup loadedGroup1 = modelService.get(UserGroup.class, group1.getId());
 		final UserGroup loadedGroup2 = modelService.get(UserGroup.class, group2.getId());
 
-		Assert.assertEquals(2, loadedUser1.getGroups().size());
-		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup1));
-		Assert.assertTrue(loadedUser1.getGroups().contains(loadedGroup2));
+		Assertions.assertEquals(2, loadedUser1.getGroups().size());
+		Assertions.assertTrue(loadedUser1.getGroups().contains(loadedGroup1));
+		Assertions.assertTrue(loadedUser1.getGroups().contains(loadedGroup2));
 
-		Assert.assertEquals(1, loadedUser2.getGroups().size());
-		Assert.assertTrue(loadedUser2.getGroups().contains(loadedGroup2));
+		Assertions.assertEquals(1, loadedUser2.getGroups().size());
+		Assertions.assertTrue(loadedUser2.getGroups().contains(loadedGroup2));
 	}
 
 	@Test
@@ -240,13 +239,13 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		final LocalizationValue loaded = modelService.getByExample(example);
 
-		Assert.assertEquals(localization.getUid(), loaded.getUid());
+		Assertions.assertEquals(localization.getUid(), loaded.getUid());
 
 		// test using map
 		final Map<String, Object> exampleMap = Collections.singletonMap(LocalizationValue.PROPERTY_UID, "test.key");
 		final LocalizationValue resultFromMap = modelService.get(LocalizationValue.class, exampleMap);
 
-		Assert.assertEquals(localization.getUid(), resultFromMap.getUid());
+		Assertions.assertEquals(localization.getUid(), resultFromMap.getUid());
 	}
 
 	@Test
@@ -256,7 +255,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 		modelService.save(user);
 
-		Assert.assertNotNull(user.getUid());
+		Assertions.assertNotNull(user.getUid());
 	}
 
 	@Test
@@ -272,7 +271,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 
 	@Test
 	public void testValidateModelRecursively() {
-		expectedExeption.expect(ModelSaveException.class);
+//		expectedExeption.expect(ModelSaveException.class);
 
 		// TODO: how to handle localized messages?
 		// expectedExeption.expectMessage("User.id must not be null");
@@ -283,7 +282,7 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		final User user = modelService.create(User.class);
 		group.getMembers().add(user);
 
-		modelService.save(group);
+		assertThrows(ModelSaveException.class, () -> modelService.save(group));
 	}
 
 	/**
@@ -305,14 +304,14 @@ public class PersistenceIT extends AbstractIntegrationTest {
 			lastUsedId--;
 		}
 
-		Assert.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
+		Assertions.assertEquals(user.getTypeCode() + "-" + lastUsedId, user.getUid());
 	}
 
 	/**
 	 * If the many side of a {@link OneToMany} relation has set its property to unique=true, it has to be removed when it is removed from the one-side's
 	 * collection property.
 	 */
-	@Test(expected = ModelNotFoundException.class)
+	@Test
 	public void testOneToManyWithUniqueConstraint() {
 		final Catalog catalog = testMocker.mockCatalog();
 
@@ -324,14 +323,14 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		modelService.save(catalog);
 		modelService.refresh(catalog);
 
-		Assert.assertEquals(1, catalog.getVersions().size());
+		Assertions.assertEquals(1, catalog.getVersions().size());
 
 		// throws an exception if already deleted
-		modelService.refresh(cvToDelete);
+		assertThrows(ModelNotFoundException.class, () -> modelService.refresh(cvToDelete));
 	}
 
-	@Ignore
-	@Test(expected = ModelNotFoundException.class)
+	@Disabled
+	@Test
 	public void testOneToManyWithUniqueConstraint_WithReference() {
 		final Catalog catalog = testMocker.mockCatalog();
 
@@ -344,9 +343,9 @@ public class PersistenceIT extends AbstractIntegrationTest {
 		modelService.save(catalog);
 		modelService.refresh(catalog);
 
-		Assert.assertEquals(1, catalog.getVersions().size());
+		Assertions.assertEquals(1, catalog.getVersions().size());
 
 		// throws an exception if already deleted
-		modelService.refresh(cvToDelete);
+		assertThrows(ModelNotFoundException.class, () -> modelService.refresh(cvToDelete));
 	}
 }

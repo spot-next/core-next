@@ -9,8 +9,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
-import io.spotnext.infrastructure.type.Item;
-
 /**
  * <p>
  * Abstract ItemSerializationMixIn class.
@@ -23,14 +21,16 @@ import io.spotnext.infrastructure.type.Item;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.ANY, isGetterVisibility = Visibility.NONE)
 // fixes unserializable hibernate proxies
 @JsonPropertyOrder({ "typeCode", "id", "version", "createdAt", "createdBy", "lastModifiedAt", "lastModifiedBy" })
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties", "isPersisted" })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "uniquenessHash", "deleted", "uniqueProperties",
+		"isPersisted" })
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", resolver = SpotObjectIdResolver.class)
 public abstract class ItemSerializationMixIn {
 
 	@JsonSerialize
 	public abstract String getTypeCode();
 
-	// render IDs as string in JSON, because otherwise it would cause an overflow, javascript can't interpret it correctly
+	// render IDs as string in JSON, because otherwise it would cause an overflow,
+	// javascript can't interpret it correctly
 	// see also ItemProxySerializer and ItemCollectionProxySerializer
 	@JsonSerialize(using = ToStringSerializer.class)
 	public abstract long getId();

@@ -78,7 +78,8 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 //	@Index(name = "idx_lastModifiedAt")
 	@UpdateTimestamp
 	@LastModifiedDate
-	// the index is needed for ORDER BY in combination with FETCH JOINS and pagination!
+	// the index is needed for ORDER BY in combination with FETCH JOINS and
+	// pagination!
 //	@Property(indexed = true)
 	@Index(name = "idx_Item_lastModifiedAt")
 	protected Date lastModifiedAt;
@@ -90,14 +91,17 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	protected int version = -1;
 
 	/**
-	 * Indicates that the given item is deleted. This property can be used to implemented "soft-deletion"
+	 * Indicates that the given item is deleted. This property can be used to
+	 * implemented "soft-deletion"
 	 */
 	@Column
 	protected boolean deleted = false;
 
 	/**
-	 * Returns a hash code calculated of all properties that are defined as unique (with the {@link Property} annotation). This is necessary to implement
-	 * extendible combined unique constraints, regardless of which JPA inheritance strategy is used
+	 * Returns a hash code calculated of all properties that are defined as unique
+	 * (with the {@link Property} annotation). This is necessary to implement
+	 * extendible combined unique constraints, regardless of which JPA inheritance
+	 * strategy is used
 	 */
 	@Column(name = "uniquenessHash", unique = true, nullable = false)
 	private Integer uniquenessHash = null;
@@ -122,8 +126,9 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	}
 
 	/**
-	 * Update uniqueness hash. This is the only column that has JPA unique-key constraint! This is necessary to make the {@link Column#unique()} annotation work
-	 * with all JPA inheritance strategies.
+	 * Update uniqueness hash. This is the only column that has JPA unique-key
+	 * constraint! This is necessary to make the {@link Column#unique()} annotation
+	 * work with all JPA inheritance strategies.
 	 */
 	protected void updateUniquenessHash() {
 		final Map<String, Object> uniqueProperties = getUniqueHashProperties();
@@ -159,6 +164,10 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 		updateUniquenessHash();
 	}
 
+	
+	protected void setLastModifiedAt(Date date) {
+		this.lastModifiedAt = date;
+	}
 	protected void setLastModifiedAt() {
 		this.lastModifiedAt = new Date();
 	}
@@ -184,7 +193,8 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	}
 
 	public LocalDateTime getLastModifiedAt() {
-		return lastModifiedAt != null ? LocalDateTime.ofInstant(lastModifiedAt.toInstant(), ZoneId.systemDefault()) : null;
+		return lastModifiedAt != null ? LocalDateTime.ofInstant(lastModifiedAt.toInstant(), ZoneId.systemDefault())
+				: null;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -192,8 +202,9 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	}
 
 	/**
-	 * @return true if the item has a ID. It is assumed that it has been saved before. If you set a ID manually and save the item, an existing item with the
-	 *         same ID will be overwritten.
+	 * @return true if the item has a ID. It is assumed that it has been saved
+	 *         before. If you set a ID manually and save the item, an existing item
+	 *         with the same ID will be overwritten.
 	 */
 	public boolean isPersisted() {
 		return id != null;
@@ -210,7 +221,8 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	/**
 	 * Returns the names and the values of all properties annotated with @Unique.
 	 * 
-	 * @return a map containing all the unique properties for this Item (key = property name)
+	 * @return a map containing all the unique properties for this Item (key =
+	 *         property name)
 	 */
 	public Map<String, Object> getUniqueHashProperties() {
 		return getProperties(this::isUniqueField);
@@ -219,7 +231,8 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	/**
 	 * Returns all fields annotated with the {@link Property} annotation.
 	 * 
-	 * @param filter can be null or a predicate that further filters the returned item properties.
+	 * @param filter can be null or a predicate that further filters the returned
+	 *               item properties.
 	 * @return all filtered item properties
 	 */
 	@JsonIgnore
@@ -241,7 +254,8 @@ public abstract class Item implements Serializable, Comparable<Item>, IndirectPr
 	}
 
 	/**
-	 * If the type and the id of the given object is the same as the current object, both are equal.
+	 * If the type and the id of the given object is the same as the current object,
+	 * both are equal.
 	 *
 	 * @see Object#equals(Object)
 	 */

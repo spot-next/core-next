@@ -1,11 +1,12 @@
 package io.spotnext.core.support.util;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.spotnext.core.support.util.data.TestClass;
 import io.spotnext.support.util.ClassUtil;
@@ -16,21 +17,21 @@ public class ClassUtilTest {
 	public void testInstantiationOfStaticInnerClass() {
 		Optional<StaticInnerClass> instance = ClassUtil.instantiate(StaticInnerClass.class);
 
-		Assert.assertTrue(instance.isPresent());
+		assertTrue(instance.isPresent());
 	}
 
 	@Test
 	public void testInstantiationOfInnerClass() {
 		Optional<InnerClass> instance = ClassUtil.instantiate(InnerClass.class);
 
-		Assert.assertTrue(instance.isPresent());
+		Assertions.assertTrue(instance.isPresent());
 	}
 
 	@Test
 	public void testInstantiationOfClass() {
 		Optional<TestClass> instance = ClassUtil.instantiate(TestClass.class);
 
-		Assert.assertTrue(instance.isPresent());
+		Assertions.assertTrue(instance.isPresent());
 	}
 
 	@Test
@@ -43,7 +44,7 @@ public class ClassUtilTest {
 		ClassUtil.visitFields(user, (field) -> Item.class.isAssignableFrom(field.getType()),
 				(field, object) -> foundObjects.add((Item) object), true);
 
-		Assert.assertEquals(4, foundObjects.size());
+		Assertions.assertEquals(4, foundObjects.size());
 	}
 
 	private static class StaticInnerClass {

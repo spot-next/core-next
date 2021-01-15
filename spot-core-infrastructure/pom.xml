@@ -83,9 +83,15 @@
 		<!-- other dependencies -->
 
 		<dependency>
+			<groupId>jakarta.el</groupId>
+			<artifactId>jakarta.el-api</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>7.0.0.Final</version>
+			<version>6.2.0.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.jboss.logging</groupId>

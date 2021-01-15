@@ -47,7 +47,7 @@ import io.spotnext.infrastructure.type.RelationNodeType;
 import io.spotnext.infrastructure.type.RelationType;
 import io.spotnext.support.weaving.AbstractBaseClassTransformer;
 import io.spotnext.support.weaving.IllegalClassTransformationException;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
