@@ -13,7 +13,7 @@
 	</parent>
 
 	<properties>
-		<ognl.version>3.2.8</ognl.version>
+		<ognl.version>3.2.18</ognl.version>
 	</properties>
 
 	<build>
@@ -103,7 +103,7 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.28</version>
+			<version>2.3.30</version>
 		</dependency>
 
 		<dependency>

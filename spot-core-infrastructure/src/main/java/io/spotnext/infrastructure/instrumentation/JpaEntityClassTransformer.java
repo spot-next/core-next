@@ -24,7 +24,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,8 +37,6 @@ import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.infrastructure.annotation.ItemType;
 import io.spotnext.infrastructure.annotation.Property;
@@ -48,6 +47,7 @@ import io.spotnext.infrastructure.type.RelationNodeType;
 import io.spotnext.infrastructure.type.RelationType;
 import io.spotnext.support.weaving.AbstractBaseClassTransformer;
 import io.spotnext.support.weaving.IllegalClassTransformationException;
+import jakarta.validation.constraints.NotNull;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
