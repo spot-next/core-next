@@ -1,9 +1,8 @@
 package io.spotnext.sample.listeners;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.simplejavamail.email.Email;
+import org.simplejavamail.api.email.Email;
 import org.simplejavamail.email.EmailBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 

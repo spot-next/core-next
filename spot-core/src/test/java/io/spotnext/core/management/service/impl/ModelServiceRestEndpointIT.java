@@ -2,8 +2,8 @@ package io.spotnext.core.management.service.impl;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,8 +14,8 @@ import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -223,7 +223,7 @@ public class ModelServiceRestEndpointIT extends AbstractIntegrationTest {
 		assertEquals(user.getShortName(), "integrationtester");
 	}
 
-	@Ignore
+	@Disabled
 	@Test
 	@Transactionless
 	public void testUpdateOneToManySideWithUniqueConstraint() throws JSONException {

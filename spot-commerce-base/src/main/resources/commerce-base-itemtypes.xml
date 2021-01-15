@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+<types
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="https://core-next.io/schemas/v2/itemtypes.xsd">
 
 	<collection elementType="AbstractOrderEntryData" name="AbstractOrderEntryDataList" collectionType="List" />
 	<collection elementType="DiscountData" name="DiscountDataList" collectionType="List" />
@@ -200,7 +202,7 @@
 				<description>The product id the price is used for.</description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="userGroup" type="UserGroup">
@@ -245,7 +247,7 @@
 			<property name="productId" type="String">
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="value" type="Integer">
@@ -264,7 +266,7 @@
 			<property name="availableAt" type="String">
 				<description>Defines a future stock and when it will be available.</description>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 		</properties>
@@ -287,7 +289,7 @@
 			<property name="customer" type="User">
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 		</properties>
@@ -306,7 +308,7 @@
 			<property name="product" type="Product">
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 		</properties>
@@ -362,7 +364,7 @@
 					The parent category, that will be used to render sub menu entries based on the sub categories and product.
 				</description>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="showOnlyCategories" type="boolean">

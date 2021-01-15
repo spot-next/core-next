@@ -2,10 +2,9 @@ package io.spotnext.test.serialzation;
 
 import java.util.Collections;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 import io.spotnext.core.infrastructure.exception.DeserializationException;
 import io.spotnext.core.infrastructure.strategy.impl.DefaultXmlSerializationStrategy;
@@ -35,14 +34,14 @@ public class DefaultXmlSerializationStrategyIT extends AbstractIntegrationTest {
 
 		User deserializedUser = xmlSerializationStrategy.deserialize(xml, User.class);
 
-		Assert.assertEquals(user.getId(), deserializedUser.getId());
-		Assert.assertEquals(user.getUid(), deserializedUser.getUid());
-		Assert.assertEquals(user.getShortName(), deserializedUser.getShortName());
-		Assert.assertEquals(user.getPassword(), deserializedUser.getPassword());
-		Assert.assertEquals(user.getEmailAddress(), deserializedUser.getEmailAddress());
-		Assert.assertEquals(user.getShortName(), deserializedUser.getShortName());
+		Assertions.assertEquals(user.getId(), deserializedUser.getId());
+		Assertions.assertEquals(user.getUid(), deserializedUser.getUid());
+		Assertions.assertEquals(user.getShortName(), deserializedUser.getShortName());
+		Assertions.assertEquals(user.getPassword(), deserializedUser.getPassword());
+		Assertions.assertEquals(user.getEmailAddress(), deserializedUser.getEmailAddress());
+		Assertions.assertEquals(user.getShortName(), deserializedUser.getShortName());
 		
-		Assert.assertEquals(user.getGroups().size(), deserializedUser.getGroups().size());
+		Assertions.assertEquals(user.getGroups().size(), deserializedUser.getGroups().size());
 	}
 
 }

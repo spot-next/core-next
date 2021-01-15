@@ -1,7 +1,7 @@
 package io.spotnext.sample.service;
 
-import org.simplejavamail.email.Email;
-import org.simplejavamail.mailer.Mailer;
+import org.simplejavamail.api.email.Email;
+import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.mailer.MailerBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

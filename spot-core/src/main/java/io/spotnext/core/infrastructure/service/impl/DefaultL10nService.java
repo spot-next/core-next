@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.validation.MessageInterpolator;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -18,6 +16,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.spotnext.core.infrastructure.service.I18nService;
 import io.spotnext.core.infrastructure.service.L10nService;
 import io.spotnext.itemtype.core.internationalization.LocalizationValue;
+import jakarta.validation.MessageInterpolator;
 
 /**
  * <p>

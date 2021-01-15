@@ -28,8 +28,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -87,6 +85,8 @@ import io.spotnext.infrastructure.type.Item;
 import io.spotnext.infrastructure.type.ItemTypePropertyDefinition;
 import io.spotnext.support.util.ClassUtil;
 import io.spotnext.support.util.MiscUtil;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 
 /**
  * <p>

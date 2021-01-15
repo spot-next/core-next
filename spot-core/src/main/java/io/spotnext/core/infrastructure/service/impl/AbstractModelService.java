@@ -8,8 +8,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +41,7 @@ import io.spotnext.itemtype.core.beans.UserData;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 import io.spotnext.support.util.ClassUtil;
+import jakarta.validation.ConstraintViolation;
 
 /**
  * <p>

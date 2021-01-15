@@ -3,12 +3,12 @@ package io.spotnext.core.infrastructure.annotation.validation;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Checks a given {@link java.util.Date} object if it has a time component (= time not

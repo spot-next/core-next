@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+<types
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="https://core-next.io/schemas/v2/itemtypes.xsd">
 
 	<collection elementType="UserData" name="UserDataList" />
 
@@ -44,7 +45,7 @@
 		<properties>
 			<property name="type" type="UserType">
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 				<defaultValue>io.spotnext.sample.types.enumerations.UserType.REGISTERED
 				</defaultValue>
@@ -58,7 +59,7 @@
 				<description>The unique title of the party</description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="motto" type="LocalizedString" localized="true">
@@ -87,4 +88,3 @@
 	</relation>
 
 </types>
-

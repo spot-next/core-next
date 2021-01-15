@@ -5,12 +5,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Date;
-
-import javax.validation.Constraint;
-import javax.validation.Payload;
 
 import org.springmodules.validation.bean.conf.loader.annotation.handler.ValidationRule;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 /**
  * Checks a given {@link java.util.Date} object if it has a time component (= time not 00:00:00).

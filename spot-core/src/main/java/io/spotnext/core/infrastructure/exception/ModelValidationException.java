@@ -3,7 +3,7 @@ package io.spotnext.core.infrastructure.exception;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 /**
  * <p>ModelValidationException class.</p>

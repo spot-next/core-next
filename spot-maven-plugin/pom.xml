@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+		xmlns="http://maven.apache.org/POM/4.0.0"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>spot-maven-plugin</artifactId>
 	<name>${project.groupId}:${project.artifactId}</name>
@@ -75,20 +77,20 @@
 			<groupId>io.spot-next</groupId>
 			<artifactId>spot-core-infrastructure</artifactId>
 			<version>${revision}</version>
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.aspectj</groupId> -->
-<!-- 					<artifactId>aspectjtools</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
-<!-- 					<artifactId>log4j-core</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
-<!-- 					<artifactId>log4j-api</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
+			<!-- 			<exclusions> -->
+			<!-- 				<exclusion> -->
+			<!-- 					<groupId>org.aspectj</groupId> -->
+			<!-- 					<artifactId>aspectjtools</artifactId> -->
+			<!-- 				</exclusion> -->
+			<!-- 				<exclusion> -->
+			<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
+			<!-- 					<artifactId>log4j-core</artifactId> -->
+			<!-- 				</exclusion> -->
+			<!-- 				<exclusion> -->
+			<!-- 					<groupId>org.apache.logging.log4j</groupId> -->
+			<!-- 					<artifactId>log4j-api</artifactId> -->
+			<!-- 				</exclusion> -->
+			<!-- 			</exclusions> -->
 		</dependency>
 
 		<!-- The dependency to the maven API -->
@@ -116,7 +118,7 @@
 			<version>3.6.3</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- java code generation and formatting -->
 		<dependency>
 			<groupId>org.jboss.forge.roaster</groupId>
@@ -134,7 +136,7 @@
 			<artifactId>velocity-engine-core</artifactId>
 			<version>2.2</version>
 		</dependency>
-		
+
 		<!-- general stuff -->
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -142,9 +144,14 @@
 			<version>2.8.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
 			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.3.0.1</version>
 		</dependency>
 
 		<!-- Eclipse integration -->

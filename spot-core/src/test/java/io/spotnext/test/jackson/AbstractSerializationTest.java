@@ -3,9 +3,9 @@ package io.spotnext.test.jackson;
 import java.io.IOException;
 import java.util.HashSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -14,13 +14,13 @@ import org.springframework.context.ApplicationContext;
 import io.spotnext.core.infrastructure.exception.UnknownTypeException;
 import io.spotnext.core.infrastructure.service.TypeService;
 import io.spotnext.core.infrastructure.support.spring.Registry;
-import io.spotnext.core.testing.SpotJunitRunner;
+import io.spotnext.core.testing.SpotSpringExtension;
 import io.spotnext.itemtype.core.catalog.Catalog;
 import io.spotnext.itemtype.core.catalog.CatalogVersion;
 import io.spotnext.itemtype.core.user.User;
 import io.spotnext.itemtype.core.user.UserGroup;
 
-@RunWith(SpotJunitRunner.class)
+@ExtendWith(SpotSpringExtension.class)
 public abstract class AbstractSerializationTest {
 
 	@Mock
@@ -32,7 +32,7 @@ public abstract class AbstractSerializationTest {
 		super();
 	}
 
-	@Before
+	@BeforeEach
 	public void setup() throws IOException, UnknownTypeException, ClassNotFoundException {
 		MockitoAnnotations.initMocks(this);
 
@@ -94,14 +94,14 @@ public abstract class AbstractSerializationTest {
 	}
 
 	protected void assertUser(User expected, User deserializedUser) {
-		Assert.assertEquals(expected.getGroups().size(), deserializedUser.getGroups().size());
-		Assert.assertEquals(expected.getId(), deserializedUser.getId());
-		Assert.assertEquals(expected.getUid(), deserializedUser.getUid());
-		Assert.assertEquals(expected.getEmailAddress(), deserializedUser.getEmailAddress());
-		Assert.assertEquals(expected.getShortName(), deserializedUser.getShortName());
-		Assert.assertEquals(expected.getPassword(), deserializedUser.getPassword());
-		Assert.assertEquals(expected.getCreatedAt(), deserializedUser.getCreatedAt());
-		Assert.assertEquals(expected.getLastModifiedAt(), deserializedUser.getLastModifiedAt());
+		Assertions.assertEquals(expected.getGroups().size(), deserializedUser.getGroups().size());
+		Assertions.assertEquals(expected.getId(), deserializedUser.getId());
+		Assertions.assertEquals(expected.getUid(), deserializedUser.getUid());
+		Assertions.assertEquals(expected.getEmailAddress(), deserializedUser.getEmailAddress());
+		Assertions.assertEquals(expected.getShortName(), deserializedUser.getShortName());
+		Assertions.assertEquals(expected.getPassword(), deserializedUser.getPassword());
+		Assertions.assertEquals(expected.getCreatedAt(), deserializedUser.getCreatedAt());
+		Assertions.assertEquals(expected.getLastModifiedAt(), deserializedUser.getLastModifiedAt());
 	}
 
 }

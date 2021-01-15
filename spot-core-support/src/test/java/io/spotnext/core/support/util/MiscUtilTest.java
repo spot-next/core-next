@@ -2,8 +2,8 @@ package io.spotnext.core.support.util;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import io.spotnext.support.util.MiscUtil;
 
@@ -15,7 +15,7 @@ public class MiscUtilTest {
 
 		Optional<Integer> length = MiscUtil.$(() -> test.length());
 
-		Assert.assertTrue(!length.isPresent());
+		Assertions.assertTrue(!length.isPresent());
 	}
 
 	@Test
@@ -24,7 +24,7 @@ public class MiscUtilTest {
 
 		Integer length = MiscUtil.$(() -> test.length(), 0);
 
-		Assert.assertEquals(Integer.valueOf(0), length);
+		Assertions.assertEquals(Integer.valueOf(0), length);
 	}
 	
 	@Test

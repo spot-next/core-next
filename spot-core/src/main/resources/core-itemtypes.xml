@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://spot-next.io/schemas/v2/itemtypes.xsd">
+<types
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="https://core-next.io/schemas/v2/itemtypes.xsd">
 
 	<!-- atomic java types -->
 	<!-- primitive types -->
@@ -100,13 +101,13 @@
 			<property name="format" type="DataFormat">
 				<description>Specifies the import format.</description>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="scriptIdentifier" type="String">
 				<description>Holds the filename or abstract identifier of the import data</description>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="ignoreErrors" type="Boolean">
@@ -122,10 +123,10 @@
 			<property name="serializeNulls" type="boolean" />
 			<property name="format" type="DataFormat">
 				<description>Specifies the serialization format.</description>
-				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
+				<defaultValue>io.spotnext.itemtype.core.enumeration.DataFormat.JSON</defaultValue>
 			</property>
 		</properties>
 	</bean>
@@ -168,7 +169,7 @@
 					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 					</annotation>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 				<persistence indexed="true" />
 			</property>
@@ -183,7 +184,7 @@
 				<description>The catalog version this item belongs to.</description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 		</properties>
@@ -342,7 +343,7 @@
                 </description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="2" />
 						<argument name="max" numberValue="2" />
@@ -355,7 +356,7 @@
 				@see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3.
 			</description>
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 						<argument name="max" numberValue="3" />
@@ -384,7 +385,7 @@
                 </description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 					<annotation javaClass="org.hibernate.validator.constraints.Length">
 						<argument name="min" numberValue="3" />
 						<argument name="max" numberValue="3" />
@@ -415,7 +416,7 @@
 				<description>The iso code of the currency.</description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="name" type="LocalizedString" localized="true">
@@ -481,7 +482,7 @@
 			</description>
 				<modifiers unique="true" />
 				<annotations>
-					<annotation javaClass="javax.validation.constraints.NotNull" />
+					<annotation javaClass="jakarta.validation.constraints.NotNull" />
 				</annotations>
 			</property>
 			<property name="value" type="String">
@@ -695,4 +696,3 @@
 	</relation>
 
 </types>
-

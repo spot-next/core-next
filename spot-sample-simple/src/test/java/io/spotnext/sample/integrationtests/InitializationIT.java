@@ -1,11 +1,11 @@
 package io.spotnext.sample.integrationtests;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -44,14 +44,15 @@ public class InitializationIT extends AbstractIntegrationTest {
 
 	@Test
 	public void moduleInitialized() {
-		assertTrue(SampleInit.class.getSimpleName() + " not initialized", init.isAlreadyInitialized());
-		assertTrue("Instrumentation not initiazed", DynamicInstrumentationLoader.isInstrumentationAvailable());
+		assertTrue(init.isAlreadyInitialized(), SampleInit.class.getSimpleName() + " not initialized");
+		assertTrue(DynamicInstrumentationLoader.isInstrumentationAvailable(), "Instrumentation not initiazed");
 
 		// make sure the item type transformer kicks it by referencing an item type
 		User user = new User();
 
 		// check if the core initial data have been imported correctly
-		Language english = modelService.get(new ModelQuery<>(Language.class, Collections.singletonMap("iso3Code", "eng")));
+		Language english = modelService
+				.get(new ModelQuery<>(Language.class, Collections.singletonMap("iso3Code", "eng")));
 
 		assertNotNull(english);
 	}
