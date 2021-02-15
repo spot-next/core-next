@@ -28,6 +28,7 @@
 	<atomic name="Instant" className="java.time.Instant" />
 	<atomic name="ByteArray" className="java.lang.Byte" array="true" />
 	<atomic name="Locale" className="java.util.Locale" />
+	<atomic name="UUID" className="java.util.UUID" />
 
 	<collection name="BooleanList" elementType="Boolean" />
 	<collection name="StringList" elementType="String" />

@@ -93,7 +93,7 @@ public class DefaultUserService<U extends User, G extends UserGroup> extends Abs
 	@Override
 	public G getUserGroup(final String uid) {
 		final Map<String, Object> params = new HashMap<>();
-		params.put("id", uid);
+		params.put(UserGroup.PROPERTY_UID, uid);
 
 		return modelService.get(getUserGroupType(), params);
 	}
