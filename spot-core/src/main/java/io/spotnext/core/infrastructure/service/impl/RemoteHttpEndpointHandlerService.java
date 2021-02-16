@@ -197,9 +197,9 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 				final RemoteEndpoint remoteEndpoint = ClassUtil.getAnnotation(endpoint.getClass(),
 						RemoteEndpoint.class);
 
-				Class<? extends Filter> autenticationFilterType = remoteEndpoint.authenticationFilter();
-
+				Class<? extends Filter> classAutenticationFilterType = remoteEndpoint.authenticationFilter();
 				for (final Method method : endpoint.getClass().getMethods()) {
+					
 					final Handler handler = ClassUtil.getAnnotation(method, Handler.class);
 
 					if (handler != null) {
@@ -207,16 +207,20 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						final String mimeType = handler.mimeType().toString();
 
 						// only override the class authentication filter, if it's not the default one
+						var methodAuthenticationFilterType = classAutenticationFilterType;
 						if (!DEFAULT_AUTHENTICATION_HANDLER.equals(handler.authenticationFilter())) {
-							autenticationFilterType = handler.authenticationFilter();
+							methodAuthenticationFilterType = handler.authenticationFilter();
 						}
 
+						var authenticationFilter = authenticationFilters.get(methodAuthenticationFilterType);
 						// the authentication will not be handled in the
 						// "before" handler to allow us to have different
 						// authenticationFilters for each remote endpoint
 						final Route route = new HttpRoute(endpoint, method,
-								authenticationFilters.get(autenticationFilterType), mimeType);
+								authenticationFilter, mimeType);
 
+						Logger.debug(String.format("URL: %s, Method: %s, Filter: %s", remoteEndpoint.pathMapping()[0], method, authenticationFilter));
+						
 						if (handler.responseTransformer() != null) {
 							transformer = responseTransformers.get(handler.responseTransformer());
 
