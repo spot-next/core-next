@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import io.spotnext.core.management.support.AuthenticationFilter;
 import io.spotnext.core.management.support.NoAuthenticationFilter;
+import io.spotnext.core.management.support.NoopAuthenticationFilter;
 
 /**
  * <p>RemoteEndpoint class.</p>
@@ -27,7 +28,6 @@ import io.spotnext.core.management.support.NoAuthenticationFilter;
 @Service
 public @interface RemoteEndpoint {
 	// if changed, also change the default value for authenticationFitler here and in the Handler annotation!
-	public static final Class<? extends AuthenticationFilter> DEFAULT_AUTHENTICATION_HANDLER = NoAuthenticationFilter.class;
 	public static final int DEFAULT_PORT = 8080;
 
 	/**

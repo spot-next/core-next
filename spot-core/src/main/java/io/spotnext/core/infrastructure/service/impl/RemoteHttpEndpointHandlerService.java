@@ -33,6 +33,7 @@ import io.spotnext.core.management.annotation.Handler;
 import io.spotnext.core.management.annotation.RemoteEndpoint;
 import io.spotnext.core.management.exception.RemoteServiceInitException;
 import io.spotnext.core.management.support.AuthenticationFilter;
+import io.spotnext.core.management.support.NoopAuthenticationFilter;
 import io.spotnext.core.persistence.service.PersistenceService;
 import io.spotnext.core.security.service.AuthenticationService;
 import io.spotnext.itemtype.core.user.User;
@@ -64,6 +65,8 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
 	public static final String HTTP_HEADER_ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
 	public static final String HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+
+	public static final Class<? extends AuthenticationFilter> DEFAULT_AUTHENTICATION_HANDLER = NoopAuthenticationFilter.class;
 
 	private boolean isStarted = false;
 
@@ -204,7 +207,7 @@ public class RemoteHttpEndpointHandlerService extends AbstractService {
 						final String mimeType = handler.mimeType().toString();
 
 						// only override the class authentication filter, if it's not the default one
-						if (!RemoteEndpoint.DEFAULT_AUTHENTICATION_HANDLER.equals(handler.authenticationFilter())) {
+						if (!DEFAULT_AUTHENTICATION_HANDLER.equals(handler.authenticationFilter())) {
 							autenticationFilterType = handler.authenticationFilter();
 						}
 

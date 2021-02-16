@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 import io.spotnext.core.infrastructure.support.MimeType;
 import io.spotnext.core.management.support.AuthenticationFilter;
 import io.spotnext.core.management.support.NoAuthenticationFilter;
+import io.spotnext.core.management.support.NoopAuthenticationFilter;
 import io.spotnext.core.management.transformer.PlainTextResponseTransformer;
 import io.spotnext.core.management.transformer.ResponseTransformer;
 import spark.route.HttpMethod;
@@ -61,6 +62,6 @@ public @interface Handler {
 	 * 
 	 * @return the defined authentication filter
 	 */
-	Class<? extends AuthenticationFilter> authenticationFilter() default NoAuthenticationFilter.class;
+	Class<? extends AuthenticationFilter> authenticationFilter() default NoopAuthenticationFilter.class;
 
 }
