@@ -150,7 +150,7 @@
 
 		<!-- misc -->
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<log4j.version>2.13.2</log4j.version>
+		<log4j.version>2.16.0</log4j.version>
 		<junit.version>4.12</junit.version>
 		<junit.jupiter.version>5.3.1</junit.jupiter.version>
 		<spring.boot.version>2.1.0.RELEASE</spring.boot.version>
