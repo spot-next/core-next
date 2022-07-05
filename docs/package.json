@@ -7,7 +7,7 @@
     "docsify": "^4.7.1",
     "docsify-copy-code": "^2.0.2",
     "docsify-themeable": "^0.3.0",
-    "mermaid": "^8.2.3",
+    "mermaid": "^9.1.2",
     "prismjs": "^1.21.0",
     "yuml2svg": "^4.0.1"
   },
